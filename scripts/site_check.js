@@ -17,6 +17,7 @@ const ROOT = path.resolve(__dirname, '..');
 const APP = fs.readFileSync(path.join(ROOT, 'site/static/app.js'), 'utf8');
 const SCHEMA = JSON.parse(fs.readFileSync(path.join(ROOT, 'site/board.schema.json'), 'utf8'));
 const BOARD = JSON.parse(fs.readFileSync(path.join(ROOT, 'site/fixtures/board.json'), 'utf8'));
+const INDEX = fs.readFileSync(path.join(ROOT, 'site/static/index.html'), 'utf8');
 
 let fails = 0;
 function ok(cond, label, detail) {
@@ -78,6 +79,10 @@ function makeLeaflet() {
   const layer = (kind, latlng, opts) => {
     const l = { kind, latlng, opts, tooltip: null, tooltipOpts: null, handlers: {}, added: false };
     l.addTo = function (m) { this.added = true; m.layers.push(this); return this; };
+    // Leaflet hands back the marker's DOM node once it is on the map; app.js names it for a screen
+    // reader through this (it dropped `title`, which drew a second, native tooltip over Leaflet's).
+    l.element = { attrs: {}, setAttribute(k, v) { this.attrs[k] = String(v); } };
+    l.getElement = function () { return this.added ? this.element : null; };
     l.bindTooltip = function (c, o) { this.tooltip = c; this.tooltipOpts = o; return this; };
     l.on = function (ev, fn) { this.handlers[ev] = fn; return this; };
     created.push(l);
@@ -145,13 +150,40 @@ async function runPage(board) {
   // 2. the page renders the fixture: one marker per beach, tooltips, list, card
   const { els, L, errors } = await runPage(BOARD);
   ok(errors.length === 0, 'app.js logged no errors while loading', errors.join(' | '));
-  const markers = L.created.filter(l => l.added && (l.kind === 'circleMarker' || l.kind === 'marker') && l.tooltip !== 'you');
-  ok(markers.length === BOARD.beaches.length, 'exactly one marker per beach (' + markers.length + ')');
+  const isWave = l => l.kind === 'marker' && l.opts && l.opts.icon && l.opts.icon.divIcon && /\bwave\b/.test(l.opts.icon.options.className);
+  const markers = L.created.filter(l => l.added && isWave(l));
+  ok(markers.length === BOARD.beaches.length, 'exactly one wave divIcon marker per beach (' + markers.length + ')');
+  ok(L.created.filter(l => l.added && l.kind === 'circleMarker').length === 0, 'no circleMarker is left for beaches');
   const joaq = markers.find(m => String(m.tooltip).includes('Praia da Joaquina'));
-  ok(!!joaq, 'a marker carries a tooltip naming Praia da Joaquina');
-  ok(joaq && /55 at 10:00/.test(String(joaq.tooltip)), 'Joaquina\'s tooltip shows its best score and hour', joaq && String(joaq.tooltip));
+  ok(!!joaq, 'a wave carries a tooltip naming Praia da Joaquina');
+  const tip = joaq ? String(joaq.tooltip) : '';
+  ok(/55\/100 at 10:00/.test(tip), 'Joaquina\'s tooltip head shows score/100 and the hour', tip);
+  ok(joaq && joaq.tooltipOpts && joaq.tooltipOpts.sticky === true && joaq.tooltipOpts.className === 'aspects', 'the tooltip is sticky with the aspects class');
+  // MIP-0009 §3: six aspects, the fixture's own numbers, every emoji followed by its word
+  [['🌬️ breezy, 27 km/h S', 'wind band + km/h + direction'], ['🌡️ water 19.0 °C', 'water temperature'],
+   ['〰️ waves 1.3 m every 6 s', 'waves + period'], ['🪼 jellyfish Low', 'jellyfish'],
+   ['🐋 whales Low (best 07:00)', 'whales with the day\'s best hour'], ['💧 1/1 PRÓPRIA (25 Aug)', 'water verdict']]
+    .forEach(([needle, label]) => ok(tip.includes(needle), 'tooltip cell: ' + label + ' → "' + needle + '"', tip));
+  ok((tip.match(/<span/g) || []).length === 6, 'the tooltip grid has exactly six cells');
+  ok(joaq && joaq.opts.icon.options.html.includes('#e0a800'), 'Joaquina\'s wave is filled with the 40-69 colour', joaq && joaq.opts.icon.options.html);
   const brava = markers.find(m => String(m.tooltip).includes('Praia Brava'));
-  ok(brava && brava.opts && brava.opts.fillColor === '#c0392b', 'the unfit beach is drawn in the red (score-0) colour', brava && JSON.stringify(brava.opts));
+  ok(brava && brava.opts.icon.options.html.includes('#c0392b'), 'the unfit beach\'s wave is the red (score-0) colour', brava && brava.opts.icon.options.html);
+  ok(brava && /class="wide unfit">💧 0\/1 IMPRÓPRIA/.test(String(brava.tooltip)), 'the unfit beach\'s water cell carries the unfit class', brava && String(brava.tooltip));
+  // the water verdict is a sentence and gets the full width (CSS: .aspects .grid .wide spans both
+  // columns and wraps) — nowrap in one column ran it past the 21 rem tooltip and clipped the card
+  ok(/<span class="wide (water|unfit)">💧/.test(tip), 'the water cell is the spanning, wrapping one', tip);
+  ok((tip.match(/class="wide /g) || []).length === 1, 'only the water cell spans both columns', tip);
+  // one filled path, not two thin ribbons and a halo: the score colour needs area at area zoom
+  ok(joaq && (joaq.opts.icon.options.html.match(/<path /g) || []).length === 1, 'the wave is a single filled path', joaq && joaq.opts.icon.options.html);
+  ok(joaq && !/opacity=|drop-shadow|transform=/.test(joaq.opts.icon.options.html), 'no per-path opacity, halo transform or drop-shadow in the marker SVG', joaq && joaq.opts.icon.options.html);
+  ok(joaq && joaq.opts.title === undefined && joaq.opts.keyboard === true,
+    'the marker has no `title` (no native tooltip over Leaflet\'s) but stays keyboard-reachable');
+  ok(joaq && joaq.element.attrs['aria-label'] === 'Praia da Joaquina',
+    'the marker element is named for a screen reader with aria-label', joaq && JSON.stringify(joaq.element.attrs));
+  // the legend key is the same glyph, or the key stops meaning "this shape on the map is a beach"
+  const keyPath = (/<span class="wave-key">.*?<path d="([^"]+)"/.exec(INDEX) || [])[1];
+  const iconPath = (/<path d="([^"]+)"/.exec((joaq && joaq.opts.icon.options.html) || '') || [])[1];
+  ok(!!keyPath && keyPath === iconPath, 'index.html\'s legend key draws the same path as the marker', keyPath + ' vs ' + iconPath);
   ok((els.list.innerHTML.match(/<li /g) || []).length === 2 && els.list.innerHTML.indexOf('Joaquina') < els.list.innerHTML.indexOf('Brava'),
     'the list has two entries, best score first');
   ok(els.card.hidden === true || els.card.innerHTML === '', 'the card starts closed');
@@ -159,15 +191,21 @@ async function runPage(board) {
   if (joaq && joaq.handlers.click) {
     joaq.handlers.click({});
     ok(els.card.hidden === false && els.card.innerHTML.includes('Praia da Joaquina') && els.card.innerHTML.includes('55/100'),
-      'clicking Joaquina\'s marker opens its card with the score');
-  } else ok(false, 'Joaquina\'s marker has a click handler');
+      'clicking Joaquina\'s wave opens its card with the score');
+    const sel = L.created.filter(l => l.added && isWave(l)).find(m => String(m.tooltip).includes('Praia da Joaquina'));
+    ok(sel && /\bselected\b/.test(sel.opts.icon.options.className) && sel.opts.icon.options.iconSize[0] === 32 && sel.opts.zIndexOffset === 1000,
+      'after selection the wave is re-drawn larger (32 px), marked selected, on top', sel && JSON.stringify(sel.opts.icon.options.iconSize));
+  } else ok(false, 'Joaquina\'s wave has a click handler');
 
-  // 3. an older board without wind_level (task 1 made it optional) renders the same
+  // 3. an older board without wind_level (task 1 made it optional) renders: number, no band word
   const stripped = JSON.parse(JSON.stringify(BOARD));
   stripped.beaches.forEach(b => b.hours.forEach(h => { delete h.wind_level; }));
   const r2 = await runPage(stripped);
-  const markers2 = r2.L.created.filter(l => l.added && l.tooltip !== 'you');
-  ok(r2.errors.length === 0 && markers2.length === BOARD.beaches.length, 'a board without wind_level still renders every beach');
+  const markers2 = r2.L.created.filter(l => l.added && isWave(l));
+  ok(r2.errors.length === 0 && markers2.length === BOARD.beaches.length, 'a board without wind_level still renders every beach as a wave');
+  const tip2 = String((markers2.find(m => String(m.tooltip).includes('Praia da Joaquina')) || {}).tooltip || '');
+  ok(!/breezy|calm|strong/.test(tip2) && tip2.includes('🌬️ wind 27 km/h') && (tip2.match(/<span/g) || []).length === 6,
+    'without wind_level the wind cell keeps the number and drops the band word; six cells remain', tip2);
 
   if (fails === 0) { console.log('site_check: ok'); process.exit(0); }
   console.error('site_check: ' + fails + ' failure(s)'); process.exit(1);
