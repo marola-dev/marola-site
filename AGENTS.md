@@ -23,13 +23,15 @@ The map at [marola.dev](https://marola.dev): a static page that shows every area
 boards (MIP-0005), with no server, no LLM and no per-visitor cost.
 
 - `site/static/`: the page (`index.html`, `about.html`, `support.html` behind Donate, `app.js`,
-  `style.css`, the chat widget, vendored Leaflet) and `404.html`, which forwards the old
-  `marola.dev/docs/*` links to `docs.marola.dev`.
+  `ui.js` (the language and `t()`), the generated `i18n.js`, `style.css`, the chat widget, vendored
+  Leaflet) and `404.html`, which forwards the old `marola.dev/docs/*` links to `docs.marola.dev`.
+- `site/i18n/`: the pt-BR and en catalogs plus `context.json`, one translator note per key
+  (MIP-0054 §5.8). `scripts/i18n_bundle.py` checks them and writes `site/static/i18n.js`.
 - `site/areas.json`: the areas the boards are built for. `site/fixtures/board.json`: the board the
   harness renders. `site/board.schema.json`: the board contract, vendored from the pinned image.
 - `scripts/`: `site_check.js` (app.js in a stub DOM and Leaflet), `redirect_check.js` (the 404
-  forwarder), `board-schema.sh` (the image pin and its schema), `stamp_site_version.sh`,
-  `site_live_check.py` (what marola.dev actually serves), `site-data-push.sh` (the retrying push
+  forwarder), `i18n_bundle.py` (the catalogs' gates and `i18n.js`), `board-schema.sh` (the image
+  pin and its schema), `stamp_site_version.sh`, `site_live_check.py` (what marola.dev actually serves), `site-data-push.sh` (the retrying push
   every `site-data` writer uses), `mip-trailer-check.sh`.
 - `.claude/skills/site-frontend/`: this repo's own skill for anything a visitor sees.
 
@@ -59,6 +61,7 @@ just quality              # every gate CI runs that needs no docker or network
 just site-build floripa   # boards from the pinned image + the page into site/dist (docker, network)
 just site-serve           # http://localhost:8000
 just site-live-check      # what marola.dev serves now
+just i18n                 # rewrite site/static/i18n.js after editing site/i18n/*.json
 just board-schema --check # the vendored schema against the pinned image's (docker)
 ```
 
@@ -89,5 +92,7 @@ The phase list is the umbrella's `docs/PHASES.md`. Site work serves the current 
 
 Plain JavaScript, no framework and no build step; the page makes no third-party requests and keeps
 `script-src 'self'`. A visible change goes through the `site-frontend` skill, `node scripts/site_check.js`
-and before/after screenshots. Shell: `set -euo pipefail`, shellcheck-clean. Python: ruff. Comments
-only for why, a trap, or a pointer, as the umbrella's AGENTS.md spells out.
+and before/after screenshots, in both languages. Visible text is pt-BR first: a new string goes
+into both `site/i18n` catalogs with a `context.json` note, then `just i18n`. Shell:
+`set -euo pipefail`, shellcheck-clean. Python: ruff. Comments only for why, a trap, or a pointer, as
+the umbrella's AGENTS.md spells out.

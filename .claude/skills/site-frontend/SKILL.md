@@ -42,8 +42,8 @@ change looked at before it is committed.
    so in words (`fail()` in `app.js`). Budget: `style.css` < 15 KB, zero new network requests,
    no framework, no build step.
 6. **Verify, then show.** `node --check site/static/app.js`, the harness again, `just quality`,
-   and the before/after screenshots in the PR. A change of more than ~80 CSS lines without a
-   screenshot is not done.
+   and the before/after screenshots in the PR, in pt-BR and under `?lang=en`. A change of more
+   than ~80 CSS lines without a screenshot is not done.
 
 ## Quick reference
 
@@ -52,6 +52,7 @@ change looked at before it is committed.
 | A "more polished" header | Bigger wordmark (26 px / 600), the one-line description, the same white panel, not a gradient |
 | Floating panels that feel light | `--panel` background, `--line` border, one `0 6px 20px rgba(0,0,0,.15)` shadow, 10 px radius |
 | Numbers that line up | `tabular-nums`, right-aligned, same size as the label |
+| New or changed copy | Both `site/i18n/{pt-BR,en}.json` plus a `context.json` note, then `just i18n` and commit `i18n.js`; the HTML source text is pt-BR (MIP-0054) |
 | An icon | Inline SVG, `currentColor`, 16 px, `aria-hidden`, text label kept |
 | Motion | Only what shows a state change, ≤ 150 ms, inside `@media (prefers-reduced-motion: no-preference)` |
 | A marker that is not a dot | See MIP-0009 (wave `divIcon` filled with the score colour) |

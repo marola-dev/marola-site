@@ -35,6 +35,10 @@ site-live-check *args:
 board-schema *args:
     scripts/board-schema.sh {{ args }}
 
+# Rewrite site/static/i18n.js from site/i18n/*.json after editing a catalog (MIP-0054 §5.8).
+i18n:
+    python3 scripts/i18n_bundle.py
+
 # Every gate CI runs that needs no docker or network.
 quality:
     #!/usr/bin/env bash
@@ -45,9 +49,13 @@ quality:
     shellcheck --severity=error scripts/*.sh
     actionlint
     node --check site/static/app.js
+    node --check site/static/ui.js
+    node --check site/static/i18n.js
+    python3 scripts/i18n_bundle.py --check
     node scripts/site_check.js
     node scripts/redirect_check.js
     python3 scripts/site_live_check.py --self-test
+    python3 scripts/i18n_bundle.py --self-test
     scripts/site-data-push.sh --self-test
     scripts/board-schema.sh --self-test
     scripts/mip-trailer-check.sh --self-test
@@ -56,6 +64,7 @@ quality:
 # The devkit hooks' contract: fast checks at commit, the full gate (and the MIP: rule) at push.
 precommit:
     node --check site/static/app.js
+    python3 scripts/i18n_bundle.py --check
     node scripts/site_check.js
     ruff check .
     agents-check
