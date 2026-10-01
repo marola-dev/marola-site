@@ -416,6 +416,11 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   }
   const SUPPORT = fs.readFileSync(path.join(ROOT, 'site/static/support.html'), 'utf8');
   ok(!/<script/i.test(SUPPORT), 'the support page loads no third-party script');
+  const FUNDING = fs.readFileSync(path.join(ROOT, '.github/FUNDING.yml'), 'utf8');
+  const patreon = (/^patreon:\s*(\S+)/m.exec(FUNDING) || [])[1];
+  const patreonLinks = SUPPORT.match(/href="https:\/\/www\.patreon\.com\/[^"]*"/g) || [];
+  ok(!!patreon && patreonLinks.every(h => h === 'href="https://www.patreon.com/' + patreon + '"'),
+    "the support page's Patreon links are FUNDING.yml's account (" + patreon + ')');
   ok(eip55('0x5aaeb6053f3e94c9b9a09f33669435e7ef1beaed') === '0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed',
     "the EIP-55 check reproduces the EIP's own example");
   const addrs = [...new Set(SUPPORT.match(/0x[0-9a-fA-F]{40}/g) || [])];
