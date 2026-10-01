@@ -367,8 +367,8 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
 
   // --- section nav ---------------------------------------------------------------------------
   const nav = (/<nav class="sitenav"[\s\S]*?<\/nav>/.exec(INDEX) || [''])[0];
-  ok(nav.length > 0, 'the page has a section nav — /docs/ is reachable without typing the URL');
-  ok(/<a href="\/docs\/">Docs<\/a>/.test(nav), 'Docs is a real link to the published docs');
+  ok(nav.length > 0, 'the page has a section nav — the docs are reachable without typing the URL');
+  ok(/<a href="https:\/\/docs\.marola\.dev\/">Docs<\/a>/.test(nav), 'Docs is a real link to the published docs');
   ok(/<a href="about\.html">About<\/a>/.test(nav), 'About is a real link to the about page');
   ok((nav.match(/<span aria-disabled="true">/g) || []).length === 4,
     'the four sections with no page yet are spans, not links');
