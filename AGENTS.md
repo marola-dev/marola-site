@@ -22,9 +22,9 @@ Non-negotiable in every marola repo; a repo may make these stricter, never loose
 The map at [marola.dev](https://marola.dev): a static page that shows every area's precomputed
 boards (MIP-0005), with no server, no LLM and no per-visitor cost.
 
-- `site/static/`: the page (`index.html`, `about.html`, `app.js`, `style.css`, the chat widget,
-  vendored Leaflet) and `404.html`, which forwards the old `marola.dev/docs/*` links to
-  `docs.marola.dev`.
+- `site/static/`: the page (`index.html`, `about.html`, `support.html` behind Donate, `app.js`,
+  `style.css`, the chat widget, vendored Leaflet) and `404.html`, which forwards the old
+  `marola.dev/docs/*` links to `docs.marola.dev`.
 - `site/areas.json`: the areas the boards are built for. `site/fixtures/board.json`: the board the
   harness renders. `site/board.schema.json`: the board contract, vendored from the pinned image.
 - `scripts/`: `site_check.js` (app.js in a stub DOM and Leaflet), `redirect_check.js` (the 404

@@ -119,11 +119,12 @@ button[aria-pressed="true"], .segmented button.on { background: var(--accent); c
 .footer p { margin: .3rem 0; max-width: 65ch; }
 .footer .lore { font-size: 15px; color: var(--ink); }
 /* Lowercase house style, except names marola did not choose: providers, the agency's verbatim
- * PRÓPRIA/IMPRÓPRIA verdict (MIP-0001), beaches. Containers are exempted because app.js emits
+ * PRÓPRIA/IMPRÓPRIA verdict (MIP-0001), beaches, and literal text in <code> (a `Cost:` trailer; an
+ * EIP-55 address, whose letter case is its checksum). Containers are exempted because app.js emits
  * beach names as bare text nodes. */
 body { text-transform: lowercase; }
 .src, .water, .unfit, .leaflet-control-attribution,
-.list li, .card h2, .leaflet-tooltip .head { text-transform: none; }
+.list li, .card h2, .leaflet-tooltip .head, .about-body code { text-transform: none; }
 .bar h1 { text-transform: lowercase; }
 
 /* Wraps rather than scrolls, so all six stay reachable at 390px. */
@@ -158,6 +159,10 @@ body { text-transform: lowercase; }
 .about-body h2:first-child { margin-top: 0; }
 .about-body p { margin: 0 0 .8rem; color: var(--ink); }
 html:not(:lang(en)) article.about-body:lang(en), html:lang(en) article.about-body:lang(pt) { display: none; }
+/* The empty slot is the width the address will take (0x + 40 hex digits). */
+.addr:empty { display: inline-block; width: 42ch; max-width: 100%; padding: 0 .4rem; vertical-align: middle;
+  border: 1px dashed var(--muted); border-radius: 4px; }
+.addr:empty::before { content: "not published yet"; color: var(--muted); }
 
 .leaflet-container { font: inherit; }
 .leaflet-container .leaflet-control-zoom a { color: var(--ink); }
