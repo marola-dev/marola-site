@@ -519,6 +519,18 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
     ok(/<code class="addr"><\/code>/.test(SUPPORT), 'no address published yet: its field is on the page, empty (#2)');
   }
 
+  // --- the favicon: the docs site's own (marola-dev/marola docs/assets/favicon.svg), copied (#25) ----
+  const FAVICON = path.join(ROOT, 'site/static/favicon.svg');
+  ok(fs.existsSync(FAVICON) && /^<svg[\s>]/.test(fs.readFileSync(FAVICON, 'utf8')), 'site/static/favicon.svg exists and is an SVG');
+  for (const page of ['index.html', 'about.html', 'support.html', '404.html']) {
+    const head = (/<head>[\s\S]*?<\/head>/.exec(fs.readFileSync(path.join(ROOT, 'site/static', page), 'utf8')) || [''])[0];
+    // 404.html is served at whatever path was missing, so only a root-absolute href finds the icon there.
+    const href = page === '404.html' ? '/favicon.svg' : 'favicon.svg';
+    ok(head.includes('<link rel="icon" href="' + href + '" type="image/svg+xml">'), page + ': links the favicon as ' + href);
+  }
+  ok(/! -name favicon\.svg\b/.test(fs.readFileSync(path.join(ROOT, '.github/workflows/site.yml'), 'utf8')),
+    "site.yml's publish allowlist keeps favicon.svg");
+
   // --- the repo link on every page (#498) ------------------------------------------------------
   const REPO_URL = 'https://github.com/marola-dev/marola';
   for (const page of ['index.html', 'about.html', 'support.html']) {
