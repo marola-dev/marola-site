@@ -19,6 +19,13 @@ on:
   # stats/, then each sends this so the panels refresh without waiting for the schedule.
   repository_dispatch:
     types: [site-data-updated]
+  # A PR that changes how the boards are built runs the same build, minus the deploy job, so the
+  # change is proven on the real image before it merges (#4).
+  pull_request:
+    paths:
+      - ".github/workflows/site.yml"
+      - "site/water.json"
+      - "scripts/water.py"
   workflow_dispatch:
     inputs:
       area:
@@ -33,13 +40,14 @@ permissions:
   id-token: write
 
 # Never two deploys at once; a queued run waits rather than cancelling a build that already paid
-# for its Overpass query.
+# for its Overpass query. A PR build only queues behind its own PR's.
 concurrency:
-  group: site
-  cancel-in-progress: false
+  group: ${{ github.event_name == 'pull_request' && format('site-pr-{0}', github.event.pull_request.number) || 'site' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -76,9 +84,24 @@ jobs:
           node --check site/static/app.js
           BOARD_SCHEMA="$RUNNER_TEMP/board.schema.json" node scripts/site_check.js
 
+      # #4: this build only reads water quality; water.yml fetches each agency on its own cadence and
+      # stores its last good fetch on site-data as water/<id>.json. Those files become the app's
+      # data/water-cache, which it serves whenever the agency itself cannot be reached.
+      - name: Water quality from site-data (stored by water.yml)
+        run: |
+          mkdir -p "$RUNNER_TEMP/water-cache"
+          if git fetch --depth=1 origin site-data 2>/dev/null && git cat-file -e FETCH_HEAD:water 2>/dev/null; then
+            git archive FETCH_HEAD:water | tar -x -C "$RUNNER_TEMP/water-cache"
+            ls -l "$RUNNER_TEMP/water-cache"
+          else
+            echo "no water/ on site-data yet: the app fetches each agency live until water.yml stores it"
+          fi
+
       # `--site` with no id builds every area; the water-quality provider is picked per area origin
-      # (IMA/SC inside Santa Catarina, "no data" elsewhere). The image runs as uid 10001, which
-      # cannot write the runner's checkout, hence --user.
+      # (IMA/SC in Santa Catarina, INEA in Rio, INEMA in Bahia). The image runs as uid 10001, which
+      # cannot write the runner's checkout, hence --user. Each agency with a stored fetch has its
+      # hosts (site/water.json) resolve to the container's own loopback, so the app never calls it
+      # here and goes straight to the stored fetch. One with nothing stored yet is fetched live.
       - name: Build the boards (one Overpass query per area, no LLM)
         env:
           IMAGE: ${{ steps.image.outputs.ref }}
@@ -86,10 +109,13 @@ jobs:
         run: |
           args=(--site)
           [ -z "$AREA" ] || args+=("$AREA")
+          agencies=()
+          while read -r host; do [ -z "$host" ] || agencies+=(--add-host "$host:127.0.0.1"); done < <(python3 scripts/water.py hosts "$RUNNER_TEMP/water-cache")
           mkdir -p site/dist
           for attempt in 1 2; do
-            if docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp \
-                 -v "$PWD/site:/work/site" -w /work "$IMAGE" \
+            if docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp "${agencies[@]}" \
+                 -v "$PWD/site:/work/site" -v "$RUNNER_TEMP/water-cache:/work/data/water-cache" \
+                 -w /work "$IMAGE" \
                  "${args[@]}" --areas site/areas.json --site-out site/dist; then
               exit 0
             fi
@@ -133,6 +159,10 @@ jobs:
             head -c 600 site/dist/smoke/latest.json
           fi
 
+      # #4: which areas got water quality, and from which agency's stored fetch.
+      - name: Water quality per area
+        run: python3 scripts/water.py report site/dist
+
       # A half-built site must never reach Pages.
       - name: Required files — the page, the 404, the areas index, one latest.json per area
         run: |
@@ -166,6 +196,7 @@ jobs:
 
   deploy:
     needs: build
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     environment:

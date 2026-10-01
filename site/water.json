@@ -1,0 +1,31 @@
+{
+  "agencies": [
+    {
+      "id": "ima-sc",
+      "name": "IMA/SC",
+      "area": "floripa",
+      "cron": "40 9 * * 5",
+      "cadence": "weekly in season, monthly off it (MIP-0056); fetched every Friday",
+      "brazil_only": false,
+      "hosts": ["balneabilidade.ima.sc.gov.br"]
+    },
+    {
+      "id": "inea-rj",
+      "name": "INEA/RJ",
+      "area": "rio",
+      "cron": "50 9 * * 5",
+      "cadence": "weekly per zone, Rio's on Mondays and Niterói's on Thursdays (MIP-0067); fetched every Friday",
+      "brazil_only": true,
+      "hosts": ["www.inea.rj.gov.br"]
+    },
+    {
+      "id": "inema-ba",
+      "name": "INEMA/BA",
+      "area": "salvador",
+      "cron": "0 10 * * 5",
+      "cadence": "weekly bulletin; fetched every Friday",
+      "brazil_only": true,
+      "hosts": ["balneabilidade.inema.ba.gov.br"]
+    }
+  ]
+}

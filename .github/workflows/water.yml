@@ -1,0 +1,164 @@
+name: water (fetch the agencies' bathing-water bulletins)
+
+# #4: the map's build (site.yml) only reads water quality; this fetches it. One agency per run, on
+# that agency's own publishing cadence (site/water.json), stored on site-data as water/<id>.json.
+# The fetch is a one-area site build whose boards are thrown away: the app writes its water cache
+# only when the agency answered with sampling points, so that file existing is the proof. INEA and
+# INEMA answer only Brazilian addresses, so their fetch goes through MAROLA_BR_PROXY
+# (scripts/br-proxy.sh, ops/br-proxy/).
+
+on:
+  schedule:
+    # site/water.json's "cron" strings, one per agency (scripts/water.py --self-test checks).
+    - cron: "40 9 * * 5" # ima-sc
+    - cron: "50 9 * * 5" # inea-rj
+    - cron: "0 10 * * 5" # inema-ba
+  workflow_dispatch:
+    inputs:
+      agency:
+        description: "Agency id from site/water.json (empty = every agency)"
+        type: string
+        default: ""
+  # A PR that changes the fetch runs it for every agency, storing nothing, so a fetch that does not
+  # work cannot merge.
+  pull_request:
+    paths:
+      - ".github/workflows/water.yml"
+      - "site/water.json"
+      - "scripts/water.py"
+      - "scripts/br-proxy.sh"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: water-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'store' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      agencies: ${{ steps.plan.outputs.agencies }}
+    steps:
+      - uses: actions/checkout@v7
+      - id: plan
+        env:
+          SCHEDULE: ${{ github.event.schedule }}
+          AGENCY: ${{ inputs.agency }}
+        run: echo "agencies=$(python3 scripts/water.py plan)" >>"$GITHUB_OUTPUT"
+
+  fetch:
+    needs: plan
+    if: >-
+      needs.plan.outputs.agencies != '[]'
+      && (github.event_name != 'pull_request'
+          || github.event.pull_request.head.repo.full_name == github.repository)
+    name: fetch ${{ matrix.id }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write # water/<id>.json onto site-data, and the site-data-updated dispatch
+      packages: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.plan.outputs.agencies) }}
+    env:
+      ID: ${{ matrix.id }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: The pinned app image (marola-image)
+        id: image
+        run: echo "ref=$(scripts/board-schema.sh --image)" >>"$GITHUB_OUTPUT"
+
+      # The same private package site.yml pulls; it grants this repo read access.
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull it
+        env:
+          IMAGE: ${{ steps.image.outputs.ref }}
+        run: |
+          for attempt in 1 2; do
+            if docker pull -q "$IMAGE"; then exit 0; fi
+            echo "docker pull attempt $attempt failed"
+            [ "$attempt" -eq 2 ] || sleep 60
+          done
+          exit 1
+
+      - name: Route ${{ matrix.name }} through MAROLA_BR_PROXY
+        if: matrix.brazil_only
+        env:
+          MAROLA_BR_PROXY: ${{ secrets.MAROLA_BR_PROXY }}
+          HOSTS: ${{ join(matrix.hosts, ' ') }}
+        run: |
+          if [ -n "$MAROLA_BR_PROXY" ]; then
+            sudo apt-get update -qq && sudo apt-get install -y -qq tinyproxy >/dev/null \
+              || echo "::warning::br-proxy: could not install tinyproxy"
+          fi
+          read -ra hosts <<<"$HOSTS"
+          opts="$(scripts/br-proxy.sh start "${hosts[@]}")"
+          [ -z "$opts" ] || echo "BR_PROXY_JVM_OPTIONS=$opts" >>"$GITHUB_ENV"
+
+      # With the route up, the container shares the runner's network to reach it on 127.0.0.1, and
+      # JDK_JAVA_OPTIONS adds the proxy to the image's own JAVA_TOOL_OPTIONS rather than replacing
+      # them. A second try covers an Overpass or Open-Meteo hiccup in the throwaway board build.
+      - name: Fetch ${{ matrix.name }} (a site build of ${{ matrix.area }}, kept only for its water cache)
+        env:
+          IMAGE: ${{ steps.image.outputs.ref }}
+          AREA: ${{ matrix.area }}
+        run: |
+          br=()
+          [ -z "${BR_PROXY_JVM_OPTIONS:-}" ] || br=(--network host -e "JDK_JAVA_OPTIONS=$BR_PROXY_JVM_OPTIONS")
+          mkdir -p "$RUNNER_TEMP/out" "$RUNNER_TEMP/water"
+          for attempt in 1 2; do
+            docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp "${br[@]}" \
+              -v "$PWD/site:/work/site:ro" -v "$RUNNER_TEMP/out:/work/out" \
+              -v "$RUNNER_TEMP/water:/work/data/water-cache" -w /work "$IMAGE" \
+              --site "$AREA" --areas site/areas.json --site-out out || true
+            [ ! -s "$RUNNER_TEMP/water/$ID.json" ] || break
+            echo "no $ID.json after attempt $attempt"
+            [ "$attempt" -eq 2 ] || sleep 60
+          done
+
+      - name: Check it is a real fetch
+        run: python3 scripts/water.py verify "$RUNNER_TEMP/water/$ID.json"
+
+      - uses: actions/checkout@v7
+        if: github.event_name != 'pull_request'
+        with:
+          ref: site-data
+          path: .site-data
+          fetch-depth: 1
+
+      - name: Store it on site-data as water/${{ matrix.id }}.json
+        id: store
+        if: github.event_name != 'pull_request'
+        env:
+          NAME: ${{ matrix.name }}
+        run: |
+          mkdir -p .site-data/water
+          cp "$RUNNER_TEMP/water/$ID.json" ".site-data/water/$ID.json"
+          git -C .site-data add "water/$ID.json"
+          if git -C .site-data diff --cached --quiet; then
+            echo "water/$ID.json unchanged: $NAME has no new bulletin"
+            exit 0
+          fi
+          git -C .site-data config user.name "github-actions[bot]"
+          git -C .site-data config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C .site-data commit -q -m "water: $NAME, fetched $(date -u +%F)"
+          scripts/site-data-push.sh .site-data
+          echo "changed=true" >>"$GITHUB_OUTPUT"
+
+      # So the map shows the new bulletin now, not at its next 3-hourly build.
+      - name: Tell site.yml (site-data-updated)
+        if: steps.store.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh api "repos/$GITHUB_REPOSITORY/dispatches" -f event_type=site-data-updated
