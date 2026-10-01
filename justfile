@@ -45,9 +45,13 @@ quality:
     shellcheck --severity=error scripts/*.sh
     actionlint
     node --check site/static/app.js
+    node --check site/static/ui.js
+    node --check site/static/i18n.js
+    python3 scripts/i18n_bundle.py --check
     node scripts/site_check.js
     node scripts/redirect_check.js
     python3 scripts/site_live_check.py --self-test
+    python3 scripts/i18n_bundle.py --self-test
     scripts/site-data-push.sh --self-test
     scripts/board-schema.sh --self-test
     scripts/mip-trailer-check.sh --self-test

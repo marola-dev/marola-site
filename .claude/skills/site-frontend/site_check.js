@@ -12,7 +12,7 @@ function El(id) {
 const els = {};
 global.document = {
   getElementById(id) { return els[id] || (els[id] = El(id)); },
-  documentElement: {}, addEventListener() {}
+  querySelectorAll() { return []; }, documentElement: {}, addEventListener() {}
 };
 global.getComputedStyle = () => ({ getPropertyValue: () => '#000' });
 global.location = { search: '', href: 'http://localhost/' };
@@ -32,7 +32,8 @@ global.fetch = async (p) => {
   if (!fs.existsSync(f)) return { ok: false, status: 404 };
   return { ok: true, status: 200, json: async () => JSON.parse(fs.readFileSync(f, 'utf8')) };
 };
-require(path.join(process.cwd(), 'site/static/app.js'));
+global.window = global;
+for (const f of ['i18n.js', 'ui.js', 'app.js']) require(path.join(process.cwd(), 'site/static', f));
 process.on('unhandledRejection', (e) => { console.error('app.js rejected:', e); process.exit(1); });
 setTimeout(() => {
   const smoke = els.smoke || {}, footer = els.footer || {}, list = els.list || {};
