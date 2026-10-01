@@ -51,6 +51,8 @@ quality:
     scripts/site-data-push.sh --self-test
     scripts/board-schema.sh --self-test
     scripts/mip-trailer-check.sh --self-test
+    scripts/br-proxy.sh --self-test
+    python3 scripts/water.py --self-test
     agents-check
 
 # The devkit hooks' contract: fast checks at commit, the full gate (and the MIP: rule) at push.

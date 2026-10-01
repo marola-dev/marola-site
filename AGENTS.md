@@ -30,7 +30,13 @@ boards (MIP-0005), with no server, no LLM and no per-visitor cost.
 - `scripts/`: `site_check.js` (app.js in a stub DOM and Leaflet), `redirect_check.js` (the 404
   forwarder), `board-schema.sh` (the image pin and its schema), `stamp_site_version.sh`,
   `site_live_check.py` (what marola.dev actually serves), `site-data-push.sh` (the retrying push
-  every `site-data` writer uses), `mip-trailer-check.sh`.
+  every `site-data` writer uses), `mip-trailer-check.sh`, `water.py` (the agencies in
+  `site/water.json`: plan, verify, report) and `br-proxy.sh` (routes the Brazil-only agencies
+  through `MAROLA_BR_PROXY`).
+- `site/water.json`: the water-quality agencies, each with its fetch cadence and hosts.
+  `water.yml` fetches each on that cadence into `site-data`'s `water/`; `site.yml` only reads it
+  (#4).
+- `ops/br-proxy/`: the proxy in Brazil that `br-proxy.sh` routes through, and how to set it up.
 - `.claude/skills/site-frontend/`: this repo's own skill for anything a visitor sees.
 
 ## What it consumes and produces
@@ -39,6 +45,7 @@ boards (MIP-0005), with no server, no LLM and no per-visitor cost.
 |---|---|
 | app → site | The image in `marola-image` (`ghcr.io/marola-dev/marola:jvm-<sha>@sha256:<digest>`, both parts required). `site.yml` runs it with `--site --areas site/areas.json --site-out site/dist`; it writes board data only. The image's `board.schema.json` is the contract |
 | app, umbrella → site | The `site-data` branch: `coverage/` and `smoke/` (the app's CI and `docker-smoke.yml`), `stats/` (the umbrella). Writers push with the cross-repo token, then send `repository_dispatch` `site-data-updated` |
+| agencies → site | `site-data`'s `water/<agency>.json`, the app's water cache as `water.yml` last fetched it; `site.yml` builds from it and never calls an agency |
 | site → app | `site/areas.json` and `site/fixtures/board.json`; the app's tests keep checked-in copies |
 | site → umbrella | `README.md` and `docs/`, aggregated into docs.marola.dev (`notify-umbrella.yml`) |
 

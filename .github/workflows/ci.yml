@@ -33,6 +33,8 @@ jobs:
         scripts/site-data-push.sh --self-test
         scripts/board-schema.sh --self-test
         scripts/mip-trailer-check.sh --self-test
+        scripts/br-proxy.sh --self-test
+        python3 scripts/water.py --self-test
 
   agents:
     uses: marola-dev/marola-devkit/.github/workflows/agents-check.yml@v0.2.2
