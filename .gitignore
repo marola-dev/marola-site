@@ -1,0 +1,9 @@
+.tmp/
+.devkit
+result
+result-*
+__pycache__/
+.claude/settings.local.json
+# `just site-build` output (boards + a copy of site/static/): derived, deployed, not committed
+/site/dist/*
+!/site/dist/.gitkeep

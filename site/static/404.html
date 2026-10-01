@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>marola — not found</title>
+  <!-- The docs moved to docs.marola.dev (MIP-0070 §5.8). Pages cannot answer a missing path with
+       a redirect, only with this page, so old /docs/* links are forwarded from here, path kept. -->
+  <script>
+    (function (l) {
+      var m = /^\/docs(\/.*)?$/.exec(l.pathname);
+      if (m) l.replace('https://docs.marola.dev' + (m[1] || '/') + l.search + l.hash);
+    })(window.location);
+  </script>
+  <style>
+    body { font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #1b2733; margin: 0; text-transform: lowercase; }
+    main { max-width: 65ch; margin: 18vh auto 0; padding: 0 20px; }
+    h1 { font-size: 26px; font-weight: 600; margin: 0 0 8px; }
+    a { color: #0b6e99; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>not found</h1>
+    <p>nothing lives at this address. <a href="/">back to the map</a>, or read the <a href="https://docs.marola.dev/">docs</a>.</p>
+  </main>
+</body>
+</html>

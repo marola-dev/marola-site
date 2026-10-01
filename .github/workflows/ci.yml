@@ -1,0 +1,40 @@
+name: CI
+
+# The devkit's reusable workflows at the pinned tag (MIP-0070 §5.6). Bump the tag here, the
+# devkit-ref inputs and flake.nix's input together.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static:
+    uses: marola-dev/marola-devkit/.github/workflows/static-ci.yml@v0.2.0
+    with:
+      shellcheck-files: scripts/*.sh
+      extra-commands: |
+        node --check site/static/app.js
+        node scripts/site_check.js
+        node scripts/redirect_check.js
+
+  python:
+    uses: marola-dev/marola-devkit/.github/workflows/python-ci.yml@v0.2.0
+    with:
+      self-test-commands: |
+        python3 scripts/site_live_check.py --self-test
+        scripts/site-data-push.sh --self-test
+        scripts/board-schema.sh --self-test
+        scripts/mip-trailer-check.sh --self-test
+
+  agents:
+    uses: marola-dev/marola-devkit/.github/workflows/agents-check.yml@v0.2.0
+    with:
+      devkit-ref: v0.2.0
