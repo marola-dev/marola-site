@@ -1,0 +1,74 @@
+{
+ "schema": 1,
+ "run_id": "36595041483",
+ "run_url": "https://github.com/marola-dev/marola/actions/runs/36595041483",
+ "when": "2026-09-29T16:07:20Z",
+ "model": "llama3.2:1b",
+ "image": "ghcr.io/marola-dev/marola:jvm",
+ "lat": -27.6733,
+ "lon": -48.47,
+ "radius_km": 15,
+ "origin_source": "--lat/--lon flags",
+ "exit_code": 0,
+ "ok": true,
+ "water": "IMA/SC",
+ "ranked": [
+  {
+   "rank": 1,
+   "score": 75,
+   "name": "Praia da Joaquina",
+   "distance_km": 4.6,
+   "when": "Wed 30 Sep, 06:00"
+  },
+  {
+   "rank": 2,
+   "score": 75,
+   "name": "Praia do Rio Tavares",
+   "distance_km": 2.1,
+   "when": "Wed 30 Sep, 06:00"
+  },
+  {
+   "rank": 3,
+   "score": 75,
+   "name": "Praia do Gravatá",
+   "distance_km": 7.6,
+   "when": "Wed 30 Sep, 06:00"
+  },
+  {
+   "rank": 4,
+   "score": 55,
+   "name": "Praia da Armação",
+   "distance_km": 7.9,
+   "when": "Wed 30 Sep, 06:00"
+  },
+  {
+   "rank": 5,
+   "score": 55,
+   "name": "Praia do Morro das Pedras",
+   "distance_km": 5.1,
+   "when": "Wed 30 Sep, 06:00"
+  },
+  {
+   "rank": 6,
+   "score": 55,
+   "name": "Praia do Campeche",
+   "distance_km": 2.1,
+   "when": "Wed 30 Sep, 06:00"
+  }
+ ],
+ "top_pick": {
+  "rank": 1,
+  "score": 75,
+  "name": "Praia da Joaquina",
+  "distance_km": 4.6,
+  "when": "Wed 30 Sep, 06:00"
+ },
+ "draft": "The combination of wind speed and wave height, along with the moderate jellyfish risk, make this a decent time for a swim at Praia da Joaquina.",
+ "review": {
+  "score": 65,
+  "verdict": "approve",
+  "summary": "The combination of wind speed and wave height, along with the moderate jellyfish risk, make this a decent time for a swim at Praia da Joaquina."
+ },
+ "errors": [],
+ "stdout": "Picked up JAVA_TOOL_OPTIONS: -XX:+UseSerialGC -XX:MaxRAMPercentage=75 -XX:TieredStopAtLevel=1 --sun-misc-unsafe-memory-access=allow\nmarola :: the ocean intelligence layer (POC) — first case: best hour tomorrow to swim nearby\nconfig -> telegram=unset llm=http://localhost:11434/v1 llama3.2:1b embed=llama3.2 knowledge=./knowledge -> ./data/knowledge-index.json lore=on ask=General>=0.0 origin=auto radius=15km water=Auto facilities=Overpass sightings=./data/sightings.jsonl vision=llava mlflow=unset(experiment=marola) traces=Off\norigin -> lat=-27.6733, lon=-48.4700 (radius 15km, source: --lat/--lon flags)\nwater quality -> IMA/SC\n 1. [ 75/100] Praia da Joaquina      (4.6km)  Wed 30 Sep, 06:00  |  water: no data  |  20.2°C, 14km/h, 0.9m  |  jellyfish: Moderate  |  whales: High  |  choppy (0.9m waves), some jellyfish likelihood  · facilities: no data\n  trails: no data\n 2. [ 75/100] Praia do Rio Tavares   (2.1km)  Wed 30 Sep, 06:00  |  water: no data  |  20.2°C, 14km/h, 0.9m  |  jellyfish: Moderate  |  whales: High  |  choppy (0.9m waves), some jellyfish likelihood  · lifeguard post: yes\n  trails: no data\n 3. [ 75/100] Praia do Gravatá       (7.6km)  Wed 30 Sep, 06:00  |  water: no data  |  20.2°C, 14km/h, 0.9m  |  jellyfish: Moderate  |  whales: High  |  choppy (0.9m waves), some jellyfish likelihood  · facilities: no data\n  trails nearby: Caminho dos Pescadores (1.1km, no difficulty data)\n 4. [ 55/100] Praia da Armação       (7.9km)  Wed 30 Sep, 06:00  |  water: no data  |  19.9°C, 10km/h, 0.7m  |  jellyfish: Moderate  |  whales: High  |  choppy (0.7m waves), cold water (19.9°C), some jellyfish likelihood  · facilities: no data\n  trails: no data\n 5. [ 55/100] Praia do Morro das Pedras (5.1km)  Wed 30 Sep, 06:00  |  water: no data  |  19.9°C, 10km/h, 1.1m  |  jellyfish: Moderate  |  whales: Moderate  |  choppy (1.1m waves), cold water (19.9°C), some jellyfish likelihood  · facilities: no data\n  trails: no data\n 6. [ 55/100] Praia do Campeche      (2.1km)  Wed 30 Sep, 06:00  |  water: no data  |  19.9°C, 14km/h, 1.1m  |  jellyfish: Moderate  |  whales: Moderate  |  choppy (1.1m waves), cold water (19.9°C), some jellyfish likelihood  · parking nearby: 1\n  trails: no data\n\nTop pick — Praia da Joaquina, Wed 30 Sep, 06:00-07:00\n  Water quality   no data\n                  Source: IMA/SC\n  Sea             20.2°C, waves 0.9m every 7s from the E, swell 0.8m/6s, current 0.3 km/h\n  Tide            high 03:00 (+0.3m), low 10:00 (-0.1m), high 15:00 (+0.3m), low 21:00 (-0.1m) (hourly resolution, ±30 min)\n  Air             20°C, wind 14 km/h from the S, UV 0, 51% chance of rain\n  Jellyfish       Moderate — some warm-calm signals present; worth a look from the sand\n  Whales          High at this hour; best daylight odds High at 06:00 — humpback season\n\nAsking llama3.2:1b to summarize the top pick (this may take a while)...\nDraft summary: The combination of wind speed and wave height, along with the moderate jellyfish risk, make this a decent time for a swim at Praia da Joaquina.\nReviewer (score 65/100, verdict: approve): The combination of wind speed and wave height, along with the moderate jellyfish risk, make this a decent time for a swim at Praia da Joaquina.\n\n🌊 Did you know? Below about 200 metres no sunlight reaches, yet the deep sea is far from dark: most animals living there make their own light. Bioluminescence is the rule rather than the exception in the largest habitat on Earth. [source: https://en.wikipedia.org/wiki/Bioluminescence]\n"
+}
