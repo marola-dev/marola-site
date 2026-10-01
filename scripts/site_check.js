@@ -421,6 +421,9 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   const patreonLinks = SUPPORT.match(/href="https:\/\/www\.patreon\.com\/[^"]*"/g) || [];
   ok(!!patreon && patreonLinks.every(h => h === 'href="https://www.patreon.com/' + patreon + '"'),
     "the support page's Patreon links are FUNDING.yml's account (" + patreon + ')');
+  ok((SUPPORT.match(/<span aria-disabled="true">Buy Me a Coffee <i>[^<]+<\/i><\/span>/g) || []).length === 2
+    && !/buymeacoffee\.com/.test(SUPPORT) && !/^buy_me_a_coffee:/m.test(FUNDING),
+    'Buy Me a Coffee is "soon" in both languages, with no link on the page or in FUNDING.yml');
   ok(eip55('0x5aaeb6053f3e94c9b9a09f33669435e7ef1beaed') === '0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed',
     "the EIP-55 check reproduces the EIP's own example");
   const addrs = [...new Set(SUPPORT.match(/0x[0-9a-fA-F]{40}/g) || [])];
