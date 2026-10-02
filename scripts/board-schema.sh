@@ -17,8 +17,8 @@ image() {
   local ref
   ref="$(tr -d '[:space:]' <"$root/marola-image")"
   # Only the jvm image has /app/marola.jar to read the schema from; the native one compiles it in.
-  [[ "$ref" =~ ^ghcr\.io/[a-z0-9-]+/marola:jvm-[0-9a-f]{7,40}@sha256:[0-9a-f]{64}$ ]] \
-    || { echo "board-schema: marola-image must be ghcr.io/<owner>/marola:jvm-<sha>@sha256:<digest>, got '$ref'" >&2; return 1; }
+  [[ "$ref" =~ ^ghcr\.io/[a-z0-9-]+/marola-app:jvm-[0-9a-f]{7,40}@sha256:[0-9a-f]{64}$ ]] \
+    || { echo "board-schema: marola-image must be ghcr.io/<owner>/marola-app:jvm-<sha>@sha256:<digest>, got '$ref'" >&2; return 1; }
   echo "$ref"
 }
 
@@ -69,7 +69,7 @@ esac
 EOF
   chmod +x "$t/bin/docker"
   run() { BOARD_SCHEMA_ROOT="$t/repo" PATH="$t/bin:$PATH" bash "${BASH_SOURCE[0]}" "$@"; }
-  local pin=ghcr.io/marola-dev/marola:jvm-8a29976@sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+  local pin=ghcr.io/marola-dev/marola-app:jvm-8a29976@sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
   echo "$pin" >"$t/repo/marola-image"
 
   [ "$(run --image)" = "$pin" ] || { echo "FAIL: --image prints the pin"; f=1; }
@@ -79,12 +79,14 @@ EOF
   cmp -s "$t/repo/site/board.schema.json" "$t/schema.json" || { echo "FAIL: --update did not write the image's schema"; f=1; }
   run --check >/dev/null || { echo "FAIL: --check failed right after --update"; f=1; }
   [ "$(sort -u "$t/created")" = "$pin" ] || { echo "FAIL: docker create was not given the pinned image"; f=1; }
-  echo "ghcr.io/marola-dev/marola:native-8a29976" >"$t/repo/marola-image"
+  echo "ghcr.io/marola-dev/marola-app:native-8a29976" >"$t/repo/marola-image"
   run --image >/dev/null 2>&1 && { echo "FAIL: a native image was accepted as the pin"; f=1; }
-  echo "ghcr.io/marola-dev/marola:jvm-8a29976" >"$t/repo/marola-image"
+  echo "ghcr.io/marola-dev/marola-app:jvm-8a29976" >"$t/repo/marola-image"
   run --image >/dev/null 2>&1 && { echo "FAIL: a tag with no digest was accepted as the pin"; f=1; }
-  echo "ghcr.io/marola-dev/marola:jvm" >"$t/repo/marola-image"
+  echo "ghcr.io/marola-dev/marola-app:jvm" >"$t/repo/marola-image"
   run --image >/dev/null 2>&1 && { echo "FAIL: a moving tag was accepted as the pin"; f=1; }
+  echo "ghcr.io/marola-dev/marola:jvm-8a29976@sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef" >"$t/repo/marola-image"
+  run --image >/dev/null 2>&1 && { echo "FAIL: the pre-split image name was accepted as the pin"; f=1; }
   echo "board-schema self-test:" "$([ "$f" -eq 0 ] && echo ok || echo FAILED)"
   [ "$f" -eq 0 ]
 }
