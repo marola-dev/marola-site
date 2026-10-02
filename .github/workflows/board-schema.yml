@@ -21,7 +21,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
-      # ghcr.io/marola-dev/marola is a private package: it has to grant this repo read access
+      # ghcr.io/marola-dev/marola-app is a private package: it has to grant this repo read access
       # (package settings, "Manage Actions access") for GITHUB_TOKEN to pull it.
       - uses: docker/login-action@v4
         with:

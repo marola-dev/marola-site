@@ -39,7 +39,7 @@ boards (MIP-0005), with no server, no LLM and no per-visitor cost.
 
 | Direction | Contract |
 |---|---|
-| app → site | The image in `marola-image` (`ghcr.io/marola-dev/marola:jvm-<sha>@sha256:<digest>`, both parts required). `site.yml` runs it with `--site --areas site/areas.json --site-out site/dist`; it writes board data only. The image's `board.schema.json` is the contract |
+| app → site | The image in `marola-image` (`ghcr.io/marola-dev/marola-app:jvm-<sha>@sha256:<digest>`, both parts required). `site.yml` runs it with `--site --areas site/areas.json --site-out site/dist`; it writes board data only. The image's `board.schema.json` is the contract |
 | app, umbrella → site | The `site-data` branch: `coverage/` and `smoke/` (the app's CI and `docker-smoke.yml`), `stats/` (the umbrella). Writers push with the cross-repo token, then send `repository_dispatch` `site-data-updated` |
 | site → app | `site/areas.json` and `site/fixtures/board.json`; the app's tests keep checked-in copies |
 | site → umbrella | `README.md` and `docs/`, aggregated into docs.marola.dev (`notify-umbrella.yml`) |
