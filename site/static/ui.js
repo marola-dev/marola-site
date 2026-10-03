@@ -16,7 +16,8 @@
     return exact || supported.filter(function (l) { return l.toLowerCase().split('-')[0] === primary; })[0] || null;
   }
 
-  /** §5.5: ?lang=, then the stored choice, then navigator.languages, then pt-BR. No globals. */
+  /** ?lang=, then the stored choice, then pt-BR. The browser's languages are not consulted: a first
+   *  visit is always in Portuguese, and English is an explicit pick on the toggle. No globals. */
   function resolveLang(o) {
     if (o.param === PSEUDO) return PSEUDO;
     var tags = [o.param, o.stored].concat(o.languages || []);
@@ -138,7 +139,6 @@
   current = resolveLang({
     param: new URLSearchParams(location.search).get('lang'),
     stored: readStored(),
-    languages: navigator.languages || (navigator.language ? [navigator.language] : []),
     supported: SUPPORTED
   });
   applyLang();

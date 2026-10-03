@@ -116,12 +116,15 @@
         return '<option value="' + esc(a.id) + '" title="' + esc(a.name) + '" aria-label="' + esc(a.name) + '">' + esc(areaCode(a)) + '</option>';
       }).join('');
       var wanted = param('area');
-      var area = state.areas.filter(function (a) { return a.id === wanted; })[0] || state.areas[0];
+      var byId = function (id) { return state.areas.filter(function (a) { return a.id === id; })[0]; };
+      var area = byId(wanted) || byId(DEFAULT_AREA) || state.areas[0];
       el.area.value = area.id;
       return selectArea(area);
     });
   }
 
+  // areas.json's order is the app's, so the first visit's area is chosen here.
+  var DEFAULT_AREA = 'rio';
   // The picker shows a two-letter code; areas.json is shared with the app, so the codes live here.
   var AREA_CODES = { floripa: 'FL', rio: 'RJ', salvador: 'BA' };
   function areaCode(a) {
