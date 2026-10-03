@@ -1,6 +1,6 @@
 ---
 name: site-frontend
-description: Use first for any change a visitor sees on marola.dev (site/static/*.html, app.js markup and markers, style.css, the chat widget, 404.html, the copy) or when the page looks plain, inconsistent or generated; it orders the other frontend skills and says which wins when they disagree
+description: Use first for any change a visitor sees on marola.dev (site/static/*.html, app.js markup and markers, the Mapbox map and flow.js's wind and wave layers, style.css, the chat widget, 404.html, the copy) or when the page looks plain, inconsistent or generated; it orders the other frontend skills, Mapbox's included, and says which wins when they disagree
 ---
 
 # site-frontend: the entry point for marola's frontend
@@ -26,23 +26,35 @@ frontend skills vendored next to it, which were written for landing pages and Re
 | `karpathy-guidelines` | how to change the code: surgical diffs, no speculative abstractions, a check per step | forrestchang/andrej-karpathy-skills, MIT (from Andrej Karpathy's notes on LLM coding) |
 | `ptbr-humanizer` | every Portuguese string | here |
 | `citizen-science-site` | sources, freshness, limits, privacy, contributing on the page | here |
+| `mapbox-web-integration-patterns` | Mapbox GL JS setup, lifecycle, token handling, common pitfalls (read its vanilla-JS parts) | mapbox/mapbox-agent-skills, MIT |
+| `mapbox-web-performance-patterns` | load waterfall, markers vs layers, render cost, memory; check `flow.js` against it | mapbox/mapbox-agent-skills, MIT |
+| `mapbox-data-visualization-patterns` | data-driven layers, heat and flow fields, animated data (the wind and wave layers) | mapbox/mapbox-agent-skills, MIT |
+| `mapbox-cartography` | the base map: colour, hierarchy, labels over data | mapbox/mapbox-agent-skills, MIT |
+| `mapbox-style-patterns` | layer recipes when a Studio style or a new map layer is designed | mapbox/mapbox-agent-skills, MIT |
+| `mapbox-style-quality` | validating a style before `MAPBOX_STYLE` points at it: contrast, size, expressions | mapbox/mapbox-agent-skills, MIT |
+| `mapbox-token-security` | the public token: scopes, URL restrictions, rotation; never an `sk.` token in the page | mapbox/mapbox-agent-skills, MIT |
+| `mapbox-maplibre-migration` | the way out if Mapbox's price or licence stops fitting (MapLibre GL is BSD and keyless) | mapbox/mapbox-agent-skills, MIT |
 
 The vendored skills stay byte-identical to upstream (their licences sit next to them); marola's
 overrides live here, not in their files.
 
 ## marola wins over the vendored skills
 
-1. **No framework, no build step, no third-party request.** Ignore the Tailwind/React/Framer
-   stack, `npm install` checks, picsum/Unsplash images and CDN fonts in `design-taste-frontend`.
-   Plain CSS with the `:root` tokens; the CSP is `default-src 'self'`.
+1. **No framework, no build step, one third-party origin: Mapbox.** Ignore the Tailwind/React/Framer
+   stack, `npm install` checks, picsum/Unsplash images and CDN fonts in `design-taste-frontend`,
+   and the React/Vue/npm setup in the Mapbox skills. Plain CSS with the `:root` tokens; Mapbox GL
+   JS is vendored (its CSP build, `vendor/mapbox-gl-csp*.js`), so scripts and the worker stay
+   `'self'`; only the base map's style, tiles, fonts and the map-load count go to Mapbox's servers.
+   Nothing else is fetched from another origin: no CDN, no second map or font provider.
 2. **Inter is the font.** Taste discourages it by default but allows it for public-information,
    accessibility-first sites, which marola is. No serif.
 3. **Lucide is the icon set**, chosen on purpose (the maintainer asked for an established set).
    The one custom shape (the jellyfish) is drawn on Lucide's grid.
 4. **The score colours are data**, not an accent. "One accent" means `--accent`; green, yellow,
    orange and red never decorate.
-5. **Dark mode is deferred** (taste calls it mandatory): the map tiles have no dark source yet.
-   DESIGN.md "Not yet".
+5. **The map is dark, the chrome is not (yet).** The base map is Mapbox's `dark-v11` (or the
+   Studio style in `MAPBOX_STYLE`) so the wind and wave colours read like Windy's; a dark theme for
+   the page itself is still DESIGN.md "Not yet", whatever taste says.
 6. **Landing-page rules do not apply to the map**: hero, CTA, bento, testimonials, eyebrows.
    The map page has no hero; the about/support pages are reading columns.
 7. **Lowercase house style stays**, with the exemptions `site_check.js` asserts.
@@ -68,6 +80,25 @@ overrides live here, not in their files.
    `node scripts/redirect_check.js`, `python3 scripts/i18n_bundle.py --check`, `ruff check .`,
    then before/after screenshots in the PR. No screenshot, not done.
 
+## The map: Mapbox GL and the flow layer
+
+- `app.js` owns the map (`ensureMap`): DOM markers for beaches, water points and "you" (so the
+  score dot, its `aria-label` and keyboard focus stay plain HTML), a GeoJSON line layer for trails,
+  and `hoverTip()` popups in place of Leaflet's sticky tooltips.
+- `flow.js` is the Windy-like part: a Mapbox custom layer that draws, in WebGL, a colour field and
+  moving particles for wind (km/h) or waves (m). The field is interpolated from the board's own
+  beach readings, never a fetched weather grid, and fades out away from the beaches; the key says
+  "estimated between beaches". `prefers-reduced-motion` freezes the particles. New layers follow
+  `mapbox-data-visualization-patterns`, then this file's rules (the ramps are DESIGN.md tokens and
+  never use the score colours).
+- The token is `MAPBOX_PUBLIC_TOKEN` (a `pk.` token restricted to marola.dev), written into
+  `mapbox-config.js` at deploy by `scripts/mapbox_config.sh`; the committed file stays empty.
+  With no token there is no map (Mapbox GL's licence needs a Mapbox account) and the page says
+  so and opens the list. `mapbox-token-security` decides anything about the token.
+- `site_check.js` stubs `mapboxgl` (markers, popups, the custom layer without a GL context); the
+  real look needs a browser with a token. The sandbox's Playwright cannot reach Mapbox, so a
+  screenshot there answers `api.mapbox.com/styles/**` with a stand-in style and says so.
+
 ## Figma
 
 `.mcp.json` registers Figma's remote MCP (`https://mcp.figma.com/mcp`, OAuth on first use, no
@@ -79,4 +110,4 @@ link; translate them into DESIGN.md tokens rather than pasting values.
 A hex code in a rule · a second accent or a tinted band · a serif · a pill-shaped card or a
 square button (radius scale broken) · a shadow on something that does not float · an emoji ·
 an em dash in copy · a font or icon from a CDN · a control styled on its own · restyling without
-opening the page.
+opening the page · a Mapbox token in a committed file · a flow colour that could pass for a score.
