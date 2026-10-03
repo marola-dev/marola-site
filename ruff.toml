@@ -1,8 +1,8 @@
 # ruff for every .py in the repo (`just quality`, the devkit's python-ci).
 target-version = "py312"
 line-length = 100
-# Nested checkouts (agent worktrees, .tmp/wt-*) are full repo copies ruff would otherwise walk.
-extend-exclude = [".claude/worktrees", ".tmp"]
+# webapp-testing is vendored from anthropics/skills, kept byte-identical. Nested checkouts (agent worktrees, .tmp/wt-*) are full repo copies ruff would otherwise walk.
+extend-exclude = [".claude/worktrees", ".tmp", ".claude/skills/webapp-testing"]
 [lint]
 select = ["E", "F", "W", "I", "UP", "B"]
 ignore = ["E501"]

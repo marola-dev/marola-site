@@ -1,0 +1,96 @@
+# DESIGN.md: marola's visual system
+
+The map is a data product. The score colours, the numbers and the sources carry the page; the
+chrome around them stays quiet, neutral and consistent so they read in five seconds on a phone.
+This file is the single source for tokens and components. `style.css`'s `:root` mirrors it.
+
+It replaced, in PR #42, the Co2 editorial reference (Refero) the redesign started from: a
+serif broadsheet look with five blues read as decoration on a map tool, and both `frontend-design`
+and `design-taste-frontend` list its signatures (hairline rules, display serif, `·` meta strings)
+as defaults to avoid.
+
+## Principles
+
+1. **Data first.** Colour on the page means a score. Chrome is neutral gray; one blue accent
+   marks what you can act on.
+2. **One of everything.** One accent, one control style, one radius scale, one type family.
+3. **Elevation only where it is real.** Panels that float over the map get a soft shadow;
+   nothing else does.
+4. **Dense but calm.** It is a tool people check daily: small type with clear weight
+   contrast, tight rows, generous gaps between groups.
+
+## Colour
+
+| Token | Value | Job |
+|---|---|---|
+| `--ink` | `#111820` | text, headings |
+| `--muted` | `#56606c` | secondary text (6.3:1 on white) |
+| `--bg` | `#ffffff` | page, panels, controls |
+| `--surface` | `#f3f5f7` | utility strip, footer, hover, segmented tracks, chat answers |
+| `--line` | `#e1e5ea` | dividers, panel borders |
+| `--line-strong` | `#cbd2da` | control borders |
+| `--sea` | `#e6ecf1` | the map before tiles load |
+| `--accent` | `#1b5fc1` | links, primary action fill, focus ring, slider, the "you" marker |
+| `--accent-hover` | `#164e9e` | hover on accent |
+| `--accent-soft` | `#e9f0fb` | pressed toggles, the visitor's chat messages |
+| `--c70 … --cna` | score colours | data only: dots, chips, legend. A change needs a MIP note |
+
+No other hex in a rule. The marker rim (`#1d2733`) and the score colours live in `app.js`'s SVG,
+where CSS variables do not reach.
+
+## Type
+
+Inter only, self-hosted (`vendor/fonts/inter-latin-wght-normal.woff2`, variable weight), never
+from a CDN. Inter is the deliberate pick for a public-information, accessibility-first page.
+
+| Role | Size / weight | Where |
+|---|---|---|
+| Page title | 34 px / 650, -0.025em (28 px on phones) | first heading of about/support |
+| Wordmark | 22 px / 650, -0.02em (20 px) | header |
+| Panel title | 20 px / 650 (18 px) | card h2, about section h2 |
+| Body | 15 px / 400, 1.5 | map page; 16 px / 1.65 in reading columns |
+| UI | 14 px / 500 | controls, list rows, card readings |
+| Meta | 13 px / 400-500 | hour bar, legend, footer, labels |
+| Caption | 12 px | ranks, chips, day dates |
+
+`tabular-nums` on scores, hours and distances. Prose ≤ 65ch. Weight, not size, makes hierarchy.
+
+## Space and shape
+
+- 4 px grid: 4, 8, 12, 16, 24, 32, 48. Page gutter 24 px (16 px on phones).
+- Radius: controls 8 px, panels 12 px, score chips and the chat toggle full pill. Nothing else.
+- Shadow `--shadow-float` on list, card, chat panel, tooltip, chat toggle. No other shadows.
+
+## Components
+
+- **Utility strip** (`.sitenav`): 40 px, `--surface`, 13 px plain links; sections with no page
+  are muted with "(em breve)", hidden on phones. Language toggle and repo link at right.
+- **Header** (`.bar`): wordmark with the wave icon in accent, the one-line tagline beside it
+  (under it on phones), controls at right (a 6-column grid on phones).
+- **Control**: 36 px, 8 px radius, 1 px `--line-strong`, white, 14/500. Hover `--surface`.
+  Pressed (`aria-pressed`, `aria-expanded`): `--accent-soft` fill, accent border and text.
+  `:active` nudges 1 px down.
+- **Area picker**: the control showing a two-letter code (FL, RJ, BA; `AREA_CODES` in `app.js`), the full name in its title and accessible name.
+- **Segmented** (day, language): a `--surface` track; the picked segment is white, raised.
+- **Primary action**: accent fill, white text. One per surface (chat open, chat send).
+- **Hour bar**: label, slider (accent), legend pushed right.
+- **Panels**: white, 1 px `--line`, 12 px radius, `--shadow-float`; bottom sheets under 640 px.
+- **Close buttons**: the control as a borderless 32 px square in `--muted`.
+- **Beach marker**: a 16 px dot in its score colour, 2 px white ring, `#1d2733` rim; the selected
+  beach is a 32 px badge with its score. No glyphs, halos or shadows. The legend draws the same dot.
+- **Icons**: Lucide line icons through `icon(name)` in `app.js` (ISC, `vendor/icons/LICENSE.lucide`),
+  16 px, 1.75 stroke, in `--accent`; `aria-hidden` with the word next to it. Never emoji.
+
+## Copy
+
+Lowercase house style (with its exemptions in `style.css`). No em dash in visible copy: use a
+colon, a semicolon, a comma or a period. At most one `·` per line, and only in compact metadata.
+
+## Motion
+
+Only state changes: colour and border 150 ms ease-out, the press 100 ms, all inside
+`prefers-reduced-motion: no-preference`. No entrance animations.
+
+## Not yet
+
+Dark mode waits for a dark map tile source; tiles are a third-party choice in `areas.json`.

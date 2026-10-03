@@ -23,7 +23,7 @@ The map at [marola.dev](https://marola.dev): a static page that shows every area
 boards (MIP-0005), with no server, no LLM and no per-visitor cost.
 
 - `site/static/`: the page (`index.html`, `about.html`, `support.html` behind Donate, `app.js`,
-  `ui.js`, `style.css`, the chat widget, vendored Leaflet) and `404.html`, which forwards the old
+  `ui.js`, `style.css`, the chat widget, vendored Leaflet, Inter and the wave loop under `vendor/`) and `404.html`, which forwards the old
   `marola.dev/docs/*` links to `docs.marola.dev`.
 - `site/i18n/`: the pt-BR and English catalogs (MIP-0054). `scripts/i18n_bundle.py` checks them
   and writes `site/static/i18n.js`; edit the catalogs, never `i18n.js`.
@@ -33,7 +33,16 @@ boards (MIP-0005), with no server, no LLM and no per-visitor cost.
   forwarder), `board-schema.sh` (the image pin and its schema), `stamp_site_version.sh`,
   `site_live_check.py` (what marola.dev actually serves), `site-data-push.sh` (the retrying push
   every `site-data` writer uses), `mip-trailer-check.sh`.
-- `.claude/skills/site-frontend/`: this repo's own skill for anything a visitor sees.
+- `DESIGN.md`: the visual system (tokens, type, components); Inter is self-hosted in
+  `site/static/vendor/fonts/`.
+- `.claude/skills/site-frontend/`: the entry point for anything a visitor sees; it orders the
+  other frontend skills and settles their conflicts. `ptbr-humanizer/` keeps the Portuguese
+  natural, `citizen-science-site/` keeps sources, freshness, limits and the way to contribute on
+  the page; `frontend-design/`, `webapp-testing/` (anthropics/skills), `design-taste-frontend/`
+  (Leonxlnx/taste-skill), `emil-design-eng/`, `review-animations/` and `break-ui/`
+  (emilkowalski/skill) and `karpathy-guidelines/` (forrestchang/andrej-karpathy-skills) are
+  vendored unchanged with their licences.
+- `.mcp.json`: the Playwright and Figma MCP servers (no keys; Figma signs in with OAuth).
 
 ## What it consumes and produces
 
@@ -90,6 +99,6 @@ The phase list is the umbrella's `docs/PHASES.md`. Site work serves the current 
 ## Code style
 
 Plain JavaScript, no framework and no build step; the page makes no third-party requests and keeps
-`script-src 'self'`. A visible change goes through the `site-frontend` skill, `node scripts/site_check.js`
+`script-src 'self'`. A visible change goes through the `site-frontend` skill (which names the others), `node scripts/site_check.js`
 and before/after screenshots. Shell: `set -euo pipefail`, shellcheck-clean. Python: ruff. Comments
 only for why, a trap, or a pointer, as the umbrella's AGENTS.md spells out.

@@ -1,77 +1,82 @@
 ---
 name: site-frontend
-description: Use when changing anything a visitor sees on marola's static map — site/static/index.html, app.js, style.css, the markers, panels, copy or legend — or when the page is called plain, unfinished, generic or "looks AI-generated"
+description: Use first for any change a visitor sees on marola.dev (site/static/*.html, app.js markup and markers, style.css, the chat widget, 404.html, the copy) or when the page looks plain, inconsistent or generated; it orders the other frontend skills and says which wins when they disagree
 ---
 
-# site-frontend — the map as a product people come back to
+# site-frontend: the entry point for marola's frontend
 
 ## Overview
 
-The map is a data product: the score colours, the numbers and the sources *are* the design.
-The visual layer exists to make them legible in five seconds on a phone, load instantly, and look
-made by a person who swims here. One type scale, one accent, the data colours untouched, and every
-change looked at before it is committed.
+The map is a data product: the score colours, numbers and sources are the design. `DESIGN.md`
+holds the tokens and components; this skill is the recipe and the referee between the general
+frontend skills vendored next to it, which were written for landing pages and React apps.
 
-## When to use
+## Which skill, when
 
-- Any edit under `site/static/` (layout, typography, colour, markers, tooltips, copy, legend).
-- A request like "make it modern / appealing / adoptable / a better first impression".
-- Not for the board JSON or `SiteBuilder` (that is MIP-0005's Scala side).
+| Skill | Use it for | Source |
+|---|---|---|
+| `site-frontend` (this) | the recipe, marola's constraints, conflict rules | here |
+| `DESIGN.md` | tokens, type scale, components | here |
+| `frontend-design` | planning a direction before a bigger change; its critique pass | anthropics/skills, Apache-2.0 |
+| `design-taste-frontend` | the anti-slop pre-flight: AI tells, contrast, layout discipline | Leonxlnx/taste-skill, MIT |
+| `emil-design-eng` | polish of a component: states, press feedback, easing, review table | emilkowalski/skill, MIT |
+| `review-animations` | any motion change (invoke it by name) | emilkowalski/skill, MIT |
+| `break-ui` | stress a panel with worst-case data (long beach names, no data, 40 beaches) | emilkowalski/skill, MIT |
+| `webapp-testing` | Playwright scripts against `just site-serve` | anthropics/skills, Apache-2.0 |
+| `karpathy-guidelines` | how to change the code: surgical diffs, no speculative abstractions, a check per step | forrestchang/andrej-karpathy-skills, MIT (from Andrej Karpathy's notes on LLM coding) |
+| `ptbr-humanizer` | every Portuguese string | here |
+| `citizen-science-site` | sources, freshness, limits, privacy, contributing on the page | here |
 
-## The recipe — do these in order
+The vendored skills stay byte-identical to upstream (their licences sit next to them); marola's
+overrides live here, not in their files.
 
-1. **Look first.** Build and open it: `just site-build floripa && just site-serve` (needs
-   network; or copy `site/dist/` from another checkout), then `node
-   .claude/skills/site-frontend/site_check.js site/dist`: the stub-DOM harness runs `app.js`
-   and prints what rendered. Screenshot 390 px and 1280 px. Write down at most five concrete
-   problems a first-time visitor has (what is this? where am I? which beach? why?).
-2. **Type.** The system stack that is already there (`system-ui, -apple-system, "Segoe UI",
-   Roboto`), no font download: the page promises no third-party requests. One scale:
-   13 / 15 / 17 / 20 / 26 px, line-height 1.45, weights 400 and 600 only, `font-variant-numeric:
-   tabular-nums` on scores, hours and distances, prose ≤ 65ch.
-3. **Colour.** The five score tokens (`--c70 … --cna`) are data and stay. Chrome is the existing
-   tokens: `--ink`, `--muted`, `--bg`, `--panel`, `--line`, one `--accent` (#0b6e99, also the
-   "you" marker in `app.js`). Flat surfaces; one shadow per floating panel; contrast ≥ 4.5:1.
-   A new colour needs a job no token does, and it goes in `:root` next to the others.
-4. **Layout and copy.** Mobile first: the map fills the viewport, list and card are bottom
-   sheets under 640 px, at most four controls in the header. Hierarchy by size and weight, not
-   colour. The one-line description says what the page does in concrete nouns (sea, wind,
-   tide, water quality, hour) in ≤ 12 words; no adjectives about the product itself.
-5. **Adoption.** First five seconds: title, the one line, the map, one obvious tap. Share links
-   keep working (`?area&day&beach`); "no cookies, no tracking" stays visible; a failed load says
-   so in words (`fail()` in `app.js`). Budget: `style.css` < 15 KB, zero new network requests,
-   no framework, no build step.
-6. **Verify, then show.** `node --check site/static/app.js`, the harness again, `just quality`,
-   and the before/after screenshots in the PR. A change of more than ~80 CSS lines without a
-   screenshot is not done.
+## marola wins over the vendored skills
 
-## Quick reference
+1. **No framework, no build step, no third-party request.** Ignore the Tailwind/React/Framer
+   stack, `npm install` checks, picsum/Unsplash images and CDN fonts in `design-taste-frontend`.
+   Plain CSS with the `:root` tokens; the CSP is `default-src 'self'`.
+2. **Inter is the font.** Taste discourages it by default but allows it for public-information,
+   accessibility-first sites, which marola is. No serif.
+3. **Lucide is the icon set**, chosen on purpose (the maintainer asked for an established set).
+   The one custom shape (the jellyfish) is drawn on Lucide's grid.
+4. **The score colours are data**, not an accent. "One accent" means `--accent`; green, yellow,
+   orange and red never decorate.
+5. **Dark mode is deferred** (taste calls it mandatory): the map tiles have no dark source yet.
+   DESIGN.md "Not yet".
+6. **Landing-page rules do not apply to the map**: hero, CTA, bento, testimonials, eyebrows.
+   The map page has no hero; the about/support pages are reading columns.
+7. **Lowercase house style stays**, with the exemptions `site_check.js` asserts.
+8. **Copy**: no em dash anywhere a visitor reads (taste and `ptbr-humanizer` agree); `·` at most
+   once per line.
+9. **Karpathy's "if uncertain, ask"** means: on a visual fork, pick the DESIGN.md answer and say
+   which; ask only when the change would alter scores, data or a public contract.
+10. **Emil's "Initial Response" line** is for interactive chats; in a task, just apply the skill.
 
-| Want | Do |
-|---|---|
-| A "more polished" header | Bigger wordmark (26 px / 600), the one-line description, the same white panel, not a gradient |
-| Floating panels that feel light | `--panel` background, `--line` border, one `0 6px 20px rgba(0,0,0,.15)` shadow, 10 px radius |
-| Numbers that line up | `tabular-nums`, right-aligned, same size as the label |
-| An icon | Inline SVG, `currentColor`, 16 px, `aria-hidden`, text label kept |
-| Motion | Only what shows a state change, ≤ 150 ms, inside `@media (prefers-reduced-motion: no-preference)` |
-| A marker that is not a dot | See MIP-0009 (wave `divIcon` filled with the score colour) |
+## The recipe
 
-## Red flags — the page starts looking generated
+1. **Look first.** `just site-build floripa && just site-serve` (or copy a `site/dist/`), then
+   screenshot 390 × 844 and 1280 × 800 with the Playwright MCP (`.mcp.json`) or a
+   `webapp-testing` script. Write down at most five concrete problems.
+2. **Plan** with `frontend-design`'s token step if the change is more than one component.
+   Reuse DESIGN.md's tokens; a new token needs a job none does, and goes in DESIGN.md first.
+3. **Build** in `style.css`, `index.html`, `app.js`. Markup the harness reads (`.sitenav` before
+   `.bar`, `#lang` before `a.gh`, the dot marker, `[data-i18n]` leaves) stays.
+4. **Pre-flight**: taste's section 9 (AI tells) and contrast checks, Emil's review table for the
+   touched components, `break-ui` for a new panel.
+5. **Copy** through `ptbr-humanizer`; edit `site/i18n/*.json`, run `python3 scripts/i18n_bundle.py`.
+6. **Verify**: `node --check site/static/app.js`, `node scripts/site_check.js`,
+   `node scripts/redirect_check.js`, `python3 scripts/i18n_bundle.py --check`, `ruff check .`,
+   then before/after screenshots in the PR. No screenshot, not done.
 
-Gradient header or gradient logo tile · `backdrop-filter` / "frosted" / "glass" pills · hex codes
-from Tailwind's default palette (`#14b8a6`, `#2dd4bf`, `#0ea5e9`, `#06213a`) instead of the
-tokens · three navies · larger radii and deeper shadows as the meaning of "modern" · rise-in
-animations on panels · a hint pill floating over the map · an emoji or "✨" in the `h1` · copy
-with "smart", "AI-powered", "seamless" · `Inter` from a CDN · restyling 250 lines without opening
-the page. Seeing one: go back to step 1.
+## Figma
 
-## Common mistakes
+`.mcp.json` registers Figma's remote MCP (`https://mcp.figma.com/mcp`, OAuth on first use, no
+key in the repo). Use it to read a frame's tokens and spacing when a design arrives as a Figma
+link; translate them into DESIGN.md tokens rather than pasting values.
 
-| Mistake | Fix |
-|---|---|
-| Redesigning without rendering ("no board data in the worktree") | Build or copy `site/dist`, run the harness, screenshot, before any CSS |
-| New palette for the chrome | Reuse the tokens; the accent already exists |
-| Copy that describes the product instead of the sea | Nouns from the data: "best hour to swim, every beach, sea · wind · tide · water" |
-| A grid on `.list li` | `app.js` emits bare text nodes next to spans: flex-wrap, or change the markup in `app.js` with the harness assertion updated |
-| Changing `--c70 … --cna` to "nicer" greens | Those are the legend and the markers; a change there is a scoring-communication change and needs a MIP note |
-</content>
+## Red flags
+
+A hex code in a rule · a second accent or a tinted band · a serif · a pill-shaped card or a
+square button (radius scale broken) · a shadow on something that does not float · an emoji ·
+an em dash in copy · a font or icon from a CDN · a control styled on its own · restyling without
+opening the page.

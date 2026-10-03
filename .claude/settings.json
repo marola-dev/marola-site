@@ -8,6 +8,7 @@
     "marola-devkit": { "source": { "source": "github", "repo": "marola-dev/marola-devkit" } }
   },
   "enabledPlugins": { "marola-devkit@marola-devkit": true },
+  "enabledMcpjsonServers": ["playwright", "figma"],
   "permissions": {
     "allow": [
       "Bash(gh auth status:*)",
@@ -34,7 +35,9 @@
       "Bash(git log*)",
       "Bash(git fetch*)",
       "Bash(git rev-parse*)",
-      "Bash(command -v *)"
+      "Bash(command -v *)",
+      "mcp__playwright",
+      "mcp__figma"
     ],
     "deny": [
       "Read(.env)",
