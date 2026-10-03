@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /** site_check — runs site/static/app.js against site/fixtures/board.json in a stub DOM and a stub
- * Leaflet (`L`), no browser, no network, no dependencies (MIP-0009 task 2; §5 said this harness
- * existed since MIP-0008 — it did not, so here it is). */
+ * Mapbox GL (`mapboxgl`), no browser, no network, no dependencies (MIP-0009 task 2; §5 said this
+ * harness existed since MIP-0008 — it did not, so here it is). flow.js runs for real, minus WebGL. */
 'use strict';
 const fs = require('fs');
 const path = require('path');
@@ -9,6 +9,7 @@ const vm = require('vm');
 
 const ROOT = path.resolve(__dirname, '..');
 const APP = fs.readFileSync(path.join(ROOT, 'site/static/app.js'), 'utf8');
+const FLOW = fs.readFileSync(path.join(ROOT, 'site/static/flow.js'), 'utf8');
 // MIP-0070 §5.4: the app image owns the schema; site/board.schema.json is the vendored copy of the
 // pinned image's (scripts/board-schema.sh), BOARD_SCHEMA the one CI extracts from the image itself.
 const SCHEMA_PATH = process.env.BOARD_SCHEMA || path.join(ROOT, 'site/board.schema.json');
@@ -97,52 +98,79 @@ function validate(schema, value, p, root) {
 class El {
   constructor(id) {
     this.id = id; this.innerHTML = ''; this.textContent = ''; this.hidden = false; this.value = '';
-    this.max = 0; this.dataset = {}; this.attrs = {}; this.children = []; this.listeners = {};
-    this.classList = { toggle() {}, add() {}, remove() {}, contains() { return false; } };
+    this.max = 0; this.dataset = {}; this.attrs = {}; this.children = []; this.listeners = {}; this.style = {};
+    this.className = ''; this.found = {};
+    const cls = new Set();
+    this.classList = { toggle(c, on) { (on === undefined ? !cls.has(c) : on) ? cls.add(c) : cls.delete(c); }, add(c) { cls.add(c); },
+      remove(c) { cls.delete(c); }, contains(c) { return cls.has(c); } };
   }
   addEventListener(type, fn) { (this.listeners[type] = this.listeners[type] || []).push(fn); }
+  fire(type, ev) { (this.listeners[type] || []).forEach(fn => fn(Object.assign({ stopPropagation() {}, preventDefault() {} }, ev))); }
   setAttribute(k, v) { this.attrs[k] = String(v); }
   getAttribute(k) { return this.attrs[k]; }
   querySelector() { return new El('anon'); }
+  querySelectorAll(sel) { return this.found[sel] || []; }
+  closest() { return this; }
 }
-const IDS = ['area', 'days', 'near', 'sound', 'toggle-list', 'hourbar', 'hour', 'hour-label', 'list', 'card', 'footer', 'status'];
+const IDS = ['area', 'days', 'near', 'sound', 'toggle-list', 'hourbar', 'hour', 'hour-label', 'list', 'card', 'footer', 'status', 'flow', 'flowkeys', 'map-note', 'map'];
+// #flow's layer buttons, the beaches toggle and their keys, as index.html has them.
+const LAYER_KEYS = ['wind', 'waves', 'water', 'clouds', 'sst', 'anomaly', 'elnino'];
+function flowPanel(flow, keys) {
+  flow.found['button[data-layer]'] = LAYER_KEYS.map(k => Object.assign(new El('flow-' + k), { dataset: { layer: k } }));
+  flow.found['button[data-toggle]'] = ['beaches', 'trails'].map(k => Object.assign(new El('flow-' + k), { dataset: { toggle: k } }));
+  keys.found['[data-when]'] = ['clouds', 'sst', 'anomaly'].map(k => Object.assign(new El('when-' + k), { dataset: { when: k } }));
+  keys.found['[data-key]'] = LAYER_KEYS.map(k => Object.assign(new El('key-' + k), { dataset: { key: k } }));
+}
 // 'smoke' is deliberately absent: the page must tolerate a build without the panel (app.js
 // header).
 
-// --- a Leaflet just big enough for app.js
+// --- a Mapbox GL just big enough for app.js: markers keep their DOM element, a popup records
+// whether it is open, and a custom layer is added but never handed a WebGL context
 // --------------------------------------------------------.
-function makeLeaflet() {
-  const created = []; // every marker/circleMarker, in creation order
-  const layer = (kind, latlng, opts) => {
-    const l = { kind, latlng, opts, tooltip: null, tooltipOpts: null, handlers: {}, added: false };
-    l.addTo = function (m) { this.added = true; m.layers.push(this); return this; };
-    // Leaflet hands back the marker's DOM node once it is on the map; app.js names it for a
-    // screen reader through this (it dropped `title`, which drew a second, native tooltip over
-    // Leaflet's).
-    l.element = { attrs: {}, setAttribute(k, v) { this.attrs[k] = String(v); } };
-    l.getElement = function () { return this.added ? this.element : null; };
-    l.bindTooltip = function (c, o) { this.tooltip = c; this.tooltipOpts = o; return this; };
-    l.on = function (ev, fn) { this.handlers[ev] = fn; return this; };
-    created.push(l);
-    return l;
-  };
-  const L = {
-    created,
-    map() {
-      const m = { layers: [], handlers: {} };
-      m.on = (ev, fn) => { m.handlers[ev] = fn; return m; };
-      m.removeLayer = (l) => { m.layers = m.layers.filter(x => x !== l); if (l) l.added = false; };
-      m.setView = () => m; m.fitBounds = () => m; m.panTo = () => m;
-      return m;
-    },
-    tileLayer() { return { addTo(m) { m.layers.push(this); return this; } }; },
-    circleMarker: (ll, o) => layer('circleMarker', ll, o),
-    marker: (ll, o) => layer('marker', ll, o),
-    polyline: (latlngs, o) => layer('polyline', latlngs, o),
-    divIcon: (o) => ({ divIcon: true, options: o }),
-    DomEvent: { stopPropagation() {} }
-  };
-  return L;
+function makeMapbox() {
+  const M = { created: [], maps: [], lastShown: null };
+  class Popup {
+    constructor(o) { this.kind = 'popup'; this.options = o || {}; this.html = ''; this.open = false; M.created.push(this); }
+    setLngLat(ll) { this.lngLat = ll; return this; }
+    setHTML(h) { this.html = h; return this; }
+    addTo() { this.open = true; M.lastShown = this; return this; }
+    remove() { this.open = false; return this; }
+  }
+  class Marker {
+    constructor(o) { this.kind = 'marker'; this.options = o; this.element = o.element; this.added = false; this.M = M; M.created.push(this); }
+    setLngLat(ll) { this.lngLat = ll; return this; }
+    addTo() { this.added = true; return this; }
+    remove() { this.added = false; return this; }
+  }
+  class Map {
+    constructor(o) {
+      this.options = o; this.handlers = {}; this.layers = []; this.sources = {}; this.controls = [];
+      this.touchZoomRotate = { disableRotation() {} };
+      M.maps.push(this);
+      Promise.resolve().then(() => M.styleStatus
+        ? (this.handlers.error || []).forEach(fn => fn({ error: { status: M.styleStatus } }))
+        : (this.handlers.load || []).forEach(fn => fn()));
+    }
+    on(ev, a, b) { const k = b ? ev + ':' + a : ev; (this.handlers[k] = this.handlers[k] || []).push(b || a); return this; }
+    addControl(c, where) { this.controls.push([c, where]); return this; }
+    jumpTo(o) { this.jumped = o; return this; }
+    fitBounds(b, o) { this.fitted = [b, o]; return this; }
+    setMinZoom(z) { this.minZoom = z; return this; }
+    panTo(c) { this.panned = c; return this; }
+    resize() { return this; }
+    getStyle() { return { layers: [{ id: 'water', type: 'fill' }, { id: 'road', type: 'line' }, { id: 'place-label', type: 'symbol' }] }; }
+    addSource(id, src) { this.sources[id] = { src, data: src.data, setData(d) { this.data = d; } }; }
+    getSource(id) { return this.sources[id]; }
+    removeSource(id) { delete this.sources[id]; }
+    addLayer(layer, before) { this.layers.push({ layer, before }); }
+    getLayer(id) { const l = this.layers.find(x => x.layer.id === id); return l && l.layer; }
+    removeLayer(id) { this.layers = this.layers.filter(x => x.layer.id !== id); }
+    setLayoutProperty(id, k, v) { const l = this.getLayer(id); if (l) (l.layout = l.layout || {})[k] = v; }
+    getCanvas() { return { style: {}, clientWidth: 800, clientHeight: 600 }; }
+    triggerRepaint() {}
+  }
+  M.mapboxgl = { version: '3.32.0', Map, Marker, Popup, NavigationControl: function (o) { this.options = o; } };
+  return M;
 }
 
 // --- an AudioContext just big enough for app.js's wave sound (no real audio, records the node
@@ -204,13 +232,18 @@ async function runPage(board, opts) {
     'data/fixture/latest.json': { days: [{ day: board.day, file: board.day + '.json' }] }
   };
   if (!opts.noBoard) files['data/fixture/' + board.day + '.json'] = board;
-  const L = makeLeaflet();
+  const M = makeMapbox();
+  if (opts.styleStatus) M.styleStatus = opts.styleStatus;
+  flowPanel(els.flow, els.flowkeys);
+  (opts.disabled || []).forEach(k => ['button[data-layer]', 'button[data-toggle]'].forEach(q =>
+    els.flow.found[q].forEach(b => { if (b.dataset.layer === k || b.dataset.toggle === k) b.disabled = true; })));
   const colours = { '--c70': '#2a9d4b', '--c40': '#e0a800', '--c1': '#e07a00', '--c0': '#c0392b', '--cna': '#999999' };
   const errors = [], alerts = [], fetched = [];
   const search = opts.search || '';
   const sandbox = {
     console: { error: (...a) => errors.push(a.map(String).join(' ')), log() {} },
-    document: { getElementById: id => els[id] || null, querySelectorAll: () => [], documentElement: {} },
+    document: { getElementById: id => els[id] || null, querySelectorAll: () => [], documentElement: {}, createElement: tag => new El(tag),
+      addEventListener() {}, hidden: false },
     getComputedStyle: () => ({ getPropertyValue: n => colours[n] || '' }),
     fetch: p => { fetched.push(p); return Promise.resolve(p === 'vendor/sounds/waves.mp3'
       ? { ok: true, status: 200, arrayBuffer: () => Promise.resolve(new ArrayBuffer(8)) }
@@ -223,17 +256,21 @@ async function runPage(board, opts) {
     alert: m => alerts.push(String(m)),
     AudioContext: function () { return makeAudioContext(); },
     URL, URLSearchParams, Promise, Math, String, Array, Object, Number, Error, parseInt, setTimeout, JSON,
-    L
+    Float32Array, Uint8Array, Infinity, isFinite, Date,
+    mapboxgl: M.mapboxgl,
+    MAROLA_MAPBOX: { token: opts.token === undefined ? 'pk.test' : opts.token, style: '' }
   };
   stubStorage(sandbox, opts.store || {}, opts.storeThrows);
   sandbox.window = sandbox;
   vm.createContext(sandbox);
   vm.runInContext(I18N_JS, sandbox, { filename: 'site/static/i18n.js' });
   vm.runInContext(UI, sandbox, { filename: 'site/static/ui.js' });
+  vm.runInContext(FLOW, sandbox, { filename: 'site/static/flow.js' });
   vm.runInContext(APP, sandbox, { filename: 'site/static/app.js' });
   // fail() logs through console.error, so an error ends the wait as a rendered list does.
   for (let i = 0; i < 200 && !els.list.innerHTML && !errors.length; i++) await new Promise(r => setImmediate(r));
-  return { els, L, errors, alerts, fetched, api: sandbox.marolaI18n };
+  for (let i = 0; i < 5; i++) await new Promise(r => setImmediate(r)); // the map's load event
+  return { els, M, map: M.maps[0], errors, alerts, fetched, api: sandbox.marolaI18n, flow: sandbox.marolaFlow };
 }
 
 // --- ui.js against a page's real markup: every start tag becomes an element with its attributes.
@@ -325,19 +362,42 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   const badEnum = JSON.parse(JSON.stringify(BOARD)); badEnum.beaches[0].hours[0].wind_level = 'gale';
   ok(validate(SCHEMA, badEnum).some(e => e.includes('not in enum')), 'the checker rejects an unknown wind_level');
 
+  // A marker's tooltip is the popup its element opens on hover; a click is the element's.
+  const tipOf = m => {
+    if (!m) return '';
+    m.M.lastShown = null; m.element.fire('mouseenter');
+    const shown = m.M.lastShown, html = shown && shown.open ? String(shown.html) : '';
+    m.element.fire('mouseleave');
+    return html;
+  };
+  const click = m => m.element.fire('click');
+  const isWave = l => l.kind === 'marker' && l.added && /\bwave\b/.test(l.element.className);
+  const isPoint = l => l.kind === 'marker' && l.added && /\bwpoint\b/.test(l.element.className);
+  const wavesOf = r => r.M.created.filter(isWave);
+  const trailsOf = r => (r.map && r.map.sources.trails ? r.map.sources.trails.data.features : []);
+
   // 2. the page renders the fixture: one marker per beach, tooltips, list, card. Under ?lang=en these are
   // the English needles from before MIP-0054; section 5 holds the same page to pt-BR.
-  const { els, L, errors, fetched } = await runPage(BOARD, { search: '?lang=en' });
+  const first = await runPage(BOARD, { search: '?lang=en' });
+  const { els, M, map, errors, fetched } = first;
   ok(errors.length === 0, 'app.js logged no errors while loading', errors.join(' | '));
-  const isWave = l => l.kind === 'marker' && l.opts && l.opts.icon && l.opts.icon.divIcon && /\bwave\b/.test(l.opts.icon.options.className);
-  const markers = L.created.filter(l => l.added && isWave(l));
-  ok(markers.length === BOARD.beaches.length, 'exactly one wave divIcon marker per beach (' + markers.length + ')');
-  ok(L.created.filter(l => l.added && l.kind === 'circleMarker').length === 0, 'no circleMarker is left for beaches');
-  const joaq = markers.find(m => String(m.tooltip).includes('Praia da Joaquina'));
+  ok(map && map.options.container === 'map' && map.options.style === 'mapbox://styles/mapbox/outdoors-v12' && map.options.projection === 'mercator',
+    'the map is Mapbox GL on #map, the dark style by default, in mercator (flow.js draws in mercator)', map && JSON.stringify(map.options));
+  ok(M.mapboxgl.accessToken === 'pk.test' && M.mapboxgl.workerUrl === 'vendor/mapbox-gl-csp-worker.js?v=3.32.0',
+    "the token comes from mapbox-config.js, the worker from vendor/ (the CSP build: no blob: worker)");
+  ok(map && map.options.collectResourceTiming === false, 'Mapbox GL is told not to collect resource timings');
+  const markers = wavesOf(first);
+  ok(markers.length === BOARD.beaches.length, 'exactly one wave marker per beach (' + markers.length + ')');
+  ok(first.M.created.filter(isPoint).length === 0, 'no water-sampling point is drawn before a card opens');
+  const joaq = markers.find(m => tipOf(m).includes('Praia da Joaquina'));
   ok(!!joaq, 'a wave carries a tooltip naming Praia da Joaquina');
-  const tip = joaq ? plain(joaq.tooltip) : '';
+  const tip = joaq ? plain(tipOf(joaq)) : '';
   ok(/55\/100 at 10:00/.test(tip), 'Joaquina\'s tooltip head shows score/100 and the hour', tip);
-  ok(joaq && joaq.tooltipOpts && joaq.tooltipOpts.sticky === true && joaq.tooltipOpts.className === 'aspects', 'the tooltip is sticky with the aspects class');
+  ok(joaq && first.M.lastShown && first.M.lastShown.options.className === 'aspects' && first.M.lastShown.options.closeButton === false &&
+    first.M.lastShown.open === false, 'the tooltip is a popup with the aspects class that shows on hover and hides on leave');
+  if (joaq) joaq.element.fire('focus');
+  ok(first.M.lastShown && first.M.lastShown.open && String(first.M.lastShown.html).includes('Praia da Joaquina'), 'keyboard focus opens the same tooltip');
+  if (joaq) joaq.element.fire('blur');
   // MIP-0009 §3: six aspects, the fixture's own numbers, every icon followed by its word — the
   // water cell carries a colour dot instead of an icon (2026-09-07: a dot scans by colour at
   // a glance the way the score markers already do; a repeated 💧 doesn't distinguish
@@ -352,11 +412,11 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
     .forEach(([needle, label]) => ok(tip.includes(needle), 'tooltip cell: ' + label + ' → "' + needle + '"', tip));
   ok(!/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/u.test(tip), 'the tooltip carries line icons, no emoji', tip);
   ok((tip.match(/<span/g) || []).length === 7, 'the tooltip grid has six aspect cells plus facilities (7) when the board has facility data');
-  ok(joaq && joaq.opts.icon.options.html.includes('#e0a800'), "Joaquina's wave is filled with the 40-69 colour", joaq && joaq.opts.icon.options.html);
-  const brava = markers.find(m => String(m.tooltip).includes('Praia Brava'));
-  ok(brava && brava.opts.icon.options.html.includes('#c0392b'), "the unfit beach's wave is the red (score-0) colour", brava && brava.opts.icon.options.html);
-  ok(brava && /class="wide unfit"><i class="wdot c0"><\/i> 0\/1 IMPRÓPRIA/.test(String(brava.tooltip)), "the unfit beach's water cell carries the unfit class and the red dot", brava && String(brava.tooltip));
-  ok(!String(brava.tooltip).includes('facilities'), 'Brava has no facilities data on the board, so no facilities cell renders (absent, not zeroed)', String(brava.tooltip));
+  ok(joaq && joaq.element.innerHTML.includes('#e0a800'), "Joaquina's wave is filled with the 40-69 colour", joaq && joaq.element.innerHTML);
+  const brava = markers.find(m => tipOf(m).includes('Praia Brava'));
+  ok(brava && brava.element.innerHTML.includes('#c0392b'), "the unfit beach's wave is the red (score-0) colour", brava && brava.element.innerHTML);
+  ok(brava && /class="wide unfit"><i class="wdot c0"><\/i> 0\/1 IMPRÓPRIA/.test(tipOf(brava)), "the unfit beach's water cell carries the unfit class and the red dot", tipOf(brava));
+  ok(!tipOf(brava).includes('facilities'), 'Brava has no facilities data on the board, so no facilities cell renders (absent, not zeroed)', tipOf(brava));
   // the water verdict is a sentence and gets the full width (CSS: .aspects .grid .wide spans both
   // columns and wraps) — nowrap in one column ran it past the 21 rem tooltip and clipped the
   // card.
@@ -364,18 +424,21 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok((tip.match(/class="wide /g) || []).length === 2, 'the water cell and the facilities cell both span both columns', tip);
   // a dot, not a wave glyph: crowded coasts read as points of colour (DESIGN.md's System Color
   // Marker); an Abyss Blue rim and a white ring keep neighbours apart.
-  ok(joaq && /^<svg[^>]*><circle [^>]*fill="#1d2733"\/><circle [^>]*fill="#e0a800" stroke="#fff" stroke-width="2"\/><\/svg>$/.test(joaq.opts.icon.options.html),
-    'a beach is a rimmed dot filled with its score colour', joaq && joaq.opts.icon.options.html);
-  ok(joaq && !/opacity=|drop-shadow|transform=/.test(joaq.opts.icon.options.html), 'no per-path opacity, halo transform or drop-shadow in the marker SVG', joaq && joaq.opts.icon.options.html);
-  ok(joaq && joaq.opts.title === undefined && joaq.opts.keyboard === true,
-    'the marker has no `title` (no native tooltip over Leaflet\'s) but stays keyboard-reachable');
+  ok(joaq && /^<svg[^>]*><circle [^>]*fill="#1d2733"\/><circle [^>]*fill="#e0a800" stroke="#fff" stroke-width="2"\/><\/svg>$/.test(joaq.element.innerHTML),
+    'a beach is a rimmed dot filled with its score colour', joaq && joaq.element.innerHTML);
+  ok(joaq && !/opacity=|drop-shadow|transform=/.test(joaq.element.innerHTML), 'no per-path opacity, halo transform or drop-shadow in the marker SVG', joaq && joaq.element.innerHTML);
+  ok(joaq && joaq.element.attrs.title === undefined && joaq.element.attrs.tabindex === '0' && joaq.element.attrs.role === 'button',
+    'the marker has no `title` (no native tooltip over the popup) but is a focusable button');
   ok(joaq && joaq.element.attrs['aria-label'] === 'Praia da Joaquina',
     'the marker element is named for a screen reader with aria-label', joaq && JSON.stringify(joaq.element.attrs));
+  ok(joaq && joaq.options.anchor === 'center' && joaq.lngLat[0] === -48.4487 && joaq.lngLat[1] === -27.6296,
+    'the marker sits centred on the beach, [lon, lat] as Mapbox wants it', joaq && JSON.stringify(joaq.lngLat));
+  ok(map && map.fitted && JSON.stringify(map.fitted[0]) === '[[-48.4487,-27.6296],[-48.4157,-27.4021]]', 'the first board fits the view to its beaches', map && JSON.stringify(map.fitted));
   // the legend key is the same glyph, or the key stops meaning "this shape on the map is a
   // beach".
   const shape = html => ((html || '').match(/<circle [^>]*>/g) || []).map(c => c.replace(/ fill="(?!#1d2733)[^"]*"/, ''));
   const keyShape = shape((/<span class="wave-key">[\s\S]*?<\/svg>/.exec(INDEX) || [])[0]);
-  ok(keyShape.length === 2 && JSON.stringify(keyShape) === JSON.stringify(shape(joaq && joaq.opts.icon.options.html)),
+  ok(keyShape.length === 2 && JSON.stringify(keyShape) === JSON.stringify(shape(joaq && joaq.element.innerHTML)),
     'index.html\'s legend key draws the same dot as the marker', JSON.stringify(keyShape));
   ok((els.list.innerHTML.match(/<li /g) || []).length === 2 && els.list.innerHTML.indexOf('Joaquina') < els.list.innerHTML.indexOf('Brava'),
     'the list has two entries, best score first');
@@ -407,8 +470,8 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
     ok(out && out.gain.value < 0.001, 'after the second click the sound is actually silent (gain ' + (out && out.gain.value) + ')');
     ok(fetched.filter(f => f === 'vendor/sounds/waves.mp3').length === 1, 'the loop is fetched once, not per click');
   } else ok(false, 'the sound toggle has a click handler');
-  if (joaq && joaq.handlers.click) {
-    joaq.handlers.click({});
+  if (joaq && joaq.element.listeners.click) {
+    click(joaq);
     ok(els.card.hidden === false && els.card.innerHTML.includes('Praia da Joaquina') && els.card.innerHTML.includes('55/100'),
       'clicking Joaquina\'s wave opens its card with the score');
     ok(/<span class="score c40">55\/100<\/span>/.test(els.card.innerHTML) && !/style=/.test(els.card.innerHTML),
@@ -421,47 +484,52 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
       'the card starts (after the h2) with the tooltip\'s exact aspect row, before the details', card.slice(0, 300));
     ok(card.includes('<dt>why</dt><dd><ul><li>breezy (27km/h)</li><li>cold water (19.0°C)</li></ul></dd>'),
       "the fixture's note_codes render in en exactly as the English notes did (task 3)", card);
-    const sel = L.created.filter(l => l.added && isWave(l)).find(m => String(m.tooltip).includes('Praia da Joaquina'));
-    ok(sel && /\bselected\b/.test(sel.opts.icon.options.className) && sel.opts.icon.options.iconSize[0] === 32 && sel.opts.zIndexOffset === 1000,
-      'after selection the wave is re-drawn larger (32 px), marked selected, on top', sel && JSON.stringify(sel.opts.icon.options.iconSize));
-    ok(sel && /<text [^>]*>55<\/text>/.test(sel.opts.icon.options.html), 'the selected dot carries its score', sel && sel.opts.icon.options.html);
+    const sel = wavesOf(first).find(m => tipOf(m).includes('Praia da Joaquina'));
+    ok(sel && /\bselected\b/.test(sel.element.className) && /width="32"/.test(sel.element.innerHTML),
+      'after selection the wave is re-drawn larger (32 px) and marked selected (style.css puts it on top)', sel && sel.element.className);
+    ok(sel && /<text [^>]*>55<\/text>/.test(sel.element.innerHTML), 'the selected dot carries its score', sel && sel.element.innerHTML);
+    ok(wavesOf(first).length === BOARD.beaches.length, 'a re-render replaces the markers, it does not stack them');
     // "point by point" water quality (2026-09-07): opening a beach's card also plots its real
-    // sampling points as their own circleMarkers — not just the one-line aggregate the card/
+    // sampling points as their own markers — not just the one-line aggregate the card/
     // tooltip text already shows.
-    const waterPts = L.created.filter(l => l.added && l.kind === 'circleMarker' && String(l.tooltip).includes('Ponto 33'));
-    ok(waterPts.length === 1 && waterPts[0].latlng[0] === -27.6301 && waterPts[0].latlng[1] === -48.4479,
-      "opening Joaquina's card plots its one real water-sampling point as a circleMarker at its real coordinates",
-      JSON.stringify(waterPts.map(p => p.latlng)));
-    ok(String(waterPts[0].tooltip).includes('PRÓPRIA'), "the point marker's own tooltip carries its real condition", String(waterPts[0].tooltip));
+    const waterPts = first.M.created.filter(l => isPoint(l) && tipOf(l).includes('Ponto 33'));
+    ok(waterPts.length === 1 && waterPts[0].lngLat[1] === -27.6301 && waterPts[0].lngLat[0] === -48.4479,
+      "opening Joaquina's card plots its one real water-sampling point as a marker at its real coordinates",
+      JSON.stringify(waterPts.map(p => p.lngLat)));
+    ok(waterPts[0] && tipOf(waterPts[0]).includes('PRÓPRIA'), "the point marker's own tooltip carries its real condition", waterPts[0] && tipOf(waterPts[0]));
     // Selecting a different beach swaps the plotted points, rather than accumulating them — the
     // stub DOM's querySelector can't re-find renderCard's own close-button listener (it returns a
     // fresh element each call), so this exercises the same clear-and-replot path
     // (renderWaterPoints) a real close would, via select() on Brava instead.
-    const bravaMarker = L.created.find(l => l.added && isWave(l) && String(l.tooltip).includes('Praia Brava'));
-    if (bravaMarker && bravaMarker.handlers.click) bravaMarker.handlers.click({});
-    const joaquinaPointsAfter = L.created.filter(l => l.added && l.kind === 'circleMarker' && String(l.tooltip).includes('Ponto 33'));
-    const bravaPointsAfter = L.created.filter(l => l.added && l.kind === 'circleMarker' && String(l.tooltip).includes('Ponto 12'));
+    const bravaMarker = wavesOf(first).find(l => tipOf(l).includes('Praia Brava'));
+    if (bravaMarker) click(bravaMarker);
+    const joaquinaPointsAfter = first.M.created.filter(l => isPoint(l) && tipOf(l).includes('Ponto 33'));
+    const bravaPointsAfter = first.M.created.filter(l => isPoint(l) && tipOf(l).includes('Ponto 12'));
     ok(joaquinaPointsAfter.length === 0, "selecting Brava removes Joaquina's own water-point marker, not left stacked on the map");
-    ok(bravaPointsAfter.length === 1 && bravaPointsAfter[0].opts.fillColor !== waterPts[0].opts.fillColor,
-      "Brava's own (IMPRÓPRIA) point plots instead, in a different colour than Joaquina's PRÓPRIA one",
-      JSON.stringify({ brava: bravaPointsAfter[0] && bravaPointsAfter[0].opts, joaquina: waterPts[0].opts }));
+    ok(bravaPointsAfter.length === 1 && /\bc0\b/.test(bravaPointsAfter[0].element.className) && /\bc70\b/.test(waterPts[0].element.className),
+      "Brava's own (IMPRÓPRIA) point plots instead, red where Joaquina's PRÓPRIA one is green",
+      JSON.stringify({ brava: bravaPointsAfter[0] && bravaPointsAfter[0].element.className, joaquina: waterPts[0].element.className }));
+    const mapClick = map.handlers.click[0];
+    mapClick({ originalEvent: { target: { closest: () => ({}) } } });
+    ok(els.card.hidden === false, 'a click on a marker, which Mapbox also reports to the map, keeps the card open');
+    mapClick({ originalEvent: { target: { closest: () => null } } });
+    ok(els.card.hidden === true && first.M.created.filter(isPoint).length === 0, 'a click on the map itself closes the card and clears the water points');
   } else ok(false, 'Joaquina\'s wave has a click handler');
 
   // 3. an older board without wind_level (task 1 made it optional) renders: number, no band word.
   const stripped = JSON.parse(JSON.stringify(BOARD));
   stripped.beaches.forEach(b => b.hours.forEach(h => { delete h.wind_level; }));
   const r2 = await runPage(stripped, { search: '?lang=en' });
-  const markers2 = r2.L.created.filter(l => l.added && isWave(l));
+  const markers2 = wavesOf(r2);
   ok(r2.errors.length === 0 && markers2.length === BOARD.beaches.length, 'a board without wind_level still renders every beach as a wave');
-  const tip2 = plain((markers2.find(m => String(m.tooltip).includes('Praia da Joaquina')) || {}).tooltip || '');
+  const tip2 = plain(tipOf(markers2.find(m => tipOf(m).includes('Praia da Joaquina'))));
   ok(!/breezy|calm|strong/.test(tip2) && tip2.includes('[wind] wind 27 km/h') && (tip2.match(/<span/g) || []).length === 7,
     'without wind_level the wind cell keeps the number and drops the band word; seven cells remain (Joaquina has facilities data)', tip2);
 
   // 4.
   ok(!('trails' in BOARD), 'the fixture board has no trails key yet — this is the "older board" case');
-  const isPolyline = l => l.kind === 'polyline';
-  ok(L.created.filter(l => l.added && isPolyline(l)).length === 0,
-    'a board with no trails key draws no polyline, and (from section 2 above) still renders every beach');
+  ok(map.layers.some(l => l.layer.id === 'trails' && l.layer.type === 'line' && l.layer.source === 'trails') && trailsOf(first).length === 0,
+    'a board with no trails key draws no trail, and (from section 2 above) still renders every beach');
 
   const trailed = JSON.parse(JSON.stringify(BOARD));
   trailed.trails = [
@@ -473,15 +541,144 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
       near_beach: null, near_lake: { name: 'Lagoa do Peri', distance_km: 0.2 } }
   ];
   const r3 = await runPage(trailed, { search: '?lang=en' });
-  const trails3 = r3.L.created.filter(l => l.added && isPolyline(l));
+  const trails3 = trailsOf(r3);
   ok(r3.errors.length === 0, 'app.js logged no errors with a trails array present', r3.errors.join(' | '));
-  ok(trails3.length === trailed.trails.length, 'exactly one polyline per trail (' + trails3.length + ')');
-  const lagoinha = trails3.find(l => String(l.tooltip).includes('Trilha da Lagoinha do Leste'));
-  ok(!!lagoinha && /2\.1\s*km/.test(String(lagoinha.tooltip)), 'a trail polyline\'s tooltip names it and shows its length', lagoinha && String(lagoinha.tooltip));
-  ok(lagoinha && lagoinha.latlng.length === 3, 'the polyline carries the trail\'s full geometry, not just endpoints');
-  ok(lagoinha && lagoinha.opts.color === '#999999', 'a trail with no difficulty tag draws grey (no-data colour)', lagoinha && lagoinha.opts.color);
-  const macoGuarda = trails3.find(l => String(l.tooltip).includes('Maço-Guarda'));
-  ok(macoGuarda && macoGuarda.opts.color === '#e0a800', 'a mountain_hiking trail draws the amber colour', macoGuarda && macoGuarda.opts.color);
+  ok(trails3.length === trailed.trails.length, 'exactly one line feature per trail (' + trails3.length + ')');
+  const lagoinha = trails3.find(f => f.properties.tip.includes('Trilha da Lagoinha do Leste'));
+  ok(!!lagoinha && /2\.1\s*km/.test(lagoinha.properties.tip), 'a trail\'s tooltip names it and shows its length', lagoinha && lagoinha.properties.tip);
+  ok(lagoinha && lagoinha.geometry.type === 'LineString' && JSON.stringify(lagoinha.geometry.coordinates[0]) === '[-48.49,-27.79]' && lagoinha.geometry.coordinates.length === 3,
+    'the line carries the trail\'s full geometry, flipped to [lon, lat]', lagoinha && JSON.stringify(lagoinha.geometry));
+  ok(lagoinha && lagoinha.properties.color === '#999999', 'a trail with no difficulty tag draws grey (no-data colour)', lagoinha && lagoinha.properties.color);
+  const macoGuarda = trails3.find(f => f.properties.tip.includes('Maço-Guarda'));
+  ok(macoGuarda && macoGuarda.properties.color === '#e0a800', 'a mountain_hiking trail draws the amber colour', macoGuarda && macoGuarda.properties.color);
+  ok(r3.map.layers.find(l => l.layer.id === 'trails').layer.paint['line-color'][1] === 'color', "the trail layer colours each line by its feature's own colour");
+  const trailTip = (r3.map.handlers['mousemove:trails'] || [])[0];
+  if (trailTip) trailTip({ lngLat: [-48.49, -27.79], features: [lagoinha] });
+  ok(r3.M.lastShown && r3.M.lastShown.open && r3.M.lastShown.html === lagoinha.properties.tip, 'hovering a trail shows its tooltip');
+
+  // --- the flow layer (flow.js): wind and waves from the board's own readings -----------------
+  const flowEntry = first.map.layers.find(l => l.layer.id === 'marola-flow');
+  ok(flowEntry && flowEntry.layer.type === 'custom' && flowEntry.before === 'place-label',
+    'the flow layer is a Mapbox custom layer, added under the first label layer', flowEntry && flowEntry.before);
+  const flowLayer = flowEntry && flowEntry.layer;
+  ok(flowLayer && flowLayer.kind() === 'off' && first.els.flow.found['button[data-layer]'].every(b => b.attrs['aria-pressed'] === 'false'),
+    'no layer is on by default: the map opens on the beaches alone');
+  const btn = k => first.els.flow.found['button[data-layer]'].find(b => b.dataset.layer === k);
+  // the stub's buttons are all enabled, so the layers still in "em breve" keep their tests for when they ship
+  first.els.flow.fire('click', { target: Object.assign(btn('wind'), { closest() { return this; } }) });
+  ok(flowLayer.kind() === 'wind' && btn('wind').attrs['aria-pressed'] === 'true', 'an enabled wind button turns the wind field on');
+  const F = first.flow;
+  const windField = flowLayer && flowLayer.field();
+  const atJoaq = windField && F.sample(windField, F.mercX(-48.4487), F.mercY(-27.6296));
+  ok(atJoaq && atJoaq[1] > 0 && Math.abs(atJoaq[0]) < atJoaq[1] && atJoaq[3] > 0.9,
+    "at Joaquina the wind field blows north (the board says it comes from 180°), near full confidence", JSON.stringify(atJoaq));
+  btn('waves').disabled = true;
+  first.els.flow.fire('click', { target: Object.assign(btn('waves'), { closest() { return this; } }) });
+  ok(flowLayer.kind() === 'wind', 'a disabled ("em breve") layer button does nothing');
+  btn('waves').disabled = false;
+  first.els.flow.fire('click', { target: Object.assign(btn('waves'), { closest() { return this; } }) });
+  ok(flowLayer.kind() === 'waves' && btn('waves').attrs['aria-pressed'] === 'true' && btn('wind').attrs['aria-pressed'] === 'false' &&
+    first.els.flowkeys.found['[data-key]'].find(k => k.dataset.key === 'waves').hidden === false, 'the waves button switches the layer, its key and the pressed state');
+  const waveField = flowLayer.field();
+  const waveAt = waveField && F.sample(waveField, F.mercX(-48.4487), F.mercY(-27.6296));
+  ok(waveAt && Math.abs(waveAt[2] - 1.3 / F.KINDS.waves.max) < 0.02, "Joaquina's wave height (1.3 m at its best hour) is the field's value there; Brava, with no wave direction, sits out", JSON.stringify(waveAt));
+  const drawnPoints = () => first.M.created.filter(isPoint).length;
+  const pointsBefore = drawnPoints();
+  const allPoints = BOARD.beaches.reduce((n, b) => n + ((b.water && b.water.points) || []).length, 0);
+  first.els.flow.fire('click', { target: Object.assign(btn('water'), { closest() { return this; } }) });
+  ok(flowLayer.kind() === 'off' && flowLayer.field() === null && drawnPoints() === allPoints && allPoints > 1 &&
+    first.els.flowkeys.found['[data-key]'].find(k => k.dataset.key === 'water').hidden === false,
+    'the water layer stops the particles and draws every beach\'s sampling points, with its key', drawnPoints() + ' of ' + allPoints);
+  ok(first.els.map.classList.contains('layer-water'), 'the water layer marks #map, so the beach dots step back');
+  first.els.flow.fire('click', { target: Object.assign(btn('wind'), { closest() { return this; } }) });
+  ok(drawnPoints() === pointsBefore, 'leaving the water layer takes the other beaches\' points away again', drawnPoints() + ' vs ' + pointsBefore);
+  const before = F.sample(flowLayer.field(), F.mercX(-48.4487), F.mercY(-27.6296))[2];
+  first.els.hour.value = '0'; first.els.hour.listeners.input[0]();
+  const after = F.sample(flowLayer.field(), F.mercX(-48.4487), F.mercY(-27.6296))[2];
+  ok(Math.abs(before - 27 / 40) < 0.02 && Math.abs(after - 12 / 40) < 0.02, 'the hour slider moves the field with it (27 km/h at the best hour, 12 at 07:00)', before + ' → ' + after);
+  // the NASA GIBS layers: one raster source at a time, dated from the board's day
+  const fmap = first.map;
+  const tiles = () => fmap.sources['marola-raster'] && fmap.sources['marola-raster'].src.tiles[0];
+  first.els.flow.fire('click', { target: Object.assign(btn('sst'), { closest() { return this; } }) });
+  ok(flowLayer.kind() === 'off' && /^https:\/\/gibs\.earthdata\.nasa\.gov\/wmts\/epsg3857\/best\/GHRSST_L4_MUR_Sea_Surface_Temperature\/default\/2026-09-04\/GoogleMapsCompatible_Level7\/\{z\}\/\{y\}\/\{x\}\.png$/.test(tiles()) &&
+    fmap.getLayer('marola-raster').type === 'raster' && first.els.flowkeys.found['[data-when]'].find(w => w.dataset.when === 'sst').textContent === '2026-09-04',
+    'sea temperature is a GIBS MUR raster two days before the board (2026-09-06), the date in its key, particles off', tiles());
+  first.els.flow.fire('click', { target: Object.assign(btn('clouds'), { closest() { return this; } }) });
+  ok(/VIIRS_SNPP_CorrectedReflectance_TrueColor\/default\/2026-09-05\/GoogleMapsCompatible_Level9\/.*\.jpg$/.test(tiles()) &&
+    fmap.layers.filter(l => l.layer.id === 'marola-raster').length === 1, 'satellite swaps the raster for the day before\'s VIIRS true colour, one raster at a time', tiles());
+  first.els.flow.fire('click', { target: Object.assign(btn('elnino'), { closest() { return this; } }) });
+  ok(/Sea_Surface_Temperature_Anomalies\/default\/2026-09-04\//.test(tiles()) && fmap.getLayer('nino34') && fmap.getLayer('nino34').layout.visibility === 'visible' &&
+    fmap.fitted[0][0][0] === -180 && fmap.minZoom === 0, 'El Niño shows the anomaly, the Niño 3.4 box, and zooms out to the Pacific (below the area minZoom)', JSON.stringify(fmap.fitted[0]));
+  first.els.flow.fire('click', { target: Object.assign(btn('wind'), { closest() { return this; } }) });
+  ok(!fmap.sources['marola-raster'] && !fmap.getLayer('marola-raster') && fmap.getLayer('nino34').layout.visibility === 'none' &&
+    fmap.fitted[0][0][0] > -49 && fmap.minZoom === 3 && flowLayer.kind() === 'wind', 'back to wind: the raster and the box go, the map returns to the beaches', JSON.stringify(fmap.fitted[0]));
+  const toggle = first.els.flow.found['button[data-toggle]'][0];
+  first.els.flow.fire('click', { target: Object.assign(toggle, { closest() { return this; } }) });
+  ok(first.els.map.classList.contains('no-beaches') && toggle.attrs['aria-pressed'] === 'false', 'the beaches toggle hides the beach dots');
+  first.els.flow.fire('click', { target: Object.assign(toggle, { closest() { return this; } }) });
+  ok(!first.els.map.classList.contains('no-beaches') && toggle.attrs['aria-pressed'] === 'true', 'and shows them again');
+  const trailsBtn = first.els.flow.found['button[data-toggle]'][1];
+  first.els.flow.fire('click', { target: Object.assign(trailsBtn, { closest() { return this; } }) });
+  ok(fmap.getLayer('trails').layout.visibility === 'none' && trailsBtn.attrs['aria-pressed'] === 'false' && toggle.attrs['aria-pressed'] === 'true',
+    'the trails toggle hides the coastal trails layer, leaving the beaches toggle alone');
+  first.els.flow.fire('click', { target: Object.assign(trailsBtn, { closest() { return this; } }) });
+  ok(fmap.getLayer('trails').layout.visibility === 'visible', 'and shows it again');
+  const layered = await runPage(BOARD, { search: '?layer=waves' });
+  ok(layered.map.layers.find(l => l.layer.id === 'marola-flow').layer.kind() === 'waves', '?layer=waves opens on the waves layer');
+  const watered = await runPage(BOARD, { search: '?layer=water' });
+  ok(watered.M.created.filter(isPoint).length > 1, '?layer=water opens on the water layer, its points drawn');
+  const wbtn = watered.els.flow.found['button[data-layer]'].find(b => b.dataset.layer === 'water');
+  watered.els.flow.fire('click', { target: Object.assign(wbtn, { closest() { return this; } }) });
+  ok(wbtn.attrs['aria-pressed'] === 'false' && !watered.els.map.classList.contains('layer-water'), 'pressing balneabilidade again turns it off');
+  const soon = await runPage(BOARD, { search: '?layer=wind', disabled: ['wind', 'trails'] });
+  ok(soon.map.layers.find(l => l.layer.id === 'marola-flow').layer.kind() === 'off' && soon.map.getLayer('trails').layout.visibility === 'none',
+    'a ?layer= link to a layer still "em breve" opens on no layer, and a disabled trails toggle leaves the trails hidden');
+  const railButtons = [...INDEX.matchAll(/<button type="button" data-(layer|toggle)="(\w+)"([^>]*)>/g)];
+  const live = railButtons.filter(m => !/\bdisabled\b/.test(m[3])).map(m => m[2]);
+  ok(JSON.stringify(live) === '["beaches","water"]' && railButtons.filter(m => /\bdisabled\b/.test(m[3])).every(m => /class="soon"/.test(m[3]) && /_soon"/.test(m[3])),
+    'the rail ships with only praias and balneabilidade enabled; every other button is a disabled "em breve"', JSON.stringify(live));
+  ok(!first.map.layers.some(l => l.layer.id === 'marola-coast'), 'no coastline layer when the style has no composite source');
+
+  // flow.js on its own: the interpolation the particles ride on.
+  const one = F.buildField([{ lon: -48.5, lat: -27.6, mag: 20, dir: 0 }], 40);
+  const c = F.sample(one, F.mercX(-48.5), F.mercY(-27.6));
+  ok(c && Math.abs(c[0]) < 1e-6 && Math.abs(c[1] + 20) < 1e-3 && Math.abs(c[2] - 0.5) < 1e-3 && c[3] > 0.99,
+    'flow: a north wind (from 0°) flows south, at half the ramp for 20 of 40, fully confident at its beach', JSON.stringify(c));
+  const far = F.sample(one, F.mercX(-48.5 + 25 / (111.32 * Math.cos(27.6 * Math.PI / 180))), F.mercY(-27.6));
+  ok(far && far[3] < 0.2, 'flow: 25 km from the only beach the field has faded out', JSON.stringify(far));
+  ok(F.sample(one, F.mercX(-40), F.mercY(-27.6)) === null, 'flow: outside the padded box there is no field');
+  ok(F.buildField([{ lon: -48.5, lat: -27.6, mag: null, dir: 90 }, { lon: -48.4, lat: -27.5, mag: 5, dir: null }], 40) === null,
+    'flow: a beach missing the number or the direction is left out, never read as zero');
+  const ramp = F.rampPixels(['#000000', '#ffffff']);
+  ok(ramp.length === 1024 && ramp[0] === 0 && ramp[1020] === 255 && ramp[1023] === 255, 'flow: a ramp is 256 opaque texels from the first stop to the last');
+
+  // --- Mapbox: no token, no map; the CSP and the token never in the repo ----------------------
+  const styleRefused = await runPage(BOARD, { styleStatus: 401 });
+  ok(styleRefused.els['map-note'].hidden === false && styleRefused.els.list.hidden === false && styleRefused.els.flow.hidden === true,
+    'a refused token or a missing style says the map failed and opens the list, never a blank map', styleRefused.els['map-note'].textContent);
+  const ahead = await runPage(Object.assign({}, BOARD, { day: '2026-09-08' }), { search: '?layer=clouds' });
+  const aheadTiles = ahead.M.maps[0].sources['marola-raster'] && ahead.M.maps[0].sources['marola-raster'].src.tiles[0];
+  ok(/\/default\/2026-09-05\//.test(aheadTiles || ''), 'a forecast day ahead still asks NASA for imagery that exists: dates count back from the board\'s today', aheadTiles);
+  const noToken = await runPage(BOARD, { token: '' });
+  ok(noToken.errors.length === 0 && noToken.M.maps.length === 0 && wavesOf(noToken).length === 0,
+    'with no token there is no Mapbox map (its licence needs a Mapbox account) and no error', noToken.errors.join(' | '));
+  ok(noToken.els['map-note'].hidden === false && noToken.els['map-note'].textContent.includes('Mapbox') && noToken.els.list.hidden === false &&
+    noToken.els.flow.hidden === true && /<li /.test(noToken.els.list.innerHTML), 'and the page says why, and opens the list instead', noToken.els['map-note'].textContent);
+  const csp = (/http-equiv="Content-Security-Policy" content="([^"]+)"/.exec(INDEX) || [])[1] || '';
+  const dir = name => ((new RegExp('(?:^|; )' + name + ' ([^;]+)').exec(csp)) || [])[1];
+  ok(dir('default-src') === "'self'" && dir('script-src') === undefined && dir('worker-src') === "'self'" && !csp.includes('unsafe'),
+    "the CSP keeps scripts and the Mapbox worker same-origin, with no 'unsafe-*'", csp);
+  ok((INDEX.match(/<script src="([^"]+)"/g) || []).every(t => !/\/\//.test(t)) && /<script src="vendor\/mapbox-gl-csp\.js"><\/script>\s*<script src="mapbox-config\.js"><\/script>\s*<script src="flow\.js"><\/script>\s*<script src="app\.js">/.test(INDEX),
+    'every script is ours or vendored: Mapbox GL (CSP build), its config, flow.js, then app.js');
+  const MBCONF = fs.readFileSync(path.join(ROOT, 'site/static/mapbox-config.js'), 'utf8');
+  ok(/window\.MAROLA_MAPBOX = \{ token: "", style: "" \};/.test(MBCONF), 'mapbox-config.js is committed with an empty token; site.yml fills it at deploy');
+  const leaked = fs.readdirSync(path.join(ROOT, 'site/static')).filter(f => /\.(js|html|css)$/.test(f))
+    .filter(f => /\b[ps]k\.eyJ/.test(fs.readFileSync(path.join(ROOT, 'site/static', f), 'utf8')));
+  ok(leaked.length === 0, 'no Mapbox token (pk.eyJ…/sk.eyJ…) is committed in site/static', leaked.join(', '));
+  const SITE_YML = fs.readFileSync(path.join(ROOT, '.github/workflows/site.yml'), 'utf8');
+  ok(/MAPBOX_PUBLIC_TOKEN: \$\{\{ secrets\.MAPBOX_PUBLIC_TOKEN \|\| vars\.MAPBOX_PUBLIC_TOKEN \}\}/.test(SITE_YML) && /run: scripts\/mapbox_config\.sh site\/dist/.test(SITE_YML) &&
+    /! -name mapbox-config\.js\b/.test(SITE_YML) && /! -name flow\.js\b/.test(SITE_YML),
+    'site.yml writes mapbox-config.js from MAPBOX_PUBLIC_TOKEN (scripts/mapbox_config.sh refuses an sk. token) and publishes flow.js and it');
 
   // --- section nav ---------------------------------------------------------------------------
   const nav = (/<nav class="sitenav"[\s\S]*?<\/nav>/.exec(INDEX) || [''])[0];
@@ -555,7 +752,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   const CSS = fs.readFileSync(path.join(ROOT, 'site/static/style.css'), 'utf8');
   ok(/body\s*\{\s*text-transform:\s*lowercase/.test(CSS), 'the site is lowercase as a house style');
   const exempt = (/\.src,[\s\S]*?\{\s*text-transform:\s*none;?\s*\}/.exec(CSS) || [''])[0];
-  for (const sel of ['.src', '.water', '.list li', '.card h2', '.leaflet-tooltip .head', '.about-body code']) {
+  for (const sel of ['.src', '.water', '.list li', '.card h2', '.mapboxgl-popup .head', '.about-body code']) {
     ok(exempt.includes(sel), 'keeps its own case: ' + sel);
   }
   ok(/\.bar h1\s*\{\s*text-transform:\s*lowercase/.test(CSS),
@@ -630,7 +827,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(probe.t('footer.generated', { when: 'w', area: 'a', day: 'd', n: 2, sources: 's' }).includes('· 2 praias ·'),
     'the real catalog pluralises footer.generated');
   // Lowercase house style in the catalogs; these are names marola did not choose.
-  const CASE_OK = ['°C', 'UV', 'km/h', 'mL', 'PRÓPRIA', 'IMPRÓPRIA', 'GitHub', 'Open-Meteo', 'IMA/SC', 'OpenStreetMap'];
+  const CASE_OK = ['°C', 'UV', 'km/h', 'mL', 'PRÓPRIA', 'IMPRÓPRIA', 'GitHub', 'Open-Meteo', 'IMA/SC', 'OpenStreetMap', 'Mapbox', 'NASA', 'VIIRS', 'MUR', 'El Niño', 'La Niña', 'Niño'];
   for (const [lang, cat] of Object.entries(CATALOGS)) {
     const shouty = Object.entries(cat).filter(([k, v]) => {
       if (/^dir\./.test(k)) return !/^[A-Z]{1,2}$/.test(v); // compass abbreviations, shown uppercase
@@ -641,9 +838,9 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   }
 
   // --- MIP-0054 task 2: every string app.js builds goes through t() ----------------------------------
-  const waveOf = (r, name) => r.L.created.find(l => l.added && isWave(l) && String(l.tooltip).includes(name));
-  const tipOf = (r, name) => plain((waveOf(r, name) || {}).tooltip || '');
-  const openCard = (r, name) => { const m = waveOf(r, name); if (m) m.handlers.click({}); return plain(r.els.card.innerHTML); };
+  const waveOf = (r, name) => wavesOf(r).find(l => tipOf(l).includes(name));
+  const tipNamed = (r, name) => plain(tipOf(waveOf(r, name)));
+  const openCard = (r, name) => { const m = waveOf(r, name); if (m) click(m); return plain(r.els.card.innerHTML); };
   const slide = (r, i) => { r.els.hour.value = String(i); r.els.hour.listeners.input[0](); };
   const deny = { getCurrentPosition(_ok, no) { no({ code: 1 }); } };
 
@@ -651,7 +848,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   const pt = await runPage(BOARD, { storeThrows: true, geolocation: deny });
   ok(pt.errors.length === 0 && pt.api.lang() === 'pt-BR', 'default run (no ?lang=, no languages, localStorage throws) resolves pt-BR', pt.errors.join(' | '));
   ok(pt.els['hour-label'].textContent === 'melhor horário de cada praia', 'pt-BR: hour-label reads "melhor horário de cada praia"', pt.els['hour-label'].textContent);
-  const ptTip = tipOf(pt, 'Praia da Joaquina');
+  const ptTip = tipNamed(pt, 'Praia da Joaquina');
   [['55/100 às 10:00', 'head'], ['[wind] brisa, 27 km/h <abbr class="dir">S</abbr>', 'wind band, km/h, direction'],
    ['[thermometer] água 19,0 °C', 'water temperature with a decimal comma'], ['[waves] ondas 1,3 m a cada 6 s', 'waves + period'],
    ['[jellyfish] água-viva: baixa', 'jellyfish through lvl.*'], ['[fish] baleias: baixa (melhor às 07:00)', 'whales through lvl.*'],
@@ -660,7 +857,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
     .forEach(([needle, label]) => ok(ptTip.includes(needle), 'pt-BR tooltip: ' + label + ' → "' + needle + '"', ptTip));
   ok((ptTip.match(/<span/g) || []).length === 7, 'pt-BR tooltip: the same seven cells', ptTip);
   const ptWave = waveOf(pt, 'Praia da Joaquina');
-  ok(/27\u00a0km\/h/.test(ptWave.tooltip) && /6\u00a0s/.test(ptWave.tooltip),
+  ok(/27\u00a0km\/h/.test(tipOf(ptWave)) && /6\u00a0s/.test(tipOf(ptWave)),
     'a number and its unit are joined by a no-break space, so a wrapping cell never strands the unit');
   ok(/<button type="button" data-day="2026-09-06"[^>]*>hoje <small>09-06<\/small><\/button>/.test(pt.els.days.innerHTML),
     'pt-BR: the first day button reads "hoje"', pt.els.days.innerHTML);
@@ -668,7 +865,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
     'pt-BR: the footer status line', pt.els.footer.innerHTML);
   ok(/<span class="score c40">55<\/span>Praia da Joaquina <span class="dist">10:00<\/span>/.test(pt.els.list.innerHTML) &&
     /<span class="score c0">0<\/span>/.test(pt.els.list.innerHTML), 'pt-BR: list rows and band classes as before', pt.els.list.innerHTML);
-  ok(ptWave && ptWave.opts.icon.options.html.includes('fill="#e0a800" stroke="#fff"'), 'pt-BR: the same dot, the same 40-69 fill');
+  ok(ptWave && ptWave.element.innerHTML.includes('fill="#e0a800" stroke="#fff"'), 'pt-BR: the same dot, the same 40-69 fill');
   const ptCard = openCard(pt, 'Praia da Joaquina');
   [['<button class="close" type="button" aria-label="fechar">', 'close button name'],
    ['<span class="score c40">55/100</span> melhor às <b>10:00</b></p>', 'headline'],
@@ -705,12 +902,12 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(/class="on"[^>]*>today <small>/.test(flip.els.days.innerHTML), 'flip to en: renderDays relabels the day buttons, the picked one still on', flip.els.days.innerHTML);
   ok(flip.els.list.innerHTML.includes('Praia Brava <span class="dist">dark</span>'), 'flip to en: the list', flip.els.list.innerHTML);
   ok(flip.els.card.innerHTML.includes('<dt>why</dt>') && flip.els.card.innerHTML.includes('at <b>07:00</b> (best 10:00, 55)'), 'flip to en: the open card', flip.els.card.innerHTML.slice(0, 400));
-  ok(tipOf(flip, 'Praia da Joaquina').includes('[jellyfish] jellyfish low'), "flip to en: the markers' tooltips");
+  ok(tipNamed(flip, 'Praia da Joaquina').includes('[jellyfish] jellyfish low'), "flip to en: the markers' tooltips");
   ok(flip.els.footer.innerHTML.includes('· 2 beaches · data:'), 'flip to en: the footer');
   flip.api.setLang('pt-BR');
   ok(flip.els['hour-label'].textContent === 'às 07:00' && flip.els.list.innerHTML.includes('Praia Brava <span class="dist">à noite</span>') &&
     flip.els.card.innerHTML.includes('<dt>por quê</dt>'), 'flip back to pt-BR: label, list and card');
-  ok(flip.L.created.filter(l => l.added && l.kind === 'circleMarker' && String(l.tooltip).includes('Ponto 33')).length === 1,
+  ok(flip.M.created.filter(l => isPoint(l) && tipOf(l).includes('Ponto 33')).length === 1,
     'two flips leave one water-point marker, not three');
 
   // 7. note codes (task 3's table): rendered per language when present, `notes` verbatim otherwise.
@@ -748,7 +945,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   const whyItems = html => ((/<dt>(?:why|por quê)<\/dt><dd><ul>(.*?)<\/ul><\/dd>/.exec(html) || [])[1] || '').split('</li>').filter(Boolean).map(x => x.replace('<li>', ''));
   for (const [lang, col] of [['en', 2], ['pt-BR', 3]]) {
     const r = await runPage(coded, { search: '?lang=' + lang });
-    ok(r.errors.length === 0 && r.L.created.filter(l => l.added && isWave(l)).length === coded.beaches.length,
+    ok(r.errors.length === 0 && wavesOf(r).length === coded.beaches.length,
       lang + ': a schema-2 board with note_codes loads', r.errors.join(' | '));
     const got = whyItems(openCard(r, 'Praia da Joaquina'));
     CASES.forEach((c, i) => ok(got[i] === c[col], lang + ': note.' + c[0] + ' → "' + c[col] + '"', got[i]));
@@ -759,7 +956,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   const future = structuredClone(BOARD); future.schema = 3;
   const r7 = await runPage(future, { search: '?lang=en' });
   ok(r7.els.status.textContent === 'could not load the board: board schema 3, this page understands 1, 2' &&
-    r7.L.created.filter(l => l.added && isWave(l)).length === 0, 'a schema-3 board is refused, in words', r7.els.status.textContent);
+    wavesOf(r7).length === 0, 'a schema-3 board is refused, in words', r7.els.status.textContent);
   const r8 = await runPage(BOARD, { noBoard: true });
   ok(r8.els.status.textContent === 'não foi possível carregar os dados das praias: 404 data/fixture/2026-09-06.json. você rodou `just site-build` antes?',
     'pt-BR: a missing board file says so, with the build hint', r8.els.status.textContent);
@@ -804,10 +1001,11 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   const seen = [];
   const grab = where => {
     [['hour label', px.els['hour-label'].textContent], ['days', px.els.days.innerHTML], ['list', px.els.list.innerHTML], ['footer', px.els.footer.innerHTML]]
-      .concat(px.L.created.filter(l => l.added && l.tooltip).map(l => ['tooltip', String(l.tooltip)]))
+      .concat(px.M.created.filter(l => l.kind === 'marker' && l.added).map(l => ['tooltip', tipOf(l)]))
+      .concat(trailsOf(px).map(f => ['trail', f.properties.tip]))
       .forEach(([what, html]) => seen.push([where + ', ' + what, html]));
     pz.beaches.forEach(b => seen.push([where + ', card of ' + b.name, openCard(px, b.name)]));
-    px.L.created.filter(l => l.added && l.kind === 'circleMarker' && l.tooltip).forEach(l => seen.push([where + ', water point', String(l.tooltip)]));
+    px.M.created.filter(isPoint).forEach(l => seen.push([where + ', water point', tipOf(l)]));
   };
   grab('best hours');
   slide(px, 0); grab('07:00');

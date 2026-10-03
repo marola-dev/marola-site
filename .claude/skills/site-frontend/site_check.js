@@ -7,10 +7,11 @@ function El(id) {
   return { id, innerHTML: '', textContent: '', hidden: false, value: '', max: 0, children: [], dataset: {}, _cls: new Set(),
     classList: { toggle(c, on) { on ? this._s.add(c) : this._s.delete(c); }, _s: new Set() },
     addEventListener() {}, setAttribute() {}, getAttribute() { return null; },
-    querySelector() { return { addEventListener() {} }; } };
+    querySelector() { return { addEventListener() {} }; }, querySelectorAll() { return []; } };
 }
 const els = {};
 global.document = {
+  createElement() { return El('div'); },
   getElementById(id) { return els[id] || (els[id] = El(id)); },
   querySelectorAll() { return []; }, documentElement: {}, addEventListener() {}
 };
@@ -19,27 +20,32 @@ global.location = { search: '', href: 'http://localhost/' };
 global.history = { replaceState() {} };
 global.navigator = {};
 global.URLSearchParams = URLSearchParams; global.URL = URL;
-const layer = () => ({ addTo() { return this; }, bindTooltip() { return this; }, on() { return this; } });
-const calls = { markers: [], setView: [] };
-global.L = {
-  map: () => ({ on() {}, removeLayer() {}, setView(c, z) { calls.setView.push([c, z]); }, fitBounds() {}, panTo() {} }),
-  tileLayer: () => layer(),
-  circleMarker: (ll, opts) => { calls.markers.push({ ll, opts }); return layer(); },
-  DomEvent: { stopPropagation() {} }
-};
+const calls = { markers: [] };
+// a Mapbox GL just big enough: DOM markers are recorded by their element's class
+class Popup { setLngLat() { return this; } setHTML() { return this; } addTo() { return this; } remove() { return this; } }
+class Marker {
+  constructor(o) { calls.markers.push(o.element); }
+  setLngLat() { return this; } addTo() { return this; } remove() { return this; }
+}
+class MapStub {
+  constructor() { this.touchZoomRotate = { disableRotation() {} }; }
+  on() { return this; } addControl() {} jumpTo() {} fitBounds() {} panTo() {} resize() {}
+  getStyle() { return { layers: [] }; } addSource() {} getSource() { return { setData() {} }; } addLayer() {}
+}
+global.mapboxgl = { Map: MapStub, Marker, Popup, NavigationControl: function () {} };
+global.MAROLA_MAPBOX = { token: 'pk.local-check' };
 global.fetch = async (p) => {
   const f = path.join(dist, p);
   if (!fs.existsSync(f)) return { ok: false, status: 404 };
   return { ok: true, status: 200, json: async () => JSON.parse(fs.readFileSync(f, 'utf8')) };
 };
 global.window = global;
-for (const f of ['i18n.js', 'ui.js', 'app.js']) require(path.join(process.cwd(), 'site/static', f));
+for (const f of ['i18n.js', 'ui.js', 'flow.js', 'app.js']) require(path.join(process.cwd(), 'site/static', f));
 process.on('unhandledRejection', (e) => { console.error('app.js rejected:', e); process.exit(1); });
 setTimeout(() => {
   const smoke = els.smoke || {}, footer = els.footer || {}, list = els.list || {};
-  const dashed = calls.markers.filter(m => m.opts.dashArray);
-  const beaches = calls.markers.length - dashed.length;
-  console.log('beach markers:', beaches, '| run marker:', dashed.length);
+  const beaches = calls.markers.filter(m => /\bwave\b/.test(m.className)).length;
+  console.log('beach markers:', beaches);
   console.log('list rows:', (list.innerHTML || '').split('<li').length - 1);
   console.log('footer:', (footer.innerHTML || '').replace(/<[^>]+>/g, '').slice(0, 140));
   if (smoke.innerHTML) console.log('smoke panel:', smoke.hidden ? 'hidden' : smoke.innerHTML.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').slice(0, 220));

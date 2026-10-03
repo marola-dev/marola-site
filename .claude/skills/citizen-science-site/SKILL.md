@@ -20,7 +20,7 @@ reads); this skill is about what must be on the page.
 | Freshness | footer "atualizado em", card sample dates, "laudo antigo" note | Show when the data was computed and when a sample was taken; flag stale data in words |
 | Method | about "como funciona a pontuação", docs.marola.dev | One click from the map to how the score is made |
 | Limits | legend "sem dados", note codes, about | Say what is missing or estimated; never fill a gap silently |
-| Privacy | footer, about "privacidade" | "sem cookies e sem rastreamento" stays visible; location never leaves the browser |
+| Privacy | footer, about "privacidade" | "sem cookies e sem rastreamento próprio" stays visible, and about names what Mapbox, the base map, receives; location never leaves the browser |
 | Open code and docs | nav "docs", GitHub pill, footer link | Repo and docs reachable from every page |
 | Money | support page, `Cost:` trailers | Costs and donations are public and checkable |
 | Contribute | docs, GitHub | A visitor can find the issue tracker and the docs from the page they are on |
@@ -32,8 +32,8 @@ reads); this skill is about what must be on the page.
   point and date.
 - **Safety first, plainly.** Unfit water is red with the reason; an emergency or safety note is
   never softened or hidden behind a hover.
-- **No dark patterns**: no cookie banner tricks, no tracking pixels, no third-party requests, no
-  sign-up walls.
+- **No dark patterns**: no cookie banner tricks, no tracking pixels, no sign-up walls, and no
+  third-party request beyond Mapbox's base map and NASA GIBS's satellite layers (which about's privacy section names).
 - **"Em breve" is honest.** Unbuilt sections are muted text, not dead links.
 - **Accessible by default**: contrast ≥ 4.5:1, every control has a name, icons are
   `aria-hidden` with a word next to them, the page works at 390 px.
