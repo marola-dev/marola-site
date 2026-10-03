@@ -33,7 +33,10 @@ boards (MIP-0005), with no server, no LLM and no per-visitor cost.
   forwarder), `board-schema.sh` (the image pin and its schema), `stamp_site_version.sh`,
   `site_live_check.py` (what marola.dev actually serves), `site-data-push.sh` (the retrying push
   every `site-data` writer uses), `mip-trailer-check.sh`.
-- `.claude/skills/site-frontend/`: this repo's own skill for anything a visitor sees.
+- `DESIGN.md`: the visual style reference (the Co2 editorial style); its fonts' substitutes,
+  Cormorant Garamond and Inter, are self-hosted in `site/static/vendor/fonts/`.
+- `.claude/skills/site-frontend/`: this repo's own skill for anything a visitor sees;
+  `.claude/skills/design-system/` applies `DESIGN.md` to it.
 
 ## What it consumes and produces
 
@@ -90,6 +93,6 @@ The phase list is the umbrella's `docs/PHASES.md`. Site work serves the current 
 ## Code style
 
 Plain JavaScript, no framework and no build step; the page makes no third-party requests and keeps
-`script-src 'self'`. A visible change goes through the `site-frontend` skill, `node scripts/site_check.js`
+`script-src 'self'`. A visible change goes through the `site-frontend` and `design-system` skills, `node scripts/site_check.js`
 and before/after screenshots. Shell: `set -euo pipefail`, shellcheck-clean. Python: ruff. Comments
 only for why, a trap, or a pointer, as the umbrella's AGENTS.md spells out.
