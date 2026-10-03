@@ -74,6 +74,7 @@
   "flow.label": "accessible name of the layer rail on the right of the map (wind, waves, bathing water)",
   "flow.proper": "water-layer key: a sampling point classified fit for bathing (PRÓPRIA)",
   "flow.sst": "layer rail button: satellite sea surface temperature, NASA GIBS (GHRSST MUR)",
+  "flow.trails": "layer rail toggle: shows or hides the hiking trails near the coast (from the board, MIP-0030)",
   "flow.warm": "right end of the sea temperature ramp",
   "flow.warmer": "right end of the anomaly ramp: warmer than usual",
   "flow.water": "layer rail button: every official water-sampling point in the area, coloured by its latest fit/unfit classification",

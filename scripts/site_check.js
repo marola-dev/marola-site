@@ -117,7 +117,7 @@ const IDS = ['area', 'days', 'near', 'sound', 'toggle-list', 'hourbar', 'hour', 
 const LAYER_KEYS = ['wind', 'waves', 'water', 'clouds', 'sst', 'anomaly', 'elnino'];
 function flowPanel(flow, keys) {
   flow.found['button[data-layer]'] = LAYER_KEYS.map(k => Object.assign(new El('flow-' + k), { dataset: { layer: k } }));
-  flow.found['button[data-toggle]'] = [Object.assign(new El('flow-beaches'), { dataset: { toggle: 'beaches' } })];
+  flow.found['button[data-toggle]'] = ['beaches', 'trails'].map(k => Object.assign(new El('flow-' + k), { dataset: { toggle: k } }));
   keys.found['[data-when]'] = ['clouds', 'sst', 'anomaly'].map(k => Object.assign(new El('when-' + k), { dataset: { when: k } }));
   keys.found['[data-key]'] = LAYER_KEYS.map(k => Object.assign(new El('key-' + k), { dataset: { key: k } }));
 }
@@ -604,6 +604,12 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(first.els.map.classList.contains('no-beaches') && toggle.attrs['aria-pressed'] === 'false', 'the beaches toggle hides the beach dots');
   first.els.flow.fire('click', { target: Object.assign(toggle, { closest() { return this; } }) });
   ok(!first.els.map.classList.contains('no-beaches') && toggle.attrs['aria-pressed'] === 'true', 'and shows them again');
+  const trailsBtn = first.els.flow.found['button[data-toggle]'][1];
+  first.els.flow.fire('click', { target: Object.assign(trailsBtn, { closest() { return this; } }) });
+  ok(fmap.getLayer('trails').layout.visibility === 'none' && trailsBtn.attrs['aria-pressed'] === 'false' && toggle.attrs['aria-pressed'] === 'true',
+    'the trails toggle hides the coastal trails layer, leaving the beaches toggle alone');
+  first.els.flow.fire('click', { target: Object.assign(trailsBtn, { closest() { return this; } }) });
+  ok(fmap.getLayer('trails').layout.visibility === 'visible', 'and shows it again');
   const layered = await runPage(BOARD, { search: '?layer=waves' });
   ok(layered.map.layers.find(l => l.layer.id === 'marola-flow').layer.kind() === 'waves', '?layer=waves opens on the waves layer');
   const watered = await runPage(BOARD, { search: '?layer=water' });

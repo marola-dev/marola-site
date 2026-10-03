@@ -85,10 +85,10 @@ from a CDN. Inter is the deliberate pick for a public-information, accessibility
 - **Close buttons**: the control as a borderless 32 px square in `--muted`.
 - **Beach marker**: a 16 px dot in its score colour, 2 px white ring, `#1d2733` rim; the selected
   beach is a 32 px badge with its score. No glyphs, halos or shadows. The legend draws the same dot.
-- **Map**: Mapbox GL JS on the `dark-v11` style (or `MAPBOX_STYLE`), zoom buttons top right, no
+- **Map**: Mapbox GL JS on the `dark-v11` style (or `MAPBOX_STYLE`), zoom buttons top left (the layer rail takes the right), no
   rotation or pitch. Popups take the panel shape, without the arrow.
-- **Layer rail** (`.flow`): Windy-style, right of the map under the zoom buttons, in dark glass.
-  A beaches toggle (praias) over a thin rule, then one round icon button per layer (vento, ondas,
+- **Layer rail** (`.flow`): Windy-style, top right of the map, in dark glass; it scrolls on a map too short for it.
+  Two toggles (praias, trilhas perto da costa) over a thin rule, then one round icon button per layer (vento, ondas,
   balneabilidade, satélite, temperatura do mar, anomalias, El Niño), no text: the word is the
   button's title and its screen-reader label. The four satellite layers are NASA GIBS rasters
   under the labels; El Niño zooms out to the Pacific and draws the Niño 3.4 box. Batimetria sits last, disabled at 45% opacity, titled "em breve". The active one is in `--accent`; under them the

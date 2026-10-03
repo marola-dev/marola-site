@@ -27,7 +27,8 @@
     markers: {}, map: null, flow: null, ready: false,
     waterPointMarkers: [],
     layer: 'wind',      // the map layer: one of LAYERS
-    beaches: true       // the beach dots, a toggle over any layer
+    beaches: true,      // the beach dots and the coastal trails: toggles over any layer
+    trails: true
   };
   // site.yml writes mapbox-config.js from the repo's MAPBOX_PUBLIC_TOKEN at deploy (AGENTS.md).
   var MAPBOX = window.MAROLA_MAPBOX || {};
@@ -189,7 +190,7 @@
         state.map.touchZoomRotate.disableRotation();
         // the hour bar and footer fill in after the map is made and change #map's height
         if (window.ResizeObserver) new ResizeObserver(function () { state.map.resize(); }).observe(document.getElementById('map'));
-        state.map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
+        state.map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-left');
         state.map.on('click', function (e) {
           // a click on a marker reaches the map too
           if (e.originalEvent && e.originalEvent.target && e.originalEvent.target.closest && e.originalEvent.target.closest('.mapboxgl-marker')) return;
@@ -268,11 +269,12 @@
       b.setAttribute('aria-pressed', String(b.dataset.layer === state.layer));
     });
     Array.prototype.forEach.call(el.flow.querySelectorAll('button[data-toggle]'), function (b) {
-      b.setAttribute('aria-pressed', String(state.beaches));
+      b.setAttribute('aria-pressed', String(state[b.dataset.toggle]));
     });
     Array.prototype.forEach.call(el.keys.querySelectorAll('[data-key]'), function (k) { k.hidden = k.dataset.key !== state.layer; });
     el.map.classList.toggle('layer-water', state.layer === 'water');
     el.map.classList.toggle('no-beaches', !state.beaches);
+    if (state.map && state.ready && state.map.getLayer('trails')) state.map.setLayoutProperty('trails', 'visibility', state.trails ? 'visible' : 'none');
     renderRaster();
     if (!state.flow || !state.board) return;
     state.flow.setData(flowPoints());
@@ -687,7 +689,8 @@
   el.hour.addEventListener('input', function () { state.hourIndex = parseInt(el.hour.value, 10); render(); });
   el.flow.addEventListener('click', function (e) {
     var btn = e.target.closest('button'); if (!btn) return;
-    if (btn.dataset.toggle === 'beaches') { state.beaches = !state.beaches; setParam('beaches', state.beaches ? '1' : '0'); }
+    var t = btn.dataset.toggle;
+    if (t === 'beaches' || t === 'trails') { state[t] = !state[t]; setParam(t, state[t] ? '1' : '0'); }
     else if (btn.dataset.layer) { state.layer = btn.dataset.layer; setParam('layer', state.layer); }
     else return;
     renderFlow();
@@ -751,6 +754,7 @@
 
   if (LAYERS.indexOf(param('layer')) >= 0) state.layer = param('layer');
   if (param('beaches') === '0') state.beaches = false;
+  if (param('trails') === '0') state.trails = false;
 
   loadAreas().catch(fail);
 })();

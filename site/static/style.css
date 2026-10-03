@@ -142,14 +142,15 @@ button[aria-pressed="true"], button[aria-expanded="true"] {
 #map { position: absolute; inset: 0; background: var(--sea); }
 /* the open list would cover the layer panel */
 @media (min-width: 641px) {
-  /* the open card would cover the zoom buttons and the layer rail */
-  .main:has(.card:not([hidden])) .mapboxgl-ctrl-top-right,
+  /* the open card would cover the layer rail, and the open list the zoom buttons and the key */
   .main:has(.card:not([hidden])) .flow { right: calc(min(26rem, calc(100vw - 24px)) + 24px); }
   .main:has(.list:not([hidden])) .flowkeys { left: calc(min(22rem, 90vw) + 24px); }
+  .main:has(.list:not([hidden])) .mapboxgl-ctrl-top-left { left: calc(min(22rem, 90vw) + 12px); }
 }
 
-/* the layer rail and its key, Windy-style: right of the map, under the zoom buttons */
-.flow { position: absolute; z-index: 900; top: 84px; right: 12px; display: flex; flex-direction: column; align-items: flex-end;
+/* the layer rail, Windy-style: top right of the map; it scrolls if the map is too short for it.
+ * The padding keeps the buttons' shadows inside the scroll box. */
+.flow { position: absolute; z-index: 900; top: 12px; right: 12px; max-height: calc(100% - 24px); overflow-y: auto; scrollbar-width: none; padding: 2px 6px 8px; margin: -2px -6px 0 0; display: flex; flex-direction: column; align-items: flex-end;
   gap: 8px; font-size: 12px; color: var(--glass-muted); }
 .flow .layers { display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .flow .layers .sep { width: 20px; height: 1px; margin: 2px 0; background: var(--glass-line); }
@@ -353,7 +354,7 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   .hourbar label { min-width: 0; flex: none; }
   .hourbar input[type=range] { flex: 1 1 0; min-width: 6rem; max-width: none; }
   .legend { margin-left: 0; gap: 4px 12px; }
-  .flow { top: 80px; right: 8px; gap: 6px; }
+  .flow { top: 8px; right: 8px; gap: 6px; }
   .flow .layers { gap: 4px; }
   .flow .layers button { width: 32px; min-height: 32px; }
   .flow .layers button .ic { width: 16px; height: 16px; }
