@@ -4,15 +4,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title data-i18n="title.map">marola: condições do mar em cada praia</title>
-  <meta name="description" content="Todas as praias da região ordenadas pelas condições de hoje e de amanhã: mar, vento, ondas, maré, qualidade da água e águas-vivas. Dados abertos, sem cookies e sem rastreamento.">
+  <meta name="description" content="Todas as praias da região ordenadas pelas condições de hoje e de amanhã: mar, vento, ondas, maré, qualidade da água e águas-vivas. Dados abertos e sem cookies.">
   <meta name="theme-color" content="#ffffff">
-  <!-- img-src https: is the map tiles (site/areas.json); connect-src https: is the chat tunnel
-       URL in chatbot-config.js. Scripts stay same-origin (MIP-0033 §5.2). -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https:; connect-src 'self' https:; object-src 'none'">
+  <!-- Scripts stay same-origin (MIP-0033 §5.2): Mapbox GL is vendored, and its CSP build loads its
+       worker from vendor/, not a blob:. connect-src https: is Mapbox (api.mapbox.com for the style,
+       tiles, fonts and sprites; events.mapbox.com for the map-load count it bills by) and the chat
+       tunnel URL in chatbot-config.js; img-src data: blob: is how Mapbox GL decodes its images. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob: https:; connect-src 'self' https:; worker-src 'self'; object-src 'none'">
   <!-- impact.com's site-ownership check reads this tag verbatim, non-standard `value` attribute included. -->
   <meta name='impact-site-verification' value='01172e56-c6f9-4720-ac79-04d3a5b40fef'>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="vendor/leaflet.css">
+  <link rel="stylesheet" href="vendor/mapbox-gl.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -61,6 +63,16 @@
 
   <main class="main">
     <div id="map" role="application" aria-label="mapa das praias" data-i18n-aria-label="map.label"></div>
+    <div id="flow" class="flow" role="group" aria-label="camada do mapa" data-i18n-aria-label="flow.label">
+      <div class="segmented">
+        <button type="button" data-layer="wind" aria-pressed="true" data-i18n="flow.wind">vento</button>
+        <button type="button" data-layer="waves" aria-pressed="false" data-i18n="flow.waves">ondas</button>
+        <button type="button" data-layer="off" aria-pressed="false" data-i18n="flow.off">nenhuma</button>
+      </div>
+      <p class="flowkey" data-key="wind"><span class="ramp wind" aria-hidden="true"></span><span class="ends"><span>0</span><span>40 km/h</span></span><span data-i18n="flow.key_wind">vento estimado entre as praias</span></p>
+      <p class="flowkey" data-key="waves" hidden><span class="ramp waves" aria-hidden="true"></span><span class="ends"><span>0</span><span>3 m</span></span><span data-i18n="flow.key_waves">ondas estimadas entre as praias</span></p>
+    </div>
+    <p id="map-note" class="map-note" hidden aria-live="polite"></p>
     <aside id="list" class="list" hidden></aside>
     <section id="card" class="card" hidden aria-live="polite"></section>
   </main>
@@ -86,7 +98,9 @@
   <noscript><p class="nojs"><span data-i18n="noscript">esta página precisa de javascript para mostrar os dados. os arquivos brutos estão em</span> <a href="data/">data/</a>.</p></noscript>
   <script src="i18n.js"></script>
   <script src="ui.js"></script>
-  <script src="vendor/leaflet.js"></script>
+  <script src="vendor/mapbox-gl-csp.js"></script>
+  <script src="mapbox-config.js"></script>
+  <script src="flow.js"></script>
   <script src="app.js"></script>
   <script src="chatbot-config.js"></script>
   <script src="chat.js"></script>

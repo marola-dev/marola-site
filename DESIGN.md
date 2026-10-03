@@ -29,12 +29,15 @@ as defaults to avoid.
 | `--surface` | `#f3f5f7` | utility strip, footer, hover, segmented tracks, chat answers |
 | `--line` | `#e1e5ea` | dividers, panel borders |
 | `--line-strong` | `#cbd2da` | control borders |
-| `--sea` | `#e6ecf1` | the map before tiles load |
+| `--sea` | `#1c2530` | the map before the dark base map loads |
 | `--accent` | `#1b5fc1` | links, primary action fill, focus ring, slider, the "you" marker |
 | `--accent-hover` | `#164e9e` | hover on accent |
 | `--accent-soft` | `#e9f0fb` | pressed toggles, the visitor's chat messages |
 | `--c70 … --cna` | score colours | data only: dots, chips, legend. A change needs a MIP note |
+| `--flow-wind-0 … 3` | `#1e2a55` → `#e6f4fb` | the wind field, calm to 40 km/h (`flow.js`, the key's ramp) |
+| `--flow-wave-0 … 3` | `#2a1d5a` → `#efe6ff` | the wave field, flat to 3 m |
 
+The flow ramps are data too, and stay cool (blue, violet) so a field never reads as a score.
 No other hex in a rule. The marker rim (`#1d2733`) and the score colours live in `app.js`'s SVG,
 where CSS variables do not reach.
 
@@ -78,6 +81,11 @@ from a CDN. Inter is the deliberate pick for a public-information, accessibility
 - **Close buttons**: the control as a borderless 32 px square in `--muted`.
 - **Beach marker**: a 16 px dot in its score colour, 2 px white ring, `#1d2733` rim; the selected
   beach is a 32 px badge with its score. No glyphs, halos or shadows. The legend draws the same dot.
+- **Map**: Mapbox GL JS on the `dark-v11` style (or `MAPBOX_STYLE`), zoom buttons top right, no
+  rotation or pitch. Popups take the panel shape, without the arrow.
+- **Flow panel** (`.flow`): floats top left of the map. A segmented control (vento, ondas,
+  nenhuma) over the active ramp, its 0 and max, and the line saying it is estimated between
+  beaches. White particles over a field at 55% opacity, fading out 18 km past the last beach.
 - **Icons**: Lucide line icons through `icon(name)` in `app.js` (ISC, `vendor/icons/LICENSE.lucide`),
   16 px, 1.75 stroke, in `--accent`; `aria-hidden` with the word next to it. Never emoji.
 
@@ -89,8 +97,11 @@ colon, a semicolon, a comma or a period. At most one `·` per line, and only in 
 ## Motion
 
 Only state changes: colour and border 150 ms ease-out, the press 100 ms, all inside
-`prefers-reduced-motion: no-preference`. No entrance animations.
+`prefers-reduced-motion: no-preference`. No entrance animations. The one ambient motion is the
+flow layer's particles, which are data (direction and speed); under `prefers-reduced-motion:
+reduce` they are drawn once as still streaks.
 
 ## Not yet
 
-Dark mode waits for a dark map tile source; tiles are a third-party choice in `areas.json`.
+A dark theme for the page chrome. The base map is already dark (Mapbox `dark-v11`), so it is a
+chrome-only change now, and it waits for its own design pass.

@@ -14,6 +14,7 @@ on:
       - "marola-image"
       - "scripts/board-schema.sh"
       - "scripts/stamp_site_version.sh"
+      - "scripts/mapbox_config.sh"
       - ".github/workflows/site.yml"
   # The app's CI and docker-smoke.yml push coverage/ and smoke/ to site-data, the umbrella pushes
   # stats/, then each sends this so the panels refresh without waiting for the schedule.
@@ -74,6 +75,7 @@ jobs:
         run: |
           scripts/board-schema.sh --extract "$RUNNER_TEMP/board.schema.json"
           node --check site/static/app.js
+          node --check site/static/flow.js
           BOARD_SCHEMA="$RUNNER_TEMP/board.schema.json" node scripts/site_check.js
 
       # `--site` with no id builds every area; the water-quality provider is picked per area origin
@@ -101,6 +103,15 @@ jobs:
       # SiteBuilder writes board data only (MIP-0070 §5.4).
       - name: Copy the static page into dist
         run: cp -r site/static/. site/dist/
+
+      # The base map is Mapbox's. Its token is public by design (it ships to every visitor), so it
+      # is a pk. token restricted to marola.dev's URLs in the Mapbox account; the script refuses an
+      # sk. one. A repo variable is enough; a secret of the same name wins if both exist.
+      - name: Mapbox token and style into mapbox-config.js
+        env:
+          MAPBOX_PUBLIC_TOKEN: ${{ secrets.MAPBOX_PUBLIC_TOKEN || vars.MAPBOX_PUBLIC_TOKEN }}
+          MAPBOX_STYLE: ${{ vars.MAPBOX_STYLE }}
+        run: scripts/mapbox_config.sh site/dist
 
       # fix/site-smoke-panel-null: stamp index.html's app.js/style.css tags with `?v=<sha>` so
       # Pages' CDN (each file cached independently, `cache-control: max-age=600` per file) can never
@@ -138,7 +149,8 @@ jobs:
         run: |
           cd site/dist
           missing=0
-          for f in index.html 404.html app.js ui.js i18n.js style.css vendor/leaflet.js data/areas.json \
+          for f in index.html 404.html app.js ui.js i18n.js style.css flow.js mapbox-config.js \
+                   vendor/mapbox-gl-csp.js vendor/mapbox-gl-csp-worker.js vendor/mapbox-gl.css data/areas.json \
                    $(python3 -c 'import json; [print("data/%s/latest.json" % a["id"]) for a in json.load(open("../areas.json"))]'); do
             if [ ! -f "$f" ]; then echo "missing: $f"; missing=1; fi
           done
@@ -150,11 +162,11 @@ jobs:
         run: echo "marola.dev" > site/dist/CNAME
 
       # Only the map is public.
-      - name: Publish allowlist — index.html, 404.html, about.html, support.html, favicon.svg, app.js, ui.js, i18n.js, style.css, chat.js, chatbot-config.js, CNAME, vendor/, data/, smoke/, coverage/, stats/ and nothing else
+      - name: Publish allowlist — index.html, 404.html, about.html, support.html, favicon.svg, app.js, ui.js, i18n.js, style.css, flow.js, mapbox-config.js, chat.js, chatbot-config.js, CNAME, vendor/, data/, smoke/, coverage/, stats/ and nothing else
         run: |
           cd site/dist
           rm -f .gitkeep
-          unexpected="$(find . -mindepth 1 \( -path ./data -o -path ./smoke -o -path ./coverage -o -path ./stats -o -path ./vendor \) -prune -o -type f ! -name index.html ! -name 404.html ! -name about.html ! -name support.html ! -name favicon.svg ! -name app.js ! -name ui.js ! -name i18n.js ! -name style.css ! -name chat.js ! -name chatbot-config.js ! -name CNAME -print)"
+          unexpected="$(find . -mindepth 1 \( -path ./data -o -path ./smoke -o -path ./coverage -o -path ./stats -o -path ./vendor \) -prune -o -type f ! -name index.html ! -name 404.html ! -name about.html ! -name support.html ! -name favicon.svg ! -name app.js ! -name ui.js ! -name i18n.js ! -name style.css ! -name flow.js ! -name mapbox-config.js ! -name chat.js ! -name chatbot-config.js ! -name CNAME -print)"
           if [ -n "$unexpected" ]; then
             echo "files in site/dist that are not on the publish allowlist:"; echo "$unexpected"; exit 1
           fi

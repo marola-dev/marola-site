@@ -20,16 +20,19 @@ Non-negotiable in every marola repo; a repo may make these stricter, never loose
 ## What this repo is
 
 The map at [marola.dev](https://marola.dev): a static page that shows every area's precomputed
-boards (MIP-0005), with no server, no LLM and no per-visitor cost.
+boards (MIP-0005), with no server and no LLM, over a Mapbox base map (free up to Mapbox's monthly
+map-load tier, billed above it).
 
 - `site/static/`: the page (`index.html`, `about.html`, `support.html` behind Donate, `app.js`,
-  `ui.js`, `style.css`, the chat widget, vendored Leaflet, Inter and the wave loop under `vendor/`) and `404.html`, which forwards the old
-  `marola.dev/docs/*` links to `docs.marola.dev`.
+  `ui.js`, `style.css`, `flow.js` (the WebGL wind and wave layer), `mapbox-config.js`, the chat
+  widget, vendored Mapbox GL JS (its CSP build), Inter and the wave loop under `vendor/`) and
+  `404.html`, which forwards the old `marola.dev/docs/*` links to `docs.marola.dev`.
 - `site/i18n/`: the pt-BR and English catalogs (MIP-0054). `scripts/i18n_bundle.py` checks them
   and writes `site/static/i18n.js`; edit the catalogs, never `i18n.js`.
 - `site/areas.json`: the areas the boards are built for. `site/fixtures/board.json`: the board the
   harness renders. `site/board.schema.json`: the board contract, vendored from the pinned image.
-- `scripts/`: `site_check.js` (app.js in a stub DOM and Leaflet), `redirect_check.js` (the 404
+- `scripts/`: `site_check.js` (app.js and flow.js in a stub DOM and Mapbox GL), `mapbox_config.sh`
+  (the public Mapbox token into `mapbox-config.js` at deploy), `redirect_check.js` (the 404
   forwarder), `board-schema.sh` (the image pin and its schema), `stamp_site_version.sh`,
   `site_live_check.py` (what marola.dev actually serves), `site-data-push.sh` (the retrying push
   every `site-data` writer uses), `mip-trailer-check.sh`.
@@ -40,8 +43,8 @@ boards (MIP-0005), with no server, no LLM and no per-visitor cost.
   natural, `citizen-science-site/` keeps sources, freshness, limits and the way to contribute on
   the page; `frontend-design/`, `webapp-testing/` (anthropics/skills), `design-taste-frontend/`
   (Leonxlnx/taste-skill), `emil-design-eng/`, `review-animations/` and `break-ui/`
-  (emilkowalski/skill) and `karpathy-guidelines/` (forrestchang/andrej-karpathy-skills) are
-  vendored unchanged with their licences.
+  (emilkowalski/skill), `karpathy-guidelines/` (forrestchang/andrej-karpathy-skills) and the eight
+  `mapbox-*/` skills (mapbox/mapbox-agent-skills) are vendored unchanged with their licences.
 - `.mcp.json`: the Playwright and Figma MCP servers (no keys; Figma signs in with OAuth).
 
 ## What it consumes and produces
@@ -81,6 +84,11 @@ The devkit's git hooks (`core.hooksPath .devkit/.githooks`, set by the dev shell
 As in the umbrella. `site.yml` deploys to GitHub Pages (free) on a schedule and on `main`; an agent
 does not trigger a deploy by hand (`just site-deploy` is denied in `.claude/settings.json`).
 
+The base map is Mapbox's, billed per map load above its free tier: the account, the token and
+any billing setting are a human's. The token is a public `pk.` token restricted to marola.dev's
+URLs, kept in the repo variable (or secret) `MAPBOX_PUBLIC_TOKEN` and written into
+`mapbox-config.js` only at deploy; never commit one, and never an `sk.` token anywhere in the page.
+
 ## Issue tracking (hard rule)
 
 An agent starts work only on an issue carrying `agent-ready`, in this repo (MIP-0070 §5.7).
@@ -98,7 +106,8 @@ The phase list is the umbrella's `docs/PHASES.md`. Site work serves the current 
 
 ## Code style
 
-Plain JavaScript, no framework and no build step; the page makes no third-party requests and keeps
-`script-src 'self'`. A visible change goes through the `site-frontend` skill (which names the others), `node scripts/site_check.js`
+Plain JavaScript, no framework and no build step; the page keeps `script-src 'self'`, and its one
+third-party origin is Mapbox for the base map (style, tiles, fonts, the map-load count). A visible
+change goes through the `site-frontend` skill (which names the others), `node scripts/site_check.js`
 and before/after screenshots. Shell: `set -euo pipefail`, shellcheck-clean. Python: ruff. Comments
 only for why, a trap, or a pointer, as the umbrella's AGENTS.md spells out.

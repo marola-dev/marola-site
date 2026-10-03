@@ -14,7 +14,8 @@
   var el = {
     area: $('area'), days: $('days'), near: $('near'), sound: $('sound'), toggleList: $('toggle-list'),
     hourbar: $('hourbar'), hour: $('hour'), hourLabel: $('hour-label'),
-    list: $('list'), card: $('card'), footer: $('footer'), status: $('status')
+    list: $('list'), card: $('card'), footer: $('footer'), status: $('status'),
+    flow: $('flow'), mapNote: $('map-note')
   };
 
   var state = {
@@ -23,9 +24,13 @@
     hourIndex: -1,      // -1 = each beach at its own best hour
     selected: null,     // beach name
     here: null,         // {lat, lon} after "near me"
-    markers: {}, trailLayers: [], tiles: null, map: null,
-    waterPointMarkers: []
+    markers: {}, map: null, flow: null, ready: false,
+    waterPointMarkers: [],
+    layer: 'wind'       // the flow layer: wind, waves or off
   };
+  // site.yml writes mapbox-config.js from the repo's MAPBOX_PUBLIC_TOKEN at deploy (AGENTS.md).
+  var MAPBOX = window.MAROLA_MAPBOX || {};
+  var DEFAULT_STYLE = 'mapbox://styles/mapbox/dark-v11';
 
   // --- helpers -------------------------------------------------------------------------------.
   var I = window.marolaI18n, t = I.t;
@@ -166,14 +171,98 @@
   }
 
   // --- map -----------------------------------------------------------------------------------.
+  // The Mapbox GL licence allows it only with a Mapbox account, so with no token there is no map,
+  // and the list carries the page (areas.json's `tiles` is the app's, not used here any more).
   function ensureMap(area) {
-    if (!state.map) {
-      state.map = L.map('map', { zoomControl: true, attributionControl: true });
-      state.map.on('click', function () { closeCard(); });
+    if (!state.map && !state.mapFailed) {
+      try {
+        if (!window.mapboxgl || !MAPBOX.token) throw new Error('no token');
+        mapboxgl.accessToken = MAPBOX.token;
+        // the CSP build: the worker is a same-origin file, not a blob: (script-src 'self')
+        mapboxgl.workerUrl = 'vendor/mapbox-gl-csp-worker.js';
+        state.map = new mapboxgl.Map({
+          container: 'map', style: MAPBOX.style || DEFAULT_STYLE, projection: 'mercator',
+          center: [area.lon, area.lat], zoom: 10, minZoom: 3, maxZoom: 17,
+          attributionControl: true, collectResourceTiming: false, pitchWithRotate: false, dragRotate: false
+        });
+        state.map.touchZoomRotate.disableRotation();
+        // the hour bar and footer fill in after the map is made and change #map's height
+        if (window.ResizeObserver) new ResizeObserver(function () { state.map.resize(); }).observe(document.getElementById('map'));
+        state.map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
+        state.map.on('click', function (e) {
+          // a click on a marker reaches the map too
+          if (e.originalEvent && e.originalEvent.target && e.originalEvent.target.closest && e.originalEvent.target.closest('.mapboxgl-marker')) return;
+          if (state.selected) closeCard();
+        });
+        state.map.on('error', function (e) { console.error(e && e.error ? e.error : e); });
+        state.map.on('load', function () {
+          state.ready = true;
+          addTrailLayer();
+          state.flow = window.marolaFlow.layer({ id: 'marola-flow', still: reducedMotion(), ramps: {
+            wind: [0, 1, 2, 3].map(function (i) { return getCss('--flow-wind-' + i); }),
+            waves: [0, 1, 2, 3].map(function (i) { return getCss('--flow-wave-' + i); })
+          } });
+          // under the labels, so place names stay readable over the particles
+          state.map.addLayer(state.flow, firstSymbolLayer());
+          if (state.board) { renderTrails(); renderFlow(); }
+        });
+      } catch (e) {
+        state.mapFailed = true;
+        mapNote(e.message === 'no token' ? 'map.no_token' : 'map.failed');
+        if (e.message !== 'no token') console.error(e);
+      }
     }
-    if (state.tiles) state.map.removeLayer(state.tiles);
-    state.tiles = L.tileLayer(area.tiles, { maxZoom: 18, attribution: esc(area.tiles_attribution || '') }).addTo(state.map);
-    state.map.setView([area.lat, area.lon], 11);
+    if (state.map) state.map.jumpTo({ center: [area.lon, area.lat], zoom: 10 });
+  }
+  function mapNote(key) {
+    state.mapNoteKey = key;
+    el.mapNote.textContent = t(key); el.mapNote.hidden = false;
+    el.flow.hidden = true;
+    el.list.hidden = false; el.toggleList.setAttribute('aria-expanded', 'true');
+  }
+  function reducedMotion() { return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); }
+  function firstSymbolLayer() {
+    var layers = (state.map.getStyle() || {}).layers || [];
+    for (var i = 0; i < layers.length; i++) if (layers[i].type === 'symbol') return layers[i].id;
+    return undefined;
+  }
+
+  /** A popup that shows while the pointer or keyboard focus is on el, like Leaflet's sticky tooltip did. */
+  function hoverTip(node, lngLat, html, cls, offset) {
+    var tip = new mapboxgl.Popup({ closeButton: false, closeOnClick: false, focusAfterOpen: false, className: cls || '',
+      offset: offset || 10, maxWidth: 'none' }).setLngLat(lngLat).setHTML(html);
+    var show = function () { tip.addTo(state.map); }, hide = function () { tip.remove(); };
+    node.addEventListener('mouseenter', show); node.addEventListener('mouseleave', hide);
+    node.addEventListener('focus', show); node.addEventListener('blur', hide);
+    return tip;
+  }
+  function domMarker(cls, html, label, lngLat) {
+    var node = document.createElement('div');
+    node.className = cls; node.innerHTML = html;
+    if (label) { node.setAttribute('role', 'button'); node.setAttribute('tabindex', '0'); node.setAttribute('aria-label', label); }
+    return { node: node, marker: new mapboxgl.Marker({ element: node, anchor: 'center' }).setLngLat(lngLat).addTo(state.map) };
+  }
+
+  // --- the flow layer (flow.js): wind and waves as particles, from the board's own readings ----.
+  /** One point per beach at the hour on show; directions are the board's (best hour) ones. */
+  function flowPoints() {
+    var wind = [], waves = [];
+    state.board.beaches.forEach(function (b) {
+      var e = hourEntry(b, shown(b));
+      if (!e) return;
+      wind.push({ lon: b.lon, lat: b.lat, mag: e.wind_kmh, dir: b.sea.wind_dir_deg });
+      waves.push({ lon: b.lon, lat: b.lat, mag: e.wave_m, dir: b.sea.wave_dir_deg });
+    });
+    return { wind: wind, waves: waves };
+  }
+  function renderFlow() {
+    Array.prototype.forEach.call(el.flow.querySelectorAll('button[data-layer]'), function (b) {
+      b.setAttribute('aria-pressed', String(b.dataset.layer === state.layer));
+    });
+    Array.prototype.forEach.call(el.flow.querySelectorAll('[data-key]'), function (k) { k.hidden = k.dataset.key !== state.layer; });
+    if (!state.flow || !state.board) return;
+    state.flow.setData(flowPoints());
+    state.flow.setKind(state.layer);
   }
 
   // --- wave markers + hover aspects (MIP-0009) ----------------------------------------------.
@@ -200,18 +289,14 @@
 
   // A beach is a dot in its score colour: a white ring keeps neighbours apart where beaches crowd,
   // and the picked one grows into a badge with its number. The `wave` class name is MIP-0009's.
-  function waveIcon(fill, selected, past, score) {
+  function waveIcon(fill, selected, score) {
     var size = selected ? 32 : 16, r = size / 2;
     var label = selected && score !== null && score !== undefined
       ? '<text x="16" y="20.5" text-anchor="middle" font-size="13" font-weight="600" fill="' + (fill === getCss('--c40') ? '#181b22' : '#fff') + '">' + esc(String(score)) + '</text>'
       : '';
-    return L.divIcon({
-      className: 'wave' + (selected ? ' selected' : '') + (past ? ' past' : ''),
-      iconSize: [size, size], iconAnchor: [r, r], tooltipAnchor: [0, -r],
-      html: '<svg viewBox="0 0 ' + size + ' ' + size + '" width="' + size + '" height="' + size + '" aria-hidden="true">' +
-        '<circle cx="' + r + '" cy="' + r + '" r="' + (r - .5) + '" fill="#1d2733"/>' +
-        '<circle cx="' + r + '" cy="' + r + '" r="' + (r - 2) + '" fill="' + esc(fill) + '" stroke="#fff" stroke-width="2"/>' + label + '</svg>'
-    });
+    return '<svg viewBox="0 0 ' + size + ' ' + size + '" width="' + size + '" height="' + size + '" aria-hidden="true">' +
+      '<circle cx="' + r + '" cy="' + r + '" r="' + (r - .5) + '" fill="#1d2733"/>' +
+      '<circle cx="' + r + '" cy="' + r + '" r="' + (r - 2) + '" fill="' + esc(fill) + '" stroke="#fff" stroke-width="2"/>' + label + '</svg>';
   }
 
   /** The best-hour shape `shown()` returns carries no numbers; this finds the hours[] entry. */
@@ -269,18 +354,26 @@
     return icon('footprints') + ' ' + esc(trail.name) + ' · ' + fmt(trail.length_km, ' km');
   }
 
-  function renderTrails() {
-    state.trailLayers.forEach(function (l) { state.map.removeLayer(l); });
-    state.trailLayers = [];
-    (state.board.trails || []).forEach(function (trail) {
-      var latlngs = (trail.geometry || []).map(function (p) { return [p[0], p[1]]; });
-      if (latlngs.length < 2) return;
-      var line = L.polyline(latlngs, {
-        color: trailColour(trail.difficulty), weight: 3, opacity: 0.8, dashArray: '4,4'
-      }).addTo(state.map);
-      line.bindTooltip(trailTooltipHtml(trail), { sticky: true, direction: 'top' });
-      state.trailLayers.push(line);
+  // Trails are a GeoJSON line layer (one source, many features), not a layer per trail.
+  function addTrailLayer() {
+    state.map.addSource('trails', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+    state.map.addLayer({ id: 'trails', type: 'line', source: 'trails', layout: { 'line-cap': 'round' },
+      paint: { 'line-color': ['get', 'color'], 'line-width': 3, 'line-opacity': 0.85, 'line-dasharray': [1.5, 1.5] } });
+    var tip = new mapboxgl.Popup({ closeButton: false, closeOnClick: false, offset: 8, maxWidth: 'none' });
+    state.map.on('mousemove', 'trails', function (e) {
+      var f = e.features && e.features[0]; if (!f) return;
+      state.map.getCanvas().style.cursor = 'default';
+      tip.setLngLat(e.lngLat).setHTML(f.properties.tip).addTo(state.map);
     });
+    state.map.on('mouseleave', 'trails', function () { tip.remove(); });
+  }
+  function renderTrails() {
+    if (!state.ready) return;
+    var features = (state.board.trails || []).filter(function (trail) { return (trail.geometry || []).length >= 2; }).map(function (trail) {
+      return { type: 'Feature', properties: { color: trailColour(trail.difficulty), tip: trailTooltipHtml(trail) },
+        geometry: { type: 'LineString', coordinates: trail.geometry.map(function (p) { return [p[1], p[0]]; }) } };
+    });
+    state.map.getSource('trails').setData({ type: 'FeatureCollection', features: features });
   }
 
   function facilitiesHtml(f) {
@@ -293,29 +386,37 @@
 
   function render() {
     var board = state.board;
-    Object.keys(state.markers).forEach(function (k) { state.map.removeLayer(state.markers[k]); });
-    state.markers = {};
-    renderTrails();
-    var bounds = [];
-    board.beaches.forEach(function (beach) {
-      var s = shown(beach);
-      var c = colour(s ? s.score : null, beach.water.unfit);
-      var selected = state.selected === beach.name;
-      var m = L.marker([beach.lat, beach.lon], {
-        icon: waveIcon(c, selected, !!(s && isPast(s.h)), s ? s.score : null), zIndexOffset: selected ? 1000 : 0, keyboard: true
-      }).addTo(state.map);
-      // No `title`: the browser would draw a native tooltip on top of Leaflet's.
-      if (m.getElement) { var mel = m.getElement(); if (mel) mel.setAttribute('aria-label', beach.name); }
-      m.bindTooltip(aspectsHtml(beach, s), { sticky: true, direction: 'top', className: 'aspects', opacity: 0.97 });
-      m.on('click', function (e) { L.DomEvent.stopPropagation(e); select(beach.name, false); });
-      state.markers[beach.name] = m;
-      bounds.push([beach.lat, beach.lon]);
-    });
-    if (bounds.length && !state.fitted) { state.map.fitBounds(bounds, { padding: [30, 30] }); state.fitted = true; }
+    if (state.map) renderMarkers(board);
     renderHourLabel();
     renderList();
     renderFooter();
+    renderFlow();
     if (state.selected) renderCard();
+  }
+
+  function renderMarkers(board) {
+    Object.keys(state.markers).forEach(function (k) { state.markers[k].marker.remove(); state.markers[k].tip.remove(); });
+    state.markers = {};
+    renderTrails();
+    var w = Infinity, e = -Infinity, s0 = Infinity, n = -Infinity;
+    board.beaches.forEach(function (beach) {
+      var s = shown(beach);
+      var selected = state.selected === beach.name;
+      var past = !!(s && isPast(s.h));
+      // No `title`: the browser would draw a native tooltip on top of the popup.
+      var m = domMarker('wave' + (selected ? ' selected' : '') + (past ? ' past' : ''),
+        waveIcon(colour(s ? s.score : null, beach.water.unfit), selected, s ? s.score : null), beach.name, [beach.lon, beach.lat]);
+      m.tip = hoverTip(m.node, [beach.lon, beach.lat], aspectsHtml(beach, s), 'aspects', selected ? 18 : 10);
+      m.node.addEventListener('click', function (ev) { if (ev && ev.stopPropagation) ev.stopPropagation(); select(beach.name, false); });
+      m.node.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Enter' || ev.key === ' ') { if (ev.preventDefault) ev.preventDefault(); select(beach.name, false); }
+      });
+      state.markers[beach.name] = m;
+      w = Math.min(w, beach.lon); e = Math.max(e, beach.lon); s0 = Math.min(s0, beach.lat); n = Math.max(n, beach.lat);
+    });
+    if (board.beaches.length && !state.fitted) {
+      state.map.fitBounds([[w, s0], [e, n]], { padding: 40, duration: 0, maxZoom: 13 }); state.fitted = true;
+    }
   }
 
   function renderHourLabel() {
@@ -353,7 +454,7 @@
   function select(name, pan) {
     state.selected = name; setParam('beach', name);
     var b = beachByName(name);
-    if (b && pan !== false) state.map.panTo([b.lat, b.lon]);
+    if (b && pan !== false && state.map) state.map.panTo([b.lon, b.lat]);
     renderWaterPoints(b);
     render();
   }
@@ -370,14 +471,14 @@
   function condLabel(c) { return c === 'proper' ? 'PRÓPRIA' : c === 'improper' ? 'IMPRÓPRIA' : t('water.unclassified'); }
 
   function renderWaterPoints(beach) {
-    state.waterPointMarkers.forEach(function (m) { state.map.removeLayer(m); });
+    state.waterPointMarkers.forEach(function (m) { m.marker.remove(); m.tip.remove(); });
     state.waterPointMarkers = [];
-    if (!beach || !beach.water || !beach.water.points) return;
+    if (!state.map || !beach || !beach.water || !beach.water.points) return;
     beach.water.points.forEach(function (p) {
-      var color = p.condition === 'improper' ? getCss('--c0') : p.condition === 'proper' ? getCss('--c70') : getCss('--cna');
-      var m = L.circleMarker([p.lat, p.lon], { radius: 6, color: '#fff', weight: 2, fillColor: color, fillOpacity: 1 })
-        .addTo(state.map)
-        .bindTooltip(esc(p.point) + ' (' + esc(p.location) + '): ' + esc(condLabel(p.condition)) + ', ' + esc(p.sampled_on), { direction: 'top', offset: [0, -6] });
+      var band = p.condition === 'improper' ? 'c0' : p.condition === 'proper' ? 'c70' : 'cna';
+      var text = esc(p.point) + ' (' + esc(p.location) + '): ' + esc(condLabel(p.condition)) + ', ' + esc(p.sampled_on);
+      var m = domMarker('wpoint ' + band, '', p.point, [p.lon, p.lat]);
+      m.tip = hoverTip(m.node, [p.lon, p.lat], '<span class="water">' + text + '</span>', '', 8);
       state.waterPointMarkers.push(m);
     });
   }
@@ -517,6 +618,11 @@
     selectDay({ day: btn.dataset.day, file: btn.dataset.file }).catch(fail);
   });
   el.hour.addEventListener('input', function () { state.hourIndex = parseInt(el.hour.value, 10); render(); });
+  el.flow.addEventListener('click', function (e) {
+    var btn = e.target.closest('button[data-layer]'); if (!btn) return;
+    state.layer = btn.dataset.layer; setParam('layer', state.layer);
+    renderFlow();
+  });
   el.toggleList.addEventListener('click', function () {
     el.list.hidden = !el.list.hidden;
     el.toggleList.setAttribute('aria-expanded', String(!el.list.hidden));
@@ -531,8 +637,11 @@
       state.here = { lat: pos.coords.latitude, lon: pos.coords.longitude };
       el.near.setAttribute('aria-pressed', 'true');
       el.list.hidden = false; el.toggleList.setAttribute('aria-expanded', 'true');
-      state.hereMarker = L.circleMarker([state.here.lat, state.here.lon], { radius: 6, color: '#1b5fc1', fillColor: '#1b5fc1', fillOpacity: 1 })
-        .addTo(state.map).bindTooltip(tx('near.you'));
+      if (state.map) {
+        if (state.hereMarker) { state.hereMarker.marker.remove(); state.hereMarker.tip.remove(); }
+        state.hereMarker = domMarker('here', '', null, [state.here.lon, state.here.lat]);
+        state.hereMarker.tip = hoverTip(state.hereMarker.node, [state.here.lon, state.here.lat], tx('near.you'), '', 8);
+      }
       render();
     }, function () { alert(t('near.denied')); });
   });
@@ -566,8 +675,11 @@
     if (!state.board) return;
     render();
     renderWaterPoints(beachByName(state.selected));
-    if (state.hereMarker) state.hereMarker.bindTooltip(tx('near.you'));
+    if (state.hereMarker) state.hereMarker.tip.setHTML(tx('near.you'));
+    if (state.mapNoteKey) el.mapNote.textContent = t(state.mapNoteKey);
   });
+
+  if (['wind', 'waves', 'off'].indexOf(param('layer')) >= 0) state.layer = param('layer');
 
   loadAreas().catch(fail);
 })();
