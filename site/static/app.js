@@ -169,18 +169,40 @@
   }
 
   // --- wave markers + hover aspects (MIP-0009) ----------------------------------------------.
-  var WIND_EMOJI = { calm: '🍃', breezy: '🌬️', strong: '💨' };
+  // Line icons instead of emoji: Lucide's shapes (ISC, vendor/icons/LICENSE.lucide), except the
+  // jellyfish, drawn here in the same 24 px, round-cap style because Lucide has none.
+  var ICONS = {
+    wind: '<path d="M12.8 19.6A2 2 0 1 0 14 16H2"/><path d="M17.5 8a2.5 2.5 0 1 1 2 4H2"/><path d="M9.8 4.4A2 2 0 1 1 11 8H2"/>',
+    thermometer: '<path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/>',
+    waves: '<path d="M2 6q2.5 2 5 0t5 0 5 0 5 0"/><path d="M2 12q2.5 2 5 0t5 0 5 0 5 0"/><path d="M2 18q2.5 2 5 0t5 0 5 0 5 0"/>',
+    jellyfish: '<path d="M4 12a8 8 0 0 1 16 0Z"/><path d="M8 12v3a2 2 0 0 1-1 2v2"/><path d="M12 12v9"/><path d="M16 12v3a2 2 0 0 0 1 2v2"/>',
+    fish: '<path d="M6.5 12c.94-3.46 4.94-6 8.5-6 3.56 0 6.06 2.54 7 6-.94 3.47-3.44 6-7 6s-7.56-2.53-8.5-6Z"/><path d="M18 12v.5"/><path d="M16 17.93a9.77 9.77 0 0 1 0-11.86"/><path d="M7 10.67C7 8 5.58 5.97 2.73 5.5c-1 1.5-1 5 .23 6.5-1.24 1.5-1.24 5-.23 6.5C5.58 18.03 7 16 7 13.33"/>',
+    footprints: '<path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0Z"/><path d="M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0Z"/>',
+    parking: '<circle cx="12" cy="12" r="10"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/>',
+    toilets: '<path d="M7 12h13a1 1 0 0 1 1 1 5 5 0 0 1-5 5h-.598a.5.5 0 0 0-.424.765l1.544 2.47a.5.5 0 0 1-.424.765H5.402a.5.5 0 0 1-.424-.765L7 18"/><path d="M8 18a5 5 0 0 1-5-5V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8"/>',
+    shower: '<path d="m4 4 2.5 2.5"/><path d="M13.5 6.5a4.95 4.95 0 0 0-7 7"/><path d="M15 5 5 15"/><path d="M14 17v.01"/><path d="M10 16v.01"/><path d="M13 13v.01"/><path d="M16 10v.01"/>',
+    lifeguard: '<circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/><circle cx="12" cy="12" r="4"/>',
+    book: '<path d="M12 5v16"/><path d="M20 19a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-4a5 5 0 0 0-4 2 5 5 0 0 0-4-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4a5 5 0 0 1 4 2 5 5 0 0 1 4-2z"/>'
+  };
+  function icon(name) {
+    return '<svg class="ic ic-' + name + '" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' + ICONS[name] + '</svg>';
+  }
   var COMPASS = ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'];
   function compass(deg) { return word('dir.', COMPASS[Math.round(deg / 45) % 8]); }
 
-  var WAVE_PATH = 'M3 10c2.6-7 6.4-7 9 0s6.4 5 9 0v10H3z';
-  function waveIcon(fill, selected, past) {
-    var size = selected ? 32 : 24;
+  // A beach is a dot in its score colour: a white ring keeps neighbours apart where beaches crowd,
+  // and the picked one grows into a badge with its number. The `wave` class name is MIP-0009's.
+  function waveIcon(fill, selected, past, score) {
+    var size = selected ? 32 : 16, r = size / 2;
+    var label = selected && score !== null && score !== undefined
+      ? '<text x="16" y="20.5" text-anchor="middle" font-size="13" font-weight="600" fill="' + (fill === getCss('--c40') ? '#181b22' : '#fff') + '">' + esc(String(score)) + '</text>'
+      : '';
     return L.divIcon({
       className: 'wave' + (selected ? ' selected' : '') + (past ? ' past' : ''),
-      iconSize: [size, size], iconAnchor: [size / 2, size / 2], tooltipAnchor: [0, -size / 2],
-      html: '<svg viewBox="0 0 24 24" width="' + size + '" height="' + size + '" aria-hidden="true">' +
-        '<path d="' + WAVE_PATH + '" fill="' + esc(fill) + '" stroke="#fff" stroke-width="1" stroke-linejoin="round"/></svg>'
+      iconSize: [size, size], iconAnchor: [r, r], tooltipAnchor: [0, -r],
+      html: '<svg viewBox="0 0 ' + size + ' ' + size + '" width="' + size + '" height="' + size + '" aria-hidden="true">' +
+        '<circle cx="' + r + '" cy="' + r + '" r="' + (r - .5) + '" fill="#0b3d8c"/>' +
+        '<circle cx="' + r + '" cy="' + r + '" r="' + (r - 2) + '" fill="' + esc(fill) + '" stroke="#fff" stroke-width="2"/>' + label + '</svg>'
     });
   }
 
@@ -204,25 +226,25 @@
     return t('cell.waves', { m: fmt(waveM, ' m'), every: periodS === null || periodS === undefined ? 'no' : 'yes', s: fmt(periodS, ' s', 0) });
   }
 
-  /** Every emoji is followed by its word: older fonts lack 🪼. */
+  /** Every icon is followed by its word: the icon is decoration (aria-hidden), the word is the reading. */
   function aspectsHtml(beach, s) {
-    var head = '<div class="head">🌊 ' + esc(beach.name) + ' · ' + (s ? tx('tip.at', { score: s.score, h: s.h }) : tx('tip.dark')) + '</div>';
+    var head = '<div class="head">' + esc(beach.name) + ' · ' + (s ? tx('tip.at', { score: s.score, h: s.h }) : tx('tip.dark')) + '</div>';
     var e = hourEntry(beach, s);
     if (!e) return head;
     var level = e.wind_level || null; // an older board has no band: number only, no word
     var kmh = fmt(e.wind_kmh, ' km/h', 0);
-    var wind = (level ? (WIND_EMOJI[level] || '🌬️') + ' ' + esc(word('wind.', level)) + ', ' + esc(kmh) : '🌬️ ' + tx('cell.wind', { v: kmh })) +
+    var wind = icon('wind') + ' ' + (level ? esc(word('wind.', level)) + ', ' + esc(kmh) : tx('cell.wind', { v: kmh })) +
       (s.best && beach.sea.wind_dir_deg !== null ? ' <abbr class="dir">' + esc(compass(beach.sea.wind_dir_deg)) + '</abbr>' : '');
-    var waves = '〰️ ' + esc(wavesText(e.wave_m, s.best ? beach.sea.period_s : null));
+    var waves = icon('waves') + ' ' + esc(wavesText(e.wave_m, s.best ? beach.sea.period_s : null));
     var peak = beach.whales.peak && beach.whales.peak !== e.h;
-    var whales = '🐋 ' + tx('cell.whales', { level: word('lvl.', e.whales), best: peak ? 'yes' : 'no', peak: beach.whales.peak || '' });
+    var whales = icon('fish') + ' ' + tx('cell.whales', { level: word('lvl.', e.whales), best: peak ? 'yes' : 'no', peak: beach.whales.peak || '' });
     var water = '<span class="wide ' + (beach.water.unfit ? 'unfit' : 'water') + '"><i class="' + waterDotClass(beach) + '"></i> ' + esc(waterSummary(beach)) + '</span>';
     var facilities = facilitiesHtml(beach.facilities);
     return head + '<div class="grid">' +
       '<span>' + wind + '</span>' +
-      '<span>🌡️ ' + tx('cell.water', { v: fmt(e.sea_temp_c, ' °C') }) + '</span>' +
+      '<span>' + icon('thermometer') + ' ' + tx('cell.water', { v: fmt(e.sea_temp_c, ' °C') }) + '</span>' +
       '<span>' + waves + '</span>' +
-      '<span>🪼 ' + tx('cell.jellyfish', { level: word('lvl.', e.jellyfish) }) + '</span>' +
+      '<span>' + icon('jellyfish') + ' ' + tx('cell.jellyfish', { level: word('lvl.', e.jellyfish) }) + '</span>' +
       '<span>' + whales + '</span>' +
       water +
       (facilities ? '<span class="wide facilities">' + facilities + '</span>' : '') +
@@ -236,7 +258,7 @@
     return getCss('--cna');
   }
   function trailTooltipHtml(trail) {
-    return '🥾 ' + esc(trail.name) + ' · ' + fmt(trail.length_km, ' km');
+    return icon('footprints') + ' ' + esc(trail.name) + ' · ' + fmt(trail.length_km, ' km');
   }
 
   function renderTrails() {
@@ -253,13 +275,11 @@
     });
   }
 
-  var FACILITY_EMOJI = { parking: '🅿️', toilets: '🚻', shower: '🚿', lifeguard: '🛟' };
-
   function facilitiesHtml(f) {
     if (!f) return '';
     var parts = ['parking', 'toilets', 'shower', 'lifeguard']
       .filter(function (k) { return f[k] !== undefined && f[k] !== null; })
-      .map(function (k) { return FACILITY_EMOJI[k] + ' ' + tx('fac.' + k, { n: f[k] }); });
+      .map(function (k) { return icon(k) + ' ' + tx('fac.' + k, { n: f[k] }); });
     return parts.join(' · ');
   }
 
@@ -274,7 +294,7 @@
       var c = colour(s ? s.score : null, beach.water.unfit);
       var selected = state.selected === beach.name;
       var m = L.marker([beach.lat, beach.lon], {
-        icon: waveIcon(c, selected, !!(s && isPast(s.h))), zIndexOffset: selected ? 1000 : 0, keyboard: true
+        icon: waveIcon(c, selected, !!(s && isPast(s.h)), s ? s.score : null), zIndexOffset: selected ? 1000 : 0, keyboard: true
       }).addTo(state.map);
       // No `title`: the browser would draw a native tooltip on top of Leaflet's.
       if (m.getElement) { var mel = m.getElement(); if (mel) mel.setAttribute('aria-label', beach.name); }
@@ -437,7 +457,7 @@
       var label = href ? '<a href="' + href + '" target="_blank" rel="noopener">' + esc(s) + '</a>' : esc(s);
       return '<span class="src">' + label + '</span>';
     }).join(' · ');
-    var lore = b.lore ? '<p class="lore">' + (b.lore.kind === 'creature' ? '🐋 ' + tx('lore.creature') : '🌊 ' + tx('lore.fact')) + ' ' + esc(b.lore.text) +
+    var lore = b.lore ? '<p class="lore">' + (b.lore.kind === 'creature' ? icon('fish') + ' ' + tx('lore.creature') : icon('book') + ' ' + tx('lore.fact')) + ' ' + esc(b.lore.text) +
       ' <a href="' + esc(b.lore.source) + '" target="_blank" rel="noopener">[' + tx('lore.source') + ']</a></p>' : '';
     el.footer.innerHTML =
       '<p id="status">' + t('footer.generated', { when: esc(b.generated_at.replace('T', ' ').slice(0, 16)), area: esc(state.area.name),

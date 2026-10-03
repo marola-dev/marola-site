@@ -30,8 +30,8 @@ change looked at before it is committed.
    `vendor/fonts/`, never from a CDN. `font-variant-numeric: tabular-nums` on scores, hours and
    distances, prose ≤ 65ch.
 3. **Colour.** The five score tokens (`--c70 … --cna`) are data and stay. Chrome is the
-   `DESIGN.md` tokens already in `:root` (`--ink`, `--muted`, `--bg`, `--soft`, `--wash`,
-   `--line`, `--cyan`, `--mint`, `--accent` Climate Blue, also the "you" marker in `app.js`).
+   `DESIGN.md` tokens already in `:root` (`--ink`, `--muted`, `--navy`, `--blue-ink`, `--accent`,
+   `--ice`, `--cyan`, `--line`); blue is the primary, Climate Blue is also the "you" marker.
    Flat surfaces, no shadows; contrast ≥ 4.5:1. A new colour needs a job no token does.
 4. **Layout and copy.** Mobile first: the map fills the viewport, list and card are bottom
    sheets under 640 px, at most four controls in the header. Hierarchy by size and weight, not
@@ -52,9 +52,9 @@ change looked at before it is committed.
 | A "more polished" header | The serif wordmark (56 px / 300), the one-line description, the same white panel, not a gradient |
 | Floating panels that feel light | `--panel` background, 1 px `--line` border, 16 px radius, no shadow (DESIGN.md's White Data Card) |
 | Numbers that line up | `tabular-nums`, right-aligned, same size as the label |
-| An icon | Inline SVG, `currentColor`, 16 px, `aria-hidden`, text label kept |
 | Motion | Only what shows a state change, ≤ 150 ms, inside `@media (prefers-reduced-motion: no-preference)` |
-| A marker that is not a dot | See MIP-0009 (wave `divIcon` filled with the score colour) |
+| A beach marker | The rimmed score-colour dot in `waveIcon()` (DESIGN.md "Beaches are dots"); the selected one carries its score |
+| An icon | `icon(name)` in `app.js` (Lucide line style), never an emoji |
 
 ## Red flags — the page starts looking generated
 

@@ -7,6 +7,27 @@ Source measurements are normalized; roles and recommendations are interpreted. F
 
 Co2.is frames public climate-policy information as a quiet editorial archive: expansive white space, hairline rules, and low-contrast pill navigation leave room for oversized, whisper-weight serif statements. A near-black editorial ink carries all reading and controls, while pale cyan and mint blocks mark filters and responsible bodies rather than turning the interface into a brightly branded dashboard. Saturated blue, teal, violet, orange, and yellow appear as a compact classification language for climate systems, with a high-contrast blue-and-white environmental image providing the hero’s only large visual interruption.
 
+## marola adaptations
+
+> Source: the Co2 style reference below was obtained from [Refero](https://refero.design/)'s style library. Everything after this section is that reference, unchanged. Where they differ, this section wins.
+
+- **Blue is the primary.** Mint Wash is not used. Selected states (current page, chosen day, pressed toggle, open list) are a Harbor Blue fill with white text; the one primary action on a surface (the chat's open and send buttons) is an Abyss Blue fill.
+- **The blue family**, added to the colour tokens:
+
+  | Name | Value | Token | Role |
+  |------|-------|-------|------|
+  | Abyss Blue | `#0b3d8c` | `--navy` | Serif headings and the wordmark, primary-action fill, the marker rim (10:1 on white) |
+  | Harbor Blue | `#1659c0` | `--blue-ink` | Link text, selected-state fill, line icons, the slider (6.5:1 on white) |
+  | Climate Blue | `#4098ff` | `--accent` | Hover and focus rings, link underlines, the wordmark's wave, editorial rules; never text (3:1) |
+  | Ice Blue | `#eef6ff` | `--ice` | The header band, the footer, hover fills |
+  | Cyan Wash | `#dff9ff` | `--cyan` | The empty sea under the map, chat answers |
+
+- **One control.** Every button, select and nav link is the same 36 px pill (32 px under 640 px): 1px Rule Gray border, white fill, 16 px Inter; hover is Ice Blue with a Climate Blue border; selected is Harbor Blue with white text. Segmented groups (day, language) are one outlined pill holding borderless inner pills. A section with no page yet is plain muted text, not a pill.
+- **Compact header.** The map is the product: nav pills, then a 38 px serif wordmark (30 px on phones) with a 14 px one-line tagline beside the controls, then the hour bar. No 56–64 px statements on the map page; those stay for about/support.
+- **Icons, never emoji.** Line icons in Lucide's style (24 px grid, round caps, 1.75 stroke, Harbor Blue), inline SVG, `aria-hidden`, always followed by their word. Lucide's own shapes where one exists; anything missing (the jellyfish) is drawn in the same style.
+- **Beaches are dots.** A beach on the map is a 16 px dot in its score colour with a white ring and an Abyss Blue rim, so a crowded coast reads as points of colour; the selected beach grows to a 32 px badge carrying its score. The five score colours are data and stay as they are; they play the role of the reference's system colour markers.
+- **Fonts** are the documented substitutes, self-hosted: Cormorant Garamond for Gt Alpina Standard, Inter for Abacaxilatin(web).
+
 ## Tokens — Colors
 
 | Name | Value | Token | Role |

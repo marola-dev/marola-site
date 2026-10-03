@@ -23,8 +23,9 @@ const UI = fs.readFileSync(path.join(ROOT, 'site/static/ui.js'), 'utf8');
 const CATALOGS = Object.fromEntries(['pt-BR', 'en'].map(l => [l, JSON.parse(fs.readFileSync(path.join(ROOT, 'site/i18n', l + '.json'), 'utf8'))]));
 
 let fails = 0;
-// app.js glues each number to its unit with a no-break space; the needles below are written as read.
-const plain = s => String(s).replace(/\u00a0/g, ' ');
+// app.js glues each number to its unit with a no-break space; the needles below are written as read
+// …and each line icon is read as [name], so a needle names the icon it expects.
+const plain = s => String(s).replace(/\u00a0/g, ' ').replace(/<svg class="ic ic-([a-z]+)"[\s\S]*?<\/svg>/g, '[$1]');
 function ok(cond, label, detail) {
   if (cond) console.log('  ok   ' + label);
   else { console.log('  FAIL ' + label + (detail ? ' — ' + detail : '')); fails++; }
@@ -333,18 +334,19 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   const tip = joaq ? plain(joaq.tooltip) : '';
   ok(/55\/100 at 10:00/.test(tip), 'Joaquina\'s tooltip head shows score/100 and the hour', tip);
   ok(joaq && joaq.tooltipOpts && joaq.tooltipOpts.sticky === true && joaq.tooltipOpts.className === 'aspects', 'the tooltip is sticky with the aspects class');
-  // MIP-0009 §3: six aspects, the fixture's own numbers, every emoji followed by its word — the
-  // water cell now carries a colour dot instead of an emoji (2026-09-07: a dot scans by colour at
+  // MIP-0009 §3: six aspects, the fixture's own numbers, every icon followed by its word — the
+  // water cell carries a colour dot instead of an icon (2026-09-07: a dot scans by colour at
   // a glance the way the score markers already do; a repeated 💧 doesn't distinguish
   // PRÓPRIA/IMPRÓPRIA/no-data).
   // Levels are lowercase in the catalog (the page lowercases them anyway); the compass point keeps
   // its case in an <abbr class="dir">, where "NO" (noroeste) cannot be read as the word "no".
-  [['🌬️ breezy, 27 km/h <abbr class="dir">S</abbr>', 'wind band + km/h + direction'], ['🌡️ water 19.0 °C', 'water temperature'],
-   ['〰️ waves 1.3 m every 6 s', 'waves + period'], ['🪼 jellyfish low', 'jellyfish'],
-   ['🐋 whales low (best 07:00)', "whales with the day's best hour"],
+  [['[wind] breezy, 27 km/h <abbr class="dir">S</abbr>', 'wind band + km/h + direction'], ['[thermometer] water 19.0 °C', 'water temperature'],
+   ['[waves] waves 1.3 m every 6 s', 'waves + period'], ['[jellyfish] jellyfish low', 'jellyfish'],
+   ['[fish] whales low (best 07:00)', "whales with the day's best hour"],
    ['<i class="wdot c70"></i> 1/1 PRÓPRIA (25 Aug)', 'water verdict, a colour dot not an emoji'],
-   ['🅿️ parking 3 · 🚻 toilets 1', 'facilities, only the counts the board actually has']]
+   ['[parking] parking 3 · [toilets] toilets 1', 'facilities, only the counts the board actually has']]
     .forEach(([needle, label]) => ok(tip.includes(needle), 'tooltip cell: ' + label + ' → "' + needle + '"', tip));
+  ok(!/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/u.test(tip), 'the tooltip carries line icons, no emoji', tip);
   ok((tip.match(/<span/g) || []).length === 7, 'the tooltip grid has six aspect cells plus facilities (7) when the board has facility data');
   ok(joaq && joaq.opts.icon.options.html.includes('#e0a800'), "Joaquina's wave is filled with the 40-69 colour", joaq && joaq.opts.icon.options.html);
   const brava = markers.find(m => String(m.tooltip).includes('Praia Brava'));
@@ -356,8 +358,10 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   // card.
   ok(/<span class="wide (water|unfit)"><i class="wdot/.test(tip), 'the water cell is the spanning, wrapping one', tip);
   ok((tip.match(/class="wide /g) || []).length === 2, 'the water cell and the facilities cell both span both columns', tip);
-  // one filled path, not two thin ribbons and a halo: the score colour needs area at area zoom.
-  ok(joaq && (joaq.opts.icon.options.html.match(/<path /g) || []).length === 1, 'the wave is a single filled path', joaq && joaq.opts.icon.options.html);
+  // a dot, not a wave glyph: crowded coasts read as points of colour (DESIGN.md's System Color
+  // Marker); an Abyss Blue rim and a white ring keep neighbours apart.
+  ok(joaq && /^<svg[^>]*><circle [^>]*fill="#0b3d8c"\/><circle [^>]*fill="#e0a800" stroke="#fff" stroke-width="2"\/><\/svg>$/.test(joaq.opts.icon.options.html),
+    'a beach is a rimmed dot filled with its score colour', joaq && joaq.opts.icon.options.html);
   ok(joaq && !/opacity=|drop-shadow|transform=/.test(joaq.opts.icon.options.html), 'no per-path opacity, halo transform or drop-shadow in the marker SVG', joaq && joaq.opts.icon.options.html);
   ok(joaq && joaq.opts.title === undefined && joaq.opts.keyboard === true,
     'the marker has no `title` (no native tooltip over Leaflet\'s) but stays keyboard-reachable');
@@ -365,9 +369,10 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
     'the marker element is named for a screen reader with aria-label', joaq && JSON.stringify(joaq.element.attrs));
   // the legend key is the same glyph, or the key stops meaning "this shape on the map is a
   // beach".
-  const keyPath = (/<span class="wave-key">.*?<path d="([^"]+)"/.exec(INDEX) || [])[1];
-  const iconPath = (/<path d="([^"]+)"/.exec((joaq && joaq.opts.icon.options.html) || '') || [])[1];
-  ok(!!keyPath && keyPath === iconPath, 'index.html\'s legend key draws the same path as the marker', keyPath + ' vs ' + iconPath);
+  const shape = html => ((html || '').match(/<circle [^>]*>/g) || []).map(c => c.replace(/ fill="(?!#0b3d8c)[^"]*"/, ''));
+  const keyShape = shape((/<span class="wave-key">[\s\S]*?<\/svg>/.exec(INDEX) || [])[0]);
+  ok(keyShape.length === 2 && JSON.stringify(keyShape) === JSON.stringify(shape(joaq && joaq.opts.icon.options.html)),
+    'index.html\'s legend key draws the same dot as the marker', JSON.stringify(keyShape));
   ok((els.list.innerHTML.match(/<li /g) || []).length === 2 && els.list.innerHTML.indexOf('Joaquina') < els.list.innerHTML.indexOf('Brava'),
     'the list has two entries, best score first');
   // #460: index.html's CSP has no style-src, so a `style=` chip renders white on white. The
@@ -416,6 +421,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
     const sel = L.created.filter(l => l.added && isWave(l)).find(m => String(m.tooltip).includes('Praia da Joaquina'));
     ok(sel && /\bselected\b/.test(sel.opts.icon.options.className) && sel.opts.icon.options.iconSize[0] === 32 && sel.opts.zIndexOffset === 1000,
       'after selection the wave is re-drawn larger (32 px), marked selected, on top', sel && JSON.stringify(sel.opts.icon.options.iconSize));
+    ok(sel && /<text [^>]*>55<\/text>/.test(sel.opts.icon.options.html), 'the selected dot carries its score', sel && sel.opts.icon.options.html);
     // "point by point" water quality (2026-09-07): opening a beach's card also plots its real
     // sampling points as their own circleMarkers — not just the one-line aggregate the card/
     // tooltip text already shows.
@@ -445,7 +451,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   const markers2 = r2.L.created.filter(l => l.added && isWave(l));
   ok(r2.errors.length === 0 && markers2.length === BOARD.beaches.length, 'a board without wind_level still renders every beach as a wave');
   const tip2 = plain((markers2.find(m => String(m.tooltip).includes('Praia da Joaquina')) || {}).tooltip || '');
-  ok(!/breezy|calm|strong/.test(tip2) && tip2.includes('🌬️ wind 27 km/h') && (tip2.match(/<span/g) || []).length === 7,
+  ok(!/breezy|calm|strong/.test(tip2) && tip2.includes('[wind] wind 27 km/h') && (tip2.match(/<span/g) || []).length === 7,
     'without wind_level the wind cell keeps the number and drops the band word; seven cells remain (Joaquina has facilities data)', tip2);
 
   // 4.
@@ -643,11 +649,11 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(pt.errors.length === 0 && pt.api.lang() === 'pt-BR', 'default run (no ?lang=, no languages, localStorage throws) resolves pt-BR', pt.errors.join(' | '));
   ok(pt.els['hour-label'].textContent === 'melhor hora por praia', 'pt-BR: hour-label reads "melhor hora por praia"', pt.els['hour-label'].textContent);
   const ptTip = tipOf(pt, 'Praia da Joaquina');
-  [['55/100 às 10:00', 'head'], ['🌬️ brisa, 27 km/h <abbr class="dir">S</abbr>', 'wind band, km/h, direction'],
-   ['🌡️ água 19,0 °C', 'water temperature with a decimal comma'], ['〰️ ondas 1,3 m a cada 6 s', 'waves + period'],
-   ['🪼 água-viva: baixa', 'jellyfish through lvl.*'], ['🐋 baleias: baixa (melhor às 07:00)', 'whales through lvl.*'],
+  [['55/100 às 10:00', 'head'], ['[wind] brisa, 27 km/h <abbr class="dir">S</abbr>', 'wind band, km/h, direction'],
+   ['[thermometer] água 19,0 °C', 'water temperature with a decimal comma'], ['[waves] ondas 1,3 m a cada 6 s', 'waves + period'],
+   ['[jellyfish] água-viva: baixa', 'jellyfish through lvl.*'], ['[fish] baleias: baixa (melhor às 07:00)', 'whales through lvl.*'],
    ['<i class="wdot c70"></i> 1/1 PRÓPRIA (25 Aug)', "the board's own water summary, untouched until messages-report"],
-   ['🅿️ estacionamento 3 · 🚻 banheiros 1', 'facilities']]
+   ['[parking] estacionamento 3 · [toilets] banheiros 1', 'facilities']]
     .forEach(([needle, label]) => ok(ptTip.includes(needle), 'pt-BR tooltip: ' + label + ' → "' + needle + '"', ptTip));
   ok((ptTip.match(/<span/g) || []).length === 7, 'pt-BR tooltip: the same seven cells', ptTip);
   const ptWave = waveOf(pt, 'Praia da Joaquina');
@@ -659,7 +665,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
     'pt-BR: the footer status line', pt.els.footer.innerHTML);
   ok(/<span class="score c40">55<\/span>Praia da Joaquina <span class="dist">10:00<\/span>/.test(pt.els.list.innerHTML) &&
     /<span class="score c0">0<\/span>/.test(pt.els.list.innerHTML), 'pt-BR: list rows and band classes as before', pt.els.list.innerHTML);
-  ok(ptWave && ptWave.opts.icon.options.html.includes('<path d="' + keyPath + '" fill="#e0a800"'), 'pt-BR: the same wave path, the same 40-69 fill');
+  ok(ptWave && ptWave.opts.icon.options.html.includes('fill="#e0a800" stroke="#fff"'), 'pt-BR: the same dot, the same 40-69 fill');
   const ptCard = openCard(pt, 'Praia da Joaquina');
   [['<button class="close" type="button" aria-label="fechar">', 'close button name'],
    ['<span class="score c40">55/100</span> melhor às <b>10:00</b></p>', 'headline'],
@@ -696,7 +702,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(/class="on"[^>]*>today <small>/.test(flip.els.days.innerHTML), 'flip to en: renderDays relabels the day buttons, the picked one still on', flip.els.days.innerHTML);
   ok(flip.els.list.innerHTML.includes('Praia Brava <span class="dist">dark</span>'), 'flip to en: the list', flip.els.list.innerHTML);
   ok(flip.els.card.innerHTML.includes('<dt>why</dt>') && flip.els.card.innerHTML.includes('at <b>07:00</b> (best 10:00, 55)'), 'flip to en: the open card', flip.els.card.innerHTML.slice(0, 400));
-  ok(tipOf(flip, 'Praia da Joaquina').includes('🪼 jellyfish low'), "flip to en: the markers' tooltips");
+  ok(tipOf(flip, 'Praia da Joaquina').includes('[jellyfish] jellyfish low'), "flip to en: the markers' tooltips");
   ok(flip.els.footer.innerHTML.includes('· 2 beaches · data:'), 'flip to en: the footer');
   flip.api.setLang('pt-BR');
   ok(flip.els['hour-label'].textContent === 'às 07:00' && flip.els.list.innerHTML.includes('Praia Brava <span class="dist">escuro</span>') &&
@@ -766,7 +772,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   const visible = html => {
     const attrs = [];
     html.replace(/\s(?:aria-label|title|placeholder)="([^"]*)"/g, (_, v) => { attrs.push(v); });
-    return html.replace(/<[^>]*>/g, ' ') + ' ' + attrs.join(' ');
+    return html.replace(/<[^>]*>/g, ' ').replace(/\[[a-z]+\]/g, ' ') + ' ' + attrs.join(' '); // [name] is plain()'s icon
   };
   const pz = structuredClone(coded);
   pz.generated_at = '2026-09-06T11:00:00-03:00'; // 07:00 is past, so the past badges render
