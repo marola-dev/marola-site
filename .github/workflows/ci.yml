@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   static:
-    uses: marola-dev/marola-devkit/.github/workflows/static-ci.yml@v0.2.2
+    uses: marola-dev/marola-devkit/.github/workflows/static-ci.yml@v0.2.4
     with:
       shellcheck-files: scripts/*.sh
       extra-commands: |
@@ -29,7 +29,7 @@ jobs:
         node scripts/redirect_check.js
 
   python:
-    uses: marola-dev/marola-devkit/.github/workflows/python-ci.yml@v0.2.2
+    uses: marola-dev/marola-devkit/.github/workflows/python-ci.yml@v0.2.4
     with:
       self-test-commands: |
         python3 scripts/site_live_check.py --self-test
@@ -39,6 +39,6 @@ jobs:
         scripts/mip-trailer-check.sh --self-test
 
   agents:
-    uses: marola-dev/marola-devkit/.github/workflows/agents-check.yml@v0.2.2
+    uses: marola-dev/marola-devkit/.github/workflows/agents-check.yml@v0.2.4
     with:
-      devkit-ref: v0.2.2
+      devkit-ref: v0.2.4
