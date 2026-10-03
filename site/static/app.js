@@ -26,7 +26,7 @@
     here: null,         // {lat, lon} after "near me"
     markers: {}, map: null, flow: null, ready: false,
     waterPointMarkers: [],
-    layer: 'wind',      // the map layer: one of LAYERS
+    layer: 'off',       // the map layer: 'off' or one of LAYERS whose button is enabled
     beaches: true,      // the beach dots and the coastal trails: toggles over any layer
     trails: true
   };
@@ -703,9 +703,11 @@
   el.hour.addEventListener('input', function () { state.hourIndex = parseInt(el.hour.value, 10); render(); });
   el.flow.addEventListener('click', function (e) {
     var btn = e.target.closest('button'); if (!btn) return;
+    if (btn.disabled) return;
     var t = btn.dataset.toggle;
     if (t === 'beaches' || t === 'trails') { state[t] = !state[t]; setParam(t, state[t] ? '1' : '0'); }
-    else if (btn.dataset.layer) { state.layer = btn.dataset.layer; setParam('layer', state.layer); }
+    // a pressed layer button turns its layer off again
+    else if (btn.dataset.layer) { state.layer = btn.dataset.layer === state.layer ? 'off' : btn.dataset.layer; setParam('layer', state.layer); }
     else return;
     renderFlow();
     if (state.board) renderWaterPoints(beachByName(state.selected));
@@ -766,9 +768,16 @@
     if (state.mapNoteKey) el.mapNote.textContent = t(state.mapNoteKey);
   });
 
-  if (LAYERS.indexOf(param('layer')) >= 0) state.layer = param('layer');
+  // the rail's markup says which layers are built: a disabled button ("em breve") is never shown,
+  // even from a ?layer= link
+  function enabled(attr, value) {
+    return Array.prototype.some.call(el.flow.querySelectorAll('button[data-' + attr + ']'), function (b) {
+      return b.dataset[attr] === value && !b.disabled;
+    });
+  }
+  if (LAYERS.indexOf(param('layer')) >= 0 && enabled('layer', param('layer'))) state.layer = param('layer');
   if (param('beaches') === '0') state.beaches = false;
-  if (param('trails') === '0') state.trails = false;
+  if (param('trails') === '0' || !enabled('toggle', 'trails')) state.trails = false;
 
   loadAreas().catch(fail);
 })();

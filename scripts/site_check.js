@@ -235,6 +235,8 @@ async function runPage(board, opts) {
   const M = makeMapbox();
   if (opts.styleStatus) M.styleStatus = opts.styleStatus;
   flowPanel(els.flow, els.flowkeys);
+  (opts.disabled || []).forEach(k => ['button[data-layer]', 'button[data-toggle]'].forEach(q =>
+    els.flow.found[q].forEach(b => { if (b.dataset.layer === k || b.dataset.toggle === k) b.disabled = true; })));
   const colours = { '--c70': '#2a9d4b', '--c40': '#e0a800', '--c1': '#e07a00', '--c0': '#c0392b', '--cna': '#999999' };
   const errors = [], alerts = [], fetched = [];
   const search = opts.search || '';
@@ -559,14 +561,21 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(flowEntry && flowEntry.layer.type === 'custom' && flowEntry.before === 'place-label',
     'the flow layer is a Mapbox custom layer, added under the first label layer', flowEntry && flowEntry.before);
   const flowLayer = flowEntry && flowEntry.layer;
-  ok(flowLayer && flowLayer.kind() === 'wind' && first.els.flow.found['button[data-layer]'][0].attrs['aria-pressed'] === 'true',
-    'wind is the default layer, and its button is pressed');
+  ok(flowLayer && flowLayer.kind() === 'off' && first.els.flow.found['button[data-layer]'].every(b => b.attrs['aria-pressed'] === 'false'),
+    'no layer is on by default: the map opens on the beaches alone');
+  const btn = k => first.els.flow.found['button[data-layer]'].find(b => b.dataset.layer === k);
+  // the stub's buttons are all enabled, so the layers still in "em breve" keep their tests for when they ship
+  first.els.flow.fire('click', { target: Object.assign(btn('wind'), { closest() { return this; } }) });
+  ok(flowLayer.kind() === 'wind' && btn('wind').attrs['aria-pressed'] === 'true', 'an enabled wind button turns the wind field on');
   const F = first.flow;
   const windField = flowLayer && flowLayer.field();
   const atJoaq = windField && F.sample(windField, F.mercX(-48.4487), F.mercY(-27.6296));
   ok(atJoaq && atJoaq[1] > 0 && Math.abs(atJoaq[0]) < atJoaq[1] && atJoaq[3] > 0.9,
     "at Joaquina the wind field blows north (the board says it comes from 180°), near full confidence", JSON.stringify(atJoaq));
-  const btn = k => first.els.flow.found['button[data-layer]'].find(b => b.dataset.layer === k);
+  btn('waves').disabled = true;
+  first.els.flow.fire('click', { target: Object.assign(btn('waves'), { closest() { return this; } }) });
+  ok(flowLayer.kind() === 'wind', 'a disabled ("em breve") layer button does nothing');
+  btn('waves').disabled = false;
   first.els.flow.fire('click', { target: Object.assign(btn('waves'), { closest() { return this; } }) });
   ok(flowLayer.kind() === 'waves' && btn('waves').attrs['aria-pressed'] === 'true' && btn('wind').attrs['aria-pressed'] === 'false' &&
     first.els.flowkeys.found['[data-key]'].find(k => k.dataset.key === 'waves').hidden === false, 'the waves button switches the layer, its key and the pressed state');
@@ -618,6 +627,16 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(layered.map.layers.find(l => l.layer.id === 'marola-flow').layer.kind() === 'waves', '?layer=waves opens on the waves layer');
   const watered = await runPage(BOARD, { search: '?layer=water' });
   ok(watered.M.created.filter(isPoint).length > 1, '?layer=water opens on the water layer, its points drawn');
+  const wbtn = watered.els.flow.found['button[data-layer]'].find(b => b.dataset.layer === 'water');
+  watered.els.flow.fire('click', { target: Object.assign(wbtn, { closest() { return this; } }) });
+  ok(wbtn.attrs['aria-pressed'] === 'false' && !watered.els.map.classList.contains('layer-water'), 'pressing balneabilidade again turns it off');
+  const soon = await runPage(BOARD, { search: '?layer=wind', disabled: ['wind', 'trails'] });
+  ok(soon.map.layers.find(l => l.layer.id === 'marola-flow').layer.kind() === 'off' && soon.map.getLayer('trails').layout.visibility === 'none',
+    'a ?layer= link to a layer still "em breve" opens on no layer, and a disabled trails toggle leaves the trails hidden');
+  const railButtons = [...INDEX.matchAll(/<button type="button" data-(layer|toggle)="(\w+)"([^>]*)>/g)];
+  const live = railButtons.filter(m => !/\bdisabled\b/.test(m[3])).map(m => m[2]);
+  ok(JSON.stringify(live) === '["beaches","water"]' && railButtons.filter(m => /\bdisabled\b/.test(m[3])).every(m => /class="soon"/.test(m[3]) && /_soon"/.test(m[3])),
+    'the rail ships with only praias and balneabilidade enabled; every other button is a disabled "em breve"', JSON.stringify(live));
   ok(!first.map.layers.some(l => l.layer.id === 'marola-coast'), 'no coastline layer when the style has no composite source');
 
   // flow.js on its own: the interpolation the particles ride on.
