@@ -65,14 +65,14 @@ button[aria-pressed="true"] .ic, button[aria-expanded="true"] .ic { stroke: curr
 /* One control, everywhere (DESIGN.md's Transparent Outline Pill on a Rule Gray hairline): 36 px,
  * 999 px radius, Washed Gray on hover, Mint Wash when selected. Segmented groups (day, language)
  * are one outlined pill holding borderless inner pills. */
-select, button, .pill, .sitenav > a {
+select, button, .pill, .sitenav > a, .controls > a {
   display: inline-flex; align-items: center; gap: 6px;
   font: inherit; font-size: 16px; font-weight: 400; line-height: 1.32; min-height: 36px; padding: 0 16px;
   border: 1px solid var(--line); border-radius: 999px;
   background: var(--panel); color: var(--ink); cursor: pointer; text-decoration: none;
 }
 select { display: inline-block; padding-right: 10px; }
-select:hover, button:hover, .pill:hover, .sitenav > a:hover { background: var(--ice); border-color: var(--accent); color: var(--navy); }
+select:hover, button:hover, .pill:hover, .sitenav > a:hover, .controls > a:hover { background: var(--ice); border-color: var(--accent); color: var(--navy); }
 button[aria-pressed="true"], button[aria-expanded="true"], .segmented button.on,
 .sitenav > a[aria-current="page"] { background: var(--blue-ink); border-color: var(--blue-ink); color: #fff; }
 .segmented, .lang { display: inline-flex; align-items: center; gap: 2px; padding: 2px; min-height: 36px;

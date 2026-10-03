@@ -36,7 +36,8 @@ boards (MIP-0005), with no server, no LLM and no per-visitor cost.
 - `DESIGN.md`: the visual style reference (the Co2 editorial style); its fonts' substitutes,
   Cormorant Garamond and Inter, are self-hosted in `site/static/vendor/fonts/`.
 - `.claude/skills/site-frontend/`: this repo's own skill for anything a visitor sees;
-  `.claude/skills/design-system/` applies `DESIGN.md` to it.
+  `design-system/` applies `DESIGN.md` to it, `ptbr-humanizer/` keeps the Portuguese natural, and
+  `citizen-science-site/` keeps sources, freshness, limits and the way to contribute on the page.
 
 ## What it consumes and produces
 
@@ -93,6 +94,6 @@ The phase list is the umbrella's `docs/PHASES.md`. Site work serves the current 
 ## Code style
 
 Plain JavaScript, no framework and no build step; the page makes no third-party requests and keeps
-`script-src 'self'`. A visible change goes through the `site-frontend` and `design-system` skills, `node scripts/site_check.js`
+`script-src 'self'`. A visible change goes through the `site-frontend`, `design-system`, `ptbr-humanizer` and `citizen-science-site` skills, `node scripts/site_check.js`
 and before/after screenshots. Shell: `set -euo pipefail`, shellcheck-clean. Python: ruff. Comments
 only for why, a trap, or a pointer, as the umbrella's AGENTS.md spells out.

@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title data-i18n="title.map">marola — a camada de inteligência do oceano</title>
-  <meta name="description" content="Todas as praias da área ordenadas pelas condições de hoje e de amanhã: mar, vento, ondas, qualidade da água, marés, águas-vivas. Calculado uma vez, sem rastreamento. Primeiro caso: a melhor hora amanhã para nadar.">
+  <title data-i18n="title.map">marola — condições do mar em cada praia</title>
+  <meta name="description" content="Todas as praias da região ordenadas pelas condições de hoje e de amanhã: mar, vento, ondas, maré, qualidade da água e águas-vivas. Dados abertos, sem cookies e sem rastreamento.">
   <meta name="theme-color" content="#ffffff">
   <!-- img-src https: is the map tiles (site/areas.json); connect-src https: is the chat tunnel
        URL in chatbot-config.js. Scripts stay same-origin (MIP-0033 §5.2). -->
@@ -29,7 +29,7 @@
       <button type="button" data-lang="pt-BR" lang="pt-BR" aria-label="português (Brasil)" aria-pressed="true">PT-BR</button>
       <button type="button" data-lang="en" lang="en" aria-label="English" aria-pressed="false">EN</button>
     </div>
-    <a class="gh" href="https://github.com/marola-dev/marola" aria-label="marola-dev/marola no GitHub, dê uma estrela ao repositório" data-i18n-aria-label="gh.label" title="marola no GitHub — dê uma estrela se ele te ajudar" data-i18n-title="gh.title">
+    <a class="gh" href="https://github.com/marola-dev/marola" aria-label="marola-dev/marola no GitHub, dê uma estrela ao repositório" data-i18n-aria-label="gh.label" title="marola no GitHub: deixe uma estrela se o projeto for útil para você" data-i18n-title="gh.title">
       <svg class="gh-mark" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.06-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
       <span class="gh-name"><span class="gh-owner">marola-dev/</span>marola</span>
       <span class="gh-star"><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 1.6l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.4l-3.8 2 .7-4.3-3.1-3 4.3-.6z"/></svg><span data-i18n="gh.star">estrela</span></span>
@@ -39,23 +39,23 @@
   <header class="bar">
     <div class="brand">
       <h1><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2 9c2.5 0 2.5-2.5 5-2.5S9.5 9 12 9s2.5-2.5 5-2.5S19.5 9 22 9"/><path d="M2 16c2.5 0 2.5-2.5 5-2.5s2.5 2.5 5 2.5 2.5-2.5 5-2.5 2.5 2.5 5 2.5"/></svg>marola</h1>
-      <p class="tagline" data-i18n="header.tagline">o mar perto de você: condições, qualidade da água, vida marinha, marés, perigos.</p>
+      <p class="tagline" data-i18n="header.tagline">mar, vento, maré e qualidade da água em cada praia, com dados abertos.</p>
     </div>
     <div class="controls">
       <select id="area" aria-label="área" data-i18n-aria-label="controls.area"></select>
       <div id="days" class="segmented" role="group" aria-label="dia" data-i18n-aria-label="controls.day"></div>
-      <button id="near" type="button" title="ordena a lista pela distância até você (a localização fica no seu navegador)" data-i18n-title="controls.near_title"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="7"/><path d="M2 12h3M19 12h3M12 2v3M12 19v3"/></svg><span data-i18n="controls.near">perto de mim</span></button>
-      <button id="sound" type="button" aria-pressed="false" title="liga ou desliga o som ambiente de ondas — sintetizado no seu navegador, nada é baixado nem toca sozinho" data-i18n-title="controls.sound_title"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M11 4.7a.7.7 0 0 0-1.2-.5L6.4 7.6a1.4 1.4 0 0 1-1 .4H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.4a1.4 1.4 0 0 1 1 .4l3.4 3.4a.7.7 0 0 0 1.2-.5z"/><path d="M16 9a5 5 0 0 1 0 6"/><path d="M19.4 18.4a9 9 0 0 0 0-12.8"/></svg><span data-i18n="controls.sound">som</span></button>
+      <button id="near" type="button" title="ordena a lista pela distância até você. sua localização não sai do navegador." data-i18n-title="controls.near_title"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="7"/><path d="M2 12h3M19 12h3M12 2v3M12 19v3"/></svg><span data-i18n="controls.near">perto de mim</span></button>
+      <button id="sound" type="button" aria-pressed="false" title="liga ou desliga um som de ondas gerado no seu navegador. nada é baixado e nada toca sozinho." data-i18n-title="controls.sound_title"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M11 4.7a.7.7 0 0 0-1.2-.5L6.4 7.6a1.4 1.4 0 0 1-1 .4H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.4a1.4 1.4 0 0 1 1 .4l3.4 3.4a.7.7 0 0 0 1.2-.5z"/><path d="M16 9a5 5 0 0 1 0 6"/><path d="M19.4 18.4a9 9 0 0 0 0-12.8"/></svg><span data-i18n="controls.sound">som</span></button>
       <button id="toggle-list" type="button" aria-controls="list" aria-expanded="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 5h.01M3 12h.01M3 19h.01M8 5h13M8 12h13M8 19h13"/></svg><span data-i18n="controls.list">lista</span></button>
     </div>
   </header>
 
   <div id="hourbar" class="hourbar" hidden>
-    <label for="hour"><span id="hour-label" data-i18n="hour.best">melhor hora por praia</span></label>
+    <label for="hour"><span id="hour-label" data-i18n="hour.best">melhor horário de cada praia</span></label>
     <input id="hour" type="range" min="-1" max="-1" value="-1" step="1" aria-label="hora do dia" data-i18n-aria-label="hour.slider">
     <span class="legend" aria-hidden="true">
       <b data-i18n="legend.score">pontuação</b> <span><i class="c70"></i>≥70</span> <span><i class="c40"></i>40–69</span> <span><i class="c1"></i>1–39</span> <span><i class="c0"></i><span data-i18n="legend.unfit">imprópria</span></span> <span><i class="cna"></i><span data-i18n="legend.no_data">sem dados</span></span>
-      <span class="wave-key"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7.5" fill="#0b3d8c"/><circle cx="8" cy="8" r="6" fill="#4098ff" stroke="#fff" stroke-width="2"/></svg><span data-i18n="legend.wave_key">passe o mouse numa praia</span></span>
+      <span class="wave-key"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7.5" fill="#0b3d8c"/><circle cx="8" cy="8" r="6" fill="#4098ff" stroke="#fff" stroke-width="2"/></svg><span data-i18n="legend.wave_key">passe o mouse sobre uma praia</span></span>
     </span>
   </div>
 
@@ -76,14 +76,14 @@
       <button id="chat-close" type="button" aria-label="fechar" data-i18n-aria-label="chat.close">×</button>
     </header>
     <div id="chat-log" class="chat-log"></div>
-    <p id="chat-offline" class="chat-offline" hidden data-i18n="chat.offline">chatbot fora do ar — tente de novo mais tarde, ou pergunte pela linha de comando ou pela ferramenta mcp.</p>
+    <p id="chat-offline" class="chat-offline" hidden data-i18n="chat.offline">o chat está fora do ar. tente mais tarde, ou faça a pergunta pela linha de comando ou pelo servidor mcp.</p>
     <form id="chat-form">
-      <input id="chat-input" type="text" placeholder="ex.: o que eu faço numa corrente de retorno?" data-i18n-placeholder="chat.placeholder" autocomplete="off">
+      <input id="chat-input" type="text" placeholder="ex.: o que fazer se eu cair numa corrente de retorno?" data-i18n-placeholder="chat.placeholder" autocomplete="off">
       <button type="submit" data-i18n="chat.send">perguntar</button>
     </form>
   </section>
 
-  <noscript><p class="nojs"><span data-i18n="noscript">esta página precisa de javascript para ler os dados do quadro. os dados em si estão em</span> <a href="data/">data/</a>.</p></noscript>
+  <noscript><p class="nojs"><span data-i18n="noscript">esta página precisa de javascript para mostrar os dados. os arquivos brutos estão em</span> <a href="data/">data/</a>.</p></noscript>
   <script src="i18n.js"></script>
   <script src="ui.js"></script>
   <script src="vendor/leaflet.js"></script>

@@ -647,7 +647,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   // 5. the default run: no ?lang=, no browser languages, a localStorage that throws → pt-BR.
   const pt = await runPage(BOARD, { storeThrows: true, geolocation: deny });
   ok(pt.errors.length === 0 && pt.api.lang() === 'pt-BR', 'default run (no ?lang=, no languages, localStorage throws) resolves pt-BR', pt.errors.join(' | '));
-  ok(pt.els['hour-label'].textContent === 'melhor hora por praia', 'pt-BR: hour-label reads "melhor hora por praia"', pt.els['hour-label'].textContent);
+  ok(pt.els['hour-label'].textContent === 'melhor horário de cada praia', 'pt-BR: hour-label reads "melhor horário de cada praia"', pt.els['hour-label'].textContent);
   const ptTip = tipOf(pt, 'Praia da Joaquina');
   [['55/100 às 10:00', 'head'], ['[wind] brisa, 27 km/h <abbr class="dir">S</abbr>', 'wind band, km/h, direction'],
    ['[thermometer] água 19,0 °C', 'water temperature with a decimal comma'], ['[waves] ondas 1,3 m a cada 6 s', 'waves + period'],
@@ -661,7 +661,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
     'a number and its unit are joined by a no-break space, so a wrapping cell never strands the unit');
   ok(/<button type="button" data-day="2026-09-06"[^>]*>hoje <small>09-06<\/small><\/button>/.test(pt.els.days.innerHTML),
     'pt-BR: the first day button reads "hoje"', pt.els.days.innerHTML);
-  ok(pt.els.footer.innerHTML.includes('<p id="status">gerado em 2026-09-06 06:00 para Fixture Bay, 2026-09-06 · 2 praias · dados: <span class="src">'),
+  ok(pt.els.footer.innerHTML.includes('<p id="status">atualizado em 2026-09-06 06:00 · Fixture Bay, dia 2026-09-06 · 2 praias · fontes: <span class="src">'),
     'pt-BR: the footer status line', pt.els.footer.innerHTML);
   ok(/<span class="score c40">55<\/span>Praia da Joaquina <span class="dist">10:00<\/span>/.test(pt.els.list.innerHTML) &&
     /<span class="score c0">0<\/span>/.test(pt.els.list.innerHTML), 'pt-BR: list rows and band classes as before', pt.els.list.innerHTML);
@@ -677,16 +677,16 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
    ['<dt>maré</dt><dd>alta 06:40 (+0,9 m), baixa 12:50 (-0,7 m) <small>(de hora em hora, ±30 min)</small></dd>', 'tides, signed'],
    ['<dt>ar</dt><dd>22°C, vento 27 km/h, UV 5, 10% de chuva</dd>', 'air row'],
    ['<dt>água-viva</dt><dd>baixa</dd>', 'jellyfish row'],
-   ['<dt>baleias</dt><dd>baixa, melhor chance de dia às 07:00 — temporada das jubartes</dd>', 'whales row'],
+   ['<dt>baleias</dt><dd>baixa, melhor chance às 07:00 · temporada das jubartes</dd>', 'whales row'],
    ['>-27.6296, -48.4487</a>', 'coordinates keep the dot']]
     .forEach(([needle, label]) => ok(ptCard.includes(needle), 'pt-BR card: ' + label, ptCard));
   const oldCard = openCard(await runPage(BOARD_V1), 'Praia da Joaquina');
   ok(oldCard.includes('<li>breezy (27km/h)</li><li>cold water (19.0°C)</li>'), 'a schema-1 board without note_codes shows its notes verbatim', oldCard);
   pt.els.near.listeners.click[0]({});
-  ok(pt.alerts[0] === 'localização não permitida — a lista continua ordenada por pontuação.', 'pt-BR: a denied location says so (MIP-0054 §3)', pt.alerts.join(' | '));
+  ok(pt.alerts[0] === 'sem acesso à localização. a lista continua ordenada pela pontuação.', 'pt-BR: a denied location says so (MIP-0054 §3)', pt.alerts.join(' | '));
 
   const pinned = await runPage(BOARD, { search: '?lang=pt-BR', store: { 'marola.lang': 'en' }, languages: ['en-US'] });
-  ok(pinned.els['hour-label'].textContent === 'melhor hora por praia', 'a stored en plus ?lang=pt-BR renders Portuguese');
+  ok(pinned.els['hour-label'].textContent === 'melhor horário de cada praia', 'a stored en plus ?lang=pt-BR renders Portuguese');
   const browserEn = await runPage(BOARD, { languages: ['en-US'], store: {} });
   ok(browserEn.els['hour-label'].textContent === 'best hour per beach' && browserEn.els.days.innerHTML.includes('>today <small>'),
     'navigator.languages en-US with nothing stored renders English');
@@ -705,7 +705,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(tipOf(flip, 'Praia da Joaquina').includes('[jellyfish] jellyfish low'), "flip to en: the markers' tooltips");
   ok(flip.els.footer.innerHTML.includes('· 2 beaches · data:'), 'flip to en: the footer');
   flip.api.setLang('pt-BR');
-  ok(flip.els['hour-label'].textContent === 'às 07:00' && flip.els.list.innerHTML.includes('Praia Brava <span class="dist">escuro</span>') &&
+  ok(flip.els['hour-label'].textContent === 'às 07:00' && flip.els.list.innerHTML.includes('Praia Brava <span class="dist">à noite</span>') &&
     flip.els.card.innerHTML.includes('<dt>por quê</dt>'), 'flip back to pt-BR: label, list and card');
   ok(flip.L.created.filter(l => l.added && l.kind === 'circleMarker' && String(l.tooltip).includes('Ponto 33')).length === 1,
     'two flips leave one water-point marker, not three');
@@ -723,17 +723,17 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
     ['warm_water', { sea_temp_c: 28.04 }, 'warm water (28.0°C)', 'água quente (28,0 °C)'],
     ['no_sea_temp_data', {}, 'no sea temperature data', 'sem dados de temperatura da água'],
     ['rain_likely', { rain_pct: 64.6 }, '65% chance of rain', '65% de chance de chuva'],
-    ['dark', {}, 'dark', 'escuro'],
+    ['dark', {}, 'dark', 'à noite'],
     ['jellyfish_elevated', {}, 'elevated jellyfish likelihood', 'chance alta de água-viva'],
     ['jellyfish_some', {}, 'some jellyfish likelihood', 'alguma chance de água-viva'],
-    ['water_stale', { sampled_on: '2026-08-05' }, 'water quality data stale (Aug 5)', 'dados de balneabilidade desatualizados (5 de ago.)'],
+    ['water_stale', { sampled_on: '2026-08-05' }, 'water quality data stale (Aug 5)', 'laudo de balneabilidade antigo (5 de ago.)'],
     ['water_unfit', Object.assign({ enterococci_per_100ml: 800 }, unfitArgs),
       'water unfit for bathing — IMA/SC Aug 25, Ponto 12 (Brava), 800 enterococci/100mL',
-      'água imprópria para banho — IMA/SC 25 de ago., Ponto 12 (Brava), 800 enterococos/100 mL'],
+      'água imprópria para banho: IMA/SC, 25 de ago., Ponto 12 (Brava), 800 enterococos/100 mL'],
     ['water_unfit', unfitArgs, 'water unfit for bathing — IMA/SC Aug 25, Ponto 12 (Brava), count n/a',
-      'água imprópria para banho — IMA/SC 25 de ago., Ponto 12 (Brava), contagem n/d'],
+      'água imprópria para banho: IMA/SC, 25 de ago., Ponto 12 (Brava), contagem n/d'],
     ['water_mixed', { proper: 1, total: 3, avoid: ['Ponto 7 (Canto)', 'Ponto 9 (Centro)'] },
-      '1/3 points PRÓPRIA — avoid Ponto 7 (Canto); Ponto 9 (Centro)', '1/3 pontos PRÓPRIA — evite Ponto 7 (Canto); Ponto 9 (Centro)'],
+      '1/3 points PRÓPRIA — avoid Ponto 7 (Canto); Ponto 9 (Centro)', '1 de 3 pontos com laudo PRÓPRIA; evite Ponto 7 (Canto); Ponto 9 (Centro)'],
     ['a_code_from_a_newer_board', {}, 'its english note', 'its english note']
   ];
   const coded = structuredClone(BOARD);
@@ -750,7 +750,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
     const got = whyItems(openCard(r, 'Praia da Joaquina'));
     CASES.forEach((c, i) => ok(got[i] === c[col], lang + ': note.' + c[0] + ' → "' + c[col] + '"', got[i]));
     slide(r, 0);
-    ok(whyItems(r.els.card.innerHTML)[0] === (lang === 'en' ? 'dark' : 'escuro'), lang + ": an hour's own note_codes render at that hour");
+    ok(whyItems(r.els.card.innerHTML)[0] === (lang === 'en' ? 'dark' : 'à noite'), lang + ": an hour's own note_codes render at that hour");
   }
 
   const future = structuredClone(BOARD); future.schema = 3;
@@ -758,7 +758,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(r7.els.status.textContent === 'could not load the board: board schema 3, this page understands 1, 2' &&
     r7.L.created.filter(l => l.added && isWave(l)).length === 0, 'a schema-3 board is refused, in words', r7.els.status.textContent);
   const r8 = await runPage(BOARD, { noBoard: true });
-  ok(r8.els.status.textContent === 'não foi possível carregar o quadro: 404 data/fixture/2026-09-06.json — rodou `just site-build` antes?',
+  ok(r8.els.status.textContent === 'não foi possível carregar os dados das praias: 404 data/fixture/2026-09-06.json. você rodou `just site-build` antes?',
     'pt-BR: a missing board file says so, with the build hint', r8.els.status.textContent);
 
   // 8. gate 4 (§5.8): under ?lang=x-pseudo every message is accented and bracketed, so a plain
