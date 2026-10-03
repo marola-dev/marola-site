@@ -36,6 +36,7 @@ as defaults to avoid.
 | `--c70 … --cna` | score colours | data only: dots, chips, legend. A change needs a MIP note |
 | `--flow-wind-0 … 5` | `#5b6db3` → `#a8566a` | the wind field, calm to 40 km/h (`flow.js`, the key's ramp) |
 | `--flow-wave-0 … 5` | `#2f5a9e` → `#c86e6e` | the wave field, flat to 3 m |
+| `--sst-0 … 5`, `--anom-*` | GIBS-like | the satellite layers' key ramps, after GIBS's own palettes |
 | `--glass`, `--glass-*` | `rgb(22 26 32 / .8)`, … | what floats over the map: layer rail, key, zoom buttons, popups |
 
 The flow ramps are data too. They follow Windy's muted scales, which visitors already read; a
@@ -87,8 +88,10 @@ from a CDN. Inter is the deliberate pick for a public-information, accessibility
 - **Map**: Mapbox GL JS on the `dark-v11` style (or `MAPBOX_STYLE`), zoom buttons top right, no
   rotation or pitch. Popups take the panel shape, without the arrow.
 - **Layer rail** (`.flow`): Windy-style, right of the map under the zoom buttons, in dark glass.
-  One round icon button per layer (vento, ondas, balneabilidade), no text: the word is the
-  button's title and its screen-reader label. The active one is in `--accent`; under them the
+  A beaches toggle (praias) over a thin rule, then one round icon button per layer (vento, ondas,
+  balneabilidade, satélite, temperatura do mar, anomalias, El Niño), no text: the word is the
+  button's title and its screen-reader label. The four satellite layers are NASA GIBS rasters
+  under the labels; El Niño zooms out to the Pacific and draws the Niño 3.4 box. The active one is in `--accent`; under them the
   active layer's key (ramp with 0 and max, or the fit/unfit dots) and its caption. Wind and waves are white particles over a
   field at 78% opacity, fading out 18 km past the last beach, with a thin white coastline over
   it on Mapbox's own styles. Balneabilidade stops the particles, draws every sampling point in

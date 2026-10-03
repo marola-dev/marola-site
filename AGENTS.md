@@ -107,7 +107,8 @@ The phase list is the umbrella's `docs/PHASES.md`. Site work serves the current 
 ## Code style
 
 Plain JavaScript, no framework and no build step; the page keeps `script-src 'self'`, and its one
-third-party origin is Mapbox for the base map (style, tiles, fonts, the map-load count). A visible
+third-party origins are Mapbox for the base map (style, tiles, fonts, the map-load count) and NASA
+GIBS for the satellite layers (public, keyless tiles, fetched only when a visitor picks one). A visible
 change goes through the `site-frontend` skill (which names the others), `node scripts/site_check.js`
 and before/after screenshots. Shell: `set -euo pipefail`, shellcheck-clean. Python: ruff. Comments
 only for why, a trap, or a pointer, as the umbrella's AGENTS.md spells out.

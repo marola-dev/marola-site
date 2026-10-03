@@ -15,7 +15,7 @@
     area: $('area'), days: $('days'), near: $('near'), sound: $('sound'), toggleList: $('toggle-list'),
     hourbar: $('hourbar'), hour: $('hour'), hourLabel: $('hour-label'),
     list: $('list'), card: $('card'), footer: $('footer'), status: $('status'),
-    flow: $('flow'), mapNote: $('map-note'), map: $('map')
+    flow: $('flow'), keys: $('flowkeys'), mapNote: $('map-note'), map: $('map')
   };
 
   var state = {
@@ -26,7 +26,8 @@
     here: null,         // {lat, lon} after "near me"
     markers: {}, map: null, flow: null, ready: false,
     waterPointMarkers: [],
-    layer: 'wind'       // the map layer: wind, waves or water
+    layer: 'wind',      // the map layer: one of LAYERS
+    beaches: true       // the beach dots, a toggle over any layer
   };
   // site.yml writes mapbox-config.js from the repo's MAPBOX_PUBLIC_TOKEN at deploy (AGENTS.md).
   var MAPBOX = window.MAROLA_MAPBOX || {};
@@ -266,11 +267,65 @@
     Array.prototype.forEach.call(el.flow.querySelectorAll('button[data-layer]'), function (b) {
       b.setAttribute('aria-pressed', String(b.dataset.layer === state.layer));
     });
-    Array.prototype.forEach.call(el.flow.querySelectorAll('[data-key]'), function (k) { k.hidden = k.dataset.key !== state.layer; });
+    Array.prototype.forEach.call(el.flow.querySelectorAll('button[data-toggle]'), function (b) {
+      b.setAttribute('aria-pressed', String(state.beaches));
+    });
+    Array.prototype.forEach.call(el.keys.querySelectorAll('[data-key]'), function (k) { k.hidden = k.dataset.key !== state.layer; });
     el.map.classList.toggle('layer-water', state.layer === 'water');
+    el.map.classList.toggle('no-beaches', !state.beaches);
+    renderRaster();
     if (!state.flow || !state.board) return;
     state.flow.setData(flowPoints());
-    state.flow.setKind(state.layer === 'water' ? 'off' : state.layer);
+    state.flow.setKind(state.layer === 'wind' || state.layer === 'waves' ? state.layer : 'off');
+  }
+
+  // --- satellite layers: NASA GIBS tiles, keyless and public (the page's second third-party origin) ---.
+  var LAYERS = ['wind', 'waves', 'water', 'clouds', 'sst', 'anomaly', 'elnino'];
+  var GIBS = 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/';
+  // daysBack: VIIRS is complete the next day; MUR SST is published with about a day's lag.
+  var RASTERS = {
+    clouds: { layer: 'VIIRS_SNPP_CorrectedReflectance_TrueColor', matrix: 'GoogleMapsCompatible_Level9', ext: 'jpg', maxzoom: 9, daysBack: 1, opacity: 1 },
+    sst: { layer: 'GHRSST_L4_MUR_Sea_Surface_Temperature', matrix: 'GoogleMapsCompatible_Level7', ext: 'png', maxzoom: 7, daysBack: 2, opacity: 0.85 },
+    anomaly: { layer: 'GHRSST_L4_MUR_Sea_Surface_Temperature_Anomalies', matrix: 'GoogleMapsCompatible_Level7', ext: 'png', maxzoom: 7, daysBack: 2, opacity: 0.85 }
+  };
+  RASTERS.elnino = RASTERS.anomaly;
+  // Niño 3.4: 5°N–5°S, 170°W–120°W, where NOAA measures El Niño.
+  var NINO34 = [[-170, -5], [-120, -5], [-120, 5], [-170, 5], [-170, -5]];
+
+  function rasterDay(r) {
+    var d = new Date((state.board ? state.board.day : new Date().toISOString().slice(0, 10)) + 'T12:00:00Z');
+    d.setUTCDate(d.getUTCDate() - r.daysBack);
+    return d.toISOString().slice(0, 10);
+  }
+  function renderRaster() {
+    var r = RASTERS[state.layer];
+    Array.prototype.forEach.call(el.keys.querySelectorAll('[data-when]'), function (w) {
+      var k = RASTERS[w.dataset.when]; w.textContent = k ? rasterDay(k) : '';
+    });
+    if (!state.map || !state.ready) return;
+    var id = r ? r.layer + '/' + rasterDay(r) : null;
+    if (state.rasterId !== id) {
+      if (state.rasterId) { state.map.removeLayer('marola-raster'); state.map.removeSource('marola-raster'); }
+      state.rasterId = id;
+      if (r) {
+        state.map.addSource('marola-raster', { type: 'raster', tileSize: 256, maxzoom: r.maxzoom,
+          attribution: '<a href="https://www.earthdata.nasa.gov/gibs">NASA GIBS</a>',
+          tiles: [GIBS + r.layer + '/default/' + rasterDay(r) + '/' + r.matrix + '/{z}/{y}/{x}.' + r.ext] });
+        state.map.addLayer({ id: 'marola-raster', type: 'raster', source: 'marola-raster', paint: { 'raster-opacity': r.opacity } },
+          state.map.getLayer('marola-coast') ? 'marola-coast' : firstSymbolLayer());
+      }
+    }
+    var nino = state.layer === 'elnino';
+    if (nino && !state.map.getSource('nino34')) {
+      state.map.addSource('nino34', { type: 'geojson', data: { type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: NINO34 } } });
+      state.map.addLayer({ id: 'nino34', type: 'line', source: 'nino34', paint: { 'line-color': '#ffffff', 'line-width': 1.5, 'line-dasharray': [2, 2] } });
+    }
+    if (state.map.getLayer('nino34')) state.map.setLayoutProperty('nino34', 'visibility', nino ? 'visible' : 'none');
+    if (nino !== !!state.zoomedOut) {
+      state.zoomedOut = nino;
+      if (nino) state.map.fitBounds([[-180, -30], [-60, 25]], { padding: 20, duration: reducedMotion() ? 0 : 1200 });
+      else if (state.bounds) state.map.fitBounds(state.bounds, { padding: 40, duration: reducedMotion() ? 0 : 1200, maxZoom: 13 });
+    }
   }
 
   // --- wave markers + hover aspects (MIP-0009) ----------------------------------------------.
@@ -422,8 +477,9 @@
       state.markers[beach.name] = m;
       w = Math.min(w, beach.lon); e = Math.max(e, beach.lon); s0 = Math.min(s0, beach.lat); n = Math.max(n, beach.lat);
     });
-    if (board.beaches.length && !state.fitted) {
-      state.map.fitBounds([[w, s0], [e, n]], { padding: 40, duration: 0, maxZoom: 13 }); state.fitted = true;
+    if (board.beaches.length) state.bounds = [[w, s0], [e, n]];
+    if (board.beaches.length && !state.fitted && !state.zoomedOut) {
+      state.map.fitBounds(state.bounds, { padding: 40, duration: 0, maxZoom: 13 }); state.fitted = true;
     }
   }
 
@@ -630,8 +686,10 @@
   });
   el.hour.addEventListener('input', function () { state.hourIndex = parseInt(el.hour.value, 10); render(); });
   el.flow.addEventListener('click', function (e) {
-    var btn = e.target.closest('button[data-layer]'); if (!btn) return;
-    state.layer = btn.dataset.layer; setParam('layer', state.layer);
+    var btn = e.target.closest('button'); if (!btn) return;
+    if (btn.dataset.toggle === 'beaches') { state.beaches = !state.beaches; setParam('beaches', state.beaches ? '1' : '0'); }
+    else if (btn.dataset.layer) { state.layer = btn.dataset.layer; setParam('layer', state.layer); }
+    else return;
     renderFlow();
     if (state.board) renderWaterPoints(beachByName(state.selected));
   });
@@ -691,7 +749,8 @@
     if (state.mapNoteKey) el.mapNote.textContent = t(state.mapNoteKey);
   });
 
-  if (['wind', 'waves', 'water'].indexOf(param('layer')) >= 0) state.layer = param('layer');
+  if (LAYERS.indexOf(param('layer')) >= 0) state.layer = param('layer');
+  if (param('beaches') === '0') state.beaches = false;
 
   loadAreas().catch(fail);
 })();

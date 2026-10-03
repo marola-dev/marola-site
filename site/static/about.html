@@ -62,7 +62,10 @@
       fontes são públicas e gratuitas, e o marola não usa nenhuma fonte de dados paga ou privada.
       o mapa de fundo é do <a href="https://www.mapbox.com/about/maps/">Mapbox</a>, feito sobre o
       OpenStreetMap. as cores e as partículas de vento e de ondas são estimadas entre as praias a
-      partir da mesma previsão, e não de uma grade meteorológica: longe das praias elas somem.</p>
+      partir da mesma previsão, e não de uma grade meteorológica: longe das praias elas somem.
+      as camadas de satélite, temperatura do mar, anomalias e El Niño são imagens públicas da NASA
+      (<a href="https://www.earthdata.nasa.gov/gibs">GIBS</a>): a foto VIIRS do dia anterior e a
+      temperatura da superfície do mar MUR, com cerca de dois dias de atraso.</p>
       <p>o som do botão "som" é uma gravação de ondas feita por Luftrum
       (<a href="https://freesound.org/s/48412/">freesound</a>, licença
       <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>), em loop editado por
@@ -73,7 +76,8 @@
       o navegador busca o estilo, os pedaços do mapa e as fontes nos servidores do
       <a href="https://www.mapbox.com/legal/privacy">Mapbox</a>, que recebem o seu endereço IP e contam
       cada vez que o mapa abre (é assim que o Mapbox cobra). para essa contagem, o Mapbox guarda no seu
-      navegador um identificador aleatório, sem nome nem e-mail. a opção "perto de mim" usa a sua
+      navegador um identificador aleatório, sem nome nem e-mail. quando você escolhe uma camada de
+      satélite, as imagens vêm dos servidores da NASA, que também veem o seu endereço IP. a opção "perto de mim" usa a sua
       localização só dentro do navegador, e ela nunca é enviada para lugar nenhum. os dados das praias
       são calculados em horários fixos e publicados como arquivos estáticos.</p>
 
@@ -103,7 +107,9 @@
       free, public sources; marola adds no private or paid data feed by default. The base map is
       <a href="https://www.mapbox.com/about/maps/">Mapbox</a>'s, built on OpenStreetMap. The wind and
       wave colours and particles are estimated between beaches from the same forecast, not from a
-      weather grid, so they fade out away from the beaches.</p>
+      weather grid, so they fade out away from the beaches. The satellite, sea temperature, anomaly
+      and El Niño layers are NASA's public imagery (<a href="https://www.earthdata.nasa.gov/gibs">GIBS</a>):
+      the previous day's VIIRS picture and the MUR sea surface temperature, about two days behind.</p>
       <p>The "sound" button plays a recording of waves by Luftrum
       (<a href="https://freesound.org/s/48412/">freesound</a>,
       <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>), looped by Porrumentzio for
@@ -114,7 +120,8 @@
       it, your browser fetches the style, map tiles and fonts from
       <a href="https://www.mapbox.com/legal/privacy">Mapbox</a>'s servers, which see your IP address
       and count each map load (that is how Mapbox bills). For that count Mapbox keeps a random
-      identifier in your browser, with no name or email attached. The "near me" sort uses your
+      identifier in your browser, with no name or email attached. When you pick a satellite layer,
+      its images come from NASA's servers, which also see your IP address. The "near me" sort uses your
       location only inside your own browser; it is never sent anywhere. The beach data is computed on
       a schedule and served as static files.</p>
 

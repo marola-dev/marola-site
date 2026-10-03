@@ -33,7 +33,7 @@ reads); this skill is about what must be on the page.
 - **Safety first, plainly.** Unfit water is red with the reason; an emergency or safety note is
   never softened or hidden behind a hover.
 - **No dark patterns**: no cookie banner tricks, no tracking pixels, no sign-up walls, and no
-  third-party request beyond Mapbox's base map (which about's privacy section names).
+  third-party request beyond Mapbox's base map and NASA GIBS's satellite layers (which about's privacy section names).
 - **"Em breve" is honest.** Unbuilt sections are muted text, not dead links.
 - **Accessible by default**: contrast ≥ 4.5:1, every control has a name, icons are
   `aria-hidden` with a word next to them, the page works at 390 px.

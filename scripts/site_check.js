@@ -112,11 +112,14 @@ class El {
   querySelectorAll(sel) { return this.found[sel] || []; }
   closest() { return this; }
 }
-const IDS = ['area', 'days', 'near', 'sound', 'toggle-list', 'hourbar', 'hour', 'hour-label', 'list', 'card', 'footer', 'status', 'flow', 'map-note', 'map'];
-// #flow's three layer buttons and their keys, as index.html has them.
-function flowPanel(flow) {
-  flow.found['button[data-layer]'] = ['wind', 'waves', 'water'].map(k => Object.assign(new El('flow-' + k), { dataset: { layer: k } }));
-  flow.found['[data-key]'] = ['wind', 'waves', 'water'].map(k => Object.assign(new El('key-' + k), { dataset: { key: k } }));
+const IDS = ['area', 'days', 'near', 'sound', 'toggle-list', 'hourbar', 'hour', 'hour-label', 'list', 'card', 'footer', 'status', 'flow', 'flowkeys', 'map-note', 'map'];
+// #flow's layer buttons, the beaches toggle and their keys, as index.html has them.
+const LAYER_KEYS = ['wind', 'waves', 'water', 'clouds', 'sst', 'anomaly', 'elnino'];
+function flowPanel(flow, keys) {
+  flow.found['button[data-layer]'] = LAYER_KEYS.map(k => Object.assign(new El('flow-' + k), { dataset: { layer: k } }));
+  flow.found['button[data-toggle]'] = [Object.assign(new El('flow-beaches'), { dataset: { toggle: 'beaches' } })];
+  keys.found['[data-when]'] = ['clouds', 'sst', 'anomaly'].map(k => Object.assign(new El('when-' + k), { dataset: { when: k } }));
+  keys.found['[data-key]'] = LAYER_KEYS.map(k => Object.assign(new El('key-' + k), { dataset: { key: k } }));
 }
 // 'smoke' is deliberately absent: the page must tolerate a build without the panel (app.js
 // header).
@@ -153,9 +156,13 @@ function makeMapbox() {
     panTo(c) { this.panned = c; return this; }
     resize() { return this; }
     getStyle() { return { layers: [{ id: 'water', type: 'fill' }, { id: 'road', type: 'line' }, { id: 'place-label', type: 'symbol' }] }; }
-    addSource(id, src) { this.sources[id] = { data: src.data, setData(d) { this.data = d; } }; }
+    addSource(id, src) { this.sources[id] = { src, data: src.data, setData(d) { this.data = d; } }; }
     getSource(id) { return this.sources[id]; }
+    removeSource(id) { delete this.sources[id]; }
     addLayer(layer, before) { this.layers.push({ layer, before }); }
+    getLayer(id) { const l = this.layers.find(x => x.layer.id === id); return l && l.layer; }
+    removeLayer(id) { this.layers = this.layers.filter(x => x.layer.id !== id); }
+    setLayoutProperty(id, k, v) { const l = this.getLayer(id); if (l) (l.layout = l.layout || {})[k] = v; }
     getCanvas() { return { style: {}, clientWidth: 800, clientHeight: 600 }; }
     triggerRepaint() {}
   }
@@ -223,7 +230,7 @@ async function runPage(board, opts) {
   };
   if (!opts.noBoard) files['data/fixture/' + board.day + '.json'] = board;
   const M = makeMapbox();
-  flowPanel(els.flow);
+  flowPanel(els.flow, els.flowkeys);
   const colours = { '--c70': '#2a9d4b', '--c40': '#e0a800', '--c1': '#e07a00', '--c0': '#c0392b', '--cna': '#999999' };
   const errors = [], alerts = [], fetched = [];
   const search = opts.search || '';
@@ -558,7 +565,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   const btn = k => first.els.flow.found['button[data-layer]'].find(b => b.dataset.layer === k);
   first.els.flow.fire('click', { target: Object.assign(btn('waves'), { closest() { return this; } }) });
   ok(flowLayer.kind() === 'waves' && btn('waves').attrs['aria-pressed'] === 'true' && btn('wind').attrs['aria-pressed'] === 'false' &&
-    first.els.flow.found['[data-key]'].find(k => k.dataset.key === 'waves').hidden === false, 'the waves button switches the layer, its key and the pressed state');
+    first.els.flowkeys.found['[data-key]'].find(k => k.dataset.key === 'waves').hidden === false, 'the waves button switches the layer, its key and the pressed state');
   const waveField = flowLayer.field();
   const waveAt = waveField && F.sample(waveField, F.mercX(-48.4487), F.mercY(-27.6296));
   ok(waveAt && Math.abs(waveAt[2] - 1.3 / F.KINDS.waves.max) < 0.02, "Joaquina's wave height (1.3 m at its best hour) is the field's value there; Brava, with no wave direction, sits out", JSON.stringify(waveAt));
@@ -567,7 +574,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   const allPoints = BOARD.beaches.reduce((n, b) => n + ((b.water && b.water.points) || []).length, 0);
   first.els.flow.fire('click', { target: Object.assign(btn('water'), { closest() { return this; } }) });
   ok(flowLayer.kind() === 'off' && flowLayer.field() === null && drawnPoints() === allPoints && allPoints > 1 &&
-    first.els.flow.found['[data-key]'].find(k => k.dataset.key === 'water').hidden === false,
+    first.els.flowkeys.found['[data-key]'].find(k => k.dataset.key === 'water').hidden === false,
     'the water layer stops the particles and draws every beach\'s sampling points, with its key', drawnPoints() + ' of ' + allPoints);
   ok(first.els.map.classList.contains('layer-water'), 'the water layer marks #map, so the beach dots step back');
   first.els.flow.fire('click', { target: Object.assign(btn('wind'), { closest() { return this; } }) });
@@ -576,6 +583,27 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   first.els.hour.value = '0'; first.els.hour.listeners.input[0]();
   const after = F.sample(flowLayer.field(), F.mercX(-48.4487), F.mercY(-27.6296))[2];
   ok(Math.abs(before - 27 / 40) < 0.02 && Math.abs(after - 12 / 40) < 0.02, 'the hour slider moves the field with it (27 km/h at the best hour, 12 at 07:00)', before + ' → ' + after);
+  // the NASA GIBS layers: one raster source at a time, dated from the board's day
+  const fmap = first.map;
+  const tiles = () => fmap.sources['marola-raster'] && fmap.sources['marola-raster'].src.tiles[0];
+  first.els.flow.fire('click', { target: Object.assign(btn('sst'), { closest() { return this; } }) });
+  ok(flowLayer.kind() === 'off' && /^https:\/\/gibs\.earthdata\.nasa\.gov\/wmts\/epsg3857\/best\/GHRSST_L4_MUR_Sea_Surface_Temperature\/default\/2026-09-04\/GoogleMapsCompatible_Level7\/\{z\}\/\{y\}\/\{x\}\.png$/.test(tiles()) &&
+    fmap.getLayer('marola-raster').type === 'raster' && first.els.flowkeys.found['[data-when]'].find(w => w.dataset.when === 'sst').textContent === '2026-09-04',
+    'sea temperature is a GIBS MUR raster two days before the board (2026-09-06), the date in its key, particles off', tiles());
+  first.els.flow.fire('click', { target: Object.assign(btn('clouds'), { closest() { return this; } }) });
+  ok(/VIIRS_SNPP_CorrectedReflectance_TrueColor\/default\/2026-09-05\/GoogleMapsCompatible_Level9\/.*\.jpg$/.test(tiles()) &&
+    fmap.layers.filter(l => l.layer.id === 'marola-raster').length === 1, 'satellite swaps the raster for the day before\'s VIIRS true colour, one raster at a time', tiles());
+  first.els.flow.fire('click', { target: Object.assign(btn('elnino'), { closest() { return this; } }) });
+  ok(/Sea_Surface_Temperature_Anomalies\/default\/2026-09-04\//.test(tiles()) && fmap.getLayer('nino34') && fmap.getLayer('nino34').layout.visibility === 'visible' &&
+    fmap.fitted[0][0][0] === -180, 'El Niño shows the anomaly, the Niño 3.4 box, and zooms out to the Pacific', JSON.stringify(fmap.fitted[0]));
+  first.els.flow.fire('click', { target: Object.assign(btn('wind'), { closest() { return this; } }) });
+  ok(!fmap.sources['marola-raster'] && !fmap.getLayer('marola-raster') && fmap.getLayer('nino34').layout.visibility === 'none' &&
+    fmap.fitted[0][0][0] > -49 && flowLayer.kind() === 'wind', 'back to wind: the raster and the box go, the map returns to the beaches', JSON.stringify(fmap.fitted[0]));
+  const toggle = first.els.flow.found['button[data-toggle]'][0];
+  first.els.flow.fire('click', { target: Object.assign(toggle, { closest() { return this; } }) });
+  ok(first.els.map.classList.contains('no-beaches') && toggle.attrs['aria-pressed'] === 'false', 'the beaches toggle hides the beach dots');
+  first.els.flow.fire('click', { target: Object.assign(toggle, { closest() { return this; } }) });
+  ok(!first.els.map.classList.contains('no-beaches') && toggle.attrs['aria-pressed'] === 'true', 'and shows them again');
   const layered = await runPage(BOARD, { search: '?layer=waves' });
   ok(layered.map.layers.find(l => l.layer.id === 'marola-flow').layer.kind() === 'waves', '?layer=waves opens on the waves layer');
   const watered = await runPage(BOARD, { search: '?layer=water' });
@@ -764,7 +792,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(probe.t('footer.generated', { when: 'w', area: 'a', day: 'd', n: 2, sources: 's' }).includes('· 2 praias ·'),
     'the real catalog pluralises footer.generated');
   // Lowercase house style in the catalogs; these are names marola did not choose.
-  const CASE_OK = ['°C', 'UV', 'km/h', 'mL', 'PRÓPRIA', 'IMPRÓPRIA', 'GitHub', 'Open-Meteo', 'IMA/SC', 'OpenStreetMap', 'Mapbox'];
+  const CASE_OK = ['°C', 'UV', 'km/h', 'mL', 'PRÓPRIA', 'IMPRÓPRIA', 'GitHub', 'Open-Meteo', 'IMA/SC', 'OpenStreetMap', 'Mapbox', 'NASA', 'VIIRS', 'MUR', 'El Niño', 'La Niña', 'Niño'];
   for (const [lang, cat] of Object.entries(CATALOGS)) {
     const shouty = Object.entries(cat).filter(([k, v]) => {
       if (/^dir\./.test(k)) return !/^[A-Z]{1,2}$/.test(v); // compass abbreviations, shown uppercase

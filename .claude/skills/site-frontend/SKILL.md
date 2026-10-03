@@ -40,12 +40,14 @@ overrides live here, not in their files.
 
 ## marola wins over the vendored skills
 
-1. **No framework, no build step, one third-party origin: Mapbox.** Ignore the Tailwind/React/Framer
+1. **No framework, no build step, two third-party origins: Mapbox and NASA GIBS.** Ignore the Tailwind/React/Framer
    stack, `npm install` checks, picsum/Unsplash images and CDN fonts in `design-taste-frontend`,
    and the React/Vue/npm setup in the Mapbox skills. Plain CSS with the `:root` tokens; Mapbox GL
    JS is vendored (its CSP build, `vendor/mapbox-gl-csp*.js`), so scripts and the worker stay
    `'self'`; only the base map's style, tiles, fonts and the map-load count go to Mapbox's servers.
-   Nothing else is fetched from another origin: no CDN, no second map or font provider.
+   The satellite layers (satélite, temperatura do mar, anomalias, El Niño) load NASA GIBS's
+   public, keyless tiles, and only once a visitor picks one. Nothing else is fetched from another
+   origin: no CDN, no other map or font provider.
 2. **Inter is the font.** Taste discourages it by default but allows it for public-information,
    accessibility-first sites, which marola is. No serif.
 3. **Lucide is the icon set**, chosen on purpose (the maintainer asked for an established set).
