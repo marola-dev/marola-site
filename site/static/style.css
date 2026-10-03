@@ -1,6 +1,6 @@
 /* marola map (MIP-0005), styled per DESIGN.md. Plain CSS, mobile first, no framework; Inter is
- * self-hosted under vendor/fonts (the page makes no third-party request). The five score tokens
- * are data and stay. */
+ * self-hosted under vendor/fonts. Third-party origins: Mapbox (base map) and NASA GIBS (satellite layers). The five
+ * score tokens and the two flow ramps are data and stay. */
 @font-face { font-family: "Inter"; font-style: normal; font-weight: 100 900; font-display: swap;
   src: url(vendor/fonts/inter-latin-wght-normal.woff2) format("woff2"); }
 :root {
@@ -15,7 +15,19 @@
   --surface: #f3f5f7;
   --line: #e1e5ea;
   --line-strong: #cbd2da; /* control borders */
-  --sea: #e6ecf1;         /* the map before its tiles load */
+  --sea: #cfe6f1;         /* the map before its tiles load: the base map's water */
+  /* flow ramps (flow.js), calm to strong, after Windy's muted scales; the score dots sit on top
+   * with a ring and a number, so a field colour is never read as a score */
+  --flow-wind-0: #5b6db3; --flow-wind-1: #4a94a9; --flow-wind-2: #4d9a6e; --flow-wind-3: #8fa64a;
+  --flow-wind-4: #b5904a; --flow-wind-5: #a8566a;
+  --flow-wave-0: #2f5a9e; --flow-wave-1: #4a63b8; --flow-wave-2: #6b55b3; --flow-wave-3: #9150a8;
+  --flow-wave-4: #b4508c; --flow-wave-5: #c86e6e;
+  /* the NASA GIBS layers' keys, drawn after GIBS's own palettes: MUR SST, then its anomaly */
+  --sst-0: #3b1d73; --sst-1: #2f5fb3; --sst-2: #33a3c8; --sst-3: #6cc46a; --sst-4: #f0d23c; --sst-5: #d9452b;
+  --anom-cold: #2b5cb8; --anom-mid: #f4f4f4; --anom-warm: #c8322b;
+  /* what floats over the map is frosted white glass, readable over the light base map and the fields */
+  --glass: rgb(255 255 255 / .9); --glass-hover: rgb(17 24 32 / .06); --glass-line: rgb(17 24 32 / .12);
+  --glass-ink: #111820; --glass-muted: #56606c; --glass-unfit: #c0262d;
   --accent: #1b5fc1;      /* the one accent: links, primary fill, focus, the "you" marker (6.1:1) */
   --accent-hover: #164e9e;
   --accent-soft: #e9f0fb; /* selected toggles */
@@ -128,8 +140,47 @@ button[aria-pressed="true"], button[aria-expanded="true"] {
 /* the map fills what is left */
 .main { position: relative; flex: 1 1 auto; min-height: 60vh; }
 #map { position: absolute; inset: 0; background: var(--sea); }
-/* the open list would cover the zoom buttons */
-@media (min-width: 641px) { .main:has(.list:not([hidden])) .leaflet-left { left: calc(min(22rem, 90vw) + 12px); } }
+/* the open list would cover the layer panel */
+@media (min-width: 641px) {
+  /* the open card would cover the layer rail, and the open list the zoom buttons and the key */
+  .main:has(.card:not([hidden])) .flow { right: calc(min(26rem, calc(100vw - 24px)) + 24px); }
+  .main:has(.list:not([hidden])) .flowkeys { left: calc(min(22rem, 90vw) + 24px); }
+  .main:has(.list:not([hidden])) .mapboxgl-ctrl-top-left { left: calc(min(22rem, 90vw) + 12px); }
+}
+
+/* the layer rail, Windy-style: top right of the map; it scrolls if the map is too short for it.
+ * The padding keeps the buttons' shadows inside the scroll box. */
+.flow { position: absolute; z-index: 900; top: 12px; right: 12px; max-height: calc(100% - 24px); overflow-y: auto; scrollbar-width: none; padding: 2px 6px 8px; margin: -2px -6px 0 0; display: flex; flex-direction: column; align-items: flex-end;
+  gap: 8px; font-size: 12px; color: var(--glass-muted); }
+.flow .layers { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.flow .layers .sep { width: 20px; height: 1px; margin: 2px 0; background: var(--glass-line); }
+.flow .layers button { display: flex; align-items: center; justify-content: center; width: 36px; min-height: 36px; padding: 0;
+  border: 1px solid var(--glass-line); border-radius: 50%; background: var(--glass); color: var(--glass-ink);
+  box-shadow: var(--shadow-float); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.flow .layers button .ic { width: 18px; height: 18px; }
+/* icons only; the word stays for screen readers and as the title */
+.flow .layers button > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.flow .layers button:hover { background: var(--bg); border-color: var(--line-strong); color: var(--accent); }
+.flow .layers button .ic { color: inherit; }
+.flow .layers button.soon { opacity: .45; cursor: not-allowed; }
+.flow .layers button.soon:hover { background: var(--glass); color: var(--glass-ink); }
+.flow .layers button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.flowkeys { position: absolute; z-index: 900; left: 12px; bottom: 40px; font-size: 12px; color: var(--glass-muted); }
+.flowkey [data-when] { white-space: nowrap; }
+.flowkey { display: grid; gap: 4px; width: 13rem; margin: 0; padding: 8px 10px; line-height: 1.35;
+  background: var(--glass); border: 1px solid var(--glass-line); border-radius: var(--r-control);
+  box-shadow: var(--shadow-float); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.flowkey .ramp { display: block; height: 8px; border-radius: 4px; }
+.ramp.wind { background: linear-gradient(90deg, var(--flow-wind-0), var(--flow-wind-1), var(--flow-wind-2), var(--flow-wind-3), var(--flow-wind-4), var(--flow-wind-5)); }
+.ramp.sst { background: linear-gradient(90deg, var(--sst-0), var(--sst-1), var(--sst-2), var(--sst-3), var(--sst-4), var(--sst-5)); }
+.ramp.anomaly { background: linear-gradient(90deg, var(--anom-cold), var(--anom-mid), var(--anom-warm)); }
+.ramp.waves { background: linear-gradient(90deg, var(--flow-wave-0), var(--flow-wave-1), var(--flow-wave-2), var(--flow-wave-3), var(--flow-wave-4), var(--flow-wave-5)); }
+.flowkey .ends { display: flex; justify-content: space-between; font-variant-numeric: tabular-nums; color: var(--glass-ink); }
+.flowkey .dots { display: flex; flex-wrap: wrap; gap: 2px 10px; color: var(--glass-ink); }
+.flowkey .dots i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: 1px; }
+.map-note { position: absolute; z-index: 900; top: 12px; right: 12px; max-width: min(24rem, calc(100% - 24px)); margin: 0;
+  padding: 12px 16px; background: var(--bg); border: 1px solid var(--line); border-radius: var(--r-panel);
+  box-shadow: var(--shadow-float); font-size: 14px; }
 
 /* panels float over the map, so they are the one place with elevation */
 .list, .card {
@@ -177,8 +228,8 @@ button[aria-pressed="true"], button[aria-expanded="true"] {
  * EIP-55 address, whose letter case is its checksum). Containers are exempted because app.js emits
  * beach names as bare text nodes. */
 body { text-transform: lowercase; }
-.src, .water, .unfit, .leaflet-control-attribution,
-.list li, .card h2, .leaflet-tooltip .head, .about-body code, .dir { text-transform: none; }
+.src, .water, .unfit, .mapboxgl-ctrl-attrib,
+.list li, .card h2, .mapboxgl-popup .head, .about-body code, .dir, .flowkey { text-transform: none; }
 .bar h1 { text-transform: lowercase; }
 
 .nojs { padding: 32px; max-width: 65ch; }
@@ -199,22 +250,38 @@ html:not(:lang(en)) article.about-body:lang(en), html:lang(en) article.about-bod
 .addr:empty::before { content: "not published yet"; color: var(--muted); }
 html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
 
-.leaflet-container { font: inherit; }
-.leaflet-bar { border: 1px solid var(--line-strong) !important; border-radius: var(--r-control) !important; box-shadow: 0 1px 2px rgb(17 24 32 / .08) !important; }
-.leaflet-bar a:first-child { border-radius: 7px 7px 0 0 !important; }
-.leaflet-bar a:last-child { border-radius: 0 0 7px 7px !important; }
-.leaflet-container .leaflet-control-zoom a { color: var(--ink); }
-.leaflet-tooltip { font-size: 13px; font-variant-numeric: tabular-nums; border-color: var(--line); border-radius: var(--r-control); box-shadow: var(--shadow-float); }
-.leaflet-control-attribution { font-size: 11px; color: var(--muted); }
+/* Mapbox GL's controls and popups in DESIGN.md's control and panel shapes */
+.mapboxgl-map { font: inherit; }
+.mapboxgl-ctrl-group { border: 1px solid var(--glass-line); border-radius: var(--r-control) !important; box-shadow: var(--shadow-float) !important;
+  overflow: hidden; background: var(--glass) !important; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.mapboxgl-ctrl-group button + button { border-top-color: var(--glass-line) !important; }
+.mapboxgl-ctrl-group button:hover { background: var(--glass-hover) !important; }
+.mapboxgl-ctrl-group button { min-height: 0; border-radius: 0; }
+.mapboxgl-ctrl-attrib { font-size: 11px; }
+.mapboxgl-popup { font-size: 13px; font-variant-numeric: tabular-nums; pointer-events: none; }
+.mapboxgl-popup-content { padding: 8px 12px; color: var(--glass-ink); background: var(--glass); border: 1px solid var(--glass-line);
+  border-radius: var(--r-control); box-shadow: var(--shadow-float); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.mapboxgl-popup .unfit, .mapboxgl-popup .improper { color: var(--glass-unfit); }
+.mapboxgl-popup .facilities, .mapboxgl-popup .past { color: var(--glass-muted); }
+.mapboxgl-popup .ic { color: var(--accent); }
+.mapboxgl-popup-tip { display: none; }
 
 /* beach dots + hover aspects (MIP-0009) */
-.leaflet-marker-icon.wave { background: none; border: 0; cursor: pointer; }
+.mapboxgl-marker.wave { cursor: pointer; line-height: 0; }
+.mapboxgl-marker.wave:hover, .mapboxgl-marker.wave:focus-visible { z-index: 2; }
+.mapboxgl-marker.wave.selected { z-index: 3; }
 .wave svg { display: block; overflow: visible; }
 .wave text { font-family: var(--sans); }
-.wave:hover { z-index: 900 !important; }
-/* fading the whole element left a past dot almost invisible over the sea tiles */
+/* fading the whole element left a past dot almost invisible over the sea */
 .wave.past circle + circle { fill-opacity: .45; stroke-dasharray: 2 1.5; }
-.leaflet-tooltip.aspects { padding: 10px 12px; line-height: 1.4; width: max-content; max-width: 22rem; white-space: normal; }
+/* a water-sampling point and the visitor: the same dot shape, smaller */
+.wpoint, .here { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--bg); cursor: default; }
+.here { background: var(--accent); }
+/* on the water layer the sampling points are the data: the beach dots step back */
+.layer-water .mapboxgl-marker.wave { opacity: .4; }
+.no-beaches .mapboxgl-marker.wave { display: none; }
+.layer-water .mapboxgl-marker.wpoint { width: 14px; height: 14px; z-index: 4; }
+.mapboxgl-popup.aspects .mapboxgl-popup-content { padding: 10px 12px; line-height: 1.4; width: max-content; max-width: 22rem; white-space: normal; }
 .aspects .head { font-weight: 600; margin-bottom: 6px; }
 /* auto columns wrap only what does not fit (nowrap clips the right column in pt-BR); width: max-content
  * above because the tooltip sits in a zero-width pane */
@@ -285,6 +352,13 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   .hourbar label { min-width: 0; flex: none; }
   .hourbar input[type=range] { flex: 1 1 0; min-width: 6rem; max-width: none; }
   .legend { margin-left: 0; gap: 4px 12px; }
+  .flow { top: 8px; right: 8px; gap: 6px; }
+  .flow .layers { gap: 4px; }
+  .flow .layers button { width: 32px; min-height: 32px; }
+  .flow .layers button .ic { width: 16px; height: 16px; }
+  .flowkeys { left: 8px; bottom: 36px; }
+  .flowkey { width: 7.5rem; padding: 6px 8px; font-size: 11px; }
+  .flowkey > span:last-child { display: none; } /* the caption; the about page explains the field */
   .list { top: auto; left: 8px; right: 8px; bottom: 8px; width: auto; max-height: 55%; }
   .card { left: 8px; right: 8px; bottom: 8px; width: auto; max-height: 62%; padding: 16px 16px 12px; }
   .card h2 { font-size: 18px; }

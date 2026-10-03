@@ -15,8 +15,8 @@ The static map at [marola.dev](https://marola.dev) (MIP-0005, split out by MIP-0
 
 ## Checks
 
-- `node scripts/site_check.js`: `app.js` in a stub DOM and Leaflet against the fixture board, which
-  must match the schema.
+- `node scripts/site_check.js`: `app.js` and `flow.js` in a stub DOM and Mapbox GL against the
+  fixture board, which must match the schema.
 - `node scripts/redirect_check.js`: the 404 page sends `/docs/*` to `docs.marola.dev`, path kept,
   and leaves every other missing path on the not-found page.
 - `scripts/board-schema.sh --check`: the vendored schema is the pinned image's.

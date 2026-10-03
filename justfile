@@ -17,6 +17,7 @@ site-build area="":
     docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp -v "$PWD/site:/work/site" -w /work "$image" \
       "${args[@]}" --areas site/areas.json --site-out site/dist
     cp -r site/static/. site/dist/
+    scripts/mapbox_config.sh site/dist  # MAPBOX_PUBLIC_TOKEN=pk.… from your shell, or no base map
     scripts/stamp_site_version.sh site/dist
 
 # Serve site/dist at http://localhost:8000.
@@ -45,6 +46,7 @@ quality:
     shellcheck --severity=error scripts/*.sh
     actionlint
     node --check site/static/app.js
+    node --check site/static/flow.js
     node --check site/static/ui.js
     node --check site/static/i18n.js
     python3 scripts/i18n_bundle.py --check
@@ -54,6 +56,7 @@ quality:
     python3 scripts/i18n_bundle.py --self-test
     scripts/site-data-push.sh --self-test
     scripts/board-schema.sh --self-test
+    scripts/mapbox_config.sh --self-test
     scripts/mip-trailer-check.sh --self-test
     agents-check
 
