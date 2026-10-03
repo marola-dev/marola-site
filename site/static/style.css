@@ -1,10 +1,6 @@
-/* marola map — MIP-0005, dressed in DESIGN.md (the Co2 editorial style, with its marola adaptations). Plain CSS, mobile first,
- * no framework; the fonts are DESIGN.md's documented substitutes, self-hosted under vendor/fonts
- * (the page makes no third-party request). The five score tokens are data and stay. */
-@font-face { font-family: "Cormorant Garamond"; font-style: normal; font-weight: 300; font-display: swap;
-  src: url(vendor/fonts/cormorant-garamond-latin-300-normal.woff2) format("woff2"); }
-@font-face { font-family: "Cormorant Garamond"; font-style: normal; font-weight: 400; font-display: swap;
-  src: url(vendor/fonts/cormorant-garamond-latin-400-normal.woff2) format("woff2"); }
+/* marola map (MIP-0005), styled per DESIGN.md. Plain CSS, mobile first, no framework; Inter is
+ * self-hosted under vendor/fonts (the page makes no third-party request). The five score tokens
+ * are data and stay. */
 @font-face { font-family: "Inter"; font-style: normal; font-weight: 100 900; font-display: swap;
   src: url(vendor/fonts/inter-latin-wght-normal.woff2) format("woff2"); }
 :root {
@@ -13,134 +9,166 @@
   --c1:  #d95f02;   /* 1-39 poor */
   --c0:  #d7191c;   /* 0 / water unfit */
   --cna: #8c8c8c;   /* no data */
-  --ink: #181b22;      /* Editorial Ink */
-  --muted: #5b5e66;    /* secondary text on white: Muted Steel is for dark cards and fails 4.5:1 here */
-  --bg: #ffffff;       /* Paper White */
-  --panel: #ffffff;
-  --line: #d9d9d9;     /* Rule Gray */
-  /* marola's blue family (DESIGN.md "marola adaptations"): blue is the primary, mint is not used */
-  --navy: #0b3d8c;     /* Abyss Blue: headings, primary fill (10:1 on white) */
-  --blue-ink: #1659c0; /* Harbor Blue: links, selected fill (6.5:1 on white) */
-  --accent: #4098ff;   /* Climate Blue: icons, hover and focus rings, rules, the "you" marker (3:1: never text) */
-  --ice: #eef6ff;      /* Ice Blue: the header band, the footer, hover fills */
-  --cyan: #dff9ff;     /* Cyan Wash: the empty sea under the map, answers in the chat */
-  --serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --ink: #111820;
+  --muted: #56606c;      /* 6.3:1 on white, 5.8:1 on --surface */
+  --bg: #ffffff;
+  --surface: #f3f5f7;
+  --line: #e1e5ea;
+  --line-strong: #cbd2da; /* control borders */
+  --sea: #e6ecf1;         /* the map before its tiles load */
+  --accent: #1b5fc1;      /* the one accent: links, primary fill, focus, the "you" marker (6.1:1) */
+  --accent-hover: #164e9e;
+  --accent-soft: #e9f0fb; /* selected toggles */
+  --shadow-float: 0 1px 2px rgb(17 24 32 / .06), 0 8px 24px -6px rgb(17 24 32 / .16);
+  --r-control: 8px;
+  --r-panel: 12px;
   --sans: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; }
 body {
-  font: 400 16px/1.5 var(--sans);
+  font: 400 15px/1.5 var(--sans); letter-spacing: -.005em;
   color: var(--ink); background: var(--bg);
   display: flex; flex-direction: column; min-height: 100vh;
-  -webkit-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%; -webkit-font-smoothing: antialiased;
 }
-/* Climate Blue on white is 3:1, so link text is Harbor Blue and Climate Blue is only their rule */
-a { color: var(--blue-ink); text-decoration-color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 3px; }
-a:hover { color: var(--navy); }
-::selection { background: var(--accent); color: #fff; }
+a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { color: var(--accent-hover); }
+::selection { background: var(--accent-soft); }
 b, strong { font-weight: 600; }
-small { font-size: 14px; }
+small { font-size: 13px; }
 [hidden] { display: none !important; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.ic { width: 1.1em; height: 1.1em; flex: none; vertical-align: -.2em; fill: none; stroke: var(--blue-ink);
+.ic { width: 16px; height: 16px; flex: none; vertical-align: -3px; fill: none; stroke: currentColor;
   stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
-button[aria-pressed="true"] .ic, button[aria-expanded="true"] .ic { stroke: currentColor; }
-.score, .dist, .hourbar label, .card dd, .list li::before { font-variant-numeric: tabular-nums; }
+.card .ic, .aspects .ic { color: var(--muted); }
+.score, .dist, .hourbar label, .card dd, .list li::before, .legend { font-variant-numeric: tabular-nums; }
 
-/* header: the serif wordmark and what the page does at left, at most four controls at right */
+/* utility strip: sections, language, the repo. Plain links, not pills: they are navigation */
+.sitenav { display: flex; flex-wrap: wrap; gap: 4px 20px; align-items: center;
+  min-height: 40px; padding: 4px 24px; background: var(--surface); border-bottom: 1px solid var(--line);
+  font-size: 13px; }
+.sitenav > a { color: var(--ink); text-decoration: none; font-weight: 500; }
+.sitenav > a:hover { color: var(--accent); }
+.sitenav > a[aria-current="page"] { color: var(--accent); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 6px; }
+/* a section with no page yet is muted text, so it does not read as a link */
+.sitenav span, .about-body span[aria-disabled] { color: var(--muted); cursor: default; }
+.sitenav i, .about-body span[aria-disabled] i { font-style: normal; font-size: 12px; color: var(--muted); margin-left: 2px; }
+.sitenav i::before, .about-body span[aria-disabled] i::before { content: "("; }
+.sitenav i::after, .about-body span[aria-disabled] i::after { content: ")"; }
+/* the repo link, #498: static on purpose, no live star count (that would be a request to api.github.com) */
+.sitenav .gh { display: inline-flex; align-items: center; gap: 6px; color: var(--ink); text-decoration: none; font-weight: 500; }
+.sitenav .gh span { color: inherit; cursor: pointer; }
+.sitenav .gh:hover { color: var(--accent); }
+.gh svg { width: 15px; height: 15px; flex: none; }
+.sitenav .gh .gh-owner { color: var(--muted); font-weight: 400; }
+.gh-star { display: inline-flex; align-items: center; gap: 4px; padding-left: 8px; border-left: 1px solid var(--line-strong); }
+.gh-star svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linejoin: round; }
+.gh:hover .gh-star svg { fill: currentColor; }
+/* the language toggle pairs with the repo link (MIP-0054 §5.8) */
+.sitenav .lang { margin-left: auto; }
+.lang-icon { width: 14px; height: 14px; margin: 0 4px 0 6px; flex: none; fill: none; stroke: var(--muted); stroke-width: 1.2; }
+.lang button { text-transform: none; }
+
+/* header: wordmark and what the page does at left, the controls at right */
 .bar {
-  display: flex; align-items: center; gap: 12px 32px; flex-wrap: wrap;
-  padding: 12px 32px 16px; background: var(--ice); border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; gap: 12px 24px; flex-wrap: wrap;
+  padding: 12px 24px; background: var(--bg);
 }
-.brand { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.brand { display: flex; align-items: baseline; gap: 4px 16px; flex-wrap: wrap; min-width: 0; }
 .bar h1 {
   display: flex; align-items: center; gap: 8px; margin: 0;
-  font: 300 38px/1.08 var(--serif); letter-spacing: -.01em; white-space: nowrap; color: var(--navy);
+  font-size: 22px; font-weight: 650; line-height: 1.2; letter-spacing: -.02em; white-space: nowrap;
 }
-.bar h1 svg { width: 22px; height: 22px; color: var(--accent); flex: none; stroke-width: 1.5; }
-.tagline { margin: 0; font-size: 14px; line-height: 1.32; color: var(--muted); max-width: 65ch; }
+.bar h1 svg { width: 22px; height: 22px; color: var(--accent); flex: none; align-self: center; }
+.tagline { margin: 0; font-size: 14px; line-height: 1.4; color: var(--muted); max-width: 60ch; }
 .controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-left: auto; }
-.controls select { min-width: 0; }
-/* One control, everywhere (DESIGN.md's Transparent Outline Pill on a Rule Gray hairline): 36 px,
- * 999 px radius, Washed Gray on hover, Mint Wash when selected. Segmented groups (day, language)
- * are one outlined pill holding borderless inner pills. */
-select, button, .pill, .sitenav > a, .controls > a {
-  display: inline-flex; align-items: center; gap: 6px;
-  font: inherit; font-size: 16px; font-weight: 400; line-height: 1.32; min-height: 36px; padding: 0 16px;
-  border: 1px solid var(--line); border-radius: 999px;
-  background: var(--panel); color: var(--ink); cursor: pointer; text-decoration: none;
+.controls:empty { display: none; }
+
+/* One control everywhere: 36 px, 8 px radius, a 1px border. Selected toggles take the soft
+ * accent; the one primary action per surface (chat) takes the accent fill. */
+select, button, .pill, .controls > a {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  font: inherit; font-size: 14px; font-weight: 500; line-height: 1.2; min-height: 36px; padding: 0 12px;
+  border: 1px solid var(--line-strong); border-radius: var(--r-control);
+  background: var(--bg); color: var(--ink); cursor: pointer; text-decoration: none; white-space: nowrap;
 }
-select { display: inline-block; padding-right: 10px; }
-select:hover, button:hover, .pill:hover, .sitenav > a:hover, .controls > a:hover { background: var(--ice); border-color: var(--accent); color: var(--navy); }
-button[aria-pressed="true"], button[aria-expanded="true"], .segmented button.on,
-.sitenav > a[aria-current="page"] { background: var(--blue-ink); border-color: var(--blue-ink); color: #fff; }
+select { display: inline-block; padding: 0 8px 0 12px; }
+select:hover, button:hover, .pill:hover, .controls > a:hover { background: var(--surface); border-color: #b4bec9; }
+button:active { transform: translateY(1px); }
+button[aria-pressed="true"], button[aria-expanded="true"] {
+  background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+/* segmented groups (day, language): a gray track, the picked segment raised in white */
 .segmented, .lang { display: inline-flex; align-items: center; gap: 2px; padding: 2px; min-height: 36px;
-  border: 1px solid var(--line); border-radius: 999px; background: var(--panel); }
-.segmented button, .lang button { min-height: 30px; padding: 0 12px; border-color: transparent; }
-.segmented button:hover, .lang button:hover { border-color: transparent; }
-.segmented button small { font-size: 14px; color: var(--muted); }
-.segmented button.on small { color: inherit; opacity: .85; }
+  border-radius: var(--r-control); background: var(--surface); border: 1px solid var(--line); }
+.lang { min-height: 30px; }
+.segmented button, .lang button { min-height: 30px; padding: 0 10px; border-color: transparent; background: transparent;
+  border-radius: 6px; color: var(--muted); }
+.lang button { min-height: 24px; padding: 0 8px; font-size: 12px; }
+.segmented button:hover, .lang button:hover { background: rgb(255 255 255 / .6); border-color: transparent; color: var(--ink); }
+.segmented button.on, .lang button[aria-pressed="true"] {
+  background: var(--bg); border-color: var(--line); color: var(--ink); box-shadow: 0 1px 2px rgb(17 24 32 / .08); }
+.segmented button small { font-size: 12px; color: var(--muted); font-weight: 400; }
 
 /* hour slider + legend */
 .hourbar {
   display: flex; align-items: center; gap: 8px 24px; flex-wrap: wrap;
-  padding: 10px 32px; background: var(--panel); border-bottom: 1px solid var(--line);
-  font-size: 14px; line-height: 1.32; color: var(--muted);
+  padding: 8px 24px; background: var(--bg); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  font-size: 13px; line-height: 1.4; color: var(--muted);
 }
-.hourbar label { min-width: 11rem; font-size: 14px; font-weight: 500; color: var(--navy); }
-.hourbar input[type=range] { flex: 1 1 12rem; min-width: 8rem; margin: 0; accent-color: var(--blue-ink); }
-.legend { display: inline-flex; align-items: center; gap: 12px; white-space: nowrap; }
+.hourbar label { min-width: 12rem; font-weight: 500; color: var(--ink); }
+.hourbar input[type=range] { flex: 1 1 12rem; min-width: 8rem; max-width: 28rem; margin: 0; accent-color: var(--accent); }
+.legend { display: inline-flex; align-items: center; gap: 4px 14px; flex-wrap: wrap; margin-left: auto; }
 .legend b { font-weight: 500; color: var(--ink); }
-.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: .35em; vertical-align: -1px; }
+.legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
 .c70 { background: var(--c70); } .c40 { background: var(--c40); } .c1 { background: var(--c1); }
 .c0 { background: var(--c0); } .cna { background: var(--cna); }
 
 /* the map fills what is left */
 .main { position: relative; flex: 1 1 auto; min-height: 60vh; }
-#map { position: absolute; inset: 0; background: var(--cyan); }
+#map { position: absolute; inset: 0; background: var(--sea); }
 
-/* White Data Cards over the map: 16 px radius, a Rule Gray hairline, no shadow */
+/* panels float over the map, so they are the one place with elevation */
 .list, .card {
-  position: absolute; z-index: 1000; background: var(--panel); border: 1px solid var(--line);
-  border-radius: 16px; box-shadow: none; overflow: auto; overscroll-behavior: contain;
+  position: absolute; z-index: 1000; background: var(--bg); border: 1px solid var(--line);
+  border-radius: var(--r-panel); box-shadow: var(--shadow-float); overflow: auto; overscroll-behavior: contain;
 }
-.list { top: 16px; left: 16px; bottom: 16px; width: min(24rem, 90vw); padding: 8px 24px; }
+.list { top: 12px; left: 12px; bottom: 12px; width: min(22rem, 90vw); padding: 4px 0; }
 .list ol { margin: 0; padding: 0; list-style: none; counter-reset: rank; }
 .list li {
   display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 10px;
-  padding: 16px 0; border-top: 1px solid var(--line); cursor: pointer; font-size: 18px; line-height: 1.5;
+  padding: 10px 16px; border-top: 1px solid var(--line); cursor: pointer; font-size: 14px; font-weight: 500; line-height: 1.4;
 }
 .list li:first-child { border-top: 0; }
-.list li::before { content: counter(rank); counter-increment: rank; min-width: 1.4em; text-align: right; font-size: 14px; color: var(--blue-ink); }
-.list li:hover { color: var(--blue-ink); }
+.list li::before { content: counter(rank); counter-increment: rank; min-width: 1.5em; text-align: right; font-size: 12px; font-weight: 400; color: var(--muted); }
+.list li:hover { background: var(--surface); }
 .list .score {
-  display: inline-block; min-width: 2.6em; padding: 1px 6px; text-align: center;
-  color: #fff; border-radius: 999px; font-size: 14px; line-height: 1.5; font-weight: 600;
+  display: inline-block; min-width: 2.4em; padding: 1px 6px; text-align: center;
+  color: #fff; border-radius: 999px; font-size: 12px; line-height: 1.5; font-weight: 600;
 }
-.list .dist { font-size: 14px; color: var(--muted); }
-.list .water { flex-basis: 100%; padding-left: calc(1.4em + 10px); font-size: 14px; color: var(--muted); }
+.list .dist { margin-left: auto; font-size: 13px; font-weight: 400; color: var(--muted); }
+.list .water { flex-basis: 100%; padding-left: calc(1.5em + 10px); font-size: 12px; font-weight: 400; color: var(--muted); }
 .list .water.unfit { color: var(--c0); font-weight: 600; }
 
-.card { right: 16px; bottom: 16px; width: min(28rem, calc(100vw - 32px)); max-height: 72%; padding: 32px 32px 16px; }
-.card h2 { margin: 0 32px 8px 0; font: 300 38px/1.08 var(--serif); color: var(--navy); }
-.card .close { position: absolute; top: 16px; right: 16px; }
-.card .headline { margin: 16px 0; padding-top: 16px; border-top: 1px solid var(--line); font-size: 18px; }
-.card .headline .score { color: #fff; border-radius: 999px; padding: 2px 10px; font-weight: 600; }
-.card dl { margin: 0; display: grid; grid-template-columns: 7rem 1fr; gap: 8px 16px; font-size: 16px; }
-.card dt { font-size: 14px; color: var(--muted); padding-top: .15em; }
+.card { right: 12px; bottom: 12px; width: min(26rem, calc(100vw - 24px)); max-height: calc(100% - 24px); padding: 20px 24px 16px; }
+.card h2 { margin: 0 40px 12px 0; font-size: 20px; font-weight: 650; line-height: 1.25; letter-spacing: -.015em; }
+.card .close { position: absolute; top: 14px; right: 14px; }
+.card .headline { margin: 16px 0 12px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 15px; }
+.card .headline .score { color: #fff; border-radius: 999px; padding: 2px 8px; margin-right: 4px; font-size: 13px; font-weight: 600; }
+.card dl { margin: 0; display: grid; grid-template-columns: 6.5rem 1fr; gap: 8px 16px; font-size: 14px; }
+.card dt { font-size: 13px; color: var(--muted); }
 .card dd { margin: 0; max-width: 65ch; }
 .card dd small { color: var(--muted); }
-.card ul { margin: 2px 0 0; padding-left: 1.1rem; }
-.card li { margin: 2px 0; }
+.card ul { margin: 0; padding-left: 1rem; }
+.card li { margin: 0 0 2px; }
 .card .unfit { color: var(--c0); font-weight: 600; }
 .card .improper { color: var(--c0); }
-.card .proper { color: var(--c70); }
+.card .proper { color: #137a5c; }
 .card .past { color: var(--muted); }
 
-.footer { padding: 24px 32px 32px; font-size: 14px; line-height: 1.5; color: var(--muted); background: var(--ice); border-top: 1px solid var(--line); }
-.footer p { margin: 4px 0; max-width: 72ch; }
-.footer .lore { font-size: 18px; color: var(--ink); }
+.footer { padding: 16px 24px 24px; font-size: 13px; line-height: 1.55; color: var(--muted); background: var(--surface); border-top: 1px solid var(--line); }
+.footer p { margin: 4px 0; max-width: 75ch; }
+.footer .lore { font-size: 15px; color: var(--ink); }
 /* Lowercase house style, except names marola did not choose: providers, the agency's verbatim
  * PRÓPRIA/IMPRÓPRIA verdict (MIP-0001), beaches, and literal text in <code> (a `Cost:` trailer; an
  * EIP-55 address, whose letter case is its checksum). Containers are exempted because app.js emits
@@ -150,135 +178,111 @@ body { text-transform: lowercase; }
 .list li, .card h2, .leaflet-tooltip .head, .about-body code, .dir { text-transform: none; }
 .bar h1 { text-transform: lowercase; }
 
-/* Global Pill Navigation, in the shared control style; wraps rather than scrolls, so every link
- * stays reachable at 390px */
-.sitenav { display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
-  padding: 12px 32px 0; background: var(--ice); }
-/* a section with no page yet is plain muted text, so it does not read as a control */
-.sitenav > span { padding: 0 8px; }
-.sitenav span, .about-body span[aria-disabled] { color: var(--muted); cursor: default; }
-.sitenav i, .about-body span[aria-disabled] i { font-style: normal; font-size: 14px; color: var(--muted); margin-left: 4px; }
-/* the repo pill, #498: static on purpose, no live star count (that would be a request to api.github.com) */
-.sitenav .gh { gap: 8px; padding: 0 0 0 14px; }
-.sitenav .gh span { color: inherit; cursor: pointer; }
-.gh svg { width: 16px; height: 16px; flex: none; }
-.sitenav .gh .gh-owner { color: var(--muted); }
-.gh-star { display: inline-flex; align-items: center; gap: 4px; align-self: stretch; padding: 0 14px 0 10px;
-  border-left: 1px solid var(--line); }
-.sitenav .gh .gh-star { color: var(--ink); }
-.gh-star svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linejoin: round; }
-.gh:hover .gh-star svg { fill: currentColor; }
-/* the language toggle pairs with the repo pill (MIP-0054 §5.8), a segmented group like the day picker */
-.sitenav .lang { margin-left: auto; padding-left: 10px; }
-.lang-icon { width: 14px; height: 14px; margin-right: 2px; flex: none; fill: none; stroke: var(--ink); stroke-width: 1.2; }
-.lang button { font-size: 14px; font-weight: 500; text-transform: none; }
-@media (max-width: 640px) {
-  .sitenav { padding: 8px 16px 0; gap: 6px; }
-  .sitenav > a, select, button { font-size: 14px; min-height: 32px; padding: 0 12px; }
-  .segmented, .lang { min-height: 32px; }
-  .segmented button, .lang button { min-height: 26px; padding: 0 10px; }
-  /* sections with no page yet would take a second row on a phone for nothing to tap */
-  .sitenav > span { display: none; }
-  .sitenav .gh .gh-name, .sitenav .gh .gh-star { display: none; }
-  .sitenav .gh { padding: 0 9px; }
-  .sitenav .lang { padding-left: 2px; }
-  .lang-icon { display: none; }
-}
-
 .nojs { padding: 32px; max-width: 65ch; }
 
-/* about / support: an editorial document, serif statements in a restrained reading column */
-.about { display: block; flex: none; padding: 64px 32px 96px; }
-.about-body { max-width: 40rem; margin: 0 auto; font-size: 18px; line-height: 1.5; }
-.about-body h2 { font: 300 38px/1.32 var(--serif); margin: 64px 0 16px; padding-top: 24px; border-top: 1px solid var(--accent); color: var(--navy); }
-.about-body h2:first-child { font-size: 64px; line-height: 1.08; margin: 0 0 32px; padding-top: 0; border-top: 0; }
-.about-body p { margin: 0 0 24px; color: var(--ink); }
+/* about / support: a reading column */
+.about { display: block; flex: none; padding: 48px 24px 80px; border-top: 1px solid var(--line); }
+.about-body { max-width: 38rem; margin: 0 auto; font-size: 16px; line-height: 1.65; }
+.about-body h2 { font-size: 20px; font-weight: 650; line-height: 1.3; letter-spacing: -.015em; margin: 48px 0 12px; }
+.about-body h2:first-child { font-size: 34px; line-height: 1.15; letter-spacing: -.025em; margin: 0 0 24px; }
+.about-body p { margin: 0 0 16px; }
 .about-body ul { padding-left: 1.2rem; }
+.about-body li { margin-bottom: 6px; }
+.about-body code { font-size: 14px; padding: 1px 5px; border-radius: 4px; background: var(--surface); }
 html:not(:lang(en)) article.about-body:lang(en), html:lang(en) article.about-body:lang(pt) { display: none; }
 /* The empty slot is the width the address will take (0x + 40 hex digits). */
 .addr:empty { display: inline-block; width: 42ch; max-width: 100%; padding: 0 .4rem; vertical-align: middle;
-  border: 1px dashed var(--muted); border-radius: 8px; }
+  border: 1px dashed var(--line-strong); border-radius: 6px; }
 .addr:empty::before { content: "not published yet"; color: var(--muted); }
 html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
 
 .leaflet-container { font: inherit; }
-.leaflet-bar { border: 1px solid var(--line) !important; border-radius: 8px !important; box-shadow: none !important; }
+.leaflet-bar { border: 1px solid var(--line-strong) !important; border-radius: var(--r-control) !important; box-shadow: 0 1px 2px rgb(17 24 32 / .08) !important; }
+.leaflet-bar a:first-child { border-radius: 7px 7px 0 0 !important; }
+.leaflet-bar a:last-child { border-radius: 0 0 7px 7px !important; }
 .leaflet-container .leaflet-control-zoom a { color: var(--ink); }
-.leaflet-tooltip { font-size: 14px; font-variant-numeric: tabular-nums; border-color: var(--line); border-radius: 8px; box-shadow: none; }
+.leaflet-tooltip { font-size: 13px; font-variant-numeric: tabular-nums; border-color: var(--line); border-radius: var(--r-control); box-shadow: var(--shadow-float); }
 .leaflet-control-attribution { font-size: 11px; color: var(--muted); }
 
-/* wave markers + hover aspects (MIP-0009) */
+/* beach dots + hover aspects (MIP-0009) */
 .leaflet-marker-icon.wave { background: none; border: 0; cursor: pointer; }
 .wave svg { display: block; overflow: visible; }
 .wave text { font-family: var(--sans); }
 .wave:hover { z-index: 900 !important; }
-/* fading the whole element left a past wave almost invisible over the sea tiles */
+/* fading the whole element left a past dot almost invisible over the sea tiles */
 .wave.past circle + circle { fill-opacity: .45; stroke-dasharray: 2 1.5; }
-.leaflet-tooltip.aspects { padding: 12px 16px; font-size: 14px; line-height: 1.35; width: max-content; max-width: 22rem; white-space: normal; }
+.leaflet-tooltip.aspects { padding: 10px 12px; line-height: 1.4; width: max-content; max-width: 22rem; white-space: normal; }
 .aspects .head { font-weight: 600; margin-bottom: 6px; }
 /* auto columns wrap only what does not fit (nowrap clips the right column in pt-BR); width: max-content
  * above because the tooltip sits in a zero-width pane */
-.aspects .grid { display: grid; grid-template-columns: auto auto; gap: 2px 16px; }
+.aspects .grid { display: grid; grid-template-columns: auto auto; gap: 3px 16px; }
 .aspects .grid .wide { grid-column: 1 / -1; }
 .aspects .unfit { color: var(--c0); font-weight: 600; }
-.wdot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: .25em; vertical-align: 1px; }
+.wdot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin: 0 5px 0 4px; vertical-align: 1px; }
 .aspects .facilities { color: var(--muted); }
-.legend .wave-key { color: var(--ink); }
-.legend .wave-key svg { width: 14px; height: 14px; vertical-align: -2px; margin-right: .3em; }
+.legend .wave-key { color: var(--muted); }
+.legend .wave-key svg { width: 12px; height: 12px; vertical-align: -1px; margin-right: 6px; }
 /* in the card the head repeats the h2, and a 390 px card cannot fit one line per reading */
-.card .aspects { margin: 4px 0 0; font-size: 14px; }
+.card .aspects { margin: 0; font-size: 13px; }
 .card .aspects .head { display: none; }
-.card .aspects .grid { gap: 2px 12px; }
+.card .aspects .grid { gap: 4px 12px; }
 
 @media (prefers-reduced-motion: no-preference) {
-  select, button, .list li, .sitenav a { transition: background-color .15s, border-color .15s, color .15s; }
+  select, button, .list li, .sitenav a { transition: background-color .15s ease-out, border-color .15s ease-out, color .15s ease-out, transform .1s ease-out; }
 }
 
-/* Chat widget — MIP-0033 §5.2. */
+/* Chat widget: MIP-0033 §5.2. */
 .chat-toggle {
   position: fixed; right: 16px; bottom: 16px; z-index: 900;
-  min-height: 40px; font-weight: 500;
+  min-height: 40px; padding: 0 16px; border-radius: 999px; box-shadow: var(--shadow-float);
 }
-/* the one primary action on each surface: Abyss Blue fill */
-.chat-toggle, #chat-form button { background: var(--navy); border-color: var(--navy); color: #fff; }
-.chat-toggle:hover, #chat-form button:hover { background: var(--blue-ink); border-color: var(--blue-ink); color: #fff; }
+.chat-toggle, #chat-form button { background: var(--accent); border-color: var(--accent); color: #fff; }
+.chat-toggle:hover, #chat-form button:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: #fff; }
 .chat-panel {
-  position: fixed; right: 16px; bottom: 72px; z-index: 900;
+  position: fixed; right: 16px; bottom: 68px; z-index: 900;
   width: min(24rem, calc(100vw - 32px)); max-height: min(30rem, calc(100vh - 6rem));
   display: flex; flex-direction: column;
-  background: var(--panel); border: 1px solid var(--line); border-radius: 16px;
+  background: var(--bg); border: 1px solid var(--line); border-radius: var(--r-panel); box-shadow: var(--shadow-float);
 }
-.chat-panel header { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid var(--line); }
-.chat-panel h2 { margin: 0; font: 300 26px/1.2 var(--serif); color: var(--navy); }
-/* the two close buttons are the shared control as a 32 px circle */
-.chat-panel header button, .card .close { justify-content: center; width: 32px; height: 32px; min-height: 0; padding: 0; font-size: 20px; line-height: 1; }
-.chat-log { flex: 1; overflow-y: auto; padding: 16px 24px; min-height: 6rem; }
-.chat-msg { margin: 0 0 8px; padding: 8px 12px; border-radius: 8px; max-width: 90%; white-space: pre-wrap; }
-.chat-msg.user { background: var(--ice); margin-left: auto; }
-.chat-msg.assistant { background: var(--cyan); }
+.chat-panel header { display: flex; align-items: center; justify-content: space-between; padding: 12px 12px 12px 16px; border-bottom: 1px solid var(--line); }
+.chat-panel h2 { margin: 0; font-size: 15px; font-weight: 600; }
+/* the two close buttons are the shared control as a 32 px square */
+.chat-panel header button, .card .close { width: 32px; height: 32px; min-height: 0; padding: 0; font-size: 18px; line-height: 1;
+  border-color: transparent; color: var(--muted); }
+.chat-panel header button:hover, .card .close:hover { color: var(--ink); }
+.chat-log { flex: 1; overflow-y: auto; padding: 12px 16px; min-height: 6rem; font-size: 14px; }
+.chat-msg { margin: 0 0 8px; padding: 8px 12px; border-radius: 10px; max-width: 90%; white-space: pre-wrap; }
+.chat-msg.user { background: var(--accent-soft); margin-left: auto; }
+.chat-msg.assistant { background: var(--surface); }
 .chat-msg.pending { color: var(--muted); }
-.chat-offline { margin: 0 24px 8px; color: var(--c0); font-size: 14px; }
-#chat-form { display: flex; gap: 8px; padding: 16px 24px; border-top: 1px solid var(--line); }
-#chat-input { flex: 1; min-height: 36px; padding: 0 16px; border: 1px solid var(--line); border-radius: 999px; font: inherit; }
+.chat-offline { margin: 0 16px 8px; color: var(--c0); font-size: 13px; }
+#chat-form { display: flex; gap: 8px; padding: 12px; border-top: 1px solid var(--line); }
+#chat-input { flex: 1; min-width: 0; min-height: 36px; padding: 0 12px; border: 1px solid var(--line-strong); border-radius: var(--r-control); font: inherit; font-size: 14px; }
 
 @media (max-width: 640px) {
-  .chat-panel { right: 8px; left: 8px; width: auto; bottom: 68px; }
-  .bar { padding: 8px 16px 12px; gap: 8px; }
-  .bar h1 { font-size: 30px; }
-  .bar h1 svg { width: 20px; height: 20px; }
-  .controls { margin-left: 0; width: 100%; gap: 6px; }
-  .hourbar { padding: 8px 16px; gap: 4px 16px; }
+  .sitenav { padding: 4px 16px; gap: 4px 16px; }
+  /* sections with no page yet would take a second row on a phone for nothing to tap */
+  .sitenav > span { display: none; }
+  .sitenav .gh .gh-name, .sitenav .gh .gh-star { display: none; }
+  .lang-icon { display: none; }
+  .bar { padding: 12px 16px; gap: 10px; }
+  .bar h1 { font-size: 20px; }
+  .tagline { font-size: 13px; }
+  .controls { margin-left: 0; width: 100%; display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+  .controls select { grid-column: span 3; min-width: 0; }
+  .controls .segmented { grid-column: span 3; }
+  .controls .segmented button { flex: 1; }
+  .controls > button { grid-column: span 2; padding: 0 6px; gap: 4px; font-size: 13px; }
+  .hourbar { padding: 8px 16px; gap: 6px 12px; }
   .hourbar label { min-width: 0; flex: none; }
-  .hourbar input[type=range] { min-width: 6rem; }
-  .list { top: auto; left: 8px; right: 8px; bottom: 8px; width: auto; max-height: 55%; padding: 4px 24px; }
-  .list li { padding: 12px 0; font-size: 16px; }
-  /* a bottom sheet keeps 24 px: 32 px leaves a 390 px phone too little line for the readings */
-  .card { left: 8px; right: 8px; width: auto; max-height: 62%; padding: 24px 24px 16px; }
-  .card h2 { font-size: 30px; }
+  .hourbar input[type=range] { flex: 1 1 0; min-width: 6rem; max-width: none; }
+  .legend { margin-left: 0; gap: 4px 12px; }
+  .list { top: auto; left: 8px; right: 8px; bottom: 8px; width: auto; max-height: 55%; }
+  .card { left: 8px; right: 8px; bottom: 8px; width: auto; max-height: 62%; padding: 16px 16px 12px; }
+  .card h2 { font-size: 18px; }
   .card dl { grid-template-columns: 5.5rem 1fr; }
-  .legend { flex-wrap: wrap; row-gap: 4px; }
   .legend .wave-key { display: none; } /* no hover on touch, and it clips at 390 px */
-  .about { padding: 40px 16px 64px; }
-  .about-body h2 { font-size: 30px; margin-top: 48px; }
-  .about-body h2:first-child { font-size: 56px; }
+  .chat-panel { right: 8px; left: 8px; width: auto; bottom: 64px; }
+  .about { padding: 32px 16px 64px; }
+  .about-body h2:first-child { font-size: 28px; }
 }

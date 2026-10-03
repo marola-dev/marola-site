@@ -201,7 +201,7 @@
       className: 'wave' + (selected ? ' selected' : '') + (past ? ' past' : ''),
       iconSize: [size, size], iconAnchor: [r, r], tooltipAnchor: [0, -r],
       html: '<svg viewBox="0 0 ' + size + ' ' + size + '" width="' + size + '" height="' + size + '" aria-hidden="true">' +
-        '<circle cx="' + r + '" cy="' + r + '" r="' + (r - .5) + '" fill="#0b3d8c"/>' +
+        '<circle cx="' + r + '" cy="' + r + '" r="' + (r - .5) + '" fill="#1d2733"/>' +
         '<circle cx="' + r + '" cy="' + r + '" r="' + (r - 2) + '" fill="' + esc(fill) + '" stroke="#fff" stroke-width="2"/>' + label + '</svg>'
     });
   }
@@ -528,7 +528,7 @@
       state.here = { lat: pos.coords.latitude, lon: pos.coords.longitude };
       el.near.setAttribute('aria-pressed', 'true');
       el.list.hidden = false; el.toggleList.setAttribute('aria-expanded', 'true');
-      state.hereMarker = L.circleMarker([state.here.lat, state.here.lon], { radius: 6, color: '#4098ff', fillColor: '#4098ff', fillOpacity: 1 })
+      state.hereMarker = L.circleMarker([state.here.lat, state.here.lon], { radius: 6, color: '#1b5fc1', fillColor: '#1b5fc1', fillOpacity: 1 })
         .addTo(state.map).bindTooltip(tx('near.you'));
       render();
     }, function () { alert(t('near.denied')); });

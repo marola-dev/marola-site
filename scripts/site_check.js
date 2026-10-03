@@ -360,7 +360,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok((tip.match(/class="wide /g) || []).length === 2, 'the water cell and the facilities cell both span both columns', tip);
   // a dot, not a wave glyph: crowded coasts read as points of colour (DESIGN.md's System Color
   // Marker); an Abyss Blue rim and a white ring keep neighbours apart.
-  ok(joaq && /^<svg[^>]*><circle [^>]*fill="#0b3d8c"\/><circle [^>]*fill="#e0a800" stroke="#fff" stroke-width="2"\/><\/svg>$/.test(joaq.opts.icon.options.html),
+  ok(joaq && /^<svg[^>]*><circle [^>]*fill="#1d2733"\/><circle [^>]*fill="#e0a800" stroke="#fff" stroke-width="2"\/><\/svg>$/.test(joaq.opts.icon.options.html),
     'a beach is a rimmed dot filled with its score colour', joaq && joaq.opts.icon.options.html);
   ok(joaq && !/opacity=|drop-shadow|transform=/.test(joaq.opts.icon.options.html), 'no per-path opacity, halo transform or drop-shadow in the marker SVG', joaq && joaq.opts.icon.options.html);
   ok(joaq && joaq.opts.title === undefined && joaq.opts.keyboard === true,
@@ -369,7 +369,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
     'the marker element is named for a screen reader with aria-label', joaq && JSON.stringify(joaq.element.attrs));
   // the legend key is the same glyph, or the key stops meaning "this shape on the map is a
   // beach".
-  const shape = html => ((html || '').match(/<circle [^>]*>/g) || []).map(c => c.replace(/ fill="(?!#0b3d8c)[^"]*"/, ''));
+  const shape = html => ((html || '').match(/<circle [^>]*>/g) || []).map(c => c.replace(/ fill="(?!#1d2733)[^"]*"/, ''));
   const keyShape = shape((/<span class="wave-key">[\s\S]*?<\/svg>/.exec(INDEX) || [])[0]);
   ok(keyShape.length === 2 && JSON.stringify(keyShape) === JSON.stringify(shape(joaq && joaq.opts.icon.options.html)),
     'index.html\'s legend key draws the same dot as the marker', JSON.stringify(keyShape));
@@ -728,12 +728,12 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
     ['jellyfish_some', {}, 'some jellyfish likelihood', 'alguma chance de água-viva'],
     ['water_stale', { sampled_on: '2026-08-05' }, 'water quality data stale (Aug 5)', 'laudo de balneabilidade antigo (5 de ago.)'],
     ['water_unfit', Object.assign({ enterococci_per_100ml: 800 }, unfitArgs),
-      'water unfit for bathing — IMA/SC Aug 25, Ponto 12 (Brava), 800 enterococci/100mL',
+      'water unfit for bathing: IMA/SC Aug 25, Ponto 12 (Brava), 800 enterococci/100mL',
       'água imprópria para banho: IMA/SC, 25 de ago., Ponto 12 (Brava), 800 enterococos/100 mL'],
-    ['water_unfit', unfitArgs, 'water unfit for bathing — IMA/SC Aug 25, Ponto 12 (Brava), count n/a',
+    ['water_unfit', unfitArgs, 'water unfit for bathing: IMA/SC Aug 25, Ponto 12 (Brava), count n/a',
       'água imprópria para banho: IMA/SC, 25 de ago., Ponto 12 (Brava), contagem n/d'],
     ['water_mixed', { proper: 1, total: 3, avoid: ['Ponto 7 (Canto)', 'Ponto 9 (Centro)'] },
-      '1/3 points PRÓPRIA — avoid Ponto 7 (Canto); Ponto 9 (Centro)', '1 de 3 pontos com laudo PRÓPRIA; evite Ponto 7 (Canto); Ponto 9 (Centro)'],
+      '1/3 points PRÓPRIA; avoid Ponto 7 (Canto); Ponto 9 (Centro)', '1 de 3 pontos com laudo PRÓPRIA; evite Ponto 7 (Canto); Ponto 9 (Centro)'],
     ['a_code_from_a_newer_board', {}, 'its english note', 'its english note']
   ];
   const coded = structuredClone(BOARD);
