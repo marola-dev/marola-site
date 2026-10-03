@@ -508,7 +508,7 @@
       state.here = { lat: pos.coords.latitude, lon: pos.coords.longitude };
       el.near.setAttribute('aria-pressed', 'true');
       el.list.hidden = false; el.toggleList.setAttribute('aria-expanded', 'true');
-      state.hereMarker = L.circleMarker([state.here.lat, state.here.lon], { radius: 6, color: '#0b6e99', fillColor: '#0b6e99', fillOpacity: 1 })
+      state.hereMarker = L.circleMarker([state.here.lat, state.here.lon], { radius: 6, color: '#4098ff', fillColor: '#4098ff', fillOpacity: 1 })
         .addTo(state.map).bindTooltip(tx('near.you'));
       render();
     }, function () { alert(t('near.denied')); });
