@@ -76,8 +76,32 @@ jobs:
           node --check site/static/app.js
           BOARD_SCHEMA="$RUNNER_TEMP/board.schema.json" node scripts/site_check.js
 
+      # The app serves each agency's last good fetch from data/water-cache when the agency does not
+      # answer (CachedWaterQualityClient), but in a --rm container that file died with the run, so
+      # an agency that never answers GitHub's runners (INEA, INEMA: #4) had nothing to fall back on.
+      # The cache now carries it from build to build; site/water-cache/ seeds an agency it lacks.
+      - name: Restore the water cache
+        uses: actions/cache/restore@v6
+        with:
+          path: ${{ runner.temp }}/water-cache
+          key: water-cache-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: water-cache-
+
+      # A seed replaces the cached file only when its newest sample is newer, so a refreshed seed
+      # wins over an older fetch and never over a newer one.
+      - name: Seed the water cache from site/water-cache/
+        run: |
+          shopt -s nullglob
+          mkdir -p "$RUNNER_TEMP/water-cache"
+          newest() { python3 -c 'import json,sys; print(max((s["sampled_on"] for p in json.load(open(sys.argv[1]))["points"] for s in p["samples"]), default=""))' "$1" 2>/dev/null || true; }
+          for f in site/water-cache/*.json; do
+            cached="$RUNNER_TEMP/water-cache/${f##*/}"
+            if [ ! -s "$cached" ] || [[ "$(newest "$f")" > "$(newest "$cached")" ]]; then cp -v "$f" "$cached"; fi
+          done
+          for f in "$RUNNER_TEMP"/water-cache/*.json; do echo "${f##*/}: newest sample $(newest "$f")"; done
+
       # `--site` with no id builds every area; the water-quality provider is picked per area origin
-      # (IMA/SC inside Santa Catarina, "no data" elsewhere). The image runs as uid 10001, which
+      # (IMA/SC in Santa Catarina, INEA in Rio, INEMA in Bahia). The image runs as uid 10001, which
       # cannot write the runner's checkout, hence --user.
       - name: Build the boards (one Overpass query per area, no LLM)
         env:
@@ -89,7 +113,8 @@ jobs:
           mkdir -p site/dist
           for attempt in 1 2; do
             if docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp \
-                 -v "$PWD/site:/work/site" -w /work "$IMAGE" \
+                 -v "$PWD/site:/work/site" -v "$RUNNER_TEMP/water-cache:/work/data/water-cache" \
+                 -w /work "$IMAGE" \
                  "${args[@]}" --areas site/areas.json --site-out site/dist; then
               exit 0
             fi
@@ -97,6 +122,12 @@ jobs:
             [ "$attempt" -eq 2 ] || sleep 60
           done
           exit 1
+
+      - name: Save the water cache
+        uses: actions/cache/save@v6
+        with:
+          path: ${{ runner.temp }}/water-cache
+          key: water-cache-${{ github.run_id }}-${{ github.run_attempt }}
 
       # SiteBuilder writes board data only (MIP-0070 §5.4).
       - name: Copy the static page into dist

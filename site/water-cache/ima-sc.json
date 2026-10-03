@@ -1,0 +1,7607 @@
+{
+ "version": 1,
+ "points": [
+  {
+   "id": "007e458b-b7ff-4d7b-be2a-6ce082563381",
+   "beach_name": "Lagoa dos Esteves",
+   "point_name": "Ponto 02",
+   "location": "Em frente à Avenida das Cassuarina, ao lado do trapiche",
+   "lat": -28.8459306,
+   "lon": -49.2889211,
+   "samples": [
+    {
+     "sampled_on": "2026-08-26",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 14.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 230,
+     "water_temp_c": 22.0
+    }
+   ]
+  },
+  {
+   "id": "00faf194-5fcc-48d5-8ecf-2f422e83eb7e",
+   "beach_name": "Praia de Itapoá",
+   "point_name": "Ponto 01",
+   "location": "Em frente à Avenida 650 Brasília, ao lado do Posto de Guarda-Vidas",
+   "lat": -26.0668881,
+   "lon": -48.6097911,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Fraca",
+     "enterococci_per_100ml": 146,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 703,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Fraca",
+     "enterococci_per_100ml": 41,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "00fbfa28-7c58-48f9-b110-adb5c8587064",
+   "beach_name": "Praia do Gravatá",
+   "point_name": "Ponto 04",
+   "location": "Avenida Prefeito Cirino Adolfo Cabral, no molhe da foz do rio Gravatá",
+   "lat": -26.8265269,
+   "lon": -48.6220643,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 933,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 595,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 988,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "02442c4e-fd63-4ffb-9db3-33e396cdb1f6",
+   "beach_name": "Lagoa da Ferrugem",
+   "point_name": "Ponto 04",
+   "location": "Em frente à Avenida Central da Ferrugem, na Lagoa",
+   "lat": -28.0812508,
+   "lon": -48.6320621,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 63,
+     "water_temp_c": 13.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 175,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 1850,
+     "water_temp_c": 16.0
+    }
+   ]
+  },
+  {
+   "id": "02a020ab-df6f-4c8b-9804-9bd955109416",
+   "beach_name": "Praia das Gaivotas",
+   "point_name": "Ponto 04",
+   "location": "Em frente à Sétima Avenida, lado direito do córrego",
+   "lat": -29.1726705,
+   "lon": -49.5883123,
+   "samples": [
+    {
+     "sampled_on": "2026-08-26",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 12.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 300,
+     "water_temp_c": 17.0
+    }
+   ]
+  },
+  {
+   "id": "04108706-ae95-4c46-a7d9-8031d2a13e9c",
+   "beach_name": "Praia dos Ingleses",
+   "point_name": "Ponto 78",
+   "location": "Estrada Dom João Becker, n°319, em frente à Praça Charles Bento Pereira",
+   "lat": -27.4357871,
+   "lon": -48.3911559,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 63,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "07c4ffff-7206-40e4-be82-8a813636390e",
+   "beach_name": "Praia da Pinheira",
+   "point_name": "Ponto 05",
+   "location": "Rua n°504, na foz do rio",
+   "lat": -27.8498432,
+   "lon": -48.5959897,
+   "samples": [
+    {
+     "sampled_on": "2026-08-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 383,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 377,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 2909,
+     "water_temp_c": 16.0
+    }
+   ]
+  },
+  {
+   "id": "0ab5e099-fa3d-49d0-8b61-0ea08496f124",
+   "beach_name": "Praia do Balneário",
+   "point_name": "Ponto 02",
+   "location": "Em frente à Rua José Cândido da Silva",
+   "lat": -27.5778913,
+   "lon": -48.5786527,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 241,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 12997,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "0abefa20-0516-4c2b-97ac-2d6bd3aeae7b",
+   "beach_name": "Praia da Ribanceira",
+   "point_name": "Ponto 04",
+   "location": "Avenida Atlântica, em frente à João Martins, ao lado do Posto de Guarda-Vidas",
+   "lat": -28.19082,
+   "lon": -48.66263,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "0ac1d154-0439-4e03-b687-263cb25fd217",
+   "beach_name": "Praia da Armação  da Piedade",
+   "point_name": "Ponto 01",
+   "location": "Em frente à Rua Francisco Fagundes",
+   "lat": -27.3795471,
+   "lon": -48.5339384,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 282,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 1259,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "0bacdf0a-07b5-4bea-8d9f-370293ef1223",
+   "beach_name": "Praia Central",
+   "point_name": "Ponto 02",
+   "location": "Avenida Atlântica, em frente à Rua n°1001",
+   "lat": -26.9834786,
+   "lon": -48.633915,
+   "samples": [
+    {
+     "sampled_on": "2026-09-08",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 97,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-08-31",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 479,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 75,
+     "water_temp_c": 15.0
+    },
+    {
+     "sampled_on": "2026-08-17",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 1017,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-08-10",
+     "condition": "unknown",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 213,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-08-03",
+     "condition": "unknown",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 439,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 52,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-22",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-13",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 1354,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-06",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 73,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "0c7d19ee-e9c7-4341-b8fb-340ad5648d59",
+   "beach_name": "Praia do Antenor",
+   "point_name": "Ponto 05",
+   "location": "No canto esquerdo da praia, em frente ao riacho",
+   "lat": -27.4265763,
+   "lon": -48.5726606,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 52,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 31,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 3654,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "0c9d08b5-dd7b-4128-b0eb-cbd2e0c96030",
+   "beach_name": "Praia da Camboa",
+   "point_name": "Ponto 09",
+   "location": "Em frente à Rua Flamboiam",
+   "lat": -27.3675575,
+   "lon": -48.5413911,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 275,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 17329,
+     "water_temp_c": 22.0
+    }
+   ]
+  },
+  {
+   "id": "0d14d371-351d-4773-826e-af0fc59a483e",
+   "beach_name": "Praia da Pinheira",
+   "point_name": "Ponto 06",
+   "location": "Em frente à Avenida Cárdida Freitas da Rosa, próximo ao Posto de Guarda-Vidas",
+   "lat": -27.8599291,
+   "lon": -48.6021361,
+   "samples": [
+    {
+     "sampled_on": "2026-08-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 63,
+     "water_temp_c": 16.0
+    }
+   ]
+  },
+  {
+   "id": "0d550757-0461-4bb7-90f0-552b2232705b",
+   "beach_name": "Praia de Palmas",
+   "point_name": "Ponto 19",
+   "location": "Em frente à Rua dos Lírios, no acesso de pedestres",
+   "lat": -27.3198713,
+   "lon": -48.5398775,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 31,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "0f80d217-3ff9-499f-856f-3946c0fad62c",
+   "beach_name": "Praia de Garopaba",
+   "point_name": "Ponto 01",
+   "location": "Rua Aderbal Ramos da Silva, em frente à Praça 21 de abril",
+   "lat": -28.023502,
+   "lon": -48.6141968,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 309,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 323,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 3076,
+     "water_temp_c": 15.0
+    }
+   ]
+  },
+  {
+   "id": "10e23cb0-52be-44f9-9de1-faf245eeddb8",
+   "beach_name": "Praia Central",
+   "point_name": "Ponto 05",
+   "location": "Avenida Atlântica, em frente à Rua n°4900",
+   "lat": -27.0054686,
+   "lon": -48.6050405,
+   "samples": [
+    {
+     "sampled_on": "2026-09-08",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 441,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-08-31",
+     "condition": "impropria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 809,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 86,
+     "water_temp_c": 15.0
+    },
+    {
+     "sampled_on": "2026-08-17",
+     "condition": "impropria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 2613,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-08-10",
+     "condition": "unknown",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 670,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-08-03",
+     "condition": "unknown",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 805,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 512,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-22",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 72,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-13",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 443,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-06",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 134,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "1103d7b0-69bd-4260-9223-547ea689931e",
+   "beach_name": "Praia de Palmas",
+   "point_name": "Ponto 20",
+   "location": "Final da Avenida Atlântica",
+   "lat": -27.3141034,
+   "lon": -48.5403699,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 41,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "122b66fe-06fe-4285-93d6-11d65ca58935",
+   "beach_name": "Praia do Morro das Pedras",
+   "point_name": "Ponto 91",
+   "location": "Rodovia Francisco Thomaz dos Santos, SC-406, n°2089",
+   "lat": -27.7178082,
+   "lon": -48.5038093,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 209,
+     "water_temp_c": 16.0
+    }
+   ]
+  },
+  {
+   "id": "12ca59b7-ab00-439b-a42d-51910dd5f17b",
+   "beach_name": "Praia da Fazenda da Armação",
+   "point_name": "Ponto 08",
+   "location": "Final da Rua Gerino Belmiro dos Santos, próximo ao riacho",
+   "lat": -27.364988,
+   "lon": -48.5519649,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 1565,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 1723,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 1145,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "130ef7c9-4195-4841-a48c-5b7ded407063",
+   "beach_name": "Praia do Canto Grande",
+   "point_name": "Ponto 08",
+   "location": "Em frente à Rua Jequitibá",
+   "lat": -27.2005135,
+   "lon": -48.498686,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 2359,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "1494ae2d-8307-40d2-901c-fbbeb7770ffc",
+   "beach_name": "Lagoa da Conceição",
+   "point_name": "Ponto 41",
+   "location": "Rua Laurindo Januário da Silveira, n°2469, ao lado do Posto de Guarda-Vidas",
+   "lat": -27.6159144,
+   "lon": -48.4839737,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 504,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 74,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 9804,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "17b3e2a2-a807-45b2-a716-36cc67d2b17c",
+   "beach_name": "Praia do Rincão",
+   "point_name": "Ponto 05",
+   "location": "Avenida Waldemar Carlos Peteini, entre às Ruas Rio de Janeiro e Espírito Santo, na foz do arroio",
+   "lat": -28.829644,
+   "lon": -49.22486,
+   "samples": [
+    {
+     "sampled_on": "2026-08-26",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 11199,
+     "water_temp_c": 12.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 1300,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "19b1a0f8-fb5d-43db-94a5-a41099233d75",
+   "beach_name": "Praia de Itapoá",
+   "point_name": "Ponto 02",
+   "location": "Avenida 741 Beira Mar III, n°1848, entre as Ruas 1020 João Dea e Cornélius Pries, próximo do Posto de Guarda-Vidas",
+   "lat": -26.0857345,
+   "lon": -48.6036514,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Fraca",
+     "enterococci_per_100ml": 41,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Fraca",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "1b6d9aba-ef7c-4e3b-a793-d92d7d68c019",
+   "beach_name": "Praia das Gaivotas",
+   "point_name": "Ponto 07",
+   "location": "Em frente à Rua Joinville",
+   "lat": -29.1492351,
+   "lon": -49.566637,
+   "samples": [
+    {
+     "sampled_on": "2026-08-26",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 12.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 300,
+     "water_temp_c": 17.0
+    }
+   ]
+  },
+  {
+   "id": "1c1fc0e5-fc94-4c28-ada6-4a9faf6d58eb",
+   "beach_name": "Praia de Santo Antônio de Lisboa",
+   "point_name": "Ponto 12",
+   "location": "Rua Quinze de Novembro, em frente à Praça Roldão da Rocha Pires",
+   "lat": -27.5075802,
+   "lon": -48.5200527,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 98,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 41,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "1d126126-817f-4656-841e-9d7975d13a3f",
+   "beach_name": "Praia de Bombinhas",
+   "point_name": "Ponto 06",
+   "location": "Avenida Vereador Manoel dos Santos, n°1555",
+   "lat": -27.1483377,
+   "lon": -48.4834252,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 31,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "1e10ec38-1df3-4e9e-afd4-438cba0304ed",
+   "beach_name": "Praia Grande",
+   "point_name": "Ponto 24",
+   "location": "Final da Rua Garça, no acesso de pedestres",
+   "lat": -27.3602858,
+   "lon": -48.536842,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 21.0
+    }
+   ]
+  },
+  {
+   "id": "1f819b95-8a2c-455a-9f59-ba9ebbf08857",
+   "beach_name": "Praia de Taquaras (na lagoa)",
+   "point_name": "Ponto 09",
+   "location": "Lagoa de Taquaras",
+   "lat": -27.0109334,
+   "lon": -48.5785734,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 6131,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 24196,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "1fe05bf7-5599-468a-aad4-f0b807faa1ea",
+   "beach_name": "Praia Central",
+   "point_name": "Ponto 13",
+   "location": "Avenida Atlântica, entre as Ruas n°1300 e n°1400, ao lado do Posto de Guarda-Vidas",
+   "lat": -26.9885771,
+   "lon": -48.6305072,
+   "samples": [
+    {
+     "sampled_on": "2026-09-08",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 63,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-08-31",
+     "condition": "impropria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 905,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 15.0
+    },
+    {
+     "sampled_on": "2026-08-17",
+     "condition": "impropria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 2035,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-08-10",
+     "condition": "unknown",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 384,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-08-03",
+     "condition": "unknown",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 109,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-22",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 41,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-13",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 910,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-06",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 97,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "22c411db-d761-4f75-8aee-dadd07a5bb3b",
+   "beach_name": "Praia da Guarda do Embaú",
+   "point_name": "Ponto 01",
+   "location": "Rua Adelina Rodrigues Martins, ao lado do Posto de Guarda-Vida",
+   "lat": -27.905464,
+   "lon": -48.589597,
+   "samples": [
+    {
+     "sampled_on": "2026-08-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 63,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 399,
+     "water_temp_c": 15.0
+    }
+   ]
+  },
+  {
+   "id": "233d5fd4-c6cd-4043-abc2-c849c9588c45",
+   "beach_name": "Praia Grande",
+   "point_name": "Ponto 08",
+   "location": "Entre as Ruas Waldemar Werner e Rolando Kruger, à esquerda do Posto de Guarda-Vidas",
+   "lat": -26.7811101,
+   "lon": -48.5973234,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 213,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "27d651f9-bcdc-461d-bdd6-713da440dcbc",
+   "beach_name": "Lagoa de Barra Velha",
+   "point_name": "Ponto 05",
+   "location": "Entre as Ruas Pedro Gasino Borba Coelho e Gustavo Coninck, próximo à Praça da Bíblia",
+   "lat": -26.6301527,
+   "lon": -48.682724,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 1396,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 309,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 19863,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "28041403-150f-4907-ae68-cf32e5eb3932",
+   "beach_name": "Praia de Navegantes",
+   "point_name": "Ponto 03",
+   "location": "Em frente à Rua Tacilio Renato Fronza, próximo do Posto de Guarda-Vidas",
+   "lat": -26.8400126,
+   "lon": -48.6303294,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 417,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 594,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "288c4fae-5e1e-4469-b945-1ffae1febcd6",
+   "beach_name": "Beira-Mar Norte",
+   "point_name": "Ponto 95",
+   "location": "Em frente à Rua Altamiro Guimarães, ao lado das quadras de esporte",
+   "lat": -27.583927,
+   "lon": -48.5470533,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 379,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 15531,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "288f177c-2e63-42f5-8289-add204646178",
+   "beach_name": "Praia do Santinho",
+   "point_name": "Ponto 31",
+   "location": "Em frente à Rua Raul Pereira Caldas, n°388, ao lado do Posto de Guarda-Vidas",
+   "lat": -27.4629981,
+   "lon": -48.376851,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "28ec7ea1-d8db-4c50-aac4-5018b0a10532",
+   "beach_name": "Praia dos Ingleses",
+   "point_name": "Ponto 07",
+   "location": "Rua Francisco Machado de Souza, n°945, em frente à praça",
+   "lat": -26.2313303,
+   "lon": -48.6295709,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Fraca",
+     "enterococci_per_100ml": 63,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 545,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 1585,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "2bc4b028-f2c8-4646-82e8-c2fdb7b18e9f",
+   "beach_name": "Praia de Passo de Torres",
+   "point_name": "Ponto 01",
+   "location": "Em frente à Rua Blumenau",
+   "lat": -29.3233471,
+   "lon": -49.7126603,
+   "samples": [
+    {
+     "sampled_on": "2026-08-26",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 275,
+     "water_temp_c": 12.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 40,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "2d1634a7-2d47-4fc0-8281-98ea2e24bf84",
+   "beach_name": "Praia Central",
+   "point_name": "Ponto 10",
+   "location": "Avenida Atlântica, em frente à Rua n°4000",
+   "lat": -27.0041149,
+   "lon": -48.61619,
+   "samples": [
+    {
+     "sampled_on": "2026-09-08",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 189,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-08-31",
+     "condition": "impropria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 855,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 31,
+     "water_temp_c": 15.0
+    },
+    {
+     "sampled_on": "2026-08-17",
+     "condition": "impropria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 2987,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-08-10",
+     "condition": "unknown",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 279,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-08-03",
+     "condition": "unknown",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 63,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 388,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-22",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 41,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-13",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 657,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-06",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 63,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "2da49ba5-c556-4adf-86e7-24799ca953b3",
+   "beach_name": "Praia da Conceição",
+   "point_name": "Ponto 12",
+   "location": "Em frente à Rua da Palmeira",
+   "lat": -27.2023472,
+   "lon": -48.4912279,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "2f31449b-858e-468c-85fd-143acba5d56c",
+   "beach_name": "Praia de Jurerê Internacional",
+   "point_name": "Ponto 53",
+   "location": "Em frente à Rua do Salmão, próximo das quadras de areia",
+   "lat": -27.4368042,
+   "lon": -48.501953,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 41,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "2ff8956e-582f-470c-a9e4-f8ef9528b28d",
+   "beach_name": "Praia de Canasvieiras",
+   "point_name": "Ponto 81",
+   "location": "Em frente à Rua Afonso Cardoso da Veiga",
+   "lat": -27.4270608,
+   "lon": -48.4550107,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 906,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 63,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "31ff5daa-d157-4e7b-aa75-092824d003d4",
+   "beach_name": "Praia das Gaivotas",
+   "point_name": "Ponto 03",
+   "location": "Em frente à Rua B",
+   "lat": -29.1819031,
+   "lon": -49.5966983,
+   "samples": [
+    {
+     "sampled_on": "2026-08-26",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 52,
+     "water_temp_c": 12.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 230,
+     "water_temp_c": 17.0
+    }
+   ]
+  },
+  {
+   "id": "35011c7f-a67d-4681-8389-3edaef3f8b2e",
+   "beach_name": "Praia de Ponta das Canas",
+   "point_name": "Ponto 67",
+   "location": "Rua Nemesio Coelho, n°497, na lagoa",
+   "lat": -27.4038354,
+   "lon": -48.4271771,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 17329,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 275,
+     "water_temp_c": 22.0
+    }
+   ]
+  },
+  {
+   "id": "3579ad5d-5476-4b7c-9de1-d2e13255c00b",
+   "beach_name": "Praia de Itapoá - no rio",
+   "point_name": "Ponto 05",
+   "location": "Em frente à Avenida 11 Dom Henrique II, no final da rampa, no rio",
+   "lat": -26.0059753,
+   "lon": -48.6045963,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Fraca",
+     "enterococci_per_100ml": 426,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 327,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Fraca",
+     "enterococci_per_100ml": 4611,
+     "water_temp_c": 13.0
+    }
+   ]
+  },
+  {
+   "id": "35cec09c-c16b-4d33-93d7-4b964937ed30",
+   "beach_name": "Praia das Gaivotas",
+   "point_name": "Ponto 02",
+   "location": "Em frente à Rua Espírito Santo, lado esquerdo do córrego",
+   "lat": -29.156495,
+   "lon": -49.5740533,
+   "samples": [
+    {
+     "sampled_on": "2026-08-26",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 609,
+     "water_temp_c": 12.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 3000,
+     "water_temp_c": 17.0
+    }
+   ]
+  },
+  {
+   "id": "36cf0e35-e887-40eb-9326-414e167c9e2a",
+   "beach_name": "Praia de Canasvieiras",
+   "point_name": "Ponto 82",
+   "location": "Em frente à Rua José Daux",
+   "lat": -27.4274593,
+   "lon": -48.4614491,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 323,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 75,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "3865dd18-dc45-404c-8364-2f1c958b9563",
+   "beach_name": "Praia de Palmas",
+   "point_name": "Ponto 17",
+   "location": "Em frente à Rua das Anchovas",
+   "lat": -27.3313716,
+   "lon": -48.5347017,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 148,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "3908c5a7-1808-4eb3-b7bd-b75df6e443d7",
+   "beach_name": "Praia do Cachoeira do Bom Jesus",
+   "point_name": "Ponto 56",
+   "location": "Em frente à Rua do Paraíso, n°73",
+   "lat": -27.4205655,
+   "lon": -48.4347702,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 52,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "390f41d4-e7d0-4642-baf4-b6ae2ceb111a",
+   "beach_name": "Praia de Perequê",
+   "point_name": "Ponto 03",
+   "location": "Avenida Senador Atílio Fontana, n°266, foz do Rio Perequizinho",
+   "lat": -27.1555249,
+   "lon": -48.5643452,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 317,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 1050,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "3b2fcaa4-35c6-4481-b567-333520b35285",
+   "beach_name": "Praia do Capri",
+   "point_name": "Ponto 05",
+   "location": "Em frente à Rua Inglaterra, após à passarela, no mar",
+   "lat": -26.18682,
+   "lon": -48.5714,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Fraca",
+     "enterococci_per_100ml": 115,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 160,
+     "water_temp_c": 17.0
+    }
+   ]
+  },
+  {
+   "id": "3bc7cd7a-5915-4c8a-92d7-c08466e7f756",
+   "beach_name": "Praia dos Ingleses",
+   "point_name": "Ponto 27",
+   "location": "Em frente à Rua Recanto do Sol",
+   "lat": -27.4250663,
+   "lon": -48.3999077,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "3c67b4df-4968-487b-9930-93196d801057",
+   "beach_name": "Praia do Cardoso",
+   "point_name": "Ponto 06",
+   "location": "Estrada geral do farol, ao lado do Posto de Guarda-Vidas, próximo da Rua dos Robalos",
+   "lat": -28.6062201,
+   "lon": -48.8233642,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 31,
+     "water_temp_c": 16.0
+    }
+   ]
+  },
+  {
+   "id": "3c81aff7-80bc-4838-9a78-73550c75319d",
+   "beach_name": "Praia da Saudade",
+   "point_name": "Ponto 04",
+   "location": "Rua Desembargador Pedro Silva, n°1768, em frente à Rua Pascoal Simone",
+   "lat": -27.6107708,
+   "lon": -48.5793685,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 85,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "3eac57d1-b425-44a5-8e3d-47e31401bd6d",
+   "beach_name": "Praia da Armação do Pântano do Sul",
+   "point_name": "Ponto 92",
+   "location": "Rodovia Francisco Thomaz dos Santos, SC-406, n°3512, no mar",
+   "lat": -27.7268321,
+   "lon": -48.5068055,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 15.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    }
+   ]
+  },
+  {
+   "id": "3fc7950b-b46d-4324-8d7b-fa45a58b58fb",
+   "beach_name": "Praia de Bombinhas",
+   "point_name": "Ponto 01",
+   "location": "Em frente à Rua Linguado",
+   "lat": -27.1481467,
+   "lon": -48.4911621,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "3ff972dc-4981-41f9-af97-f74e18f18c9c",
+   "beach_name": "Praia de Bombinhas",
+   "point_name": "Ponto 07",
+   "location": "Em frente à Rua Castanheta",
+   "lat": -27.1468011,
+   "lon": -48.4946778,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 52,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "4088fb72-5bb4-4d31-84ea-0b022df181cf",
+   "beach_name": "Praia do Rincão",
+   "point_name": "Ponto 04",
+   "location": "Em frente à Rua Paraná",
+   "lat": -28.8322383,
+   "lon": -49.2278676,
+   "samples": [
+    {
+     "sampled_on": "2026-08-26",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 12.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 300,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "42fb848a-d069-419e-b9a9-ad9c47dee577",
+   "beach_name": "Praia do Rincão",
+   "point_name": "Ponto 08",
+   "location": "Em frente à Rua Espírito Santo, lado esquerdo do trapiche",
+   "lat": -28.8292243,
+   "lon": -49.224261,
+   "samples": [
+    {
+     "sampled_on": "2026-08-26",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 12.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 500,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "44327d08-10f5-4d21-aade-c115e85e6c90",
+   "beach_name": "Praia do Sambaqui",
+   "point_name": "Ponto 14",
+   "location": "Em frente à Servidão Paraíso das Flores",
+   "lat": -27.4944366,
+   "lon": -48.5253454,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 121,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 31,
+     "water_temp_c": 21.0
+    }
+   ]
+  },
+  {
+   "id": "46f9195d-9378-4786-b707-8937fde48400",
+   "beach_name": "Praia Alegre",
+   "point_name": "Ponto 01",
+   "location": "Rua Ivo Silveira, em frente à Travessa Marcelo dos Santos",
+   "lat": -26.7725531,
+   "lon": -48.6546686,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 565,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 12997,
+     "water_temp_c": 22.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 19863,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "47c28e7b-38e6-4112-bdfe-812aef17c5c5",
+   "beach_name": "Praia do Canto Grande - Mar de fora",
+   "point_name": "Ponto 15",
+   "location": "Em frente à Rua Acácia  Negra",
+   "lat": -27.1773205,
+   "lon": -48.5000542,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "4a4b112e-3068-42de-b26e-d9ad42139b17",
+   "beach_name": "Praia do Arroio do Silva",
+   "point_name": "Ponto 04",
+   "location": "Em frente à Rua Criciúma",
+   "lat": -28.9945195,
+   "lon": -49.4187158,
+   "samples": [
+    {
+     "sampled_on": "2026-08-26",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 12.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 230,
+     "water_temp_c": 17.0
+    }
+   ]
+  },
+  {
+   "id": "4b4ad44d-8925-44f0-bc0a-ff34a58d41f6",
+   "beach_name": "Guarda do Embaú",
+   "point_name": "Ponto 03",
+   "location": "Em frente à Rua Adelina Rodrigues Martins (no rio)",
+   "lat": -27.9032503,
+   "lon": -48.591234,
+   "samples": [
+    {
+     "sampled_on": "2026-08-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 98,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 86,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 1014,
+     "water_temp_c": 16.0
+    }
+   ]
+  },
+  {
+   "id": "4c188a53-bc2d-4aeb-9015-04ea5c03a496",
+   "beach_name": "Praia da Cachoeira do Bom Jesus",
+   "point_name": "Ponto 80",
+   "location": "Em frente à Rua Deputado Otacílio Costa, n°280",
+   "lat": -27.4238973,
+   "lon": -48.4418185,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 41,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "4eb77c0d-c56a-4f93-b1f1-28cde43a355a",
+   "beach_name": "Praia do Antenor",
+   "point_name": "Ponto 04",
+   "location": "No meio da praia",
+   "lat": -27.4265843,
+   "lon": -48.573583,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 31,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 313,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 528,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "4ed072cf-9ebe-4de7-ae0f-deca6c88e714",
+   "beach_name": "Praia dos Ingleses",
+   "point_name": "Ponto 77",
+   "location": "Rua das Gaivotas, n°1993, próximo à Rua Morro das Feiticeiras",
+   "lat": -27.4201506,
+   "lon": -48.402121,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 41,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "4fe079a4-3b07-40bc-a6c1-7e54f2a55eee",
+   "beach_name": "Praia Central",
+   "point_name": "Ponto 11",
+   "location": "Avenida Atlântica, em frente à Rua n°3500",
+   "lat": -26.998995,
+   "lon": -48.6228283,
+   "samples": [
+    {
+     "sampled_on": "2026-09-08",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 41,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-08-31",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 313,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 15.0
+    },
+    {
+     "sampled_on": "2026-08-17",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 1850,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-08-10",
+     "condition": "unknown",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 86,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-08-03",
+     "condition": "unknown",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 63,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 253,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-22",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 86,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-13",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 738,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-06",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 119,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "4ff8cd27-e427-4fb8-bdd0-9da4bda98fe6",
+   "beach_name": "Praia Central",
+   "point_name": "Ponto 03",
+   "location": "Avenida Atlântica, em frente à Rua n°2000",
+   "lat": -26.991042,
+   "lon": -48.6290003,
+   "samples": [
+    {
+     "sampled_on": "2026-09-08",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-08-31",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 384,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 15.0
+    },
+    {
+     "sampled_on": "2026-08-17",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 616,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-08-10",
+     "condition": "unknown",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 63,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-08-03",
+     "condition": "unknown",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 185,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 120,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-22",
+     "condition": "impropria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 41,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-13",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 1017,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-06",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 120,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "508380ee-d5ae-44f7-b635-cf4fcd4b1e9f",
+   "beach_name": "Praia do Itaguaçu",
+   "point_name": "Ponto 06",
+   "location": "Rua Desembargador Pedro Silva, n°3130",
+   "lat": -27.6166011,
+   "lon": -48.5910994,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 161,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 41,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "5291dae8-dfe4-4e6c-9177-18f064974cfa",
+   "beach_name": "Praia do Porto",
+   "point_name": "Ponto 05",
+   "location": "Rua Alvin Agostinho, n°85, próximo ao navio encalhado",
+   "lat": -28.2180632,
+   "lon": -48.6664049,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "54b19ce8-b32b-4ecd-b378-6f261a5cd877",
+   "beach_name": "Praia do Mar Grosso",
+   "point_name": "Ponto 03",
+   "location": "Avenida Maurílio Kfouri, n°359, em frente à Rua Lauro Muller, próximo ao Posto de Guarda-Vidas",
+   "lat": -28.4813661,
+   "lon": -48.7665704,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 145,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 15.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 17.0
+    }
+   ]
+  },
+  {
+   "id": "564be346-6451-41f0-bc37-304de4f3c9bd",
+   "beach_name": "Lagoa do Arroio Corrente",
+   "point_name": "Ponto 02",
+   "location": "Rua 29 de setembro, na entrada do chuveirão",
+   "lat": -28.6920252,
+   "lon": -49.0185997,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 52,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Fraca",
+     "enterococci_per_100ml": 187,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 52,
+     "water_temp_c": 16.0
+    }
+   ]
+  },
+  {
+   "id": "58fbe2a9-d9ce-466f-94c3-5dbd46416ead",
+   "beach_name": "Praia do Campeche",
+   "point_name": "Ponto 35",
+   "location": "Em frente à Avenida Pequeno Príncipe, n°3348",
+   "lat": -27.6898635,
+   "lon": -48.4818292,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 86,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    }
+   ]
+  },
+  {
+   "id": "5a344c6f-c8e3-4c56-bcc6-ee906de442c2",
+   "beach_name": "Praia do José Mendes",
+   "point_name": "Ponto 52",
+   "location": "Rua José Maria da Luz, n°259",
+   "lat": -27.6130814,
+   "lon": -48.5469877,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 9804,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 780,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "5af7d1ae-2d8d-4609-ac87-774e1406a56e",
+   "beach_name": "Praia Alegre",
+   "point_name": "Ponto 02",
+   "location": "Rua Abraão João Francisco, n°10, em frente às quadras de esporte",
+   "lat": -26.7721538,
+   "lon": -48.6591107,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 568,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 269,
+     "water_temp_c": 22.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 19863,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "5b7cc43e-ce94-45fd-959c-f34bd8dbc8dd",
+   "beach_name": "Lagoa do Faxinal",
+   "point_name": "Ponto 03",
+   "location": "Rodovia Jorge Fortulino, km 5, no Parque Aquático Parque Verde",
+   "lat": -28.8371917,
+   "lon": -49.275747,
+   "samples": [
+    {
+     "sampled_on": "2026-08-26",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 98,
+     "water_temp_c": 14.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 500,
+     "water_temp_c": 22.0
+    }
+   ]
+  },
+  {
+   "id": "5c695235-dafd-4c29-962c-e89b5c823e76",
+   "beach_name": "Praia de Itapema",
+   "point_name": "Ponto 07",
+   "location": "Em as Ruas n°129 E3 e n°129 E5",
+   "lat": -27.0960304,
+   "lon": -48.6128401,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "5c889f40-76b9-497b-9cd9-afd19090bac1",
+   "beach_name": "Praia de Fora",
+   "point_name": "Ponto 07",
+   "location": "Em frente à Rua Girassol",
+   "lat": -27.7465113,
+   "lon": -48.6275398,
+   "samples": [
+    {
+     "sampled_on": "2026-08-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 1376,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 833,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 8164,
+     "water_temp_c": 16.0
+    }
+   ]
+  },
+  {
+   "id": "5cbb3f3d-4fb6-4963-abf2-6a184fcba133",
+   "beach_name": "Praia do Campeche",
+   "point_name": "Ponto 73",
+   "location": "Avenida Campeche, n°300, no Riozinho do Campeche",
+   "lat": -27.6859487,
+   "lon": -48.4814381,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 749,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 627,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 2187,
+     "water_temp_c": 16.0
+    }
+   ]
+  },
+  {
+   "id": "5cbe9e48-da8d-443f-b341-5d98ee25e1e5",
+   "beach_name": "Praia do Quilombo",
+   "point_name": "Ponto 03",
+   "location": "Em frente à Rua Inês de Souza",
+   "lat": -26.7732146,
+   "lon": -48.6382538,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 697,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 31,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 480,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "5e120ed7-21ec-4b3b-8ad6-087b2c1fc335",
+   "beach_name": "Praia de Itapema",
+   "point_name": "Ponto 05",
+   "location": "Em frente à Rua n°205",
+   "lat": -27.1168032,
+   "lon": -48.6079017,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 203,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 771,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "5fb54e16-6684-4431-a390-b09d57e6f69c",
+   "beach_name": "Lagoa da Conceição",
+   "point_name": "Ponto 72",
+   "location": "Em frente à Rua Canto da Amizade",
+   "lat": -27.6259911,
+   "lon": -48.476899,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 573,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 51,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 24196,
+     "water_temp_c": 16.0
+    }
+   ]
+  },
+  {
+   "id": "6090df81-c531-431e-a93c-ba80d7c919af",
+   "beach_name": "Praia das Laranjeiras",
+   "point_name": "Ponto 06",
+   "location": "Em frente à Rua Sabino Pedro Vicente",
+   "lat": -26.9974928,
+   "lon": -48.5908071,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 565,
+     "water_temp_c": 15.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "60e34274-5bd9-4738-a2a8-afd4669245c2",
+   "beach_name": "Praia do Pântano  do Sul",
+   "point_name": "Ponto 93",
+   "location": "Em frente à Rua José Corrêa Hulse, ao lado do Posto de Guarda-Vidas",
+   "lat": -27.7847209,
+   "lon": -48.5255377,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 52,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    }
+   ]
+  },
+  {
+   "id": "62f33cb3-73c6-4786-b97e-d3bc336984ed",
+   "beach_name": "Praia da Enseada",
+   "point_name": "Ponto 01",
+   "location": "Praça Manoel Perereira Júnior, ao lado do Posto de Guarda-Vidas",
+   "lat": -26.2263962,
+   "lon": -48.5091548,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Fraca",
+     "enterococci_per_100ml": 860,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 97,
+     "water_temp_c": 17.0
+    }
+   ]
+  },
+  {
+   "id": "63420be8-b882-4d66-b746-0b119ec5d1b1",
+   "beach_name": "Praia das Palmeiras",
+   "point_name": "Ponto 07",
+   "location": "Rua das Palmeiras, no meio da praia",
+   "lat": -27.61601,
+   "lon": -48.5947428,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 199,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 30,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "63d551b7-1f3c-4a1f-b5f3-a5c7bc9bcca7",
+   "beach_name": "Praia do Campeche",
+   "point_name": "Ponto 90",
+   "location": "Em frente à Rua Campos Limpos, (Rua Lomba do Sabão),  n°281",
+   "lat": -27.6976085,
+   "lon": -48.4898874,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    }
+   ]
+  },
+  {
+   "id": "643c2751-c528-438f-b8f6-1411ae8da1af",
+   "beach_name": "Praia do Campeche",
+   "point_name": "Ponto 89",
+   "location": "Avenida Jerônimo Venâncio Chagas, n°113, em frente à passarela de acesso",
+   "lat": -27.6661915,
+   "lon": -48.4756481,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    }
+   ]
+  },
+  {
+   "id": "647dee59-af7e-49ad-8b30-4a9532f8a931",
+   "beach_name": "Praia Central",
+   "point_name": "Ponto 14",
+   "location": "Avenida Atlântica, em frente à Rua n°51, esquerda da praça Almirante Tamandaré",
+   "lat": -26.986683,
+   "lon": -48.6324869,
+   "samples": [
+    {
+     "sampled_on": "2026-09-08",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 122,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-08-31",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 573,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 63,
+     "water_temp_c": 15.0
+    },
+    {
+     "sampled_on": "2026-08-17",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 934,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-08-10",
+     "condition": "unknown",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 158,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-08-03",
+     "condition": "unknown",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 279,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 216,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-22",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 84,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-13",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 591,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-06",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 121,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "64b74792-927e-464c-8632-27c547eef4ad",
+   "beach_name": "Praia de Itapirubá",
+   "point_name": "Ponto 01",
+   "location": "Avenida João Paulo 2°, n°771, Itapirubá Sul, ao lado do Posto de Guarda-Vidas",
+   "lat": -28.341045,
+   "lon": -48.7079833,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 15.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 13.0
+    }
+   ]
+  },
+  {
+   "id": "667d5157-5ea9-401a-83fb-68849ca0badd",
+   "beach_name": "Praia de Jurerê",
+   "point_name": "Ponto 54",
+   "location": "Em frente à Rua Luiz Rampa",
+   "lat": -27.437422,
+   "lon": -48.4827705,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 74,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "66aa685e-3f15-4c38-8dea-6f3c3ecd9259",
+   "beach_name": "Praia de Itapema",
+   "point_name": "Ponto 08",
+   "location": "Em frente à Rua n°261",
+   "lat": -27.1321057,
+   "lon": -48.5972905,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 63,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "6b382ee6-e645-4822-867b-8591a04e4731",
+   "beach_name": "Praia da Armação do Itapocorói",
+   "point_name": "Ponto 11",
+   "location": "Em frente à Rua Antônio Aniceto da Costa",
+   "lat": -26.7856489,
+   "lon": -48.6029821,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 5475,
+     "water_temp_c": 22.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 780,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "6b97a6d2-ea1a-458e-b9ec-71a9d2bf22e6",
+   "beach_name": "Praia de Itapema",
+   "point_name": "Ponto 04",
+   "location": "Em frente à Rua n°319",
+   "lat": -27.1429132,
+   "lon": -48.5870288,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 146,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "6bf9e548-c31c-4df8-91a1-b0d3a07b8d4c",
+   "beach_name": "Bacia da Vovó",
+   "point_name": "Ponto 07",
+   "location": "Avenida Prefeito Henrique Assis, n°775",
+   "lat": -26.7630373,
+   "lon": -48.6470388,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 201,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "6c51c162-fcd3-4b98-a22b-ccd1026eea6a",
+   "beach_name": "Praia de Ponta das Canas",
+   "point_name": "Ponto 70",
+   "location": "Em frente à Rua Alcina Janis, n°244, no mar",
+   "lat": -27.4136577,
+   "lon": -48.4281449,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 31,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 231,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "6cc48534-b7d4-41b6-bf58-6430c4bab6c6",
+   "beach_name": "Lagoa de Cabeçuda",
+   "point_name": "Ponto 04",
+   "location": "Rua Antônio da Silva Fernandes, n°1227",
+   "lat": -28.4407007,
+   "lon": -48.8201088,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 733,
+     "water_temp_c": 15.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 2247,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "6ce5166b-a2f5-4eb4-bc46-d2938ccf41f1",
+   "beach_name": "Praia da Costeira da Armação- Baía dos Golfinhos",
+   "point_name": "Ponto 03",
+   "location": "Em frente à Rua Atílio de Carvalho",
+   "lat": -27.4045912,
+   "lon": -48.5622378,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 410,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "6cfb104f-38a7-4faf-ba41-edad1154cf6b",
+   "beach_name": "Praia de Itaguaçú",
+   "point_name": "Ponto 03",
+   "location": "Em frente à Rua Manila, ao lado do Posto de Guarda-Vidas",
+   "lat": -26.1900687,
+   "lon": -48.5284612,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Fraca",
+     "enterococci_per_100ml": 121,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 41,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 17.0
+    }
+   ]
+  },
+  {
+   "id": "6e231f6f-35f2-4cf6-812a-d000ca54c4ea",
+   "beach_name": "Praia do Arroio do Silva",
+   "point_name": "Ponto 05",
+   "location": "Em frente à Rua Domingos Campos",
+   "lat": -28.9813383,
+   "lon": -49.4047656,
+   "samples": [
+    {
+     "sampled_on": "2026-08-26",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 41,
+     "water_temp_c": 12.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 230,
+     "water_temp_c": 17.0
+    }
+   ]
+  },
+  {
+   "id": "6e9719d3-176d-42d2-bfaa-d0f58ad4c25d",
+   "beach_name": "Praia da Armação do Itapocorói",
+   "point_name": "Ponto 05",
+   "location": "Em frente à Rua Maria Emília de Costa, n°62",
+   "lat": -26.7886101,
+   "lon": -48.6051976,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 24196,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 24196,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "6f5d2828-2dca-4c4f-8e5d-29a8bb4f4328",
+   "beach_name": "Praia dos Ingleses",
+   "point_name": "Ponto 58",
+   "location": "Em frente à Rua Dante de Patta",
+   "lat": -27.4336727,
+   "lon": -48.3931816,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 41,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "700e61bd-a238-4722-8fc2-bb316a641074",
+   "beach_name": "Praia de Calheiros",
+   "point_name": "Ponto 16",
+   "location": "Canto esquerdo da praia, ao lado do Posto de Guarda -Vidas",
+   "lat": -27.3162139,
+   "lon": -48.562213,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 135,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 2064,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "70841a79-a6e7-49a7-b32a-3b8c95ada0c9",
+   "beach_name": "Praia de Itapema",
+   "point_name": "Ponto 02",
+   "location": "Entre as Ruas n°149 e n°151, ao lado do Posto de Guarda-Vidas",
+   "lat": -27.1014722,
+   "lon": -48.6137999,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "71da2cbf-ac68-4ade-ab55-7e36b1e221e6",
+   "beach_name": "Praia de São Miguel",
+   "point_name": "Ponto 01",
+   "location": "Rua Brigadeiro Eduardo Gomes, ao lado da passarela",
+   "lat": -27.4522133,
+   "lon": -48.6333353,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 110,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 934,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 1334,
+     "water_temp_c": 15.0
+    }
+   ]
+  },
+  {
+   "id": "72040d53-00b6-4c6c-a077-81bc98fe35c9",
+   "beach_name": "Praia da Barra de Ibiraquera",
+   "point_name": "Ponto 03",
+   "location": "Em frente à Avenida Sul, n°2400, acesso à direita",
+   "lat": -28.1550308,
+   "lon": -48.6532467,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "733b656c-7ebe-42b0-b180-c24494397268",
+   "beach_name": "Praia da Tapera",
+   "point_name": "Ponto 48",
+   "location": "Rua da Praia, n°356",
+   "lat": -27.6886181,
+   "lon": -48.5682742,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 959,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 52,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "73889348-063c-4d83-afc8-b8611ee3526f",
+   "beach_name": "Praia de Piçarras",
+   "point_name": "Ponto 02",
+   "location": "Em frente à Avenida Getúlio Vargas, próximo ao Posto de Guarda-Vidas, à esquerda do molhe",
+   "lat": -26.7574782,
+   "lon": -48.6743253,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 41,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 121,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 5794,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "744deb4e-9251-4310-9f57-80491dd7e281",
+   "beach_name": "Praia da Pinheira",
+   "point_name": "Ponto 02",
+   "location": "Em frente à Rua Manoel Martins",
+   "lat": -27.8845079,
+   "lon": -48.5882458,
+   "samples": [
+    {
+     "sampled_on": "2026-08-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 6131,
+     "water_temp_c": 16.0
+    }
+   ]
+  },
+  {
+   "id": "74c35f52-4b09-4673-9ea7-cc3d7eee0d33",
+   "beach_name": "Praia do Arroio do Silva",
+   "point_name": "Ponto 17",
+   "location": "Em frente à Avenida Florianópolis, lado esquerdo do córrego (no mar)",
+   "lat": -28.9907426,
+   "lon": -49.4147109,
+   "samples": [
+    {
+     "sampled_on": "2026-08-26",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 31,
+     "water_temp_c": 12.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 500,
+     "water_temp_c": 17.0
+    }
+   ]
+  },
+  {
+   "id": "75c6bc54-77f3-4b40-ad43-d4d26b53a4eb",
+   "beach_name": "Praia de Morrinhos",
+   "point_name": "Ponto 11",
+   "location": "Avenida Girassol,  n°1450",
+   "lat": -27.185374,
+   "lon": -48.5123155,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 1793,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 52,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "76c6acf2-793c-44d1-9a0a-32a5d3723b2d",
+   "beach_name": "Praia do Arroio do Silva",
+   "point_name": "Ponto 01",
+   "location": "Em frente à Rua Apolônio Ireno Cardoso",
+   "lat": -28.987008,
+   "lon": -49.41067,
+   "samples": [
+    {
+     "sampled_on": "2026-08-26",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 31,
+     "water_temp_c": 12.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 230,
+     "water_temp_c": 17.0
+    }
+   ]
+  },
+  {
+   "id": "76ce3987-3419-4b06-ab0f-121ad4585fe4",
+   "beach_name": "Canal do Linguado",
+   "point_name": "Ponto 03",
+   "location": "SC-415, n°2175, em frente à Rua Offer Fiedler",
+   "lat": -26.442614,
+   "lon": -48.6281125,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 1450,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 683,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 1725,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "776da9e9-76c1-48bf-9a4c-71830f8610c8",
+   "beach_name": "Praia Central",
+   "point_name": "Ponto 04",
+   "location": "Avenida Atlântica, em frente à Rua n°3000",
+   "lat": -26.9967111,
+   "lon": -48.6253608,
+   "samples": [
+    {
+     "sampled_on": "2026-09-08",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 30,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-08-31",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 233,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 15.0
+    },
+    {
+     "sampled_on": "2026-08-17",
+     "condition": "impropria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 4352,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-08-10",
+     "condition": "unknown",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 256,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-08-03",
+     "condition": "unknown",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 121,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 120,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-22",
+     "condition": "impropria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-13",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 886,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-06",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 122,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "778a33f8-d836-4e92-b445-98ddabae2cdc",
+   "beach_name": "Praia Central",
+   "point_name": "Ponto 12",
+   "location": "Avenida Atlântica, em frente à Rua n°2500",
+   "lat": -26.9942295,
+   "lon": -48.6275028,
+   "samples": [
+    {
+     "sampled_on": "2026-09-08",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 31,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-08-31",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 369,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 15.0
+    },
+    {
+     "sampled_on": "2026-08-17",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 1301,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-08-10",
+     "condition": "unknown",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 148,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-08-03",
+     "condition": "unknown",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 110,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 75,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-22",
+     "condition": "impropria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 86,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-13",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 865,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-06",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 52,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "77c26c08-1214-4bd9-8a58-9737b661e32f",
+   "beach_name": "Praia Vermelha",
+   "point_name": "Ponto 09",
+   "location": "Em frente à Rua Antônio Benjamin da Costa, ao lado do Posto de Guarda-Vidas",
+   "lat": -26.8033447,
+   "lon": -48.5972319,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 63,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 22.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 629,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "77ceaded-2cb3-4ed2-baf0-e280ed07ecd8",
+   "beach_name": "Praia de Canto de Ganchos",
+   "point_name": "Ponto 12",
+   "location": "Rua Deodoro Dimas Custódio,  ao lado do canal",
+   "lat": -27.3148584,
+   "lon": -48.5767074,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 594,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 441,
+     "water_temp_c": 22.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 19863,
+     "water_temp_c": 21.0
+    }
+   ]
+  },
+  {
+   "id": "7a337a14-328e-4564-9f9b-af38df2f4c11",
+   "beach_name": "Praia de Jurerê Internacional",
+   "point_name": "Ponto 85",
+   "location": "Em frente à Avenida dos Pampos",
+   "lat": -27.4347207,
+   "lon": -48.508918,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "7bd92844-c345-4f7d-9e82-9cc32f230c99",
+   "beach_name": "Lagoa dos Freitas",
+   "point_name": "Ponto 01",
+   "location": "Em frente à Rua Teodorico Pedro Lino",
+   "lat": -28.8121042,
+   "lon": -49.2277171,
+   "samples": [
+    {
+     "sampled_on": "2026-08-26",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 173,
+     "water_temp_c": 14.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 3000,
+     "water_temp_c": 22.0
+    }
+   ]
+  },
+  {
+   "id": "7e784d3f-fc33-44be-bbd3-81a146e77494",
+   "beach_name": "Canal do Camacho",
+   "point_name": "Ponto 03",
+   "location": "Rodovia Heryberto Barzan, na divisa entre os municípios de Jaguaruna e Laguna, no canal",
+   "lat": -28.6093444,
+   "lon": -48.8608168,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 15.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Fraca",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 30,
+     "water_temp_c": 15.0
+    }
+   ]
+  },
+  {
+   "id": "7ef4536d-8fb1-4d2d-8b20-4fa12e9c718c",
+   "beach_name": "Praia de Bombas",
+   "point_name": "Ponto 02",
+   "location": "Em frente à Rua Martim Pescador",
+   "lat": -27.1407446,
+   "lon": -48.5077349,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 31,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 52,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "80ab3ecd-b639-44ac-ae26-a0390f98dd2a",
+   "beach_name": "Praia de Palmas",
+   "point_name": "Ponto 18",
+   "location": "Em frente à Alameda das Videiras",
+   "lat": -27.3277829,
+   "lon": -48.5370809,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 31,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "811bef6b-ec03-4b64-a2c9-7705e26c506e",
+   "beach_name": "Praia Brava",
+   "point_name": "Ponto 03",
+   "location": "Avenida José Medeiros Vieira, entre as Ruas Doca Rebello e Carola Coelho",
+   "lat": -26.9555081,
+   "lon": -48.629519,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Fraca",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 63,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 876,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "83c4c909-9e3f-4410-bb40-9bb9920e9b34",
+   "beach_name": "Praia da Fazenda da Armação",
+   "point_name": "Ponto 07",
+   "location": "Em frente à Rua Gregório Monteiro",
+   "lat": -27.3677565,
+   "lon": -48.5575421,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 364,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 203,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 4884,
+     "water_temp_c": 21.0
+    }
+   ]
+  },
+  {
+   "id": "850eca74-5e2a-4fac-a3fd-2a0de00acc77",
+   "beach_name": "Praia da Figueira",
+   "point_name": "Ponto 06",
+   "location": "Rua Francisco Machado de Souza, n°1236, em frente à praça",
+   "lat": -26.2303156,
+   "lon": -48.6262975,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "impropria",
+     "rain": "Fraca",
+     "enterococci_per_100ml": 121,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 2014,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 2359,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "863a1d61-a3b9-4b1b-81d4-b3157632586a",
+   "beach_name": "Praia das Gaivotas",
+   "point_name": "Ponto 06",
+   "location": "Em frente à Avenida Brasília, Praia Turimar",
+   "lat": -29.1541197,
+   "lon": -49.5706038,
+   "samples": [
+    {
+     "sampled_on": "2026-08-26",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 41,
+     "water_temp_c": 12.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 230,
+     "water_temp_c": 17.0
+    }
+   ]
+  },
+  {
+   "id": "869a8d0d-9c48-4ffa-a4c8-7bd3384f1618",
+   "beach_name": "Praia de Ganchos de Fora",
+   "point_name": "Ponto 15",
+   "location": "Rua dos Navegantes, ao lado do trapiche",
+   "lat": -27.3069448,
+   "lon": -48.5479028,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 4106,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 683,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 10462,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "877cff9c-1901-4c4a-b278-e5cfa5292b6b",
+   "beach_name": "Braço Morto do Rio Mampituba",
+   "point_name": "Ponto 02",
+   "location": "Rua Beira Rio, n°348",
+   "lat": -29.3255205,
+   "lon": -49.7166262,
+   "samples": [
+    {
+     "sampled_on": "2026-08-26",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 1314,
+     "water_temp_c": 13.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 9000,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "88128e93-0cad-4818-86ed-e229bc4b42ed",
+   "beach_name": "Praia de Palmas",
+   "point_name": "Ponto 02",
+   "location": "Em frente à Avenida Aderbal Ramos da Silva, ao lado do Posto de Guarda-Vidas",
+   "lat": -27.3238929,
+   "lon": -48.5389762,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 41,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "8a76ecfb-44b2-41b3-89fc-e3b58d84365d",
+   "beach_name": "Praia do Meio",
+   "point_name": "Ponto 05",
+   "location": "Rua Desembargador Pedro Silva, n°702",
+   "lat": -27.6136025,
+   "lon": -48.5854263,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 161,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 63,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "8aae1185-2b79-4105-aa77-fef316f5d153",
+   "beach_name": "Lagoa da Conceição",
+   "point_name": "Ponto 39",
+   "location": "Final da Avenida das Rendeiras, ao lado do último trapiche",
+   "lat": -27.6088745,
+   "lon": -48.4421261,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 2014,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 3448,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 11199,
+     "water_temp_c": 16.0
+    }
+   ]
+  },
+  {
+   "id": "8af2b9e8-44e1-455e-9713-84ba5f08ec02",
+   "beach_name": "Praia do Estaleiro",
+   "point_name": "Ponto 07",
+   "location": "Entre as Ruas Napoleão Vieira e Vereador Domingos Fonseca",
+   "lat": -27.0330127,
+   "lon": -48.5819911,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "8b75352f-52e9-4c6c-a2ee-48ff13c75652",
+   "beach_name": "Praia dos Ingleses",
+   "point_name": "Ponto 98",
+   "location": "Rua das Gaivotas, n°1380, na foz do Rio Capivari",
+   "lat": -27.4261029,
+   "lon": -48.3996518,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 197,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 2098,
+     "water_temp_c": 22.0
+    }
+   ]
+  },
+  {
+   "id": "8c1beff6-af4d-45bd-821c-86415c855e1a",
+   "beach_name": "Praia de Palmas",
+   "point_name": "Ponto 11",
+   "location": "Em frente à Rua Cinquenta e Um, ao lado do Posto de Guarda-Vidas",
+   "lat": -27.3336859,
+   "lon": -48.5330087,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 41,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 820,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "8c501a29-e887-4d33-b18d-368ead7bfc5d",
+   "beach_name": "Praia do Cacupé",
+   "point_name": "Ponto 09",
+   "location": "Estrada Haroldo Soares Glavan, em frente a Passagem A, próximo ao n°4000",
+   "lat": -27.5325607,
+   "lon": -48.5252399,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 52,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "8f36a14f-5c93-4a42-b691-5ccbdd5a14a4",
+   "beach_name": "Praia da Ilhota",
+   "point_name": "Ponto 10",
+   "location": "Em frente à Rua n°1100, ao lado do Posto de Guarda-Vidas",
+   "lat": -27.0621643,
+   "lon": -48.594003,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 663,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 122,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "8f52c315-c098-4a7d-ac01-685aaeaf7524",
+   "beach_name": "Praia do Rincão",
+   "point_name": "Ponto 06",
+   "location": "Em frente à Rua Castro Alves",
+   "lat": -28.8358327,
+   "lon": -49.2327864,
+   "samples": [
+    {
+     "sampled_on": "2026-08-26",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 12.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 230,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "8fbbb753-800b-4a66-8e3a-43dcc33a38ab",
+   "beach_name": "Praia do Gravatá",
+   "point_name": "Ponto 02",
+   "location": "Entre as Ruas Wilhelm Otto Heinrich Nack e Jaraguá do Sul, próximo do Posto de Guarda-Vidas",
+   "lat": -26.8301791,
+   "lon": -48.6249203,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 448,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 1296,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "8fcc36d8-67f8-440b-aa0a-b51138d76a50",
+   "beach_name": "Praia do Forte",
+   "point_name": "Ponto 17",
+   "location": "Servidão José Cardoso de Oliveira, n°87, na entrada da praia ao lado do Posto de Guarda-Vidas",
+   "lat": -27.4342578,
+   "lon": -48.5196849,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 52,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "90e90d70-8593-4d6a-a92d-e65ebaad1d7e",
+   "beach_name": "Praia do Moçambique",
+   "point_name": "Ponto 87",
+   "location": "Rodovia João Gualberto Soares, SC-406, acesso principal à praia",
+   "lat": -27.5230492,
+   "lon": -48.4170192,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    }
+   ]
+  },
+  {
+   "id": "9120b5b2-244c-4ab2-a7d5-9e0309eff7c9",
+   "beach_name": "Praia de Navegantes",
+   "point_name": "Ponto 05",
+   "location": "Entre a Rua Manoel Izidro e Avenida João Sacavem, na Praça de Navegantes, próximo ao Posto de Guarda-Vidas",
+   "lat": -26.9012159,
+   "lon": -48.6432895,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Fraca",
+     "enterococci_per_100ml": 318,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 161,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 1223,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "914ecc48-dd9e-4201-89c6-501a6d6f16fe",
+   "beach_name": "Praia do Quilombo",
+   "point_name": "Ponto 06",
+   "location": "Em frente à Rua Possidônio Silva Marçal",
+   "lat": -26.7659096,
+   "lon": -48.6439635,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 148,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "91bbd61a-dae2-4b83-84ef-cf9f54f101cb",
+   "beach_name": "Praia de Itapoá",
+   "point_name": "Ponto 04",
+   "location": "Em frente à Rua 20 Alcinei Avanzi, ao lado do Posto de Guarda-Vidas",
+   "lat": -26.0075864,
+   "lon": -48.6038613,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Fraca",
+     "enterococci_per_100ml": 63,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Fraca",
+     "enterococci_per_100ml": 75,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "926e6f74-7512-4e16-8e03-26af0122b498",
+   "beach_name": "Praia de Canasvieiras",
+   "point_name": "Ponto 59",
+   "location": "Em frente à Rua Acary Margarida",
+   "lat": -27.4277555,
+   "lon": -48.4672706,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 279,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 110,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "92ed1586-463d-49c6-a816-8ff90b9b8e78",
+   "beach_name": "Praia de Perequê",
+   "point_name": "Ponto 05",
+   "location": "Em frente à Avenida Almirante Fonseca Neves",
+   "lat": -27.1457989,
+   "lon": -48.5832953,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 110,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 183,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "951983e1-f017-475c-a0bd-ef1192a132d7",
+   "beach_name": "Praia das Gaivotas",
+   "point_name": "Ponto 01",
+   "location": "Em frente à Venida Abílio Joaquim da Cunha, lado esquerdo do córrego",
+   "lat": -29.1610328,
+   "lon": -49.577491,
+   "samples": [
+    {
+     "sampled_on": "2026-08-26",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 12.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 230,
+     "water_temp_c": 17.0
+    }
+   ]
+  },
+  {
+   "id": "95b388c9-393d-4c48-af51-df8263bbb2af",
+   "beach_name": "Praia da Solidão",
+   "point_name": "Ponto 65",
+   "location": "Rua Inério Joaquim da Silva, n°1082, à esquerda da foz do rio",
+   "lat": -27.7949416,
+   "lon": -48.534708,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 110,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 809,
+     "water_temp_c": 16.0
+    }
+   ]
+  },
+  {
+   "id": "960c40cd-b60e-432a-bdef-f36dad9659f4",
+   "beach_name": "Praia de Canasvieiras",
+   "point_name": "Ponto 60",
+   "location": "Em frente à Rua Conselheiro Cláudio de Vicenzi",
+   "lat": -27.4268005,
+   "lon": -48.4723144,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 538,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "9625ad0b-4127-4b71-960a-5f0c31df78e8",
+   "beach_name": "Praia da Base Aérea",
+   "point_name": "Ponto 49",
+   "location": "Avenida Santos Dumont (Base Aérea), ao lado do trapiche",
+   "lat": -27.676627,
+   "lon": -48.5680442,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 41,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 51,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "9645129f-16e8-4cf7-bf5f-62819b8b4163",
+   "beach_name": "Prainha",
+   "point_name": "Ponto 09",
+   "location": "Em frente à Rua Maceió, ao lado do Posto de Guarda-Vidas",
+   "lat": -26.2309004,
+   "lon": -48.5008122,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Fraca",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 17.0
+    }
+   ]
+  },
+  {
+   "id": "96f4476e-172f-41e1-be08-6e5ed04ac881",
+   "beach_name": "Lagoa Boca da Barra - Na foz do Canal do Linguado",
+   "point_name": "Ponto 02",
+   "location": "Em frente a Rua José de A da Glória, próximo ao Posto de Guarda-Vidas",
+   "lat": -26.4555481,
+   "lon": -48.5977237,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 393,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 160,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 393,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "972db02e-d0fd-48a3-960d-a6c6e91a7fd8",
+   "beach_name": "Praia da Lagoinha do Norte",
+   "point_name": "Ponto 86",
+   "location": "Estrada Jornalista Jaime Arruda Ramos, n°1850",
+   "lat": -27.3888044,
+   "lon": -48.4283194,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 399,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "979c85bd-e880-4515-a980-40fbf41dd899",
+   "beach_name": "Praia de Jurerê",
+   "point_name": "Ponto 18",
+   "location": "Em frente à Rua das Moreias",
+   "lat": -27.437989,
+   "lon": -48.4910669,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 74,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 31,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "98425a56-4e3c-4981-8306-3b805ceffab1",
+   "beach_name": "Praia dos Ingleses",
+   "point_name": "Ponto 29",
+   "location": "Em frente à Estrada Vereador Onildo Lemos, n°36, lado esquerdo do acesso",
+   "lat": -27.4435824,
+   "lon": -48.3768117,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 63,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 63,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "988d8666-0cf7-47e3-941d-24581a601be2",
+   "beach_name": "Praia Brava",
+   "point_name": "Ponto 69",
+   "location": "Rua Léa Castro Ramos, n°484, na foz do rio",
+   "lat": -27.4059031,
+   "lon": -48.4116518,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 309,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 265,
+     "water_temp_c": 22.0
+    }
+   ]
+  },
+  {
+   "id": "98907aa6-718b-4403-a332-c746dbe19727",
+   "beach_name": "Beira-Mar Norte",
+   "point_name": "Ponto 11",
+   "location": "Avenida Jornalista Rubéns de Arruda Ramos, n°5197, próximo ao bolsão da CASAN",
+   "lat": -27.584685,
+   "lon": -48.5489775,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 624,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 19863,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "9a425a6e-1003-48f2-a765-66848d59d0c1",
+   "beach_name": "Praia de Bombas",
+   "point_name": "Ponto 04",
+   "location": "Entre as Ruas Tiriba e Tinguaçu",
+   "lat": -27.1459775,
+   "lon": -48.5007491,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 98,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 238,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "9a9817d2-9d83-48ae-b505-e302555de49f",
+   "beach_name": "Praia de Canasvieiras",
+   "point_name": "Ponto 22",
+   "location": "Em frente à Rua Antônio Heil, à esquerda do trapiche",
+   "lat": -27.4263172,
+   "lon": -48.4500519,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 932,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 31,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "9b178b0d-3ac8-4f93-bf77-953acd7e1c14",
+   "beach_name": "Praia do Mariscal",
+   "point_name": "Ponto 03",
+   "location": "Avenida Água Marinha, no acesso à praia",
+   "lat": -27.1712729,
+   "lon": -48.4991094,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 86,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "9bac6841-ae93-4502-b9b1-13575d6515bb",
+   "beach_name": "Praia da Barra do Sul",
+   "point_name": "Ponto 01",
+   "location": "Em frente a Rua São Francisco do Oeste, próximo ao posto de Guarda-Vidas",
+   "lat": -26.4689702,
+   "lon": -48.6082549,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 41,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "9c36578f-cb12-42f7-ab9c-2fd76479564c",
+   "beach_name": "Praia de Barra Velha",
+   "point_name": "Ponto 01",
+   "location": "Rua Armando Petrelli, n°555",
+   "lat": -26.6279115,
+   "lon": -48.6804843,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 798,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 52,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "9c5ee424-2831-4c94-846a-d786c0ee7604",
+   "beach_name": "Praia de Ubatuba",
+   "point_name": "Ponto 04",
+   "location": "Entre as Ruas Dublin e Cidade do Cabo, ao lado do Posto de Guarda-Vidas",
+   "lat": -26.2011915,
+   "lon": -48.5277177,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Fraca",
+     "enterococci_per_100ml": 364,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 31,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 17.0
+    }
+   ]
+  },
+  {
+   "id": "9dd7e2e2-7572-494b-9878-5659190e49c8",
+   "beach_name": "Praia do Pontal Norte",
+   "point_name": "Ponto 06",
+   "location": "Avenida Beira Mar 5, à esquerda do farolete, antes do Posto de Guarda-Vidas",
+   "lat": -26.1739502,
+   "lon": -48.5859928,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "impropria",
+     "rain": "Fraca",
+     "enterococci_per_100ml": 1455,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 2247,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Fraca",
+     "enterococci_per_100ml": 160,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "9e0eca5f-bd70-4808-aabd-5315bf510442",
+   "beach_name": "Praia da Enseada",
+   "point_name": "Ponto 08",
+   "location": "Avenida Atlântica, n°20347, ao lado do Posto de Guarda-Vidas",
+   "lat": -26.2238721,
+   "lon": -48.5151649,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Fraca",
+     "enterococci_per_100ml": 144,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 169,
+     "water_temp_c": 17.0
+    }
+   ]
+  },
+  {
+   "id": "9ec116fc-b0de-45bf-8791-85deca2d2bbf",
+   "beach_name": "Praia dos Ingleses",
+   "point_name": "Ponto 57",
+   "location": "Estrada Dom João Becker, n°1777, próximo da Rua Ruth Pereira",
+   "lat": -27.4394396,
+   "lon": -48.3864365,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 85,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "9f4b4d6f-350d-4048-8eab-6078b0e86951",
+   "beach_name": "Praia de Canasvieiras",
+   "point_name": "Ponto 55",
+   "location": "Em frente à Rua Heitor Bittencourt",
+   "lat": -27.4274907,
+   "lon": -48.4688435,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 860,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 110,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "9fdf03c9-adeb-42f9-9959-1dd1ede9adcf",
+   "beach_name": "Praia de Barra Velha",
+   "point_name": "Ponto 03",
+   "location": "Avenida Beira Mar, n°560, próximo às quadras de esporte de areia",
+   "lat": -26.6375391,
+   "lon": -48.6830839,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 3448,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 160,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 961,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "a09f25d9-6b6f-4b80-908e-e0b0db7dfca9",
+   "beach_name": "Praia do Jardim Atlântico",
+   "point_name": "Ponto 01",
+   "location": "Em frente à Rua Elesbão Pinto da Luz",
+   "lat": -27.5739648,
+   "lon": -48.5974106,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 487,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 17329,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "a1a46fa4-6150-48d8-a035-b13e020ec0a2",
+   "beach_name": "Praia de Piçarras",
+   "point_name": "Ponto 01",
+   "location": "Em frente à Rua Nackle Francisco",
+   "lat": -26.7679056,
+   "lon": -48.6679598,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 31,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 148,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 961,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "a1cb59c5-6a81-4cb9-a927-b34a85f22b79",
+   "beach_name": "Praia de Ponta das Canas",
+   "point_name": "Ponto 23",
+   "location": "Rua Deputado Fernando Viegas, n°103",
+   "lat": -27.3953059,
+   "lon": -48.4334595,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 355,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "a272b677-da5c-4ec0-85a1-1073e9ab9657",
+   "beach_name": "Lagoa da Conceição",
+   "point_name": "Ponto 37",
+   "location": "Avenida das Rendeiras, em frente à servidão Pedro Manoel Fernandes",
+   "lat": -27.6093828,
+   "lon": -48.4443871,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 2187,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 581,
+     "water_temp_c": 16.0
+    }
+   ]
+  },
+  {
+   "id": "a6995bff-86b1-4a4a-944f-5493ba95e65f",
+   "beach_name": "Praia do Vigorelli",
+   "point_name": "Ponto 01",
+   "location": "Ao lado da balsa, à esquerda do píer",
+   "lat": -26.2244717,
+   "lon": -48.7667867,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "impropria",
+     "rain": "Fraca",
+     "enterococci_per_100ml": 309,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 1631,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Fraca",
+     "enterococci_per_100ml": 6867,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "a7cad43c-baec-4889-9b00-87da904f6141",
+   "beach_name": "Praia da Tereza",
+   "point_name": "Ponto 05",
+   "location": "Avenida Vira Copos, no meio da praia",
+   "lat": -28.5251048,
+   "lon": -48.7633495,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 75,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    }
+   ]
+  },
+  {
+   "id": "a86dd6f0-ac3a-44ae-805e-fcfee962e8f1",
+   "beach_name": "Lagoa da Conceição",
+   "point_name": "Ponto 61",
+   "location": "Avenida das Rendeiras, próximo a rua Pôrto Seguro, n°1480",
+   "lat": -27.6091209,
+   "lon": -48.4494922,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 169,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 121,
+     "water_temp_c": 16.0
+    }
+   ]
+  },
+  {
+   "id": "a996ce68-65f0-42dc-adb6-c617038ef0ca",
+   "beach_name": "Praia do Estaleirinho",
+   "point_name": "Ponto 15",
+   "location": "Em frente à Rua José Amaro da Cunha, ao lado do Posto de Guarda-Vidas",
+   "lat": -27.0486469,
+   "lon": -48.5880962,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "aa7e1145-1ba7-4543-a8a1-2bda001e50a9",
+   "beach_name": "Praia do Rosa",
+   "point_name": "Ponto 01",
+   "location": "Avenida Porto Novo, n°960, canto sul, acesso principal",
+   "lat": -28.1353783,
+   "lon": -48.6429228,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 15.0
+    }
+   ]
+  },
+  {
+   "id": "ab33a1d5-16ea-4596-bc17-33a57ec31f81",
+   "beach_name": "Praia de Jurerê",
+   "point_name": "Ponto 19",
+   "location": "Em frente à Rodovia Jornalista Maurício Sirotski Sobrinho, n°721",
+   "lat": -27.4381747,
+   "lon": -48.4863825,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "ab7bd03e-c62d-4940-a16a-6080876bbc9c",
+   "beach_name": "Praia de Barra Velha",
+   "point_name": "Ponto 02",
+   "location": "Avenida Beira Mar, em frente à Rua Humberto Pimentel",
+   "lat": -26.6341799,
+   "lon": -48.6811013,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 1334,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 63,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 629,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "ade31445-d36f-4ad5-9754-0b5452f7e1ca",
+   "beach_name": "Praia do Sambaqui",
+   "point_name": "Ponto 15",
+   "location": "Rodovia Rafael da Rocha Pires , n°1964, próximo da Praça Macário da Rocha",
+   "lat": -27.4892714,
+   "lon": -48.5378492,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 389,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 21.0
+    }
+   ]
+  },
+  {
+   "id": "ae8a77df-2186-4047-b699-ec0f6ea08943",
+   "beach_name": "Praia da Enseada",
+   "point_name": "Ponto 02",
+   "location": "Em frente à Rua Minas Gerais",
+   "lat": -26.2264572,
+   "lon": -48.5043798,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Fraca",
+     "enterococci_per_100ml": 63,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 122,
+     "water_temp_c": 17.0
+    }
+   ]
+  },
+  {
+   "id": "af73afab-6888-44c3-a066-7ecae3e18022",
+   "beach_name": "Praia do Canto Grande - Mar de fora",
+   "point_name": "Ponto 13",
+   "location": "Em frente à Rua Jacarandá, ao lado do Posto de Guarda-Vidas",
+   "lat": -27.1983317,
+   "lon": -48.4955695,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "afbc14fc-9076-42fa-ab75-39e4401257cc",
+   "beach_name": "Praia de Canasvieiras",
+   "point_name": "Ponto 20",
+   "location": "Em frente à Rua das Flores, n°618",
+   "lat": -27.4277109,
+   "lon": -48.4651065,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 331,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 41,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "b0e181ba-14cc-4848-b9fb-b88832845fd7",
+   "beach_name": "Praia do Arroio Corrente",
+   "point_name": "Ponto 01",
+   "location": "Em frente à Rua 29 de setembro, ao lado do Posto de Guarda-Vidas",
+   "lat": -28.6958325,
+   "lon": -49.0169369,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 15.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Fraca",
+     "enterococci_per_100ml": 52,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 30,
+     "water_temp_c": 15.0
+    }
+   ]
+  },
+  {
+   "id": "b3d4b173-df5e-4015-84e5-a77f199b8d37",
+   "beach_name": "Praia das Cordas",
+   "point_name": "Ponto 23",
+   "location": "Rua Aristides Quintino, em frente ao acesso de veículos, ao lado do Posto de Guarda-Vidas",
+   "lat": -27.37589,
+   "lon": -48.53028,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 86,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "b4aec26c-ab6f-495e-aeb5-fef32f4aea3d",
+   "beach_name": "Praia do Gi",
+   "point_name": "Ponto 02",
+   "location": "Rua Luiz Severino Duarte, n°55, ao lado do Posto de Guarda-Vidas",
+   "lat": -28.4662117,
+   "lon": -48.7666425,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 98,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 15.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 17.0
+    }
+   ]
+  },
+  {
+   "id": "b4fc0825-3bcb-4a74-aaae-53fb5482f3bf",
+   "beach_name": "Praia do Sonho",
+   "point_name": "Ponto 01",
+   "location": "Avenida Nova Aurora, ao lado do Posto de Guarda-Vidas",
+   "lat": -27.8362775,
+   "lon": -48.5878333,
+   "samples": [
+    {
+     "sampled_on": "2026-08-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 160,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 313,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 3654,
+     "water_temp_c": 16.0
+    }
+   ]
+  },
+  {
+   "id": "b5496e45-13cd-4b84-b63f-d0ee27fb2b96",
+   "beach_name": "Lagoa da Conceição",
+   "point_name": "Ponto 43",
+   "location": "Em frente à Rua Vereador Osni Ortiga",
+   "lat": -27.6067365,
+   "lon": -48.4619899,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 496,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 1153,
+     "water_temp_c": 16.0
+    }
+   ]
+  },
+  {
+   "id": "b69da40b-bdd4-482f-b2fe-e0ed0ffebed2",
+   "beach_name": "Praia Brava",
+   "point_name": "Ponto 24",
+   "location": "Rua Léa Castro Ramos, n°484, canto sul",
+   "lat": -27.4050356,
+   "lon": -48.4119853,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "b7ddde26-e2cd-447e-9c14-55a60dbff3c1",
+   "beach_name": "Praia de Canasvieiras",
+   "point_name": "Ponto 21",
+   "location": "Em frente à Avenida das Nações, acesso à praia",
+   "lat": -27.4273642,
+   "lon": -48.4583903,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 1014,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 52,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "b80e1303-53ad-41d3-985d-b38df22f2742",
+   "beach_name": "Praia do Pântano do Sul",
+   "point_name": "Ponto 45",
+   "location": "Em frente à Rua Abelardo Otacílio Gomes, n°254",
+   "lat": -27.7819668,
+   "lon": -48.5080568,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 309,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 1274,
+     "water_temp_c": 15.0
+    }
+   ]
+  },
+  {
+   "id": "b8f23383-72dc-4379-9315-fd286a546e9d",
+   "beach_name": "Praia da Lagoinha do Norte",
+   "point_name": "Ponto 26",
+   "location": "Estrada Jornalista Jaime de Arruda Ramos, n°416, à esquerda da saída da lagoa",
+   "lat": -27.3897164,
+   "lon": -48.4209797,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 110,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "b92ecc90-45d3-4988-9076-d253c2406ffa",
+   "beach_name": "Praia da Joaquina",
+   "point_name": "Ponto 33",
+   "location": "Em frente à Avenida Prefeito Acácio Garibaldi São Thiago, n°1416, ao lado do Posto de Guarda-Vidas",
+   "lat": -27.6286305,
+   "lon": -48.4482998,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 15.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    }
+   ]
+  },
+  {
+   "id": "b9419cd1-fb31-4a89-972b-63d60ed26aaf",
+   "beach_name": "Lagoa da Conceição",
+   "point_name": "Ponto 97",
+   "location": "Em frente à Servidão das Cicas",
+   "lat": -27.6234161,
+   "lon": -48.4657276,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 663,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 109,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 691,
+     "water_temp_c": 16.0
+    }
+   ]
+  },
+  {
+   "id": "baa82159-ca26-491c-ad67-eab62fe743be",
+   "beach_name": "Lagoa da Conceição",
+   "point_name": "Ponto 38",
+   "location": "Rua Senador Ivo D'Aquino, próximo ao Terminal Lacustre Professora Ruth Bastos de Oliveira",
+   "lat": -27.6046216,
+   "lon": -48.4629515,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 31,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 120,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 11199,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "bb1f0bd7-1119-4669-9f2c-5c9004692e0b",
+   "beach_name": "Praia do Cacupé",
+   "point_name": "Ponto 10",
+   "location": "Estrada Haroldo Soares Glavan, n°1700, à esquerda do trapiche",
+   "lat": -27.5428031,
+   "lon": -48.5241159,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 908,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 262,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "bc4a99d9-0b2b-4635-9938-8eac0836a1ae",
+   "beach_name": "Praia dos Ingleses",
+   "point_name": "Ponto 28",
+   "location": "Estrada Dom João  Becker, n°305, ao lado do Posto de Guarda-Vidas",
+   "lat": -27.4365077,
+   "lon": -48.3904063,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 86,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "bcd27bc7-3bf7-473c-ab64-db9104b54d77",
+   "beach_name": "Praia do Siriú",
+   "point_name": "Ponto 03",
+   "location": "Em frente à Estrada Geral da Praia do Siriú, próximo ao Posto de Guarda-Vidas",
+   "lat": -27.9744561,
+   "lon": -48.6287212,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    }
+   ]
+  },
+  {
+   "id": "bf8cdd79-30d7-4a76-b6f2-351aeac405a2",
+   "beach_name": "Praia das Gaivotas",
+   "point_name": "Ponto 05",
+   "location": "Em frente à Avenida Crespim João Pereira, lado esquerdo do córrego",
+   "lat": -29.1664602,
+   "lon": -49.5822633,
+   "samples": [
+    {
+     "sampled_on": "2026-08-26",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 12.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 230,
+     "water_temp_c": 17.0
+    }
+   ]
+  },
+  {
+   "id": "bfed53e0-79ca-41fc-955f-a206d35cc835",
+   "beach_name": "Prainha do Farol",
+   "point_name": "Ponto 07",
+   "location": "Estrada geral do farol, em frente à Rua Estrela do mar, ao lado do Posto de Guarda-Vidas",
+   "lat": -28.6022118,
+   "lon": -48.8165564,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 63,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 295,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 373,
+     "water_temp_c": 16.0
+    }
+   ]
+  },
+  {
+   "id": "c157cf64-2d29-445e-87e6-5c3118af929f",
+   "beach_name": "Praia de Palmas",
+   "point_name": "Ponto 14",
+   "location": "Em frente à Rua das Samabaias",
+   "lat": -27.3165,
+   "lon": -48.54048,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 31,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "c1734273-508a-4f99-9e70-6546d5269989",
+   "beach_name": "Lagoa do Peri",
+   "point_name": "Ponto 74",
+   "location": "Rodovia Francisco Thomaz dos Santos, SC-406, n°3512, em frente à sede do Parque",
+   "lat": -27.7265273,
+   "lon": -48.5089763,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 85,
+     "water_temp_c": 15.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 1565,
+     "water_temp_c": 14.0
+    }
+   ]
+  },
+  {
+   "id": "c17e9aaf-b3ba-43dc-b11c-e3b326191c51",
+   "beach_name": "Praia de Taquaras",
+   "point_name": "Ponto 08",
+   "location": "Avenida Rodesindo Pavan, n°800",
+   "lat": -27.0106778,
+   "lon": -48.5788476,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 161,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 122,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "c30ef6eb-9585-4bcc-b351-86fe8ed9783e",
+   "beach_name": "Praia de Porto Belo",
+   "point_name": "Ponto 06",
+   "location": "Em frente à Rua Capitão Gualberto Leal Nunes, à esquerda do trapiche Rio Rebelo",
+   "lat": -27.1523119,
+   "lon": -48.5425104,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 332,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 733,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "c34c3cd4-ea17-4435-bbb7-26d24f1c37e3",
+   "beach_name": "Praia do Cerro",
+   "point_name": "Ponto 06",
+   "location": "Entre as Ruas Maria Athanisia da Costa Chaves e Chapecó, ao lado do Posto de Guarda-Vidas",
+   "lat": -26.703224,
+   "lon": -48.6816149,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 52,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "c3507540-b40c-4746-8515-e23d37b7173d",
+   "beach_name": "Praia da Vigia",
+   "point_name": "Ponto 05",
+   "location": "Rua São Joaquim, n°250, no acesso principal",
+   "lat": -28.0195801,
+   "lon": -48.6102041,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 74,
+     "water_temp_c": 15.0
+    }
+   ]
+  },
+  {
+   "id": "c3f580b1-db45-422d-8d46-0dca3361f0b8",
+   "beach_name": "Praia de Zimbros",
+   "point_name": "Ponto 10",
+   "location": "Em frente à Rua Ijuí",
+   "lat": -27.1804481,
+   "lon": -48.5261598,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 345,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "c66475b7-fac4-49e8-9c91-c2c0e158418a",
+   "beach_name": "Beira-Mar Norte",
+   "point_name": "Ponto 94",
+   "location": "Em frente à Praça Esteves Júnior",
+   "lat": -27.5864808,
+   "lon": -48.553494,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 2046,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 9208,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "c78ee12c-2b46-4cd3-b6d6-df79f873d53e",
+   "beach_name": "Praia Grande",
+   "point_name": "Ponto 10",
+   "location": "Em frente à Avenida das Caravelas",
+   "lat": -27.3646737,
+   "lon": -48.5353139,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 22.0
+    }
+   ]
+  },
+  {
+   "id": "c8da9815-0d1f-41ed-9c13-de744ae696aa",
+   "beach_name": "Praia do Porto",
+   "point_name": "Ponto 08",
+   "location": "Rua Sebastião Paulo de Campos, n°160, à esquerda do molhe central",
+   "lat": -28.223313,
+   "lon": -48.663845,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 31,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "c93ff015-4d48-451e-8118-37944b9c61bc",
+   "beach_name": "Lagoa de Ibiraquera",
+   "point_name": "Ponto 02",
+   "location": "Avenida Jovino Tomé Marques, em frente à Rua Vereador Mauro Vieira, próximo a foz da Lagoa",
+   "lat": -28.1530163,
+   "lon": -48.6555733,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 52,
+     "water_temp_c": 15.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 41,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 960,
+     "water_temp_c": 15.0
+    }
+   ]
+  },
+  {
+   "id": "ca409384-a717-4bdc-8a14-b5fd6ed3cea8",
+   "beach_name": "Praia do Arroio do Silva",
+   "point_name": "Ponto 03",
+   "location": "Em frente à Avenida Mondardo, lado direito do córrego (no mar)",
+   "lat": -28.988136,
+   "lon": -49.411992,
+   "samples": [
+    {
+     "sampled_on": "2026-08-26",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 738,
+     "water_temp_c": 12.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 2400,
+     "water_temp_c": 17.0
+    }
+   ]
+  },
+  {
+   "id": "ca429c1c-32e7-4b93-b14e-1dc6f9dd5a55",
+   "beach_name": "Praia do Morro dos Conventos",
+   "point_name": "Ponto 01",
+   "location": "Em frente à Rua do Badejo, ao lado do Posto de Guarda-Vidas",
+   "lat": -28.9432723,
+   "lon": -49.3627218,
+   "samples": [
+    {
+     "sampled_on": "2026-08-26",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 31,
+     "water_temp_c": 12.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 500,
+     "water_temp_c": 17.0
+    }
+   ]
+  },
+  {
+   "id": "ca99ef3b-f439-46c9-8825-9c4a122ddb34",
+   "beach_name": "Praia da Fortaleza",
+   "point_name": "Ponto 04",
+   "location": "Em frente à Rua Blumenau",
+   "lat": -26.7906304,
+   "lon": -48.6154249,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 880,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 563,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 11199,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "cc56c6e9-3ac5-4862-a906-b7d265ba6757",
+   "beach_name": "Praia de Canajurê",
+   "point_name": "Ponto 68",
+   "location": "Em frente à Servidão Waldemar Medeiros, n°51",
+   "lat": -27.4316912,
+   "lon": -48.4789046,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 41,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "cc604aa3-9b5b-4cbc-846d-ca868a8da6a1",
+   "beach_name": "Praia Brava",
+   "point_name": "Ponto 04",
+   "location": "Em frente à Avenida José Medeiros Vieira, n°5, próximo ao Posto de Guarda-Vidas",
+   "lat": -26.9406799,
+   "lon": -48.6283786,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Fraca",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 7270,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "cd968562-7e78-460a-9208-05ebfda99996",
+   "beach_name": "Praia de Itapoá",
+   "point_name": "Ponto 03",
+   "location": "Em frente à Rua das Palmeiras, ao lado do Posto de Guarda-Vidas",
+   "lat": -26.1320084,
+   "lon": -48.5977209,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Fraca",
+     "enterococci_per_100ml": 75,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 41,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Fraca",
+     "enterococci_per_100ml": 183,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "cfe6d584-49e3-4ee2-9f8c-797edf432ccf",
+   "beach_name": "Praia da Armação  do Pântano do Sul",
+   "point_name": "Ponto 64",
+   "location": "Em frente à Avenida Antônio Borges dos Santos, n°792, Foz do Rio Sangradouro",
+   "lat": -27.7512962,
+   "lon": -48.5017933,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 9208,
+     "water_temp_c": 15.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 780,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 24196,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "d02c8f7e-f07d-4e3f-95d4-df659a03b4c5",
+   "beach_name": "Praia de Ponta das Canas",
+   "point_name": "Ponto 83",
+   "location": "Em frente à Rua Alcina Janis, n°244, na lagoa",
+   "lat": -27.4136369,
+   "lon": -48.427859,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 3076,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 22.0
+    }
+   ]
+  },
+  {
+   "id": "d0b03259-b472-48eb-b1ee-ebe76452d52c",
+   "beach_name": "Praia de Zimbros",
+   "point_name": "Ponto 09",
+   "location": "Em frente à Rua Rio Madeira",
+   "lat": -27.1800645,
+   "lon": -48.5313913,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 776,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 146,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "d1036991-7d14-4949-aa05-0e23d5b232a2",
+   "beach_name": "Praia da Vila",
+   "point_name": "Ponto 06",
+   "location": "Em frente à Rua Francisco Moreira Alves, ao lado do Posto de Guarda-Vidas",
+   "lat": -28.2437216,
+   "lon": -48.6615419,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "d44aaa89-dd2a-4a4d-b3cb-1ae876177384",
+   "beach_name": "Praia de Jurerê",
+   "point_name": "Ponto 76",
+   "location": "Em frente à Avenida dos Búzios",
+   "lat": -27.4327528,
+   "lon": -48.5131555,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 63,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 134,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "d4f1baac-dd97-465d-869e-7c84ad4a77c9",
+   "beach_name": "Praia de Porto Belo",
+   "point_name": "Ponto 02",
+   "location": "Ao final da Rua João Benedito Guerreiro",
+   "lat": -27.1575648,
+   "lon": -48.5526425,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 282,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "d5cff5e6-90a5-45c3-b764-1102ed3e5540",
+   "beach_name": "Praia Central",
+   "point_name": "Ponto 01",
+   "location": "Avenida Atlântica,  no Pontal Norte, n°225",
+   "lat": -26.9719493,
+   "lon": -48.633379,
+   "samples": [
+    {
+     "sampled_on": "2026-09-08",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 148,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-08-31",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 880,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 175,
+     "water_temp_c": 15.0
+    },
+    {
+     "sampled_on": "2026-08-17",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 395,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-08-10",
+     "condition": "unknown",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 571,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-08-03",
+     "condition": "unknown",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 41,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-22",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 74,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-13",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 1450,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-06",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 121,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "db5b38e0-2073-4d4f-a94c-1b7869c008e9",
+   "beach_name": "Praia de São Miguel",
+   "point_name": "Ponto 10",
+   "location": "Em frente à Rua Arnô Becker, ao lado das quadras de esporte",
+   "lat": -26.824883,
+   "lon": -48.6140969,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 697,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 199,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 9804,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "dc021008-0994-4bbf-b4fe-f10240fb39bd",
+   "beach_name": "Praia do Retiro dos Padres",
+   "point_name": "Ponto 17",
+   "location": "Ao final da Avenida Garoupas",
+   "lat": -27.1451049,
+   "lon": -48.4767519,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "dd58a0c1-eb7a-45f8-96af-50ad1862cc83",
+   "beach_name": "Praia da Caiacangaçú",
+   "point_name": "Ponto 63",
+   "location": "Em frente à servidão Recanto dos Amigos, n°119",
+   "lat": -27.7600322,
+   "lon": -48.572674,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 624,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 74,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "de789ab6-7efb-4d25-afee-f1f06f320fd7",
+   "beach_name": "Praia de Itapema",
+   "point_name": "Ponto 03",
+   "location": "Em frente à Rua n°227",
+   "lat": -27.1242554,
+   "lon": -48.6035567,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 31,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 301,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "df7b2cc5-018e-4cf0-ad7f-b5653255f581",
+   "beach_name": "Praia de Porto Belo",
+   "point_name": "Ponto 01",
+   "location": "Em frente à Rua Manoel Felipe da Silva Neto, à esquerda do Pier Turístico Municipal de Porto Belo",
+   "lat": -27.1546304,
+   "lon": -48.5445918,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 393,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 465,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "e0f47a10-8030-4f1c-9afa-24e6626a5184",
+   "beach_name": "Praia de Santo Antônio de Lisboa",
+   "point_name": "Ponto 13",
+   "location": "Em frente à Rua Hipólito Machado",
+   "lat": -27.5052721,
+   "lon": -48.5226246,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 324,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 31,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "e1b11083-60c3-46c9-b0f3-2f778971cd48",
+   "beach_name": "Praia do Atalaia",
+   "point_name": "Ponto 02",
+   "location": "Rua Deputado Francisco Evaristo Canziani, n°1203, ao lado das quadras de areia",
+   "lat": -26.9185855,
+   "lon": -48.6420264,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Fraca",
+     "enterococci_per_100ml": 96,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 41,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 700,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "e1d5bb8e-d19e-426a-b9a9-0bce665a1475",
+   "beach_name": "Praia da Daniela",
+   "point_name": "Ponto 16",
+   "location": "Em frente à Rua dos Cactos",
+   "lat": -27.4445991,
+   "lon": -48.5240579,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 754,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 63,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "e23e895d-7200-4b14-8829-82e8b8cb6c0a",
+   "beach_name": "Praia Brava",
+   "point_name": "Ponto 05",
+   "location": "Em frente à Rua Martin Pescador, ao lado do Posto de Guarda-Vidas",
+   "lat": -26.9578821,
+   "lon": -48.6289516,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Fraca",
+     "enterococci_per_100ml": 345,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 30,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 5172,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "e2b5e24b-5b0a-4bb6-98e4-1f29d415643e",
+   "beach_name": "Praia de Quatro Ilhas",
+   "point_name": "Ponto 16",
+   "location": "Em frente à Rua Ilha Itamaracá",
+   "lat": -27.1551145,
+   "lon": -48.4841311,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "e3c7e06b-28e5-4128-9446-2607f88b0c2a",
+   "beach_name": "Praia da Barra da Lagoa",
+   "point_name": "Ponto 32",
+   "location": "Rua Amaro Coelho, n°225, à esquerda do Farol da Barra",
+   "lat": -27.5742388,
+   "lon": -48.4235078,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 74,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 379,
+     "water_temp_c": 16.0
+    }
+   ]
+  },
+  {
+   "id": "e74ed25b-0a10-473b-9970-b37663b7cc40",
+   "beach_name": "Praia do Matadouro",
+   "point_name": "Ponto 03",
+   "location": "Em frente à Rua Belmira Isabel Martins",
+   "lat": -27.586032,
+   "lon": -48.5772233,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 959,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 6131,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "e7e09fe9-896f-43f9-819d-9e63dcdd81e5",
+   "beach_name": "Praia do Rincão",
+   "point_name": "Ponto 07",
+   "location": "Em frente à Rua Manoel José Magé",
+   "lat": -28.8389174,
+   "lon": -49.2368413,
+   "samples": [
+    {
+     "sampled_on": "2026-08-26",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 12.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 230,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "e84fb38c-a7f7-4ad9-84b2-1cc5565d1d84",
+   "beach_name": "Praia do Magalhães",
+   "point_name": "Ponto 06",
+   "location": "Final da Rua Beija Flor, na rampa de acesso",
+   "lat": -27.4024789,
+   "lon": -48.5623874,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 21.0
+    }
+   ]
+  },
+  {
+   "id": "e90b4af1-3a2b-484b-8412-2e513f9b0b2f",
+   "beach_name": "Praia de Ganchos",
+   "point_name": "Ponto 13",
+   "location": "Avenida dos Ganchos, próximo ao n°1008",
+   "lat": -27.3129378,
+   "lon": -48.5521313,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 2755,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 7701,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 12033,
+     "water_temp_c": 22.0
+    }
+   ]
+  },
+  {
+   "id": "e966f94f-6936-4ea4-8ca1-c3a83b04ab82",
+   "beach_name": "Praia Mole",
+   "point_name": "Ponto 71",
+   "location": "Rodovia Jornalista Manoel de Menzes, n°2001,  ao lado do Posto de Guarda-Vidas",
+   "lat": -27.6020862,
+   "lon": -48.4328442,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 21.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    }
+   ]
+  },
+  {
+   "id": "e98c870d-035b-4ab9-a0bb-8bd51635caca",
+   "beach_name": "Praia de Perequê",
+   "point_name": "Ponto 04",
+   "location": "No final da Rua Rubens Alves, ao lado do Posto de Guarda-Vidas",
+   "lat": -27.1528193,
+   "lon": -48.5717955,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 262,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "ea06f5a6-6586-4f00-9f28-37d30404372f",
+   "beach_name": "Praia da Barra da Lagoa",
+   "point_name": "Ponto 88",
+   "location": "Rua Aconchego do Mar, ao lado do Posto de Guarda-Vidas",
+   "lat": -27.5716143,
+   "lon": -48.4269638,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 63,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 428,
+     "water_temp_c": 16.0
+    }
+   ]
+  },
+  {
+   "id": "ee2596b1-d9a6-4325-a201-a1e0e76390d6",
+   "beach_name": "Praia de Bombas",
+   "point_name": "Ponto 05",
+   "location": "Em frente à Rua Arirambá, a esquerda do riacho",
+   "lat": -27.1336624,
+   "lon": -48.5131603,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 52,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "ee54448d-459f-4ccd-92fd-09c10044d063",
+   "beach_name": "Praia de Fora",
+   "point_name": "Ponto 04",
+   "location": "Em frente à Rua Antônio Júlio Fagundes",
+   "lat": -27.7376306,
+   "lon": -48.6345231,
+   "samples": [
+    {
+     "sampled_on": "2026-08-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 708,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 160,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 373,
+     "water_temp_c": 16.0
+    }
+   ]
+  },
+  {
+   "id": "efa29ba8-8258-498f-9523-f48ef7a23a1d",
+   "beach_name": "Praia de Guararema",
+   "point_name": "Ponto 01",
+   "location": "Rua Assis Brasil, ao lado da rampa náutica",
+   "lat": -27.6374259,
+   "lon": -48.6311919,
+   "samples": [
+    {
+     "sampled_on": "2026-08-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 160,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 520,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 1483,
+     "water_temp_c": 17.0
+    }
+   ]
+  },
+  {
+   "id": "f04b7b13-12d8-44ee-bd4c-907b94d912f5",
+   "beach_name": "Praia Brava",
+   "point_name": "Ponto 25",
+   "location": "Em frente à Rua Sinésio Duarte, n°192, ao lado do Posto de Guarda-Vidas",
+   "lat": -27.3977424,
+   "lon": -48.4142833,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "f1bc28d2-1cfa-4610-a8a3-d69f0575701c",
+   "beach_name": "Praia de Itapema",
+   "point_name": "Ponto 09",
+   "location": "Em frente à Rua n°163",
+   "lat": -27.1067181,
+   "lon": -48.6123695,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 31,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 63,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "f40d3748-4815-424f-90b8-a4f752d13f14",
+   "beach_name": "Praia do Campeche",
+   "point_name": "Ponto 75",
+   "location": "Avenida Campeche, n°300, no mar",
+   "lat": -27.686247,
+   "lon": -48.480933,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 226,
+     "water_temp_c": 16.0
+    }
+   ]
+  },
+  {
+   "id": "f44ebce6-a54d-4108-bd1c-1c1cddbf33d5",
+   "beach_name": "Praia Brava",
+   "point_name": "Ponto 79",
+   "location": "Em frente à Avenida Tom Traugott Wildi, próximo da rotatória",
+   "lat": -27.3931218,
+   "lon": -48.4149547,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "f5a7e386-ed0c-4504-9230-4e5ed6b91983",
+   "beach_name": "Praia da Daniela",
+   "point_name": "Ponto 84",
+   "location": "Em frente à Rua das Hortências",
+   "lat": -27.447748,
+   "lon": -48.5355778,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 650,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 109,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "f5cb23fc-4576-4b8d-b662-3b1904e0870a",
+   "beach_name": "Praia de Itapema",
+   "point_name": "Ponto 01",
+   "location": "Em frente à Rua n°113",
+   "lat": -27.0916892,
+   "lon": -48.6090213,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 63,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 20.0
+    }
+   ]
+  },
+  {
+   "id": "f7439318-f17d-4883-b497-32fc5934daa7",
+   "beach_name": "Praia do Arroio do Silva",
+   "point_name": "Ponto 02",
+   "location": "Em frente à Travessa Bonifácio de Souza Silveira, lado direito",
+   "lat": -28.9891243,
+   "lon": -49.4129474,
+   "samples": [
+    {
+     "sampled_on": "2026-08-26",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 31,
+     "water_temp_c": 12.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 300,
+     "water_temp_c": 17.0
+    }
+   ]
+  },
+  {
+   "id": "f76453e0-af33-4481-9d6c-05c54d867d6a",
+   "beach_name": "Praia de Garopaba",
+   "point_name": "Ponto 02",
+   "location": "Em frente à Rua Lauro Müller",
+   "lat": -28.0228411,
+   "lon": -48.6187553,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 52,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 20,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 373,
+     "water_temp_c": 15.0
+    }
+   ]
+  },
+  {
+   "id": "f88c3eef-33ea-4349-8c4c-49da5e2e54e3",
+   "beach_name": "Praia do Canto Grande - Mar de fora",
+   "point_name": "Ponto 14",
+   "location": "Em frente à Rua Canela, ao lado do Posto de Guarda-Vidas",
+   "lat": -27.1849544,
+   "lon": -48.4999121,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 17.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "fa04b923-2b2c-4186-ae53-2d36c6741c94",
+   "beach_name": "Praia do Bom Abrigo",
+   "point_name": "Ponto 08",
+   "location": "Em frente à Rua Theófilo Almeida",
+   "lat": -27.6121472,
+   "lon": -48.596807,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 24196,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 109,
+     "water_temp_c": 19.0
+    }
+   ]
+  },
+  {
+   "id": "fc163278-2180-4046-9b0e-2407830cf08d",
+   "beach_name": "Praia do Ribeirão da Ilha",
+   "point_name": "Ponto 47",
+   "location": "Rodovia Baldicero Filomeno, n°7938, próximo a Travessa Sabíno da Silva",
+   "lat": -27.7193935,
+   "lon": -48.5642308,
+   "samples": [
+    {
+     "sampled_on": "2026-08-24",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-27",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 30,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "fe7a45e1-10c3-487e-aaa0-4987f95114cd",
+   "beach_name": "Praia da Vila",
+   "point_name": "Ponto 07",
+   "location": "Em frente à Rua Ferena Pacheco Alves",
+   "lat": -28.2661862,
+   "lon": -48.6834028,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 30,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 10,
+     "water_temp_c": 18.0
+    }
+   ]
+  },
+  {
+   "id": "ff2f8c02-c662-4e3a-ba01-29c4059e1fb2",
+   "beach_name": "Praia de Cabeçudas",
+   "point_name": "Ponto 01",
+   "location": "Em frente à Rua Quintino Bocaiúva, ao lado do Posto de Guarda-Vidas",
+   "lat": -26.9276581,
+   "lon": -48.6330804,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "impropria",
+     "rain": "Fraca",
+     "enterococci_per_100ml": 52,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "impropria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 332,
+     "water_temp_c": 20.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "impropria",
+     "rain": "Intensa",
+     "enterococci_per_100ml": 2014,
+     "water_temp_c": 29.0
+    }
+   ]
+  },
+  {
+   "id": "fffa9607-f867-44be-b16c-dc0a5bee30cb",
+   "beach_name": "Praia da Armação do Pântano do Sul",
+   "point_name": "Ponto 44",
+   "location": "Avenida Antônio Borges dos Santos,  n°1772, em frente à Igreja",
+   "lat": -27.7501458,
+   "lon": -48.5028229,
+   "samples": [
+    {
+     "sampled_on": "2026-08-25",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 148,
+     "water_temp_c": 16.0
+    },
+    {
+     "sampled_on": "2026-07-28",
+     "condition": "propria",
+     "rain": "Ausente",
+     "enterococci_per_100ml": 63,
+     "water_temp_c": 19.0
+    },
+    {
+     "sampled_on": "2026-07-01",
+     "condition": "propria",
+     "rain": "Moderada",
+     "enterococci_per_100ml": 31,
+     "water_temp_c": 16.0
+    }
+   ]
+  }
+ ]
+}

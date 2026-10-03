@@ -29,6 +29,9 @@ boards (MIP-0005), with no server, no LLM and no per-visitor cost.
   and writes `site/static/i18n.js`; edit the catalogs, never `i18n.js`.
 - `site/areas.json`: the areas the boards are built for. `site/fixtures/board.json`: the board the
   harness renders. `site/board.schema.json`: the board contract, vendored from the pinned image.
+- `site/water-cache/`: the seed of the app's water cache (`<agency>.json`, its last good fetch).
+  `site.yml` keeps the cache between builds in actions/cache and takes a seed file only when it is
+  newer; `just site-build` writes into it directly, so a build that reaches an agency refreshes it.
 - `scripts/`: `site_check.js` (app.js in a stub DOM and Leaflet), `redirect_check.js` (the 404
   forwarder), `board-schema.sh` (the image pin and its schema), `stamp_site_version.sh`,
   `site_live_check.py` (what marola.dev actually serves), `site-data-push.sh` (the retrying push

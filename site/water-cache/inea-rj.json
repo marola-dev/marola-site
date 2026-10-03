@@ -1,0 +1,991 @@
+{
+ "version": 1,
+ "points": [
+  {
+   "location": "Em frente à Avenida Ayrton Senna",
+   "samples": [
+    {
+     "condition": "propria",
+     "sampled_on": "2026-09-21",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.3197108,
+   "point_name": "Barra da Tijuca",
+   "lat": -23.0132278,
+   "beach_name": "Barra da Tijuca",
+   "id": "BD05"
+  },
+  {
+   "location": "Em frente ao Riviera Country Club",
+   "samples": [
+    {
+     "condition": "propria",
+     "sampled_on": "2026-09-21",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.3197108,
+   "point_name": "Barra da Tijuca",
+   "lat": -23.0132278,
+   "beach_name": "Barra da Tijuca",
+   "id": "BD07"
+  },
+  {
+   "location": "Em frente ao 2º GMAR (Bombeiros)",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-21",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.3197108,
+   "point_name": "Barra da Tijuca II",
+   "lat": -23.0132278,
+   "beach_name": "Barra da Tijuca II",
+   "id": "BD09"
+  },
+  {
+   "location": "Quebra-Mar - Em frente à Rua Sargento João de Faria",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-21",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.3197108,
+   "point_name": "Barra da Tijuca II",
+   "lat": -23.0132278,
+   "beach_name": "Barra da Tijuca II",
+   "id": "BD10"
+  },
+  {
+   "location": "Centro da praia",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-21",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.2906084,
+   "point_name": "Joatinga",
+   "lat": -23.0146792,
+   "beach_name": "Joatinga",
+   "id": "JT00"
+  },
+  {
+   "location": "Em frente à Avenida Princesa Diana de Galles",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-21",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.2687914,
+   "point_name": "Pepino",
+   "lat": -23.0005882,
+   "beach_name": "Pepino",
+   "id": "PP10"
+  },
+  {
+   "location": "Em frente ao nº 220 da Avenida Prefeito Mendes de Morais",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-21",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.2687914,
+   "point_name": "São Conrado",
+   "lat": -23.0005882,
+   "beach_name": "São Conrado",
+   "id": "GV01"
+  },
+  {
+   "location": "Canto esquerdo da praia, próximo ao costão rochoso",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-21",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.2687914,
+   "point_name": "São Conrado",
+   "lat": -23.0005882,
+   "beach_name": "São Conrado",
+   "id": "GV02"
+  },
+  {
+   "location": "Centro da praia",
+   "samples": [
+    {
+     "condition": "propria",
+     "sampled_on": "2026-09-21",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.2325857,
+   "point_name": "Vidigal",
+   "lat": -22.9922221,
+   "beach_name": "Vidigal",
+   "id": "VD00"
+  },
+  {
+   "location": "Em frente à Rua Rita Ludolf",
+   "samples": [
+    {
+     "condition": "propria",
+     "sampled_on": "2026-09-21",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.2243715,
+   "point_name": "Leblon",
+   "lat": -22.9878661,
+   "beach_name": "Leblon",
+   "id": "LB00"
+  },
+  {
+   "location": "Em frente à Rua Bartolomeu Mitre",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-21",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.2243715,
+   "point_name": "Leblon",
+   "lat": -22.9878661,
+   "beach_name": "Leblon",
+   "id": "LB01"
+  },
+  {
+   "location": "Em frente à Rua Afrânio de Melo Franco",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-21",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.2243715,
+   "point_name": "Leblon",
+   "lat": -22.9878661,
+   "beach_name": "Leblon",
+   "id": "LB03"
+  },
+  {
+   "location": "Em frente à Rua Paul Redefern",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-21",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.2021257,
+   "point_name": "Ipanema",
+   "lat": -22.9873109,
+   "beach_name": "Ipanema",
+   "id": "IP03"
+  },
+  {
+   "location": "Em frente à Rua Garcia D'Ávila",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-21",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.2021257,
+   "point_name": "Ipanema",
+   "lat": -22.9873109,
+   "beach_name": "Ipanema",
+   "id": "IP10"
+  },
+  {
+   "location": "Em frente à Rua Joana Angélica",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-21",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.2021257,
+   "point_name": "Ipanema",
+   "lat": -22.9873109,
+   "beach_name": "Ipanema",
+   "id": "IP06"
+  },
+  {
+   "location": "Canto esquerdo da praia",
+   "samples": [
+    {
+     "condition": "propria",
+     "sampled_on": "2026-09-21",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.1921128,
+   "point_name": "Arpoador",
+   "lat": -22.9889771,
+   "beach_name": "Arpoador",
+   "id": "AR00"
+  },
+  {
+   "location": "Centro da praia",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-21",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.1907228,
+   "point_name": "Diabo",
+   "lat": -22.9895322,
+   "beach_name": "Diabo",
+   "id": "PD00"
+  },
+  {
+   "location": "Em frente à Rua Francisco Otaviano",
+   "samples": [
+    {
+     "condition": "propria",
+     "sampled_on": "2026-09-21",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.1866161,
+   "point_name": "Copacabana",
+   "lat": -22.9757003,
+   "beach_name": "Copacabana",
+   "id": "CP100"
+  },
+  {
+   "location": "Em frente à Rua Souza Lima",
+   "samples": [
+    {
+     "condition": "propria",
+     "sampled_on": "2026-09-21",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.1866161,
+   "point_name": "Copacabana",
+   "lat": -22.9757003,
+   "beach_name": "Copacabana",
+   "id": "CP04"
+  },
+  {
+   "location": "Em frente à Rua Santa Clara",
+   "samples": [
+    {
+     "condition": "propria",
+     "sampled_on": "2026-09-21",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.1866161,
+   "point_name": "Copacabana",
+   "lat": -22.9757003,
+   "beach_name": "Copacabana",
+   "id": "CP05"
+  },
+  {
+   "location": "Em frente à Rua República do Peru",
+   "samples": [
+    {
+     "condition": "propria",
+     "sampled_on": "2026-09-21",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.1866161,
+   "point_name": "Copacabana",
+   "lat": -22.9757003,
+   "beach_name": "Copacabana",
+   "id": "CP08"
+  },
+  {
+   "location": "Em frente à Rua Aurelino Leal",
+   "samples": [
+    {
+     "condition": "propria",
+     "sampled_on": "2026-09-21",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.1698569,
+   "point_name": "Leme",
+   "lat": -22.9644465,
+   "beach_name": "Leme",
+   "id": "LM02"
+  },
+  {
+   "location": "Centro da praia",
+   "samples": [
+    {
+     "condition": "propria",
+     "sampled_on": "2026-09-21",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.1647185,
+   "point_name": "Vermelha",
+   "lat": -22.9552571,
+   "beach_name": "Vermelha",
+   "id": "VR00"
+  },
+  {
+   "location": "Centro da praia",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-21",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.1630206,
+   "point_name": "Urca",
+   "lat": -22.9479471,
+   "beach_name": "Urca",
+   "id": "UR00"
+  },
+  {
+   "location": "Em frente à Rua Marquês de Olinda",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-21",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.180818,
+   "point_name": "Botafogo",
+   "lat": -22.9454037,
+   "beach_name": "Botafogo",
+   "id": "BT00"
+  },
+  {
+   "location": "Em frente à comporta de Botafogo",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-21",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.180818,
+   "point_name": "Botafogo",
+   "lat": -22.9454037,
+   "beach_name": "Botafogo",
+   "id": "BT01"
+  },
+  {
+   "location": "Foz do rio Carioca",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-21",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.1707385,
+   "point_name": "Flamengo",
+   "lat": -22.9280478,
+   "beach_name": "Flamengo",
+   "id": "FL000"
+  },
+  {
+   "location": "Em frente à Rua Corrêa Dutra",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-21",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.1707385,
+   "point_name": "Flamengo",
+   "lat": -22.9280478,
+   "beach_name": "Flamengo",
+   "id": "FL004"
+  },
+  {
+   "location": "Ao lado da Marina da Glória",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-21",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.1682537,
+   "point_name": "Glória",
+   "lat": -22.9216599,
+   "beach_name": "Glória",
+   "id": "FL008"
+  },
+  {
+   "location": "Centro da praia",
+   "samples": [
+    {
+     "condition": "propria",
+     "sampled_on": "2026-09-24",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.1361016,
+   "point_name": "Gragoatá",
+   "lat": -22.9021446,
+   "beach_name": "Gragoatá",
+   "id": "GR000"
+  },
+  {
+   "location": "Centro da praia",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-24",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.1301551,
+   "point_name": "Boa Viagem",
+   "lat": -22.9085752,
+   "beach_name": "Boa Viagem",
+   "id": "BV001"
+  },
+  {
+   "location": "Em frente à Rua Nilo Peçanha",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-24",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.1215632,
+   "point_name": "Flechas",
+   "lat": -22.9054564,
+   "beach_name": "Flechas",
+   "id": "FC001"
+  },
+  {
+   "location": "Em frente à Rua Praia de Icaraí n° 163",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-24",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.1215632,
+   "point_name": "Flechas",
+   "lat": -22.9054564,
+   "beach_name": "Flechas",
+   "id": "FC000"
+  },
+  {
+   "location": "À esquerda da Pedra de Itapuca",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-24",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.1114367,
+   "point_name": "Icaraí",
+   "lat": -22.9090238,
+   "beach_name": "Icaraí",
+   "id": "IC003"
+  },
+  {
+   "location": "Em frente à Praça Getúlio Vargas",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-24",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.1114367,
+   "point_name": "Icaraí",
+   "lat": -22.9090238,
+   "beach_name": "Icaraí",
+   "id": "IC000"
+  },
+  {
+   "location": "Em frente à Rua Otávio Carneiro",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-24",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.1114367,
+   "point_name": "Icaraí",
+   "lat": -22.9090238,
+   "beach_name": "Icaraí",
+   "id": "IC002"
+  },
+  {
+   "location": "Em frente à Rua Mariz e Barros",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-24",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.1114367,
+   "point_name": "Icaraí",
+   "lat": -22.9090238,
+   "beach_name": "Icaraí",
+   "id": "IC001"
+  },
+  {
+   "location": "Em frente à Rua Caraíbas",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-24",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.0948456,
+   "point_name": "São Francisco",
+   "lat": -22.9180143,
+   "beach_name": "São Francisco",
+   "id": "SF000"
+  },
+  {
+   "location": "Em frente à Avenida Quintino Bocaiúva n° 233",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-24",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.0948456,
+   "point_name": "São Francisco",
+   "lat": -22.9180143,
+   "beach_name": "São Francisco",
+   "id": "SF002"
+  },
+  {
+   "location": "Em frente à Igreja São Francisco",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-24",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.0948456,
+   "point_name": "São Francisco",
+   "lat": -22.9180143,
+   "beach_name": "São Francisco",
+   "id": "SF001"
+  },
+  {
+   "location": "Em frente à Avenida Quintino Bocaiúva n° 355",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-24",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.0974303,
+   "point_name": "Charitas",
+   "lat": -22.9291578,
+   "beach_name": "Charitas",
+   "id": "CH002"
+  },
+  {
+   "location": "Em frente à Travessa Santa Cândida",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-24",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.0974303,
+   "point_name": "Charitas",
+   "lat": -22.9291578,
+   "beach_name": "Charitas",
+   "id": "CH001"
+  },
+  {
+   "location": "Lado direito do Clube Naval de Charitas",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-24",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.0974303,
+   "point_name": "Charitas",
+   "lat": -22.9291578,
+   "beach_name": "Charitas",
+   "id": "CH000"
+  },
+  {
+   "location": "Saída da Alameda Mal.Pessoa Leal na Av.Carlos Ermelindo Martins, 1565",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-24",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.1191031,
+   "point_name": "Jurujuba",
+   "lat": -22.9267345,
+   "beach_name": "Jurujuba",
+   "id": "JR000"
+  },
+  {
+   "location": "Em frente à Avenida Carlos Ermelindo Marins n° 1935",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-24",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.1191031,
+   "point_name": "Jurujuba",
+   "lat": -22.9267345,
+   "beach_name": "Jurujuba",
+   "id": "JR001"
+  },
+  {
+   "location": "Centro da praia",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-24",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.1226435,
+   "point_name": "Eva",
+   "lat": -22.9296593,
+   "beach_name": "Eva",
+   "id": "EA000"
+  },
+  {
+   "location": "Centro da praia",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-24",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.122763,
+   "point_name": "Adão",
+   "lat": -22.9275652,
+   "beach_name": "Adão",
+   "id": "AD000"
+  },
+  {
+   "location": "Em frente à Avenida Doutor Acúrcio Torres",
+   "samples": [
+    {
+     "condition": "propria",
+     "sampled_on": "2026-09-24",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.0809261,
+   "point_name": "Piratininga",
+   "lat": -22.9553432,
+   "beach_name": "Piratininga",
+   "id": "PR000"
+  },
+  {
+   "location": "Em frente à Rua General Rubens Rosado Teixeira",
+   "samples": [
+    {
+     "condition": "propria",
+     "sampled_on": "2026-09-24",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.0809261,
+   "point_name": "Piratininga",
+   "lat": -22.9553432,
+   "beach_name": "Piratininga",
+   "id": "PR001"
+  },
+  {
+   "location": "Em frente à Rua Orestes Barbosa",
+   "samples": [
+    {
+     "condition": "propria",
+     "sampled_on": "2026-09-24",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.0809261,
+   "point_name": "Piratininga",
+   "lat": -22.9553432,
+   "beach_name": "Piratininga",
+   "id": "PR002"
+  },
+  {
+   "location": "Em frente à Rua João Gomes da Silva",
+   "samples": [
+    {
+     "condition": "propria",
+     "sampled_on": "2026-09-24",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.0809261,
+   "point_name": "Piratininga",
+   "lat": -22.9553432,
+   "beach_name": "Piratininga",
+   "id": "PR003"
+  },
+  {
+   "location": "Centro da praia",
+   "samples": [
+    {
+     "condition": "propria",
+     "sampled_on": "2026-09-24",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.0698928,
+   "point_name": "Sossego",
+   "lat": -22.9581215,
+   "beach_name": "Sossego",
+   "id": "SG000"
+  },
+  {
+   "location": "Centro da praia",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-24",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.0529252,
+   "point_name": "Camboinhas",
+   "lat": -22.9630921,
+   "beach_name": "Camboinhas",
+   "id": "CM000"
+  },
+  {
+   "location": "À 100m do Canal da Lagoa de Itaipu",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-24",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.0529252,
+   "point_name": "Camboinhas",
+   "lat": -22.9630921,
+   "beach_name": "Camboinhas",
+   "id": "CM001"
+  },
+  {
+   "location": "Em frente ao Restaurante Varandão",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-24",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.0458288,
+   "point_name": "Itaipu",
+   "lat": -22.9707549,
+   "beach_name": "Itaipu",
+   "id": "II000"
+  },
+  {
+   "location": "Em frente à Praia de Itaipú n° 21",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-24",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.0458288,
+   "point_name": "Itaipu",
+   "lat": -22.9707549,
+   "beach_name": "Itaipu",
+   "id": "II001"
+  },
+  {
+   "location": "Em frente à Rua das Azaléias",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-24",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.031957,
+   "point_name": "Itacoatiara",
+   "lat": -22.974856,
+   "beach_name": "Itacoatiara",
+   "id": "IA001"
+  },
+  {
+   "location": "Em frente à Rua das Papoulas",
+   "samples": [
+    {
+     "condition": "impropria",
+     "sampled_on": "2026-09-24",
+     "enterococci_per_100ml": null,
+     "rain": null,
+     "water_temp_c": null
+    }
+   ],
+   "lon": -43.031957,
+   "point_name": "Itacoatiara",
+   "lat": -22.974856,
+   "beach_name": "Itacoatiara",
+   "id": "IA000"
+  }
+ ]
+}
