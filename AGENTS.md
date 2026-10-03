@@ -58,12 +58,7 @@ map-load tier, billed above it).
 
 No workflow here builds the app or reads its tree (MIP-0070 §5.4).
 
-**Bumping the image.** Put the new jvm tag and its digest in `marola-image` (the tag is
-`jvm-<short sha>` from the app's `docker.yml`; `docker buildx imagetools inspect <ref>` prints the
-digest), then run `just board-schema --update` and commit both files together. `board-schema.yml`
-fails a PR whose vendored schema differs from the image's, and `site.yml` checks the page against
-the image's own schema before every deploy. The jvm image is required: the schema is read out of
-`/app/marola.jar`, which the native image does not have.
+**Bumping the image**: steps and gates in [`docs/3-development.md`](docs/3-development.md#updating-the-app-image).
 
 ## Commands
 
