@@ -39,7 +39,7 @@
   "controls.near": "button that sorts the list by distance from the visitor; one to three words",
   "controls.near_title": "tooltip of controls.near: the location never leaves the browser",
   "controls.sound": "button that toggles an ambient wave sound; the line icon before it is markup in index.html, not part of the string",
-  "controls.sound_title": "tooltip of controls.sound: synthesized locally, never autoplays",
+  "controls.sound_title": "tooltip of controls.sound: a recorded wave loop fetched on first use, never autoplays",
   "day.today": "day button label for the first day on the board",
   "day.tomorrow": "day button label for the second day on the board",
   "dir.e": "compass point the wind blows from, abbreviated (east, leste)",

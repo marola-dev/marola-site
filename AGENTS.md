@@ -23,7 +23,7 @@ The map at [marola.dev](https://marola.dev): a static page that shows every area
 boards (MIP-0005), with no server, no LLM and no per-visitor cost.
 
 - `site/static/`: the page (`index.html`, `about.html`, `support.html` behind Donate, `app.js`,
-  `ui.js`, `style.css`, the chat widget, vendored Leaflet) and `404.html`, which forwards the old
+  `ui.js`, `style.css`, the chat widget, vendored Leaflet, Inter and the wave loop under `vendor/`) and `404.html`, which forwards the old
   `marola.dev/docs/*` links to `docs.marola.dev`.
 - `site/i18n/`: the pt-BR and English catalogs (MIP-0054). `scripts/i18n_bundle.py` checks them
   and writes `site/static/i18n.js`; edit the catalogs, never `i18n.js`.

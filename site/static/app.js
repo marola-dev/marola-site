@@ -474,41 +474,36 @@
     el.status = document.getElementById('status');
   }
 
-  // --- ambient wave sound (Web Audio, synthesized — nothing to fetch) ------------------------.
-  var sound = { ctx: null, gain: null, lfoDepth: null, on: false };
-  var SWELL_DEPTH = 0.05;   // how far the LFO swings the output gain when the sound is on
-  var SOUND_LEVEL = 0.06;   // the output gain's own level when on
+  // --- ambient wave sound: a recorded loop (vendor/sounds/LICENSE.waves), fetched on first use ----.
+  var sound = { ctx: null, gain: null, on: false };
+  var SOUND_URL = 'vendor/sounds/waves.mp3';
+  var SOUND_LEVEL = 0.6;
   var SILENT = 0.0001;
-  // Low-passed brown noise reads as surf wash; a ~0.15 Hz LFO on the gain adds the swell.
   function startWaveSound(ctx) {
-    var seconds = 2, bufferSize = seconds * ctx.sampleRate;
-    var buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-    var data = buffer.getChannelData(0);
-    var last = 0;
-    for (var i = 0; i < bufferSize; i++) {
-      var white = Math.random() * 2 - 1;
-      last = (last + 0.02 * white) / 1.02;
-      data[i] = last * 3.5;
-    }
-    var noise = ctx.createBufferSource();
-    noise.buffer = buffer; noise.loop = true;
-    var filter = ctx.createBiquadFilter();
-    filter.type = 'lowpass'; filter.frequency.value = 700;
     var gainNode = ctx.createGain();
     gainNode.gain.value = SILENT;
-    var lfo = ctx.createOscillator();
-    lfo.frequency.value = 0.15;
-    var lfoGain = ctx.createGain();
-    lfoGain.gain.value = SWELL_DEPTH;
-    lfo.connect(lfoGain);
-    lfoGain.connect(gainNode.gain);
-    noise.connect(filter);
-    filter.connect(gainNode);
     gainNode.connect(ctx.destination);
-    noise.start(); lfo.start();
-    // Both must be silenced to stop the sound: a signal connected to an AudioParam is *added* to
-    // its value, so zeroing gainNode.gain alone leaves the LFO swinging it by ±SWELL_DEPTH.
-    return { gain: gainNode, lfoDepth: lfoGain };
+    fetch(SOUND_URL).then(function (r) {
+      if (!r.ok) throw new Error(r.status + ' ' + SOUND_URL);
+      return r.arrayBuffer();
+    }).then(function (bytes) {
+      // the callback form: Safari before 14.1 has no promise-returning decodeAudioData
+      return new Promise(function (resolve, reject) { ctx.decodeAudioData(bytes, resolve, reject); });
+    }).then(function (audio) {
+      var src = ctx.createBufferSource();
+      src.buffer = audio; src.loop = true;
+      // skip the MP3 encoder's padding at both ends, which would click at every loop
+      src.loopStart = 0.05; src.loopEnd = audio.duration - 0.05;
+      src.connect(gainNode);
+      src.start(0, 0.05);
+    }).catch(function (e) {
+      console.error(e);
+      // the next click tries again from scratch
+      sound.on = false; el.sound.setAttribute('aria-pressed', 'false');
+      if (ctx.close) ctx.close();
+      if (sound.ctx === ctx) sound.ctx = null;
+    });
+    return { gain: gainNode };
   }
 
   // --- events --------------------------------------------------------------------------------.
@@ -547,9 +542,7 @@
         var Ctx = window.AudioContext || window.webkitAudioContext;
         if (!Ctx) return;
         sound.ctx = new Ctx();
-        var synth = startWaveSound(sound.ctx);
-        sound.gain = synth.gain;
-        sound.lfoDepth = synth.lfoDepth;
+        sound.gain = startWaveSound(sound.ctx).gain;
       }
       if (sound.ctx.state === 'suspended') sound.ctx.resume();
       sound.on = !sound.on;
@@ -557,8 +550,6 @@
       var now = sound.ctx.currentTime;
       sound.gain.gain.cancelScheduledValues(now);
       sound.gain.gain.setTargetAtTime(sound.on ? SOUND_LEVEL : SILENT, now, 0.5);
-      sound.lfoDepth.gain.cancelScheduledValues(now);
-      sound.lfoDepth.gain.setTargetAtTime(sound.on ? SWELL_DEPTH : 0, now, 0.5);
     } catch (e) { console.error(e); }
   });
 

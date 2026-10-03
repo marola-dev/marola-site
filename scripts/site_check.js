@@ -145,17 +145,18 @@ function makeLeaflet() {
   return L;
 }
 
-// --- an AudioContext just big enough for app.js's wave-sound synth (no real audio, records the
-// node graph so the test can assert it was actually built)
+// --- an AudioContext just big enough for app.js's wave sound (no real audio, records the node
+// graph so the test can assert it was actually built)
 // ---------------------------------------.
 function makeAudioContext() {
-  makeAudioContext.gains = [];
+  makeAudioContext.gains = []; makeAudioContext.sources = [];
   function node(kind) {
     const n = { kind };
     // Connecting a node to an AudioParam does NOT replace the param's value — the Web Audio spec
     // ADDS the connected signal to the intrinsic value.
     n.connect = (target) => {
       if (target && typeof target.setTargetAtTime === 'function') target.modulators.push(n);
+      n.target = target;
       return n;
     };
     if (kind === 'gain') {
@@ -165,7 +166,7 @@ function makeAudioContext() {
         setTargetAtTime(v) { n.gain.value = v; }
       };
     }
-    if (kind === 'bufferSource' || kind === 'oscillator') n.start = () => {};
+    if (kind === 'bufferSource' || kind === 'oscillator') n.start = () => { n.started = true; };
     if (kind === 'biquadFilter' || kind === 'oscillator') n.frequency = { value: 0 };
     return n;
   }
@@ -175,7 +176,8 @@ function makeAudioContext() {
   return {
     state: 'running', currentTime: 0, destination: {}, sampleRate: 44100,
     createBuffer: (ch, len) => ({ getChannelData: () => new Float32Array(len) }),
-    createBufferSource: () => node('bufferSource'),
+    createBufferSource: () => { const b = node('bufferSource'); makeAudioContext.sources.push(b); return b; },
+    decodeAudioData: (bytes, ok) => { ok({ duration: 118, bytes }); },
     createBiquadFilter: () => node('biquadFilter'),
     createGain: () => { const g = node('gain'); makeAudioContext.gains.push(g); return g; },
     createOscillator: () => node('oscillator'),
@@ -210,7 +212,9 @@ async function runPage(board, opts) {
     console: { error: (...a) => errors.push(a.map(String).join(' ')), log() {} },
     document: { getElementById: id => els[id] || null, querySelectorAll: () => [], documentElement: {} },
     getComputedStyle: () => ({ getPropertyValue: n => colours[n] || '' }),
-    fetch: p => { fetched.push(p); return Promise.resolve(p in files
+    fetch: p => { fetched.push(p); return Promise.resolve(p === 'vendor/sounds/waves.mp3'
+      ? { ok: true, status: 200, arrayBuffer: () => Promise.resolve(new ArrayBuffer(8)) }
+      : p in files
       ? { ok: true, status: 200, json: () => Promise.resolve(JSON.parse(JSON.stringify(files[p]))) }
       : { ok: false, status: 404, json: () => Promise.reject(new Error('404')) }); },
     location: { href: 'https://example.test/' + search, search },
@@ -323,7 +327,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
 
   // 2. the page renders the fixture: one marker per beach, tooltips, list, card. Under ?lang=en these are
   // the English needles from before MIP-0054; section 5 holds the same page to pt-BR.
-  const { els, L, errors } = await runPage(BOARD, { search: '?lang=en' });
+  const { els, L, errors, fetched } = await runPage(BOARD, { search: '?lang=en' });
   ok(errors.length === 0, 'app.js logged no errors while loading', errors.join(' | '));
   const isWave = l => l.kind === 'marker' && l.opts && l.opts.icon && l.opts.icon.divIcon && /\bwave\b/.test(l.opts.icon.options.className);
   const markers = L.created.filter(l => l.added && isWave(l));
@@ -388,23 +392,20 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   if (els.sound.listeners.click && els.sound.listeners.click[0]) {
     els.sound.listeners.click[0]({});
     ok(els.sound.attrs['aria-pressed'] === 'true', 'clicking the sound toggle flips aria-pressed to true');
-    // Guard the other direction too: a "fix" that silenced the synth outright would satisfy the
+    for (let i = 0; i < 20; i++) await new Promise(r => setImmediate(r));
+    const out = (makeAudioContext.gains || [])[0];
+    const src = (makeAudioContext.sources || [])[0];
+    ok(fetched.includes('vendor/sounds/waves.mp3'), 'the first click fetches the recorded loop', fetched);
+    ok(src && src.loop === true && src.started && src.target === out,
+      'the recording loops into the output gain', src);
+    ok(src && src.loopEnd > src.loopStart && src.loopStart > 0, 'the loop skips the MP3 padding at both ends', src);
+    // Guard the other direction too: a "fix" that silenced the sound outright would satisfy the
     // silence assertion below while breaking the feature.
-    const onGains = (makeAudioContext.gains || []).filter(g => (g.gain.modulators || []).length > 0);
-    if (onGains[0]) {
-      const onPeak = onGains[0].gain.value + onGains[0].gain.modulators.reduce((s, m) => s + Math.abs(m.gain ? m.gain.value : 0), 0);
-      ok(onPeak > 0.01, 'after the first click the sound is actually audible (peak ' + onPeak.toFixed(4) + ')');
-    }
+    ok(out && out.gain.value > 0.01, 'after the first click the sound is actually audible (gain ' + (out && out.gain.value) + ')');
     els.sound.listeners.click[0]({});
     ok(els.sound.attrs['aria-pressed'] === 'false', 'clicking it again flips aria-pressed back to false — no exception either time');
-    // The bug this guards: aria-pressed flipping is not the same as the sound stopping.
-    const gains = makeAudioContext.gains || [];
-    const out = gains.filter(g => (g.gain.modulators || []).length > 0)[0];
-    ok(!!out, 'the wave synth has an output gain with an LFO connected to its gain param');
-    if (out) {
-      const peak = out.gain.value + out.gain.modulators.reduce((s, m) => s + Math.abs(m.gain ? m.gain.value : 0), 0);
-      ok(peak < 0.001, 'after the second click the sound is actually silent — LFO depth included (peak ' + peak.toFixed(4) + ')');
-    }
+    ok(out && out.gain.value < 0.001, 'after the second click the sound is actually silent (gain ' + (out && out.gain.value) + ')');
+    ok(fetched.filter(f => f === 'vendor/sounds/waves.mp3').length === 1, 'the loop is fetched once, not per click');
   } else ok(false, 'the sound toggle has a click handler');
   if (joaq && joaq.handlers.click) {
     joaq.handlers.click({});
