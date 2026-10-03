@@ -22,7 +22,8 @@ write() {
   fi
   printf '// written by scripts/mapbox_config.sh at deploy\nwindow.MAROLA_MAPBOX = { token: "%s", style: "%s" };\n' \
     "$token" "$style" >"$dist/mapbox-config.js"
-  echo "mapbox_config: wrote $dist/mapbox-config.js (token ${token:+${token:0:8}…}${token:-none}, style ${style:-default})" >&2
+  local shown="${token:+${token:0:8}…}"
+  echo "mapbox_config: wrote $dist/mapbox-config.js (token ${shown:-none}, style ${style:-default})" >&2
 }
 
 self_test() {

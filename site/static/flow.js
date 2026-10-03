@@ -265,7 +265,7 @@
       gl.uniform1i(gl.getUniformLocation(fieldProg, 'u_field'), 0);
       gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, rampTex[kind]);
       gl.uniform1i(gl.getUniformLocation(fieldProg, 'u_ramp'), 1);
-      gl.uniform1f(gl.getUniformLocation(fieldProg, 'u_opacity'), 0.55);
+      gl.uniform1f(gl.getUniformLocation(fieldProg, 'u_opacity'), 0.78);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       gl.disableVertexAttribArray(aPos);
 

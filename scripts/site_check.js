@@ -100,7 +100,9 @@ class El {
     this.id = id; this.innerHTML = ''; this.textContent = ''; this.hidden = false; this.value = '';
     this.max = 0; this.dataset = {}; this.attrs = {}; this.children = []; this.listeners = {}; this.style = {};
     this.className = ''; this.found = {};
-    this.classList = { toggle() {}, add() {}, remove() {}, contains() { return false; } };
+    const cls = new Set();
+    this.classList = { toggle(c, on) { (on === undefined ? !cls.has(c) : on) ? cls.add(c) : cls.delete(c); }, add(c) { cls.add(c); },
+      remove(c) { cls.delete(c); }, contains(c) { return cls.has(c); } };
   }
   addEventListener(type, fn) { (this.listeners[type] = this.listeners[type] || []).push(fn); }
   fire(type, ev) { (this.listeners[type] || []).forEach(fn => fn(Object.assign({ stopPropagation() {}, preventDefault() {} }, ev))); }
@@ -110,11 +112,11 @@ class El {
   querySelectorAll(sel) { return this.found[sel] || []; }
   closest() { return this; }
 }
-const IDS = ['area', 'days', 'near', 'sound', 'toggle-list', 'hourbar', 'hour', 'hour-label', 'list', 'card', 'footer', 'status', 'flow', 'map-note'];
-// #flow's three buttons and two keys, as index.html has them.
+const IDS = ['area', 'days', 'near', 'sound', 'toggle-list', 'hourbar', 'hour', 'hour-label', 'list', 'card', 'footer', 'status', 'flow', 'map-note', 'map'];
+// #flow's three layer buttons and their keys, as index.html has them.
 function flowPanel(flow) {
-  flow.found['button[data-layer]'] = ['wind', 'waves', 'off'].map(k => Object.assign(new El('flow-' + k), { dataset: { layer: k } }));
-  flow.found['[data-key]'] = ['wind', 'waves'].map(k => Object.assign(new El('key-' + k), { dataset: { key: k } }));
+  flow.found['button[data-layer]'] = ['wind', 'waves', 'water'].map(k => Object.assign(new El('flow-' + k), { dataset: { layer: k } }));
+  flow.found['[data-key]'] = ['wind', 'waves', 'water'].map(k => Object.assign(new El('key-' + k), { dataset: { key: k } }));
 }
 // 'smoke' is deliberately absent: the page must tolerate a build without the panel (app.js
 // header).
@@ -560,15 +562,25 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   const waveField = flowLayer.field();
   const waveAt = waveField && F.sample(waveField, F.mercX(-48.4487), F.mercY(-27.6296));
   ok(waveAt && Math.abs(waveAt[2] - 1.3 / F.KINDS.waves.max) < 0.02, "Joaquina's wave height (1.3 m at its best hour) is the field's value there; Brava, with no wave direction, sits out", JSON.stringify(waveAt));
-  first.els.flow.fire('click', { target: Object.assign(btn('off'), { closest() { return this; } }) });
-  ok(flowLayer.kind() === 'off' && flowLayer.field() === null, '"none" turns the layer off');
+  const drawnPoints = () => first.M.created.filter(isPoint).length;
+  const pointsBefore = drawnPoints();
+  const allPoints = BOARD.beaches.reduce((n, b) => n + ((b.water && b.water.points) || []).length, 0);
+  first.els.flow.fire('click', { target: Object.assign(btn('water'), { closest() { return this; } }) });
+  ok(flowLayer.kind() === 'off' && flowLayer.field() === null && drawnPoints() === allPoints && allPoints > 1 &&
+    first.els.flow.found['[data-key]'].find(k => k.dataset.key === 'water').hidden === false,
+    'the water layer stops the particles and draws every beach\'s sampling points, with its key', drawnPoints() + ' of ' + allPoints);
+  ok(first.els.map.classList.contains('layer-water'), 'the water layer marks #map, so the beach dots step back');
   first.els.flow.fire('click', { target: Object.assign(btn('wind'), { closest() { return this; } }) });
+  ok(drawnPoints() === pointsBefore, 'leaving the water layer takes the other beaches\' points away again', drawnPoints() + ' vs ' + pointsBefore);
   const before = F.sample(flowLayer.field(), F.mercX(-48.4487), F.mercY(-27.6296))[2];
   first.els.hour.value = '0'; first.els.hour.listeners.input[0]();
   const after = F.sample(flowLayer.field(), F.mercX(-48.4487), F.mercY(-27.6296))[2];
   ok(Math.abs(before - 27 / 40) < 0.02 && Math.abs(after - 12 / 40) < 0.02, 'the hour slider moves the field with it (27 km/h at the best hour, 12 at 07:00)', before + ' → ' + after);
   const layered = await runPage(BOARD, { search: '?layer=waves' });
   ok(layered.map.layers.find(l => l.layer.id === 'marola-flow').layer.kind() === 'waves', '?layer=waves opens on the waves layer');
+  const watered = await runPage(BOARD, { search: '?layer=water' });
+  ok(watered.M.created.filter(isPoint).length > 1, '?layer=water opens on the water layer, its points drawn');
+  ok(!first.map.layers.some(l => l.layer.id === 'marola-coast'), 'no coastline layer when the style has no composite source');
 
   // flow.js on its own: the interpolation the particles ride on.
   const one = F.buildField([{ lon: -48.5, lat: -27.6, mag: 20, dir: 0 }], 40);

@@ -34,10 +34,13 @@ as defaults to avoid.
 | `--accent-hover` | `#164e9e` | hover on accent |
 | `--accent-soft` | `#e9f0fb` | pressed toggles, the visitor's chat messages |
 | `--c70 … --cna` | score colours | data only: dots, chips, legend. A change needs a MIP note |
-| `--flow-wind-0 … 3` | `#1e2a55` → `#e6f4fb` | the wind field, calm to 40 km/h (`flow.js`, the key's ramp) |
-| `--flow-wave-0 … 3` | `#2a1d5a` → `#efe6ff` | the wave field, flat to 3 m |
+| `--flow-wind-0 … 5` | `#5b6db3` → `#a8566a` | the wind field, calm to 40 km/h (`flow.js`, the key's ramp) |
+| `--flow-wave-0 … 5` | `#2f5a9e` → `#c86e6e` | the wave field, flat to 3 m |
+| `--glass`, `--glass-*` | `rgb(22 26 32 / .8)`, … | what floats over the map: layer rail, key, zoom buttons, popups |
 
-The flow ramps are data too, and stay cool (blue, violet) so a field never reads as a score.
+The flow ramps are data too. They follow Windy's muted scales, which visitors already read; a
+score is never told by the field's colour alone, because the beach dots sit on top with a ring
+and the selected one with its number.
 No other hex in a rule. The marker rim (`#1d2733`) and the score colours live in `app.js`'s SVG,
 where CSS variables do not reach.
 
@@ -83,9 +86,13 @@ from a CDN. Inter is the deliberate pick for a public-information, accessibility
   beach is a 32 px badge with its score. No glyphs, halos or shadows. The legend draws the same dot.
 - **Map**: Mapbox GL JS on the `dark-v11` style (or `MAPBOX_STYLE`), zoom buttons top right, no
   rotation or pitch. Popups take the panel shape, without the arrow.
-- **Flow panel** (`.flow`): floats top left of the map. A segmented control (vento, ondas,
-  nenhuma) over the active ramp, its 0 and max, and the line saying it is estimated between
-  beaches. White particles over a field at 55% opacity, fading out 18 km past the last beach.
+- **Layer rail** (`.flow`): Windy-style, right of the map under the zoom buttons, in dark glass.
+  One pill per layer (vento, ondas, balneabilidade) with its icon, the active one in `--accent`;
+  under it the active layer's key (ramp with 0 and max, or the fit/unfit dots) and its caption.
+  Icons only on a phone and beside an open card. Wind and waves are white particles over a
+  field at 78% opacity, fading out 18 km past the last beach, with a thin white coastline over
+  it on Mapbox's own styles. Balneabilidade stops the particles, draws every sampling point in
+  the area and dims the beach dots.
 - **Icons**: Lucide line icons through `icon(name)` in `app.js` (ISC, `vendor/icons/LICENSE.lucide`),
   16 px, 1.75 stroke, in `--accent`; `aria-hidden` with the word next to it. Never emoji.
 

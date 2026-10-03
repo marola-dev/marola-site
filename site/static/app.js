@@ -15,7 +15,7 @@
     area: $('area'), days: $('days'), near: $('near'), sound: $('sound'), toggleList: $('toggle-list'),
     hourbar: $('hourbar'), hour: $('hour'), hourLabel: $('hour-label'),
     list: $('list'), card: $('card'), footer: $('footer'), status: $('status'),
-    flow: $('flow'), mapNote: $('map-note')
+    flow: $('flow'), mapNote: $('map-note'), map: $('map')
   };
 
   var state = {
@@ -26,7 +26,7 @@
     here: null,         // {lat, lon} after "near me"
     markers: {}, map: null, flow: null, ready: false,
     waterPointMarkers: [],
-    layer: 'wind'       // the flow layer: wind, waves or off
+    layer: 'wind'       // the map layer: wind, waves or water
   };
   // site.yml writes mapbox-config.js from the repo's MAPBOX_PUBLIC_TOKEN at deploy (AGENTS.md).
   var MAPBOX = window.MAROLA_MAPBOX || {};
@@ -199,11 +199,12 @@
           state.ready = true;
           addTrailLayer();
           state.flow = window.marolaFlow.layer({ id: 'marola-flow', still: reducedMotion(), ramps: {
-            wind: [0, 1, 2, 3].map(function (i) { return getCss('--flow-wind-' + i); }),
-            waves: [0, 1, 2, 3].map(function (i) { return getCss('--flow-wave-' + i); })
+            wind: [0, 1, 2, 3, 4, 5].map(function (i) { return getCss('--flow-wind-' + i); }),
+            waves: [0, 1, 2, 3, 4, 5].map(function (i) { return getCss('--flow-wave-' + i); })
           } });
           // under the labels, so place names stay readable over the particles
           state.map.addLayer(state.flow, firstSymbolLayer());
+          addCoastline();
           if (state.board) { renderTrails(); renderFlow(); }
         });
       } catch (e) {
@@ -221,6 +222,12 @@
     el.list.hidden = false; el.toggleList.setAttribute('aria-expanded', 'true');
   }
   function reducedMotion() { return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); }
+  /** A thin coastline over the field, as Windy draws it; only Mapbox's own styles carry `composite`. */
+  function addCoastline() {
+    if (!state.map.getSource('composite')) return;
+    state.map.addLayer({ id: 'marola-coast', type: 'line', source: 'composite', 'source-layer': 'water',
+      paint: { 'line-color': 'rgba(255,255,255,0.4)', 'line-width': 0.7 } }, firstSymbolLayer());
+  }
   function firstSymbolLayer() {
     var layers = (state.map.getStyle() || {}).layers || [];
     for (var i = 0; i < layers.length; i++) if (layers[i].type === 'symbol') return layers[i].id;
@@ -260,9 +267,10 @@
       b.setAttribute('aria-pressed', String(b.dataset.layer === state.layer));
     });
     Array.prototype.forEach.call(el.flow.querySelectorAll('[data-key]'), function (k) { k.hidden = k.dataset.key !== state.layer; });
+    el.map.classList.toggle('layer-water', state.layer === 'water');
     if (!state.flow || !state.board) return;
     state.flow.setData(flowPoints());
-    state.flow.setKind(state.layer);
+    state.flow.setKind(state.layer === 'water' ? 'off' : state.layer);
   }
 
   // --- wave markers + hover aspects (MIP-0009) ----------------------------------------------.
@@ -470,17 +478,20 @@
 
   function condLabel(c) { return c === 'proper' ? 'PRÓPRIA' : c === 'improper' ? 'IMPRÓPRIA' : t('water.unclassified'); }
 
+  /** The water layer shows every beach's sampling points; the others only the selected beach's. */
   function renderWaterPoints(beach) {
     state.waterPointMarkers.forEach(function (m) { m.marker.remove(); m.tip.remove(); });
     state.waterPointMarkers = [];
-    if (!state.map || !beach || !beach.water || !beach.water.points) return;
-    beach.water.points.forEach(function (p) {
-      var band = p.condition === 'improper' ? 'c0' : p.condition === 'proper' ? 'c70' : 'cna';
-      var text = esc(p.point) + ' (' + esc(p.location) + '): ' + esc(condLabel(p.condition)) + ', ' + esc(p.sampled_on);
-      var m = domMarker('wpoint ' + band, '', p.point, [p.lon, p.lat]);
-      m.tip = hoverTip(m.node, [p.lon, p.lat], '<span class="water">' + text + '</span>', '', 8);
-      state.waterPointMarkers.push(m);
-    });
+    if (!state.map) return;
+    var beaches = state.layer === 'water' && state.board ? state.board.beaches : beach ? [beach] : [];
+    beaches.forEach(function (b) { if (b.water && b.water.points) b.water.points.forEach(addWaterPoint); });
+  }
+  function addWaterPoint(p) {
+    var band = p.condition === 'improper' ? 'c0' : p.condition === 'proper' ? 'c70' : 'cna';
+    var text = esc(p.point) + ' (' + esc(p.location) + '): ' + esc(condLabel(p.condition)) + ', ' + esc(p.sampled_on);
+    var m = domMarker('wpoint ' + band, '', p.point, [p.lon, p.lat]);
+    m.tip = hoverTip(m.node, [p.lon, p.lat], '<span class="water">' + text + '</span>', '', 8);
+    state.waterPointMarkers.push(m);
   }
 
   // task 3's note codes carry raw numbers; round them as the English notes did.
@@ -622,6 +633,7 @@
     var btn = e.target.closest('button[data-layer]'); if (!btn) return;
     state.layer = btn.dataset.layer; setParam('layer', state.layer);
     renderFlow();
+    if (state.board) renderWaterPoints(beachByName(state.selected));
   });
   el.toggleList.addEventListener('click', function () {
     el.list.hidden = !el.list.hidden;
@@ -679,7 +691,7 @@
     if (state.mapNoteKey) el.mapNote.textContent = t(state.mapNoteKey);
   });
 
-  if (['wind', 'waves', 'off'].indexOf(param('layer')) >= 0) state.layer = param('layer');
+  if (['wind', 'waves', 'water'].indexOf(param('layer')) >= 0) state.layer = param('layer');
 
   loadAreas().catch(fail);
 })();
