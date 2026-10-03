@@ -94,6 +94,7 @@ select, button, .pill, .controls > a {
   background: var(--bg); color: var(--ink); cursor: pointer; text-decoration: none; white-space: nowrap;
 }
 select { display: inline-block; padding: 0 8px 0 12px; }
+#area { text-transform: none; font-weight: 600; letter-spacing: .02em; }
 select:hover, button:hover, .pill:hover, .controls > a:hover { background: var(--surface); border-color: #b4bec9; }
 button:active { transform: translateY(1px); }
 button[aria-pressed="true"], button[aria-expanded="true"] {
@@ -127,6 +128,8 @@ button[aria-pressed="true"], button[aria-expanded="true"] {
 /* the map fills what is left */
 .main { position: relative; flex: 1 1 auto; min-height: 60vh; }
 #map { position: absolute; inset: 0; background: var(--sea); }
+/* the open list would cover the zoom buttons */
+@media (min-width: 641px) { .main:has(.list:not([hidden])) .leaflet-left { left: calc(min(22rem, 90vw) + 12px); } }
 
 /* panels float over the map, so they are the one place with elevation */
 .list, .card {
@@ -269,8 +272,8 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   .bar h1 { font-size: 20px; }
   .tagline { font-size: 13px; }
   .controls { margin-left: 0; width: 100%; display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
-  .controls select { grid-column: span 3; min-width: 0; }
-  .controls .segmented { grid-column: span 3; }
+  .controls select { grid-column: span 2; min-width: 0; }
+  .controls .segmented { grid-column: span 4; }
   .controls .segmented button { flex: 1; }
   .controls > button { grid-column: span 2; padding: 0 6px; gap: 4px; font-size: 13px; }
   .hourbar { padding: 8px 16px; gap: 6px 12px; }

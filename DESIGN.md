@@ -70,6 +70,7 @@ from a CDN. Inter is the deliberate pick for a public-information, accessibility
 - **Control**: 36 px, 8 px radius, 1 px `--line-strong`, white, 14/500. Hover `--surface`.
   Pressed (`aria-pressed`, `aria-expanded`): `--accent-soft` fill, accent border and text.
   `:active` nudges 1 px down.
+- **Area picker**: the control showing a two-letter code (FL, RJ, BA; `AREA_CODES` in `app.js`), the full name in its title and accessible name.
 - **Segmented** (day, language): a `--surface` track; the picked segment is white, raised.
 - **Primary action**: accent fill, white text. One per surface (chat open, chat send).
 - **Hour bar**: label, slider (accent), legend pushed right.

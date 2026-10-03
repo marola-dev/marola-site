@@ -106,7 +106,7 @@
       state.areas = j.areas || [];
       if (!state.areas.length) throw new Error(t('fail.no_areas'));
       el.area.innerHTML = state.areas.map(function (a) {
-        return '<option value="' + esc(a.id) + '">' + esc(a.name) + '</option>';
+        return '<option value="' + esc(a.id) + '" title="' + esc(a.name) + '" aria-label="' + esc(a.name) + '">' + esc(areaCode(a)) + '</option>';
       }).join('');
       var wanted = param('area');
       var area = state.areas.filter(function (a) { return a.id === wanted; })[0] || state.areas[0];
@@ -115,8 +115,14 @@
     });
   }
 
+  // The picker shows a two-letter code; areas.json is shared with the app, so the codes live here.
+  var AREA_CODES = { floripa: 'FL', rio: 'RJ', salvador: 'BA' };
+  function areaCode(a) {
+    return AREA_CODES[a.id] || String(a.name).normalize('NFD').replace(/[^A-Za-z]/g, '').slice(0, 2).toUpperCase();
+  }
+
   function selectArea(area) {
-    state.area = area; setParam('area', area.id);
+    state.area = area; setParam('area', area.id); el.area.title = area.name;
     ensureMap(area);
     status(t('status.loading_named', { name: area.name }));
     return fetchJson('data/' + area.id + '/latest.json').then(function (latest) {

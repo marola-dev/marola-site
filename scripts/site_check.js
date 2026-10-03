@@ -381,6 +381,8 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
     'score chip carries a band class and no inline style (list: c40 for Joaquina, c0 for unfit Brava)', els.list.innerHTML);
   ok(!/style=/.test(els.list.innerHTML), 'the list HTML has no style= attribute (blocked by the CSP)', els.list.innerHTML);
   ok(els.card.hidden === true || els.card.innerHTML === '', 'the card starts closed');
+  ok(/<option value="fixture" title="Fixture Bay" aria-label="Fixture Bay">FI<\/option>/.test(els.area.innerHTML),
+    'the area picker shows a two-letter code, the full name in its title and accessible name', els.area.innerHTML);
   ok(els['hour-label'].textContent === 'best hour per beach', 'the slider label starts at "best hour per beach"');
   ok(els.sound.attrs['aria-pressed'] !== 'true', 'the sound toggle does not start pressed=true');
   if (els.sound.listeners.click && els.sound.listeners.click[0]) {

@@ -62,7 +62,7 @@
   "footer.github": "marola no GitHub",
   "footer.privacy": "marola: sem cookies, sem rastreamento.",
   "gh.label": "marola-dev/marola no GitHub, dê uma estrela ao repositório",
-  "gh.star": "estrela",
+  "gh.star": "star",
   "gh.title": "marola no GitHub: deixe uma estrela se o projeto for útil para você",
   "header.tagline": "mar, vento, maré e qualidade da água em cada praia, com dados abertos.",
   "hour.at": "às {h}{past, select, yes { (já passou)} other {}}",

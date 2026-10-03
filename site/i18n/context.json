@@ -62,7 +62,7 @@
   "footer.github": "map footer: link text to the repository",
   "footer.privacy": "about and support pages footer: the privacy promise",
   "gh.label": "accessible name of the GitHub pill in the nav (its text is hidden on phones)",
-  "gh.star": "short word inside the GitHub pill inviting a star; one word",
+  "gh.star": "GitHub's own button word, kept as \"star\" in every language (maintainer's call)",
   "gh.title": "hover tooltip of the GitHub pill",
   "header.tagline": "one-line description under the marola wordmark; concrete nouns, no adjectives about the product",
   "hour.at": "hour slider label when a specific hour is picked; h = HH:00, past = yes when that hour has passed today",
