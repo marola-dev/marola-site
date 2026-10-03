@@ -9,7 +9,7 @@ description: Use when adding or reviewing a page, section or panel on marola.dev
 
 marola publishes beach scores built from public data by open code. Visitors trust it only if they
 can see where each number comes from and how old it is, and contributors join only if the way in
-is obvious. Use this with `design-system` (how it looks) and `ptbr-humanizer` (how the Portuguese
+is obvious. Use this with `site-frontend` and `DESIGN.md` (how it looks) and `ptbr-humanizer` (how the Portuguese
 reads); this skill is about what must be on the page.
 
 ## What every page carries

@@ -33,11 +33,15 @@ boards (MIP-0005), with no server, no LLM and no per-visitor cost.
   forwarder), `board-schema.sh` (the image pin and its schema), `stamp_site_version.sh`,
   `site_live_check.py` (what marola.dev actually serves), `site-data-push.sh` (the retrying push
   every `site-data` writer uses), `mip-trailer-check.sh`.
-- `DESIGN.md`: the visual style reference (the Co2 editorial style); its fonts' substitutes,
-  Cormorant Garamond and Inter, are self-hosted in `site/static/vendor/fonts/`.
-- `.claude/skills/site-frontend/`: this repo's own skill for anything a visitor sees;
-  `design-system/` applies `DESIGN.md` to it, `ptbr-humanizer/` keeps the Portuguese natural, and
-  `citizen-science-site/` keeps sources, freshness, limits and the way to contribute on the page.
+- `DESIGN.md`: the visual system (tokens, type, components); Inter is self-hosted in
+  `site/static/vendor/fonts/`.
+- `.claude/skills/site-frontend/`: the entry point for anything a visitor sees; it orders the
+  other frontend skills and settles their conflicts. `ptbr-humanizer/` keeps the Portuguese
+  natural, `citizen-science-site/` keeps sources, freshness, limits and the way to contribute on
+  the page; `frontend-design/`, `webapp-testing/` (anthropics/skills), `design-taste-frontend/`
+  (Leonxlnx/taste-skill), `emil-design-eng/`, `review-animations/` and `break-ui/`
+  (emilkowalski/skill) are vendored unchanged with their licences.
+- `.mcp.json`: the Playwright and Figma MCP servers (no keys; Figma signs in with OAuth).
 
 ## What it consumes and produces
 
@@ -94,6 +98,6 @@ The phase list is the umbrella's `docs/PHASES.md`. Site work serves the current 
 ## Code style
 
 Plain JavaScript, no framework and no build step; the page makes no third-party requests and keeps
-`script-src 'self'`. A visible change goes through the `site-frontend`, `design-system`, `ptbr-humanizer` and `citizen-science-site` skills, `node scripts/site_check.js`
+`script-src 'self'`. A visible change goes through the `site-frontend` skill (which names the others), `node scripts/site_check.js`
 and before/after screenshots. Shell: `set -euo pipefail`, shellcheck-clean. Python: ruff. Comments
 only for why, a trap, or a pointer, as the umbrella's AGENTS.md spells out.

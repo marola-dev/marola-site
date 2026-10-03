@@ -27,8 +27,8 @@ municipal beach bulletin written by someone who swims), not like a product page 
    not "melhor hora por"; "à noite", not "escuro"; "dá para conferir", not "podem ser conferidos".
 2. **Name things concretely.** "os dados das praias", "o laudo de balneabilidade", "a pontuação";
    never "o quadro", "a camada de inteligência", "a solução".
-3. **No em dash as glue.** Use a period, a colon, a comma or "·" in compact UI rows. One dash in
-   a whole page is plenty.
+3. **No em dash.** Use a period, a colon, a semicolon or a comma; "·" only in compact metadata,
+   at most once per line. The same goes for the English catalog.
 4. **Short sentences, active voice, você.** Split anything over ~25 words. Prefer "usamos" or the
    subject the visitor knows over passive "é registrado".
 5. **No marketing or AI words**: inteligente, revolucionário, perfeito, solução, jornada,
