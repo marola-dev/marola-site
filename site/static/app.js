@@ -32,7 +32,7 @@
   };
   // site.yml writes mapbox-config.js from the repo's MAPBOX_PUBLIC_TOKEN at deploy (AGENTS.md).
   var MAPBOX = window.MAROLA_MAPBOX || {};
-  var DEFAULT_STYLE = 'mapbox://styles/mapbox/dark-v11';
+  var DEFAULT_STYLE = 'mapbox://styles/mapbox/outdoors-v12';
 
   // --- helpers -------------------------------------------------------------------------------.
   var I = window.marolaI18n, t = I.t;
@@ -181,7 +181,8 @@
         if (!window.mapboxgl || !MAPBOX.token) throw new Error('no token');
         mapboxgl.accessToken = MAPBOX.token;
         // the CSP build: the worker is a same-origin file, not a blob: (script-src 'self')
-        mapboxgl.workerUrl = 'vendor/mapbox-gl-csp-worker.js';
+        // keyed to the bundle's version so a cached old worker never pairs with a new bundle
+        mapboxgl.workerUrl = 'vendor/mapbox-gl-csp-worker.js?v=' + mapboxgl.version;
         state.map = new mapboxgl.Map({
           container: 'map', style: MAPBOX.style || DEFAULT_STYLE, projection: 'mercator',
           center: [area.lon, area.lat], zoom: 10, minZoom: 3, maxZoom: 17,
@@ -196,7 +197,17 @@
           if (e.originalEvent && e.originalEvent.target && e.originalEvent.target.closest && e.originalEvent.target.closest('.mapboxgl-marker')) return;
           if (state.selected) closeCard();
         });
-        state.map.on('error', function (e) { console.error(e && e.error ? e.error : e); });
+        state.map.on('error', function (e) {
+          console.error(e && e.error ? e.error : e);
+          // a refused token or a missing style never fires load: say so instead of a blank map
+          var status = e && e.error && e.error.status;
+          if (!state.ready && !state.mapFailed && (status === 401 || status === 403 || status === 404)) { state.mapFailed = true; mapNote('map.failed'); }
+        });
+        // Mapbox rebuilds its own layers after a lost GPU context, not a custom layer's GL state
+        state.map.on('webglcontextrestored', function () {
+          if (!state.flow || !state.map.getLayer('marola-flow')) return;
+          state.map.removeLayer('marola-flow'); state.map.addLayer(state.flow, firstSymbolLayer());
+        });
         state.map.on('load', function () {
           state.ready = true;
           addTrailLayer();
@@ -228,7 +239,7 @@
   function addCoastline() {
     if (!state.map.getSource('composite')) return;
     state.map.addLayer({ id: 'marola-coast', type: 'line', source: 'composite', 'source-layer': 'water',
-      paint: { 'line-color': 'rgba(255,255,255,0.4)', 'line-width': 0.7 } }, firstSymbolLayer());
+      paint: { 'line-color': 'rgba(17,24,32,0.35)', 'line-width': 0.7 } }, firstSymbolLayer());
   }
   function firstSymbolLayer() {
     var layers = (state.map.getStyle() || {}).layers || [];
@@ -295,7 +306,8 @@
   var NINO34 = [[-170, -5], [-120, -5], [-120, 5], [-170, 5], [-170, -5]];
 
   function rasterDay(r) {
-    var d = new Date((state.board ? state.board.day : new Date().toISOString().slice(0, 10)) + 'T12:00:00Z');
+    // from the day the board was made, not the forecast day: imagery for a future day does not exist
+    var d = new Date((state.board ? state.board.today : new Date().toISOString().slice(0, 10)) + 'T12:00:00Z');
     d.setUTCDate(d.getUTCDate() - r.daysBack);
     return d.toISOString().slice(0, 10);
   }
@@ -325,6 +337,8 @@
     if (state.map.getLayer('nino34')) state.map.setLayoutProperty('nino34', 'visibility', nino ? 'visible' : 'none');
     if (nino !== !!state.zoomedOut) {
       state.zoomedOut = nino;
+      // the Pacific needs zoom ~1 on a phone, below the area's minZoom
+      state.map.setMinZoom(nino ? 0 : 3);
       if (nino) state.map.fitBounds([[-180, -30], [-60, 25]], { padding: 20, duration: reducedMotion() ? 0 : 1200 });
       else if (state.bounds) state.map.fitBounds(state.bounds, { padding: 40, duration: reducedMotion() ? 0 : 1200, maxZoom: 13 });
     }

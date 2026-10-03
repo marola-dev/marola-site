@@ -161,7 +161,8 @@
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, 0, 1, 0, 0, 1, 1, 1]), gl.STATIC_DRAW);
       lines = gl.createBuffer();
       Object.keys(KINDS).forEach(function (k) { rampTex[k] = texture(gl, 256, 1, rampPixels(opts.ramps[k])); });
-      document.addEventListener('visibilitychange', function () { if (!document.hidden && map) map.triggerRepaint(); });
+      if (!self.listening) document.addEventListener('visibilitychange', function () { if (!document.hidden && map) map.triggerRepaint(); });
+      self.listening = true;
     };
     self.onRemove = function () {
       if (!gl) return;
@@ -169,6 +170,7 @@
       [quad, lines].forEach(function (b) { gl.deleteBuffer(b); });
       Object.keys(rampTex).forEach(function (k) { gl.deleteTexture(rampTex[k]); });
       if (fieldTex) gl.deleteTexture(fieldTex);
+      fieldTex = null; dirty = true; P = null;
       map = gl = null;
     };
 
@@ -265,7 +267,7 @@
       gl.uniform1i(gl.getUniformLocation(fieldProg, 'u_field'), 0);
       gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, rampTex[kind]);
       gl.uniform1i(gl.getUniformLocation(fieldProg, 'u_ramp'), 1);
-      gl.uniform1f(gl.getUniformLocation(fieldProg, 'u_opacity'), 0.78);
+      gl.uniform1f(gl.getUniformLocation(fieldProg, 'u_opacity'), 0.65);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       gl.disableVertexAttribArray(aPos);
 

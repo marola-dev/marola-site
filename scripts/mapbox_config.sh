@@ -5,7 +5,8 @@
 #   scripts/mapbox_config.sh --self-test
 #
 # The file reaches every visitor, so only a public pk. token may go in it; an sk. token fails the
-# build. No token leaves the committed empty config, and the page says the map needs one.
+# build. No token leaves the committed empty config, and the page says the map needs one;
+# MAPBOX_REQUIRE_TOKEN=1 (the deploy) fails instead, so marola.dev never loses its map.
 set -euo pipefail
 
 write() {
@@ -13,7 +14,11 @@ write() {
   [ -d "$dist" ] || { echo "mapbox_config: no $dist — build the site first" >&2; exit 1; }
   case "$token" in
     sk.*) echo "mapbox_config: MAPBOX_PUBLIC_TOKEN is a secret (sk.) token; use a public pk. token" >&2; exit 1 ;;
-    "") echo "::warning::mapbox_config: MAPBOX_PUBLIC_TOKEN is not set, so marola.dev shows no base map" >&2 ;;
+    "")
+      if [ "${MAPBOX_REQUIRE_TOKEN:-}" = 1 ]; then
+        echo "::error::mapbox_config: MAPBOX_PUBLIC_TOKEN is not set; failing so the live site keeps its map" >&2; exit 1
+      fi
+      echo "::warning::mapbox_config: MAPBOX_PUBLIC_TOKEN is not set, so the page shows no base map" >&2 ;;
     pk.*) [[ "$token" =~ ^pk\.[A-Za-z0-9._-]+$ ]] || { echo "mapbox_config: the token has characters a Mapbox token never has" >&2; exit 1; } ;;
     *) echo "mapbox_config: MAPBOX_PUBLIC_TOKEN does not start with pk." >&2; exit 1 ;;
   esac
@@ -38,6 +43,7 @@ self_test() {
   run MAPBOX_PUBLIC_TOKEN='pk.a"; alert(1); "' && { echo "FAIL: a token with quotes was written"; f=1; }
   run MAPBOX_PUBLIC_TOKEN=tk.abc && { echo "FAIL: a token that is not pk. was written"; f=1; }
   run MAPBOX_PUBLIC_TOKEN=pk.abc MAPBOX_STYLE='https://evil.example/style.json' && { echo "FAIL: a non-mapbox:// style was written"; f=1; }
+  run MAPBOX_REQUIRE_TOKEN=1 && { echo "FAIL: no token with MAPBOX_REQUIRE_TOKEN=1 should fail"; f=1; }
   run || { echo "FAIL: no token should warn, not fail"; f=1; }
   grep -q 'token: ""' "$t/mapbox-config.js" || { echo "FAIL: no token should leave it empty"; f=1; }
   echo "mapbox_config self-test:" "$([ "$f" -eq 0 ] && echo ok || echo FAILED)"

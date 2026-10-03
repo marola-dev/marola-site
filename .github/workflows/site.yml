@@ -111,6 +111,8 @@ jobs:
         env:
           MAPBOX_PUBLIC_TOKEN: ${{ secrets.MAPBOX_PUBLIC_TOKEN || vars.MAPBOX_PUBLIC_TOKEN }}
           MAPBOX_STYLE: ${{ vars.MAPBOX_STYLE }}
+          # no token, no deploy: the last good site (and its map) stays live until one is set
+          MAPBOX_REQUIRE_TOKEN: "1"
         run: scripts/mapbox_config.sh site/dist
 
       # fix/site-smoke-panel-null: stamp index.html's app.js/style.css tags with `?v=<sha>` so

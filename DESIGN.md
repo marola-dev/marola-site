@@ -29,7 +29,7 @@ as defaults to avoid.
 | `--surface` | `#f3f5f7` | utility strip, footer, hover, segmented tracks, chat answers |
 | `--line` | `#e1e5ea` | dividers, panel borders |
 | `--line-strong` | `#cbd2da` | control borders |
-| `--sea` | `#1c2530` | the map before the dark base map loads |
+| `--sea` | `#cfe6f1` | the map before the base map loads |
 | `--accent` | `#1b5fc1` | links, primary action fill, focus ring, slider, the "you" marker |
 | `--accent-hover` | `#164e9e` | hover on accent |
 | `--accent-soft` | `#e9f0fb` | pressed toggles, the visitor's chat messages |
@@ -37,7 +37,7 @@ as defaults to avoid.
 | `--flow-wind-0 … 5` | `#5b6db3` → `#a8566a` | the wind field, calm to 40 km/h (`flow.js`, the key's ramp) |
 | `--flow-wave-0 … 5` | `#2f5a9e` → `#c86e6e` | the wave field, flat to 3 m |
 | `--sst-0 … 5`, `--anom-*` | GIBS-like | the satellite layers' key ramps, after GIBS's own palettes |
-| `--glass`, `--glass-*` | `rgb(22 26 32 / .8)`, … | what floats over the map: layer rail, key, zoom buttons, popups |
+| `--glass`, `--glass-*` | `rgb(255 255 255 / .9)`, … | what floats over the map: layer rail, key, zoom buttons, popups |
 
 The flow ramps are data too. They follow Windy's muted scales, which visitors already read; a
 score is never told by the field's colour alone, because the beach dots sit on top with a ring
@@ -85,15 +85,15 @@ from a CDN. Inter is the deliberate pick for a public-information, accessibility
 - **Close buttons**: the control as a borderless 32 px square in `--muted`.
 - **Beach marker**: a 16 px dot in its score colour, 2 px white ring, `#1d2733` rim; the selected
   beach is a 32 px badge with its score. No glyphs, halos or shadows. The legend draws the same dot.
-- **Map**: Mapbox GL JS on the `dark-v11` style (or `MAPBOX_STYLE`), zoom buttons top left (the layer rail takes the right), no
+- **Map**: Mapbox GL JS on the light `outdoors-v12` style (or `MAPBOX_STYLE`): sand, trails and relief read at a glance for beachgoers, zoom buttons top left (the layer rail takes the right), no
   rotation or pitch. Popups take the panel shape, without the arrow.
-- **Layer rail** (`.flow`): Windy-style, top right of the map, in dark glass; it scrolls on a map too short for it.
+- **Layer rail** (`.flow`): Windy-style, top right of the map, in white glass; it scrolls on a map too short for it.
   Two toggles (praias, trilhas perto da costa) over a thin rule, then one round icon button per layer (vento, ondas,
   balneabilidade, satélite, temperatura do mar, anomalias, El Niño), no text: the word is the
   button's title and its screen-reader label. The four satellite layers are NASA GIBS rasters
   under the labels; El Niño zooms out to the Pacific and draws the Niño 3.4 box. Batimetria sits last, disabled at 45% opacity, titled "em breve". The active one is in `--accent`; under them the
   active layer's key (ramp with 0 and max, or the fit/unfit dots) and its caption. Wind and waves are white particles over a
-  field at 78% opacity, fading out 18 km past the last beach, with a thin white coastline over
+  field at 65% opacity (the light base map shows through), fading out 18 km past the last beach, with a thin dark coastline over
   it on Mapbox's own styles. Balneabilidade stops the particles, draws every sampling point in
   the area and dims the beach dots.
 - **Icons**: Lucide line icons through `icon(name)` in `app.js` (ISC, `vendor/icons/LICENSE.lucide`),
@@ -113,5 +113,5 @@ reduce` they are drawn once as still streaks.
 
 ## Not yet
 
-A dark theme for the page chrome. The base map is already dark (Mapbox `dark-v11`), so it is a
-chrome-only change now, and it waits for its own design pass.
+A dark theme (page chrome and a dark base map such as Mapbox `dark-v11`). The map went light on
+purpose: the audience is beachgoers, not forecasters, and a dark map read as too heavy for them.

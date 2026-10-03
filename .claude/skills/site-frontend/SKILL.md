@@ -54,9 +54,10 @@ overrides live here, not in their files.
    The one custom shape (the jellyfish) is drawn on Lucide's grid.
 4. **The score colours are data**, not an accent. "One accent" means `--accent`; green, yellow,
    orange and red never decorate.
-5. **The map is dark, the chrome is not (yet).** The base map is Mapbox's `dark-v11` (or the
-   Studio style in `MAPBOX_STYLE`) so the wind and wave colours read like Windy's; a dark theme for
-   the page itself is still DESIGN.md "Not yet", whatever taste says.
+5. **The map is light, like the chrome.** The base map is Mapbox's `outdoors-v12` (or the Studio
+   style in `MAPBOX_STYLE`): the audience is beachgoers, and a dark Windy-like map read as too heavy
+   for them. The rail, keys and popups are white glass. A dark theme is still DESIGN.md "Not yet",
+   whatever taste says.
 6. **Landing-page rules do not apply to the map**: hero, CTA, bento, testimonials, eyebrows.
    The map page has no hero; the about/support pages are reading columns.
 7. **Lowercase house style stays**, with the exemptions `site_check.js` asserts.

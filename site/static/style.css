@@ -15,7 +15,7 @@
   --surface: #f3f5f7;
   --line: #e1e5ea;
   --line-strong: #cbd2da; /* control borders */
-  --sea: #1c2530;         /* the map before its tiles load: the dark base map's water */
+  --sea: #cfe6f1;         /* the map before its tiles load: the base map's water */
   /* flow ramps (flow.js), calm to strong, after Windy's muted scales; the score dots sit on top
    * with a ring and a number, so a field colour is never read as a score */
   --flow-wind-0: #5b6db3; --flow-wind-1: #4a94a9; --flow-wind-2: #4d9a6e; --flow-wind-3: #8fa64a;
@@ -25,9 +25,9 @@
   /* the NASA GIBS layers' keys, drawn after GIBS's own palettes: MUR SST, then its anomaly */
   --sst-0: #3b1d73; --sst-1: #2f5fb3; --sst-2: #33a3c8; --sst-3: #6cc46a; --sst-4: #f0d23c; --sst-5: #d9452b;
   --anom-cold: #2b5cb8; --anom-mid: #f4f4f4; --anom-warm: #c8322b;
-  /* what floats over the map is dark glass, Windy-style; the list and the card stay light */
-  --glass: rgb(22 26 32 / .8); --glass-hover: rgb(255 255 255 / .1); --glass-line: rgb(255 255 255 / .14);
-  --glass-ink: #f2f4f6; --glass-muted: #b4bdc7; --glass-unfit: #ff7a7a;
+  /* what floats over the map is frosted white glass, readable over the light base map and the fields */
+  --glass: rgb(255 255 255 / .9); --glass-hover: rgb(17 24 32 / .06); --glass-line: rgb(17 24 32 / .12);
+  --glass-ink: #111820; --glass-muted: #56606c; --glass-unfit: #c0262d;
   --accent: #1b5fc1;      /* the one accent: links, primary fill, focus, the "you" marker (6.1:1) */
   --accent-hover: #164e9e;
   --accent-soft: #e9f0fb; /* selected toggles */
@@ -160,7 +160,7 @@ button[aria-pressed="true"], button[aria-expanded="true"] {
 .flow .layers button .ic { width: 18px; height: 18px; }
 /* icons only; the word stays for screen readers and as the title */
 .flow .layers button > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.flow .layers button:hover { background: rgb(40 46 54 / .9); border-color: var(--glass-line); color: #fff; }
+.flow .layers button:hover { background: var(--bg); border-color: var(--line-strong); color: var(--accent); }
 .flow .layers button .ic { color: inherit; }
 .flow .layers button.soon { opacity: .45; cursor: not-allowed; }
 .flow .layers button.soon:hover { background: var(--glass); color: var(--glass-ink); }
@@ -256,8 +256,6 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   overflow: hidden; background: var(--glass) !important; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
 .mapboxgl-ctrl-group button + button { border-top-color: var(--glass-line) !important; }
 .mapboxgl-ctrl-group button:hover { background: var(--glass-hover) !important; }
-/* Mapbox's icons are dark glyphs; inverted they read on the glass */
-.mapboxgl-ctrl-group .mapboxgl-ctrl-icon { filter: invert(1); }
 .mapboxgl-ctrl-group button { min-height: 0; border-radius: 0; }
 .mapboxgl-ctrl-attrib { font-size: 11px; }
 .mapboxgl-popup { font-size: 13px; font-variant-numeric: tabular-nums; pointer-events: none; }
@@ -265,7 +263,7 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   border-radius: var(--r-control); box-shadow: var(--shadow-float); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
 .mapboxgl-popup .unfit, .mapboxgl-popup .improper { color: var(--glass-unfit); }
 .mapboxgl-popup .facilities, .mapboxgl-popup .past { color: var(--glass-muted); }
-.mapboxgl-popup .ic { color: #8fb8ff; }
+.mapboxgl-popup .ic { color: var(--accent); }
 .mapboxgl-popup-tip { display: none; }
 
 /* beach dots + hover aspects (MIP-0009) */

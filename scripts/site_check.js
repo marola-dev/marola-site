@@ -147,12 +147,15 @@ function makeMapbox() {
       this.options = o; this.handlers = {}; this.layers = []; this.sources = {}; this.controls = [];
       this.touchZoomRotate = { disableRotation() {} };
       M.maps.push(this);
-      Promise.resolve().then(() => (this.handlers.load || []).forEach(fn => fn()));
+      Promise.resolve().then(() => M.styleStatus
+        ? (this.handlers.error || []).forEach(fn => fn({ error: { status: M.styleStatus } }))
+        : (this.handlers.load || []).forEach(fn => fn()));
     }
     on(ev, a, b) { const k = b ? ev + ':' + a : ev; (this.handlers[k] = this.handlers[k] || []).push(b || a); return this; }
     addControl(c, where) { this.controls.push([c, where]); return this; }
     jumpTo(o) { this.jumped = o; return this; }
     fitBounds(b, o) { this.fitted = [b, o]; return this; }
+    setMinZoom(z) { this.minZoom = z; return this; }
     panTo(c) { this.panned = c; return this; }
     resize() { return this; }
     getStyle() { return { layers: [{ id: 'water', type: 'fill' }, { id: 'road', type: 'line' }, { id: 'place-label', type: 'symbol' }] }; }
@@ -166,7 +169,7 @@ function makeMapbox() {
     getCanvas() { return { style: {}, clientWidth: 800, clientHeight: 600 }; }
     triggerRepaint() {}
   }
-  M.mapboxgl = { Map, Marker, Popup, NavigationControl: function (o) { this.options = o; } };
+  M.mapboxgl = { version: '3.32.0', Map, Marker, Popup, NavigationControl: function (o) { this.options = o; } };
   return M;
 }
 
@@ -230,6 +233,7 @@ async function runPage(board, opts) {
   };
   if (!opts.noBoard) files['data/fixture/' + board.day + '.json'] = board;
   const M = makeMapbox();
+  if (opts.styleStatus) M.styleStatus = opts.styleStatus;
   flowPanel(els.flow, els.flowkeys);
   const colours = { '--c70': '#2a9d4b', '--c40': '#e0a800', '--c1': '#e07a00', '--c0': '#c0392b', '--cna': '#999999' };
   const errors = [], alerts = [], fetched = [];
@@ -375,9 +379,9 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   const first = await runPage(BOARD, { search: '?lang=en' });
   const { els, M, map, errors, fetched } = first;
   ok(errors.length === 0, 'app.js logged no errors while loading', errors.join(' | '));
-  ok(map && map.options.container === 'map' && map.options.style === 'mapbox://styles/mapbox/dark-v11' && map.options.projection === 'mercator',
+  ok(map && map.options.container === 'map' && map.options.style === 'mapbox://styles/mapbox/outdoors-v12' && map.options.projection === 'mercator',
     'the map is Mapbox GL on #map, the dark style by default, in mercator (flow.js draws in mercator)', map && JSON.stringify(map.options));
-  ok(M.mapboxgl.accessToken === 'pk.test' && M.mapboxgl.workerUrl === 'vendor/mapbox-gl-csp-worker.js',
+  ok(M.mapboxgl.accessToken === 'pk.test' && M.mapboxgl.workerUrl === 'vendor/mapbox-gl-csp-worker.js?v=3.32.0',
     "the token comes from mapbox-config.js, the worker from vendor/ (the CSP build: no blob: worker)");
   ok(map && map.options.collectResourceTiming === false, 'Mapbox GL is told not to collect resource timings');
   const markers = wavesOf(first);
@@ -595,10 +599,10 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
     fmap.layers.filter(l => l.layer.id === 'marola-raster').length === 1, 'satellite swaps the raster for the day before\'s VIIRS true colour, one raster at a time', tiles());
   first.els.flow.fire('click', { target: Object.assign(btn('elnino'), { closest() { return this; } }) });
   ok(/Sea_Surface_Temperature_Anomalies\/default\/2026-09-04\//.test(tiles()) && fmap.getLayer('nino34') && fmap.getLayer('nino34').layout.visibility === 'visible' &&
-    fmap.fitted[0][0][0] === -180, 'El Niño shows the anomaly, the Niño 3.4 box, and zooms out to the Pacific', JSON.stringify(fmap.fitted[0]));
+    fmap.fitted[0][0][0] === -180 && fmap.minZoom === 0, 'El Niño shows the anomaly, the Niño 3.4 box, and zooms out to the Pacific (below the area minZoom)', JSON.stringify(fmap.fitted[0]));
   first.els.flow.fire('click', { target: Object.assign(btn('wind'), { closest() { return this; } }) });
   ok(!fmap.sources['marola-raster'] && !fmap.getLayer('marola-raster') && fmap.getLayer('nino34').layout.visibility === 'none' &&
-    fmap.fitted[0][0][0] > -49 && flowLayer.kind() === 'wind', 'back to wind: the raster and the box go, the map returns to the beaches', JSON.stringify(fmap.fitted[0]));
+    fmap.fitted[0][0][0] > -49 && fmap.minZoom === 3 && flowLayer.kind() === 'wind', 'back to wind: the raster and the box go, the map returns to the beaches', JSON.stringify(fmap.fitted[0]));
   const toggle = first.els.flow.found['button[data-toggle]'][0];
   first.els.flow.fire('click', { target: Object.assign(toggle, { closest() { return this; } }) });
   ok(first.els.map.classList.contains('no-beaches') && toggle.attrs['aria-pressed'] === 'false', 'the beaches toggle hides the beach dots');
@@ -630,6 +634,12 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(ramp.length === 1024 && ramp[0] === 0 && ramp[1020] === 255 && ramp[1023] === 255, 'flow: a ramp is 256 opaque texels from the first stop to the last');
 
   // --- Mapbox: no token, no map; the CSP and the token never in the repo ----------------------
+  const styleRefused = await runPage(BOARD, { styleStatus: 401 });
+  ok(styleRefused.els['map-note'].hidden === false && styleRefused.els.list.hidden === false && styleRefused.els.flow.hidden === true,
+    'a refused token or a missing style says the map failed and opens the list, never a blank map', styleRefused.els['map-note'].textContent);
+  const ahead = await runPage(Object.assign({}, BOARD, { day: '2026-09-08' }), { search: '?layer=clouds' });
+  const aheadTiles = ahead.M.maps[0].sources['marola-raster'] && ahead.M.maps[0].sources['marola-raster'].src.tiles[0];
+  ok(/\/default\/2026-09-05\//.test(aheadTiles || ''), 'a forecast day ahead still asks NASA for imagery that exists: dates count back from the board\'s today', aheadTiles);
   const noToken = await runPage(BOARD, { token: '' });
   ok(noToken.errors.length === 0 && noToken.M.maps.length === 0 && wavesOf(noToken).length === 0,
     'with no token there is no Mapbox map (its licence needs a Mapbox account) and no error', noToken.errors.join(' | '));
