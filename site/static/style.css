@@ -271,11 +271,16 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   .bar { padding: 12px 16px; gap: 10px; }
   .bar h1 { font-size: 20px; }
   .tagline { font-size: 13px; }
-  .controls { margin-left: 0; width: 100%; display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
-  .controls select { grid-column: span 2; min-width: 0; }
-  .controls .segmented { grid-column: span 4; }
-  .controls .segmented button { flex: 1; }
-  .controls > button { grid-column: span 2; padding: 0 6px; gap: 4px; font-size: 13px; }
+  /* one row on a phone: the day buttons drop their dates, the three actions keep only their icon
+   * (the label stays for screen readers) */
+  .controls { margin-left: 0; width: 100%; flex-wrap: nowrap; gap: 6px; }
+  .controls select { flex: none; min-width: 0; padding: 0 2px 0 8px; }
+  .controls .segmented { flex: 1 1 auto; min-width: 0; }
+  .controls .segmented button { flex: 1; min-width: 0; padding: 0 6px; overflow: hidden; }
+  .controls .segmented button small { display: none; }
+  .controls > button { flex: none; width: 36px; padding: 0; }
+  .controls > button .ic { width: 18px; height: 18px; }
+  .controls > button > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .hourbar { padding: 8px 16px; gap: 6px 12px; }
   .hourbar label { min-width: 0; flex: none; }
   .hourbar input[type=range] { flex: 1 1 0; min-width: 6rem; max-width: none; }
@@ -288,4 +293,10 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   .chat-panel { right: 8px; left: 8px; width: auto; bottom: 64px; }
   .about { padding: 32px 16px 64px; }
   .about-body h2:first-child { font-size: 28px; }
+}
+/* the smallest phones: "tomorrow" still has to fit beside "today" */
+@media (max-width: 359px) {
+  .controls { gap: 4px; }
+  .controls > button { width: 32px; }
+  .controls .segmented button { padding: 0 2px; font-size: 12px; }
 }

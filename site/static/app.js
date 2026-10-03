@@ -137,9 +137,11 @@
   // Its own function so a language flip relabels the buttons without refetching latest.json.
   function renderDays() {
     el.days.innerHTML = state.latest.days.map(function (d, i) {
-      var label = i === 0 ? tx('day.today') : i === 1 ? tx('day.tomorrow') : esc(d.day);
+      // a third day and later are named by their date alone, so the picker fits one row on a phone
+      var label = i === 0 ? tx('day.today') + ' <small>' + esc(d.day.slice(5)) + '</small>'
+        : i === 1 ? tx('day.tomorrow') + ' <small>' + esc(d.day.slice(5)) + '</small>' : esc(d.day.slice(5));
       return '<button type="button"' + (d.day === state.day ? ' class="on"' : '') + ' data-day="' + esc(d.day) + '" data-file="' + esc(d.file) + '">' +
-        label + ' <small>' + esc(d.day.slice(5)) + '</small></button>';
+        label + '</button>';
     }).join('');
   }
 
