@@ -79,7 +79,7 @@ from a CDN. Inter is the deliberate pick for a public-information, accessibility
 - **Beach marker**: a 16 px dot in its score colour, 2 px white ring, `#1d2733` rim; the selected
   beach is a 32 px badge with its score. No glyphs, halos or shadows. The legend draws the same dot.
 - **Icons**: Lucide line icons through `icon(name)` in `app.js` (ISC, `vendor/icons/LICENSE.lucide`),
-  16 px, 1.75 stroke, `currentColor`; `aria-hidden` with the word next to it. Never emoji.
+  16 px, 1.75 stroke, in `--accent`; `aria-hidden` with the word next to it. Never emoji.
 
 ## Copy
 
