@@ -91,7 +91,7 @@ from a CDN. Inter is the deliberate pick for a public-information, accessibility
   A beaches toggle (praias) over a thin rule, then one round icon button per layer (vento, ondas,
   balneabilidade, satélite, temperatura do mar, anomalias, El Niño), no text: the word is the
   button's title and its screen-reader label. The four satellite layers are NASA GIBS rasters
-  under the labels; El Niño zooms out to the Pacific and draws the Niño 3.4 box. The active one is in `--accent`; under them the
+  under the labels; El Niño zooms out to the Pacific and draws the Niño 3.4 box. Batimetria sits last, disabled at 45% opacity, titled "em breve". The active one is in `--accent`; under them the
   active layer's key (ramp with 0 and max, or the fit/unfit dots) and its caption. Wind and waves are white particles over a
   field at 78% opacity, fading out 18 km past the last beach, with a thin white coastline over
   it on Mapbox's own styles. Balneabilidade stops the particles, draws every sampling point in

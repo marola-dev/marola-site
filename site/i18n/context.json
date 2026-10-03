@@ -58,6 +58,7 @@
   "fail.no_areas": "status line when the site was built with no areas; data/areas.json is a file path",
   "fail.schema": "status line when the board file is in a format this page does not read; got = its version number, want = the versions the page reads",
   "flow.anomaly": "layer rail button: sea surface temperature anomaly (warmer or colder than the climatology for the date)",
+  "flow.bathymetry_soon": "layer rail button, disabled: ocean depth (bathymetry), not built yet; keep the \"soon\" marker",
   "flow.beaches": "layer rail toggle: shows or hides the beach score dots",
   "flow.clouds": "layer rail button: the day's true-colour satellite image (clouds), NASA GIBS",
   "flow.cold": "left end of the sea temperature ramp",

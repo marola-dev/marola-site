@@ -161,6 +161,8 @@ button[aria-pressed="true"], button[aria-expanded="true"] {
 .flow .layers button > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .flow .layers button:hover { background: rgb(40 46 54 / .9); border-color: var(--glass-line); color: #fff; }
 .flow .layers button .ic { color: inherit; }
+.flow .layers button.soon { opacity: .45; cursor: not-allowed; }
+.flow .layers button.soon:hover { background: var(--glass); color: var(--glass-ink); }
 .flow .layers button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
 .flowkeys { position: absolute; z-index: 900; left: 12px; bottom: 40px; font-size: 12px; color: var(--glass-muted); }
 .flowkey [data-when] { white-space: nowrap; }

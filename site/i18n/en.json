@@ -58,6 +58,7 @@
   "fail.no_areas": "no areas in data/areas.json",
   "fail.schema": "board schema {got}, this page understands {want}",
   "flow.anomaly": "anomalies",
+  "flow.bathymetry_soon": "bathymetry (soon)",
   "flow.beaches": "beaches",
   "flow.clouds": "satellite",
   "flow.cold": "cold",
