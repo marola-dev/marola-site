@@ -14,7 +14,9 @@ site-build area="":
     image="$(scripts/board-schema.sh --image)"
     args=(--site); [ -z "{{ area }}" ] || args+=("{{ area }}")
     mkdir -p site/dist
-    docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp -v "$PWD/site:/work/site" -w /work "$image" \
+    # The water cache is the checked-in seed, so a build from a Brazilian address refreshes it.
+    docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp -v "$PWD/site:/work/site" \
+      -v "$PWD/site/water-cache:/work/data/water-cache" -w /work "$image" \
       "${args[@]}" --areas site/areas.json --site-out site/dist
     cp -r site/static/. site/dist/
     scripts/stamp_site_version.sh site/dist
