@@ -87,9 +87,9 @@ from a CDN. Inter is the deliberate pick for a public-information, accessibility
 - **Map**: Mapbox GL JS on the `dark-v11` style (or `MAPBOX_STYLE`), zoom buttons top right, no
   rotation or pitch. Popups take the panel shape, without the arrow.
 - **Layer rail** (`.flow`): Windy-style, right of the map under the zoom buttons, in dark glass.
-  One pill per layer (vento, ondas, balneabilidade) with its icon, the active one in `--accent`;
-  under it the active layer's key (ramp with 0 and max, or the fit/unfit dots) and its caption.
-  Icons only on a phone and beside an open card. Wind and waves are white particles over a
+  One round icon button per layer (vento, ondas, balneabilidade), no text: the word is the
+  button's title and its screen-reader label. The active one is in `--accent`; under them the
+  active layer's key (ramp with 0 and max, or the fit/unfit dots) and its caption. Wind and waves are white particles over a
   field at 78% opacity, fading out 18 km past the last beach, with a thin white coastline over
   it on Mapbox's own styles. Balneabilidade stops the particles, draws every sampling point in
   the area and dims the beach dots.
