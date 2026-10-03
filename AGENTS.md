@@ -40,7 +40,8 @@ boards (MIP-0005), with no server, no LLM and no per-visitor cost.
   natural, `citizen-science-site/` keeps sources, freshness, limits and the way to contribute on
   the page; `frontend-design/`, `webapp-testing/` (anthropics/skills), `design-taste-frontend/`
   (Leonxlnx/taste-skill), `emil-design-eng/`, `review-animations/` and `break-ui/`
-  (emilkowalski/skill) are vendored unchanged with their licences.
+  (emilkowalski/skill) and `karpathy-guidelines/` (forrestchang/andrej-karpathy-skills) are
+  vendored unchanged with their licences.
 - `.mcp.json`: the Playwright and Figma MCP servers (no keys; Figma signs in with OAuth).
 
 ## What it consumes and produces

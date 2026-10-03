@@ -23,6 +23,7 @@ frontend skills vendored next to it, which were written for landing pages and Re
 | `review-animations` | any motion change (invoke it by name) | emilkowalski/skill, MIT |
 | `break-ui` | stress a panel with worst-case data (long beach names, no data, 40 beaches) | emilkowalski/skill, MIT |
 | `webapp-testing` | Playwright scripts against `just site-serve` | anthropics/skills, Apache-2.0 |
+| `karpathy-guidelines` | how to change the code: surgical diffs, no speculative abstractions, a check per step | forrestchang/andrej-karpathy-skills, MIT (from Andrej Karpathy's notes on LLM coding) |
 | `ptbr-humanizer` | every Portuguese string | here |
 | `citizen-science-site` | sources, freshness, limits, privacy, contributing on the page | here |
 
@@ -47,7 +48,9 @@ overrides live here, not in their files.
 7. **Lowercase house style stays**, with the exemptions `site_check.js` asserts.
 8. **Copy**: no em dash anywhere a visitor reads (taste and `ptbr-humanizer` agree); `·` at most
    once per line.
-9. **Emil's "Initial Response" line** is for interactive chats; in a task, just apply the skill.
+9. **Karpathy's "if uncertain, ask"** means: on a visual fork, pick the DESIGN.md answer and say
+   which; ask only when the change would alter scores, data or a public contract.
+10. **Emil's "Initial Response" line** is for interactive chats; in a task, just apply the skill.
 
 ## The recipe
 
