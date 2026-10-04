@@ -13,7 +13,7 @@ a question posts `{"question": …}` to `POST <endpoint>/ask` and renders `.answ
 body. A later failure while chatting — a timeout (30 s) or a non-OK response — shows the
 `#chat-offline` message rather than hanging; `/health`'s own timeout is 4 s.
 
-## Turning it on (from the app's own notes)
+## Turning it on
 
 The widget's endpoint is the app's own chat server, exposed through a **named** Cloudflare Tunnel
 (a quick/ephemeral tunnel's URL changes every restart, which would break the committed config).
@@ -33,7 +33,7 @@ cloudflared tunnel run --url http://localhost:8787 marola-chat
 Then, in this repo, edit `site/static/chatbot-config.js`:
 
 ```js
-window.MAROLA_CHAT_ENDPOINT = "https://chat.<your-domain>"; // or the trycloudflare.com URL
+window.MAROLA_CHAT_ENDPOINT = "https://chat.<your-domain>";
 ```
 
 `just site-build` copies `site/static/*` (including this file) into `site/dist/` as-is — unlike

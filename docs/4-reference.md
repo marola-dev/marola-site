@@ -33,9 +33,6 @@ this is the cost and provenance side:
 - **NASA GIBS** (the four satellite raster layers): free, keyless, public tiles, fetched only when
   a visitor turns one of those layers on. No account and no cost.
 
-This is `site/areas.json`'s `tiles`/`tiles_attribution` fields' actual status today, not what
-ARCHITECTURE §7's tile-policy row (written for the pre-Mapbox Leaflet map) still describes.
-
 ## Board schema pin
 
 `marola-image` (repo root) pins the one `ghcr.io/marola-dev/marola-app:jvm-<sha>@sha256:<digest>`
