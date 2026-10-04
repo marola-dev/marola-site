@@ -24,13 +24,15 @@
 
 ## The board, beach by beach, and markers
 
-`app.js` turns each beach's score into one of five bands: no data (`score` null/undefined), unfit
-(`unfit` or `score <= 0`), 1–39, 40–69, or ≥70 — the same bands the hour bar's legend shows. A
-marker is a 16 px dot in the band's colour ([`DESIGN.md`](../DESIGN.md)'s `--c70`…`--cna` tokens) with a white ring;
-the selected beach grows into a badge showing its number. The colour is a CSS class
-(`.c70`/`.c40`/`.c1`/`.c0`/`.cna`), never inline `style=`, because the CSP below has no
-`style-src 'unsafe-inline'`. Water-quality sampling points use the same three bands (proper,
-improper, unclassified), drawn as separate markers from the `balneabilidade` layer.
+`app.js`'s `colour()`/`band()` turn each beach's score into one of five bands: no data (`score`
+null/undefined), unfit (`unfit` or `score <= 0`), 1–39, 40–69, or ≥70 — the same bands the hour
+bar's legend shows. A map marker is a 16 px SVG dot (`waveIcon`) with a white ring, the band's
+colour ([`DESIGN.md`](../DESIGN.md)'s `--c70`…`--cna` tokens) written straight into its `fill`
+attribute; the selected beach grows to 32 px and shows its score. List/card score chips and the
+`water` layer's sampling-point markers carry the band as a CSS class instead
+(`.c70`/`.c40`/`.c1`/`.c0`/`.cna`, `wdot c0`/`wdot cna`/`wdot c70`) — never inline `style=`, which
+the CSP below blocks. The `water` layer draws every sampling point in the area, in the same three
+bands (proper, improper, unclassified).
 
 ## CSP and the no-third-party rule
 

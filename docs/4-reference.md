@@ -2,11 +2,10 @@
 
 ## Area fields
 
-Each entry in `site/areas.json` is one area `just site-build` can build boards for. `scripts/site_check.js` validates
-every entry against the same shape the app's `Areas.parse`
+Each entry in `site/areas.json` is one area `just site-build` can build boards for.
+`scripts/site_check.js` validates every entry against the same shape the app's `Areas.parse`
 ([`cli/src/main/scala/marola/site/SiteBuilder.scala`](https://github.com/marola-dev/marola-app/blob/main/cli/src/main/scala/marola/site/SiteBuilder.scala))
-requires; a malformed entry is silently dropped there rather than failing, so a bad edit here only
-surfaces at runtime — which is why the check exists on this side too.
+requires; a malformed entry is silently dropped there rather than failing.
 
 | Field | Type | Notes |
 |---|---|---|

@@ -77,10 +77,9 @@ deploy, image bumps), `4-reference` (`areas.json`, the board schema pin). The H1
 A decision that starts and ends here is an ADR at `docs/adr/NNNN-<slug>.md`; anything crossing a
 repo boundary is an umbrella MIP.
 
-- **Links**: relative within `docs/` and from the README into `docs/`, written to work on GitHub.
-  A file outside `docs/` (`AGENTS.md`, `DESIGN.md`, a script) is linked by its
-  `https://github.com/marola-dev/marola-site/blob/main/…` URL; another repo or the umbrella by
-  `https://docs.marola.dev/…`.
+- **Links**: relative inside the repo, written to work on GitHub (`../AGENTS.md`, `../DESIGN.md`
+  from `docs/`); the docs build turns a link outside `docs/` into its GitHub blob URL at the built
+  commit (Appendix A). Another repo or the umbrella is linked by `https://docs.marola.dev/…`.
 - **Recipes**: a doc names only this repo's and the devkit's recipes. Any other (the app's `just
   run -- --serve-chat`) carries the checkout marker: "in a marola-app checkout" in the same
   sentence, or `# in a marola-app checkout` as a fence's first line.
