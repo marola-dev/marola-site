@@ -36,8 +36,6 @@ Then, in this repo, edit `site/static/chatbot-config.js`:
 window.MAROLA_CHAT_ENDPOINT = "https://chat.<your-domain>"; // or the trycloudflare.com URL
 ```
 
-`just site-build` copies `site/static/*` (including this file) into `site/dist/` as-is — there is
-no deploy-time rewrite for this one, unlike `mapbox-config.js`. Leaving it empty is the default,
-committed state. Turning it on narrowly overrides MIP-0005 §9's "no server" decision for the site:
-the maintainer's own machine becomes a real, if intermittent, origin, so uptime is whatever that
-machine and tunnel happen to be, by design (MIP-0033 §6).
+`just site-build` copies `site/static/*` (including this file) into `site/dist/` as-is — unlike
+`mapbox-config.js`, there is no deploy-time rewrite. Leaving it empty is the default, committed
+state; RUN-LOCALLY §5.2 above has the trade-off of turning it on.
