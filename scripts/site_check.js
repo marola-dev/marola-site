@@ -19,6 +19,8 @@ const BOARD = JSON.parse(fs.readFileSync(path.join(ROOT, 'site/fixtures/board.js
 const BOARD_V1 = JSON.parse(fs.readFileSync(path.join(ROOT, 'site/fixtures/board-schema1.json'), 'utf8'));
 const INDEX = fs.readFileSync(path.join(ROOT, 'site/static/index.html'), 'utf8');
 const ABOUT = fs.readFileSync(path.join(ROOT, 'site/static/about.html'), 'utf8');
+const NEWS = fs.readFileSync(path.join(ROOT, 'site/static/news.html'), 'utf8');
+const SUPPORT = fs.readFileSync(path.join(ROOT, 'site/static/support.html'), 'utf8');
 const I18N_JS = fs.readFileSync(path.join(ROOT, 'site/static/i18n.js'), 'utf8');
 const UI = fs.readFileSync(path.join(ROOT, 'site/static/ui.js'), 'utf8');
 const CATALOGS = Object.fromEntries(['pt-BR', 'en'].map(l => [l, JSON.parse(fs.readFileSync(path.join(ROOT, 'site/i18n', l + '.json'), 'utf8'))]));
@@ -689,8 +691,9 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(nav.length > 0, 'the page has a section nav — the docs are reachable without typing the URL');
   ok(/<a href="https:\/\/docs\.marola\.dev\/" data-i18n="nav\.docs">docs<\/a>/.test(nav), 'Docs is a real link to the published docs');
   ok(/<a href="about\.html" data-i18n="nav\.about">sobre<\/a>/.test(nav), 'About is a real link to the about page');
-  ok((nav.match(/<span aria-disabled="true">/g) || []).length === 3,
-    'the three sections with no page yet are spans, not links');
+  ok(/<a href="news\.html" data-i18n="nav\.news">notícias<\/a>/.test(nav), 'News is a real link to the news page');
+  ok((nav.match(/<span aria-disabled="true">/g) || []).length === 2,
+    'the two sections with no page yet are spans, not links');
   ok(!/<a[^>]+href="#"/.test(nav), 'no href="#" — a link that goes nowhere is worse than "soon"');
   ok(INDEX.indexOf('<nav class="sitenav"') < INDEX.indexOf('<header class="bar"'),
     'the nav is the first thing on the page, above the header');
@@ -701,11 +704,17 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
 
   // --- donations page and FUNDING.yml (marola-dev/marola#531, ported from marola-dev/marola#588) -
   ok(fs.existsSync(path.join(ROOT, '.github/FUNDING.yml')), '.github/FUNDING.yml exists for the Sponsor button');
-  for (const page of ['index.html', 'about.html', 'support.html']) {
+  for (const page of ['index.html', 'about.html', 'support.html', 'news.html']) {
     const html = fs.readFileSync(path.join(ROOT, 'site/static', page), 'utf8');
     const pageNav = (/<nav class="sitenav"[\s\S]*?<\/nav>/.exec(html) || [''])[0];
     ok(/<a href="support\.html" data-i18n="nav\.donate"[^>]*>apoie<\/a>/.test(pageNav), page + ': Donate is a real link');
+    ok(/<a href="news\.html" data-i18n="nav\.news"[^>]*>notícias<\/a>/.test(pageNav), page + ': News is a real link');
   }
+  ok((NEWS.match(/<script\b[^>]*>/gi) || []).every(t => /^<script src="(i18n|ui)\.js">$/.test(t)),
+    'the news page loads no script but the language chrome (i18n.js, ui.js)');
+  ok((NEWS.match(/<article class="about-body" lang="pt-BR">/g) || []).length === 1 &&
+     (NEWS.match(/<article class="about-body" lang="en">/g) || []).length === 1,
+    'the news page has one article per language per post');
   const SUPPORT = fs.readFileSync(path.join(ROOT, 'site/static/support.html'), 'utf8');
   ok((SUPPORT.match(/<script\b[^>]*>/gi) || []).every(t => /^<script src="(i18n|ui)\.js">$/.test(t)),
     'the support page loads no script but the language chrome (i18n.js, ui.js)');
@@ -732,7 +741,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   // --- the favicon: the docs site's own (marola-dev/marola docs/assets/favicon.svg), copied (#25) ----
   const FAVICON = path.join(ROOT, 'site/static/favicon.svg');
   ok(fs.existsSync(FAVICON) && /^<svg[\s>]/.test(fs.readFileSync(FAVICON, 'utf8')), 'site/static/favicon.svg exists and is an SVG');
-  for (const page of ['index.html', 'about.html', 'support.html', '404.html']) {
+  for (const page of ['index.html', 'about.html', 'support.html', 'news.html', '404.html']) {
     const head = (/<head>[\s\S]*?<\/head>/.exec(fs.readFileSync(path.join(ROOT, 'site/static', page), 'utf8')) || [''])[0];
     // 404.html is served at whatever path was missing, so only a root-absolute href finds the icon there.
     const href = page === '404.html' ? '/favicon.svg' : 'favicon.svg';
@@ -740,10 +749,12 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   }
   ok(/! -name favicon\.svg\b/.test(fs.readFileSync(path.join(ROOT, '.github/workflows/site.yml'), 'utf8')),
     "site.yml's publish allowlist keeps favicon.svg");
+  ok(/! -name news\.html\b/.test(fs.readFileSync(path.join(ROOT, '.github/workflows/site.yml'), 'utf8')),
+    "site.yml's publish allowlist keeps news.html");
 
   // --- the repo link on every page (#498) ------------------------------------------------------
   const REPO_URL = 'https://github.com/marola-dev/marola';
-  for (const page of ['index.html', 'about.html', 'support.html']) {
+  for (const page of ['index.html', 'about.html', 'support.html', 'news.html']) {
     const html = fs.readFileSync(path.join(ROOT, 'site/static', page), 'utf8');
     const pageNav = (/<nav class="sitenav"[\s\S]*?<\/nav>/.exec(html) || [''])[0];
     ok(pageNav.includes('<a class="gh" href="' + REPO_URL + '"'), page + ': the section nav links the GitHub repo');
@@ -764,7 +775,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(/class="src"/.test(APP), 'app.js tags provider names so Open-Meteo and IMA/SC survive the style');
 
   // --- MIP-0054 task 1: the language toggle, resolveLang, t() and the catalogs -------------------
-  const PAGES = { 'index.html': INDEX, 'about.html': ABOUT, 'support.html': SUPPORT };
+  const PAGES = { 'index.html': INDEX, 'about.html': ABOUT, 'support.html': SUPPORT, 'news.html': NEWS };
   for (const [page, html] of Object.entries(PAGES)) {
     ok(/<html lang="pt-BR">/.test(html), page + ': <html lang="pt-BR"> in the source, so the first paint is Portuguese');
     const pageNav = (/<nav class="sitenav"[\s\S]*?<\/nav>/.exec(html) || [''])[0];
