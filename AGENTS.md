@@ -49,16 +49,9 @@ map-load tier, billed above it).
 
 ## What it consumes and produces
 
-| Direction | Contract |
-|---|---|
-| app → site | The image in `marola-image` (`ghcr.io/marola-dev/marola-app:jvm-<sha>@sha256:<digest>`, both parts required). `site.yml` runs it with `--site --areas site/areas.json --site-out site/dist`; it writes board data only. The image's `board.schema.json` is the contract |
-| app, umbrella → site | The `site-data` branch: `coverage/` and `smoke/` (the app's CI and `docker-smoke.yml`), `stats/` (the umbrella). Writers push with the cross-repo token, then send `repository_dispatch` `site-data-updated` |
-| site → app | `site/areas.json` and `site/fixtures/board.json`; the app's tests keep checked-in copies |
-| site → umbrella | `README.md` and `docs/`, aggregated into docs.marola.dev (`notify-umbrella.yml`) |
-
-No workflow here builds the app or reads its tree (MIP-0070 §5.4).
-
-**Bumping the image**: steps and gates in [`docs/3-development.md`](docs/3-development.md#updating-the-app-image).
+See [README's Contracts](README.md#contracts). No workflow here builds the app or reads its tree
+(MIP-0070 §5.4). Bumping the image: steps and gates in
+[`docs/3-development.md`](docs/3-development.md#updating-the-app-image).
 
 ## Commands
 
@@ -73,6 +66,25 @@ just board-schema --check # the vendored schema against the pinned image's (dock
 
 The devkit's git hooks (`core.hooksPath .devkit/.githooks`, set by the dev shell) run
 `just precommit` and `just prepush`.
+
+## Docs
+
+`README.md` is the landing: what the repo is, how to run it, the repo map, its contracts, and
+links. There is no `docs/index.md`. `docs/` holds numbered pages, not directories (MIP-0074 §5.2):
+`1-design` (files, the board → markers mapping, CSP), `1-design_chat-widget`, `2-libraries`
+(vendored Mapbox GL JS and the rest of `vendor/`, no build step), `3-development` (the build and
+deploy, image bumps), `4-reference` (`areas.json`, the board schema pin). The H1 is the nav label.
+A decision that starts and ends here is an ADR at `docs/adr/NNNN-<slug>.md`; anything crossing a
+repo boundary is an umbrella MIP.
+
+- **Links**: relative inside the repo, written to work on GitHub (`../AGENTS.md`, `../DESIGN.md`
+  from `docs/`); the docs build turns a link outside `docs/` into its GitHub blob URL at the built
+  commit (Appendix A). Another repo or the umbrella is linked by `https://docs.marola.dev/…`.
+- **Recipes**: a doc names only this repo's and the devkit's recipes. Any other (the app's `just
+  run -- --serve-chat`) carries the checkout marker: "in a marola-app checkout" in the same
+  sentence, or `# in a marola-app checkout` as a fence's first line.
+- `just quality` runs `docs-lint` (MIP-0074 §7): it fails on a foreign recipe without the marker,
+  a relative link that leaves the repo, `docs/index.md`, and stale split-era wording.
 
 ## Cost & deployment safety (hard rule)
 

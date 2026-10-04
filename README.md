@@ -57,9 +57,13 @@ against the image's board schema, builds every area's boards, adds the page and 
 - `python3 scripts/site_live_check.py`: what marola.dev serves, every six hours
   (`site-health.yml`).
 
-More: [docs/3-development.md](docs/3-development.md) (the build and deploy, the `site-data`
-layout, health checks, i18n, bumping the app image, the `MIP:` trailer) and
-[AGENTS.md](https://github.com/marola-dev/marola-site/blob/main/AGENTS.md).
+More: [docs/1-design.md](docs/1-design.md) (files, the board → markers mapping, CSP), its
+sibling [docs/1-design_chat-widget.md](docs/1-design_chat-widget.md) (the chat widget),
+[docs/2-libraries.md](docs/2-libraries.md) (vendored Mapbox GL JS and the rest of `vendor/`, no
+build step), [docs/3-development.md](docs/3-development.md) (the build and deploy, the `site-data`
+layout, health checks, i18n, bumping the app image, the `MIP:` trailer),
+[docs/4-reference.md](docs/4-reference.md) (`areas.json` fields, the tile policy, the board schema
+pin), and [AGENTS.md](https://github.com/marola-dev/marola-site/blob/main/AGENTS.md).
 
 ## Gemini review
 

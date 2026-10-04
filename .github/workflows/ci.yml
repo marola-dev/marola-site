@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   static:
-    uses: marola-dev/marola-devkit/.github/workflows/static-ci.yml@v0.2.4
+    uses: marola-dev/marola-devkit/.github/workflows/static-ci.yml@v0.3.1
     with:
       shellcheck-files: scripts/*.sh
       extra-commands: |
@@ -28,9 +28,10 @@ jobs:
         python3 scripts/i18n_bundle.py --check
         node scripts/site_check.js
         node scripts/redirect_check.js
+        git -c advice.detachedHead=false clone -q --depth 1 -b v0.3.1 https://github.com/marola-dev/marola-devkit /tmp/devkit && python3 /tmp/devkit/scripts/docs_lint.py .
 
   python:
-    uses: marola-dev/marola-devkit/.github/workflows/python-ci.yml@v0.2.4
+    uses: marola-dev/marola-devkit/.github/workflows/python-ci.yml@v0.3.1
     with:
       self-test-commands: |
         python3 scripts/site_live_check.py --self-test
@@ -41,6 +42,6 @@ jobs:
         scripts/mip-trailer-check.sh --self-test
 
   agents:
-    uses: marola-dev/marola-devkit/.github/workflows/agents-check.yml@v0.2.4
+    uses: marola-dev/marola-devkit/.github/workflows/agents-check.yml@v0.3.1
     with:
-      devkit-ref: v0.2.4
+      devkit-ref: v0.3.1
