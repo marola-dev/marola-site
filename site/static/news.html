@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title data-i18n="title.news">notícias do marola</title>
+  <meta name="description" content="Notícias e atualizações sobre o marola: lançamentos, arquitetura e andamento do projeto.">
+  <meta name="theme-color" content="#ffffff">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https:; object-src 'none'">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="sitenav" aria-label="seções" data-i18n-aria-label="nav.label">
+    <a href="https://docs.marola.dev/" data-i18n="nav.docs">docs</a>
+    <span aria-disabled="true"><span data-i18n="nav.alerts">alertas</span> <i data-i18n="nav.soon">em breve</i></span>
+    <a href="news.html" data-i18n="nav.news" aria-current="page">notícias</a>
+    <a href="about.html" data-i18n="nav.about">sobre</a>
+    <span aria-disabled="true"><span data-i18n="nav.contact">contato</span> <i data-i18n="nav.soon">em breve</i></span>
+    <a href="support.html" data-i18n="nav.donate">apoie</a>
+    <div id="lang" class="lang" role="group" aria-label="idioma" data-i18n-aria-label="lang.label">
+      <svg class="lang-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.5"/><ellipse cx="8" cy="8" rx="2.8" ry="6.5"/><path d="M1.5 8h13"/></svg>
+      <button type="button" data-lang="pt-BR" lang="pt-BR" aria-label="português (Brasil)" aria-pressed="true">PT-BR</button>
+      <button type="button" data-lang="en" lang="en" aria-label="English" aria-pressed="false">EN</button>
+    </div>
+    <a class="gh" href="https://github.com/marola-dev/marola" aria-label="marola-dev/marola no GitHub, dê uma estrela ao repositório" data-i18n-aria-label="gh.label" title="marola no GitHub: deixe uma estrela se o projeto for útil para você" data-i18n-title="gh.title">
+      <svg class="gh-mark" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.06-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      <span class="gh-name"><span class="gh-owner">marola-dev/</span>marola</span>
+      <span class="gh-star"><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 1.6l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.4l-3.8 2 .7-4.3-3.1-3 4.3-.6z"/></svg><span data-i18n="gh.star">star</span></span>
+    </a>
+  </nav>
+
+  <header class="bar">
+    <div class="brand">
+      <h1><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2 9c2.5 0 2.5-2.5 5-2.5S9.5 9 12 9s2.5-2.5 5-2.5S19.5 9 22 9"/><path d="M2 16c2.5 0 2.5-2.5 5-2.5s2.5 2.5 5 2.5 2.5-2.5 5-2.5 2.5 2.5 5 2.5"/></svg>marola</h1>
+      <p class="tagline" data-i18n="header.tagline">mar, vento, maré e qualidade da água em cada praia, com dados abertos.</p>
+    </div>
+    <div class="controls">
+      <a href="index.html" data-i18n="about.back">voltar ao mapa</a>
+    </div>
+  </header>
+
+  <main class="main about">
+    <article class="about-body" lang="pt-BR">
+      <h2>o marola é público</h2>
+      <p class="post-date"><time datetime="2026-10-01">1 de outubro de 2026</time></p>
+
+      <h2>o que aconteceu</h2>
+      <p>o marola agora vive na organização pública <a href="https://github.com/marola-dev">marola-dev</a>, e todo o código está aberto sob licença MIT no <a href="https://github.com/marola-dev/marola">repositório marola-dev/marola</a>. o mapa interativo em <a href="https://marola.dev/">marola.dev</a> e a documentação pública em <a href="https://docs.marola.dev/">docs.marola.dev</a> estão abertos a qualquer pessoa.</p>
+
+      <h2>o que o marola é hoje</h2>
+      <p>hoje o marola oferece:</p>
+      <ul>
+        <li>um mapa estático das praias de <b>Florianópolis, Rio de Janeiro e Salvador</b>, com notas calculadas hora a hora para hoje e amanhã;</li>
+        <li>uma pontuação que combina estado do mar, vento, ondas, maré e os laudos oficiais de balneabilidade (<a href="https://balneabilidade.ima.sc.gov.br/">IMA/SC</a>, <a href="https://www.inea.rj.gov.br/">INEA/RJ</a> e <a href="http://balneabilidade.inema.ba.gov.br/">INEMA/BA</a>), além de heurísticas ecológicas para chance de água-viva e avistamento de baleias;</li>
+        <li>zero cookies, zero rastreamento e sem necessidade de cadastro ou conta;</li>
+        <li>uma ferramenta de linha de comando e um servidor MCP (<a href="https://modelcontextprotocol.io/">Model Context Protocol</a>) rodando o mesmo pipeline aberto.</li>
+      </ul>
+      <p>o que o marola <b>não</b> é: não é salva-vidas, não é uma previsão meteorológica oficial e não é um serviço de alertas de emergência.</p>
+
+      <h2>como é construído</h2>
+      <p>o desenvolvimento segue práticas abertas e reprodutíveis:</p>
+      <ul>
+        <li>as decisões de arquitetura são documentadas abertamente como propostas de melhoria no <a href="https://github.com/marola-dev/marola/tree/main/docs/MIPs">índice de MIPs</a>;</li>
+        <li>a maior parte do código é desenvolvida com agentes de IA, e cada commit registra seu custo com transparência no trailer <code>Cost:</code> (detalhado em <a href="https://github.com/marola-dev/marola/blob/main/docs/3-Working-on-the-repo/DEV-FLOW.md">DEV-FLOW.md</a>);</li>
+        <li>o ambiente de inferência roda localmente em ferramentas gratuitas (<a href="https://ollama.com/">Ollama</a>).</li>
+      </ul>
+
+      <h2>o que queremos construir</h2>
+      <p>apenas projetos documentados com planos existentes:</p>
+      <ul>
+        <li>português em primeiro lugar (<a href="https://github.com/marola-dev/marola/blob/main/docs/MIPs/MIP-0054-i18n.md">MIP-0054</a>);</li>
+        <li>bot no Telegram para consultas rápidas (<a href="https://github.com/marola-dev/marola/blob/main/docs/MIPs/MIP-0002-telegram-bot.md">MIP-0002</a>);</li>
+        <li>alertas oficiais por estado (<a href="https://github.com/marola-dev/marola/blob/main/docs/MIPs/MIP-0071-alerts.md">MIP-0071</a>);</li>
+        <li>expansão da cobertura para mais trechos da costa brasileira;</li>
+        <li>modelo local <code>marola-sea</code> (<a href="https://github.com/marola-dev/marola/blob/main/docs/MIPs/MIP-0025-marola-sea.md">MIP-0025</a>).</li>
+      </ul>
+
+      <h2>como acompanhar ou ajudar</h2>
+      <p>você pode explorar o <a href="https://github.com/marola-dev/marola">repositório principal</a>, resolver tarefas abertas com o selo <a href="https://github.com/marola-dev/marola/issues?q=is:open+label:%22good+first+issue%22">good first issue</a>, apoiar o projeto na página <a href="support.html">apoie</a>, e acompanhar a página da equipe (<a href="https://github.com/marola-dev/marola-site/issues/9">#9</a>).</p>
+    </article>
+
+    <article class="about-body" lang="en">
+      <h2>marola is public</h2>
+      <p class="post-date"><time datetime="2026-10-01">October 1, 2026</time></p>
+
+      <h2>What happened</h2>
+      <p>marola has moved to the public <a href="https://github.com/marola-dev">marola-dev</a> organization, and all code is open source under the MIT license at <a href="https://github.com/marola-dev/marola">marola-dev/marola</a>. The interactive map at <a href="https://marola.dev/">marola.dev</a> and documentation at <a href="https://docs.marola.dev/">docs.marola.dev</a> are open to everyone.</p>
+
+      <h2>What marola is today</h2>
+      <p>Today marola provides:</p>
+      <ul>
+        <li>a static map of beaches across <b>Florianópolis, Rio de Janeiro, and Salvador</b>, scored hour by hour for today and tomorrow;</li>
+        <li>a swim score combining sea state, wind, waves, tide, and official water-quality bulletins (<a href="https://balneabilidade.ima.sc.gov.br/">IMA/SC</a>, <a href="https://www.inea.rj.gov.br/">INEA/RJ</a>, and <a href="http://balneabilidade.inema.ba.gov.br/">INEMA/BA</a>), alongside ecological heuristics for jellyfish and whale sightings;</li>
+        <li>no cookies, no tracking, and no user accounts;</li>
+        <li>a command-line tool and an MCP (<a href="https://modelcontextprotocol.io/">Model Context Protocol</a>) server running the same open pipeline.</li>
+      </ul>
+      <p>What marola is <b>not</b>: it is not a lifeguard, not an official meteorological forecast, and not an emergency alerting service.</p>
+
+      <h2>How it is built</h2>
+      <p>Development follows open and reproducible practices:</p>
+      <ul>
+        <li>architectural designs are written as proposals in the open <a href="https://github.com/marola-dev/marola/tree/main/docs/MIPs">MIP index</a>;</li>
+        <li>most code is written with AI coding agents, with each commit transparently accounting for costs in the <code>Cost:</code> trailer (<a href="https://github.com/marola-dev/marola/blob/main/docs/3-Working-on-the-repo/DEV-FLOW.md">DEV-FLOW.md</a>);</li>
+        <li>inference runs on local, free tooling (<a href="https://ollama.com/">Ollama</a>).</li>
+      </ul>
+
+      <h2>What it wants to be</h2>
+      <p>Only documented designs with active roadmaps:</p>
+      <ul>
+        <li>Portuguese first (<a href="https://github.com/marola-dev/marola/blob/main/docs/MIPs/MIP-0054-i18n.md">MIP-0054</a>);</li>
+        <li>a Telegram bot for fast coastal check-ins (<a href="https://github.com/marola-dev/marola/blob/main/docs/MIPs/MIP-0002-telegram-bot.md">MIP-0002</a>);</li>
+        <li>official alerts per state (<a href="https://github.com/marola-dev/marola/blob/main/docs/MIPs/MIP-0071-alerts.md">MIP-0071</a>);</li>
+        <li>expanded coverage along more stretches of coast;</li>
+        <li>the local <code>marola-sea</code> model (<a href="https://github.com/marola-dev/marola/blob/main/docs/MIPs/MIP-0025-marola-sea.md">MIP-0025</a>).</li>
+      </ul>
+
+      <h2>How to follow or help</h2>
+      <p>Check out the <a href="https://github.com/marola-dev/marola">main repository</a>, take on tasks marked <a href="https://github.com/marola-dev/marola/issues?q=is:open+label:%22good+first+issue%22">good first issue</a>, support development on our <a href="support.html">support page</a>, or follow the team page (<a href="https://github.com/marola-dev/marola-site/issues/9">#9</a>).</p>
+    </article>
+  </main>
+
+  <footer id="footer" class="footer">
+    <p data-i18n="footer.privacy">marola: sem cookies e sem rastreamento próprio. o mapa de fundo é do Mapbox.</p>
+  </footer>
+  <script src="i18n.js"></script>
+  <script src="ui.js"></script>
+</body>
+</html>
