@@ -7,3 +7,8 @@ __pycache__/
 # `just site-build` output (boards + a copy of site/static/): derived, deployed, not committed
 /site/dist/*
 !/site/dist/.gitkeep
+node_modules/
+# esbuild's bundles of site/src (npm run build), built in CI and at deploy
+/site/static/app.js
+/site/static/ui.js
+/site/static/chat.js

@@ -16,7 +16,7 @@
   --line: #e1e5ea;
   --line-strong: #cbd2da; /* control borders */
   --sea: #cfe6f1;         /* the map before its tiles load: the base map's water */
-  /* flow ramps (flow.js), calm to strong, after Windy's muted scales; the score dots sit on top
+  /* flow ramps (flow.ts), calm to strong, after Windy's muted scales; the score dots sit on top
    * with a ring and a number, so a field colour is never read as a score */
   --flow-wind-0: #5b6db3; --flow-wind-1: #4a94a9; --flow-wind-2: #4d9a6e; --flow-wind-3: #8fa64a;
   --flow-wind-4: #b5904a; --flow-wind-5: #a8566a;
@@ -225,7 +225,7 @@ button[aria-pressed="true"], button[aria-expanded="true"] {
 .footer .lore { font-size: 15px; color: var(--ink); }
 /* Lowercase house style, except names marola did not choose: providers, the agency's verbatim
  * PRÓPRIA/IMPRÓPRIA verdict (MIP-0001), beaches, and literal text in <code> (a `Cost:` trailer; an
- * EIP-55 address, whose letter case is its checksum). Containers are exempted because app.js emits
+ * EIP-55 address, whose letter case is its checksum). Containers are exempted because site/src emits
  * beach names as bare text nodes. */
 body { text-transform: lowercase; }
 .src, .water, .unfit, .mapboxgl-ctrl-attrib,

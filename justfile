@@ -16,6 +16,7 @@ site-build area="":
     mkdir -p site/dist
     docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp -v "$PWD/site:/work/site" -w /work "$image" \
       "${args[@]}" --areas site/areas.json --site-out site/dist
+    npm ci && npm run build
     cp -r site/static/. site/dist/
     scripts/mapbox_config.sh site/dist  # MAPBOX_PUBLIC_TOKEN=pk.… from your shell, or no base map
     scripts/stamp_site_version.sh site/dist
@@ -40,18 +41,14 @@ board-schema *args:
 quality:
     #!/usr/bin/env bash
     set -euo pipefail
-    for tool in node python3 ruff shellcheck actionlint agents-check; do command -v "$tool" >/dev/null || { echo "quality: $tool not installed — run inside 'nix develop'" >&2; exit 1; }; done
+    for tool in node npm python3 ruff shellcheck actionlint agents-check; do command -v "$tool" >/dev/null || { echo "quality: $tool not installed — run inside 'nix develop'" >&2; exit 1; }; done
     ruff check .
     ruff format --check .
     shellcheck --severity=error scripts/*.sh
     actionlint
-    node --check site/static/app.js
-    node --check site/static/flow.js
-    node --check site/static/ui.js
-    node --check site/static/i18n.js
     python3 scripts/i18n_bundle.py --check
-    node scripts/site_check.js
-    node scripts/redirect_check.js
+    [ -d node_modules ] || npm ci
+    npm run check
     python3 scripts/site_live_check.py --self-test
     python3 scripts/i18n_bundle.py --self-test
     scripts/site-data-push.sh --self-test
@@ -62,8 +59,10 @@ quality:
 
 # The devkit hooks' contract: fast checks at commit, the full gate (and the MIP: rule) at push.
 precommit:
-    node --check site/static/app.js
-    node scripts/site_check.js
+    [ -d node_modules ] || npm ci
+    npm run typecheck
+    npm run lint
+    npm test
     ruff check .
     agents-check
 

@@ -11,6 +11,8 @@ on:
     branches: [main]
     paths:
       - "site/**"
+      - "package.json"
+      - "package-lock.json"
       - "marola-image"
       - "scripts/board-schema.sh"
       - "scripts/stamp_site_version.sh"
@@ -46,6 +48,16 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Build the page's scripts (site/src → site/static)
+        run: |
+          npm ci
+          npm run build
+
       - name: The pinned app image (marola-image)
         id: image
         run: echo "ref=$(scripts/board-schema.sh --image)" >>"$GITHUB_OUTPUT"
@@ -74,9 +86,7 @@ jobs:
       - name: site harness against the image's board schema
         run: |
           scripts/board-schema.sh --extract "$RUNNER_TEMP/board.schema.json"
-          node --check site/static/app.js
-          node --check site/static/flow.js
-          BOARD_SCHEMA="$RUNNER_TEMP/board.schema.json" node scripts/site_check.js
+          BOARD_SCHEMA="$RUNNER_TEMP/board.schema.json" npm test
 
       # `--site` with no id builds every area; the water-quality provider is picked per area origin
       # (IMA/SC inside Santa Catarina, "no data" elsewhere). The image runs as uid 10001, which
@@ -151,7 +161,7 @@ jobs:
         run: |
           cd site/dist
           missing=0
-          for f in index.html 404.html app.js ui.js i18n.js style.css flow.js mapbox-config.js \
+          for f in index.html 404.html app.js ui.js chat.js style.css mapbox-config.js \
                    vendor/mapbox-gl-csp.js vendor/mapbox-gl-csp-worker.js vendor/mapbox-gl.css data/areas.json \
                    $(python3 -c 'import json; [print("data/%s/latest.json" % a["id"]) for a in json.load(open("../areas.json"))]'); do
             if [ ! -f "$f" ]; then echo "missing: $f"; missing=1; fi
@@ -164,11 +174,11 @@ jobs:
         run: echo "marola.dev" > site/dist/CNAME
 
       # Only the map is public.
-      - name: Publish allowlist — index.html, 404.html, about.html, support.html, favicon.svg, app.js, ui.js, i18n.js, style.css, flow.js, mapbox-config.js, chat.js, chatbot-config.js, CNAME, vendor/, data/, smoke/, coverage/, stats/ and nothing else
+      - name: Publish allowlist — every *.html page, favicon.svg, app.js, ui.js, style.css, mapbox-config.js, chat.js, chatbot-config.js, CNAME, vendor/, data/, smoke/, coverage/, stats/ and nothing else
         run: |
           cd site/dist
           rm -f .gitkeep
-          unexpected="$(find . -mindepth 1 \( -path ./data -o -path ./smoke -o -path ./coverage -o -path ./stats -o -path ./vendor \) -prune -o -type f ! -name index.html ! -name 404.html ! -name about.html ! -name support.html ! -name favicon.svg ! -name app.js ! -name ui.js ! -name i18n.js ! -name style.css ! -name flow.js ! -name mapbox-config.js ! -name chat.js ! -name chatbot-config.js ! -name CNAME -print)"
+          unexpected="$(find . -mindepth 1 \( -path ./data -o -path ./smoke -o -path ./coverage -o -path ./stats -o -path ./vendor \) -prune -o -type f ! -name '*.html' ! -name favicon.svg ! -name app.js ! -name ui.js ! -name style.css ! -name mapbox-config.js ! -name chat.js ! -name chatbot-config.js ! -name CNAME -print)"
           if [ -n "$unexpected" ]; then
             echo "files in site/dist that are not on the publish allowlist:"; echo "$unexpected"; exit 1
           fi

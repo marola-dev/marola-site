@@ -23,17 +23,21 @@ The map at [marola.dev](https://marola.dev): a static page that shows every area
 boards (MIP-0005), with no server and no LLM, over a Mapbox base map (free up to Mapbox's monthly
 map-load tier, billed above it).
 
-- `site/static/`: the page (`index.html`, `about.html`, `support.html` behind Donate, `app.js`,
-  `ui.js`, `style.css`, `flow.js` (the WebGL wind and wave layer), `mapbox-config.js`, the chat
-  widget, vendored Mapbox GL JS (its CSP build), Inter and the wave loop under `vendor/`) and
-  `404.html`, which forwards the old `marola.dev/docs/*` links to `docs.marola.dev`.
+- `site/src/`: the page's TypeScript. `app.ts` (the map page), `ui.ts` (the other pages' header)
+  and `chat.ts` are the entry points esbuild bundles into `site/static/{app,ui,chat}.js`
+  (`npm run build`; the bundles are gitignored). `flow.ts` is the WebGL wind and wave layer.
+- `site/static/`: the page (`index.html`, `about.html`, `support.html` behind Donate, `style.css`,
+  `mapbox-config.js`, `chatbot-config.js`, vendored Mapbox GL JS (its CSP build), Inter and the
+  wave loop under `vendor/`) and `404.html`, which forwards the old `marola.dev/docs/*` links to
+  `docs.marola.dev`.
 - `site/i18n/`: the pt-BR and English catalogs (MIP-0054). `scripts/i18n_bundle.py` checks them
-  and writes `site/static/i18n.js`; edit the catalogs, never `i18n.js`.
+  and writes `site/src/catalog.ts`; edit the catalogs, never `catalog.ts`.
+- `tests/`: `node --test` over the source and the built pages in a stub DOM and Mapbox GL. The
+  page tests read every `site/static/*.html`, so a new page is covered without touching them.
 - `site/areas.json`: the areas the boards are built for. `site/fixtures/board.json`: the board the
   harness renders. `site/board.schema.json`: the board contract, vendored from the pinned image.
-- `scripts/`: `site_check.js` (app.js and flow.js in a stub DOM and Mapbox GL), `mapbox_config.sh`
-  (the public Mapbox token into `mapbox-config.js` at deploy), `redirect_check.js` (the 404
-  forwarder), `board-schema.sh` (the image pin and its schema), `stamp_site_version.sh`,
+- `scripts/`: `mapbox_config.sh` (the public Mapbox token into `mapbox-config.js` at deploy),
+  `board-schema.sh` (the image pin and its schema), `stamp_site_version.sh`,
   `site_live_check.py` (what marola.dev actually serves), `site-data-push.sh` (the retrying push
   every `site-data` writer uses), `mip-trailer-check.sh`.
 - `DESIGN.md`: the visual system (tokens, type, components); Inter is self-hosted in
@@ -65,6 +69,7 @@ No workflow here builds the app or reads its tree (MIP-0070 §5.4).
 ```bash
 nix develop               # node, python, the lint tools and the devkit's tools; links .devkit
 just quality              # every gate CI runs that needs no docker or network
+npm run check             # typecheck, lint, build the bundles, run the tests
 just site-build floripa   # boards from the pinned image + the page into site/dist (docker, network)
 just site-serve           # http://localhost:8000
 just site-live-check      # what marola.dev serves now
@@ -91,7 +96,7 @@ An agent starts work only on an issue carrying `agent-ready`, in this repo (MIP-
 ## Attribution and cost accounting (hard rule)
 
 Commits carry `Tested:`, `Cost:` and `Co-Authored-By: Claude <noreply@anthropic.com>`.
-**Stricter here:** a commit touching `site/static/**` also carries `MIP: MIP-NNNN` or
+**Stricter here:** a commit touching `site/static/**` or `site/src/**` also carries `MIP: MIP-NNNN` or
 `MIP: none — <reason>`; `just prepush` runs `scripts/mip-trailer-check.sh` over the pushed
 commits (`origin/main..HEAD` when the hook does not pass the pushed refs on).
 
@@ -101,9 +106,10 @@ The phase list is the umbrella's `docs/PHASES.md`. Site work serves the current 
 
 ## Code style
 
-Plain JavaScript, no framework and no build step; the page keeps `script-src 'self'`, and its one
+Strict TypeScript, linted by typescript-eslint's strict type-checked rules, bundled by esbuild,
+with no framework and no runtime dependency; the page keeps `script-src 'self'`, and its only
 third-party origins are Mapbox for the base map (style, tiles, fonts, the map-load count) and NASA
 GIBS for the satellite layers (public, keyless tiles, fetched only when a visitor picks one). A visible
-change goes through the `site-frontend` skill (which names the others), `node scripts/site_check.js`
+change goes through the `site-frontend` skill (which names the others), `npm run check`
 and before/after screenshots. Shell: `set -euo pipefail`, shellcheck-clean. Python: ruff. Comments
 only for why, a trap, or a pointer, as the umbrella's AGENTS.md spells out.

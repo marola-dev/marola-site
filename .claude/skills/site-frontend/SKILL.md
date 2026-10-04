@@ -1,6 +1,6 @@
 ---
 name: site-frontend
-description: Use first for any change a visitor sees on marola.dev (site/static/*.html, app.js markup and markers, the Mapbox map and flow.js's wind and wave layers, style.css, the chat widget, 404.html, the copy) or when the page looks plain, inconsistent or generated; it orders the other frontend skills, Mapbox's included, and says which wins when they disagree
+description: Use first for any change a visitor sees on marola.dev (site/static/*.html, site/src/*.ts markup and markers, the Mapbox map and flow.ts's wind and wave layers, style.css, the chat widget, 404.html, the copy) or when the page looks plain, inconsistent or generated; it orders the other frontend skills, Mapbox's included, and says which wins when they disagree
 ---
 
 # site-frontend: the entry point for marola's frontend
@@ -27,7 +27,7 @@ frontend skills vendored next to it, which were written for landing pages and Re
 | `ptbr-humanizer` | every Portuguese string | here |
 | `citizen-science-site` | sources, freshness, limits, privacy, contributing on the page | here |
 | `mapbox-web-integration-patterns` | Mapbox GL JS setup, lifecycle, token handling, common pitfalls (read its vanilla-JS parts) | mapbox/mapbox-agent-skills, MIT |
-| `mapbox-web-performance-patterns` | load waterfall, markers vs layers, render cost, memory; check `flow.js` against it | mapbox/mapbox-agent-skills, MIT |
+| `mapbox-web-performance-patterns` | load waterfall, markers vs layers, render cost, memory; check `flow.ts` against it | mapbox/mapbox-agent-skills, MIT |
 | `mapbox-data-visualization-patterns` | data-driven layers, heat and flow fields, animated data (the wind and wave layers) | mapbox/mapbox-agent-skills, MIT |
 | `mapbox-cartography` | the base map: colour, hierarchy, labels over data | mapbox/mapbox-agent-skills, MIT |
 | `mapbox-style-patterns` | layer recipes when a Studio style or a new map layer is designed | mapbox/mapbox-agent-skills, MIT |
@@ -60,7 +60,7 @@ overrides live here, not in their files.
    whatever taste says.
 6. **Landing-page rules do not apply to the map**: hero, CTA, bento, testimonials, eyebrows.
    The map page has no hero; the about/support pages are reading columns.
-7. **Lowercase house style stays**, with the exemptions `site_check.js` asserts.
+7. **Lowercase house style stays**, with the exemptions `tests/i18n.test.ts` asserts.
 8. **Copy**: no em dash anywhere a visitor reads (taste and `ptbr-humanizer` agree); `·` at most
    once per line.
 9. **Karpathy's "if uncertain, ask"** means: on a visual fork, pick the DESIGN.md answer and say
@@ -74,21 +74,21 @@ overrides live here, not in their files.
    `webapp-testing` script. Write down at most five concrete problems.
 2. **Plan** with `frontend-design`'s token step if the change is more than one component.
    Reuse DESIGN.md's tokens; a new token needs a job none does, and goes in DESIGN.md first.
-3. **Build** in `style.css`, `index.html`, `app.js`. Markup the harness reads (`.sitenav` before
+3. **Build** in `style.css`, `index.html`, `site/src/`. Markup the tests read (`.sitenav` before
    `.bar`, `#lang` before `a.gh`, the dot marker, `[data-i18n]` leaves) stays.
 4. **Pre-flight**: taste's section 9 (AI tells) and contrast checks, Emil's review table for the
    touched components, `break-ui` for a new panel.
 5. **Copy** through `ptbr-humanizer`; edit `site/i18n/*.json`, run `python3 scripts/i18n_bundle.py`.
-6. **Verify**: `node --check site/static/app.js`, `node scripts/site_check.js`,
-   `node scripts/redirect_check.js`, `python3 scripts/i18n_bundle.py --check`, `ruff check .`,
+6. **Verify**: `npm run check` (types, lint, build, tests), `python3 scripts/i18n_bundle.py --check`,
+   `ruff check .`,
    then before/after screenshots in the PR. No screenshot, not done.
 
 ## The map: Mapbox GL and the flow layer
 
-- `app.js` owns the map (`ensureMap`): DOM markers for beaches, water points and "you" (so the
+- `app.ts` owns the map (`ensureMap`): DOM markers for beaches, water points and "you" (so the
   score dot, its `aria-label` and keyboard focus stay plain HTML), a GeoJSON line layer for trails,
   and `hoverTip()` popups in place of Leaflet's sticky tooltips.
-- `flow.js` is the Windy-like part: a Mapbox custom layer that draws, in WebGL, a colour field and
+- `flow.ts` is the Windy-like part: a Mapbox custom layer that draws, in WebGL, a colour field and
   moving particles for wind (km/h) or waves (m). The field is interpolated from the board's own
   beach readings, never a fetched weather grid, and fades out away from the beaches; the key says
   "estimated between beaches". `prefers-reduced-motion` freezes the particles. New layers follow
@@ -98,7 +98,7 @@ overrides live here, not in their files.
   `mapbox-config.js` at deploy by `scripts/mapbox_config.sh`; the committed file stays empty.
   With no token there is no map (Mapbox GL's licence needs a Mapbox account) and the page says
   so and opens the list. `mapbox-token-security` decides anything about the token.
-- `site_check.js` stubs `mapboxgl` (markers, popups, the custom layer without a GL context); the
+- `tests/harness.ts` stubs `mapboxgl` (markers, popups, the custom layer without a GL context); the
   real look needs a browser with a token. The sandbox's Playwright cannot reach Mapbox, so a
   screenshot there answers `api.mapbox.com/styles/**` with a stand-in style and says so.
 

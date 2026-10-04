@@ -14,8 +14,8 @@ municipal beach bulletin written by someone who swims), not like a product page 
 
 ## Where the Portuguese lives
 
-- `site/i18n/pt-BR.json`: every string the page and `app.js` render. Edit it, then
-  `python3 scripts/i18n_bundle.py` (never edit `site/static/i18n.js`). `site/i18n/context.json`
+- `site/i18n/pt-BR.json`: every string the pages and `site/src/` render. Edit it, then
+  `python3 scripts/i18n_bundle.py` (never edit `site/src/catalog.ts`). `site/i18n/context.json`
   says where each key appears.
 - The `lang="pt-BR"` articles in `about.html` and `support.html`, and each page's
   `<meta name="description">`.
@@ -35,7 +35,7 @@ municipal beach bulletin written by someone who swims), not like a product page 
    potencializar, "com IA", emoji.
 6. **Keep what is data or a name**: PRÓPRIA/IMPRÓPRIA (the agency's verdict, verbatim), provider
    names (Open-Meteo, OpenStreetMap, IMA/SC), beach names, `Cost:`, units with a no-break space.
-7. **House style is lowercase** in the catalog (the CSS lowercases anyway); `site_check.js` fails
+7. **House style is lowercase** in the catalog (the CSS lowercases anyway); `tests/i18n.test.ts` fails
    uppercase outside its allowlist.
 8. **ICU placeholders stay intact**: `{n, plural, ...}`, `{x, select, ...}`; read the pt-BR output
    for each branch, not just the template.
@@ -47,6 +47,6 @@ municipal beach bulletin written by someone who swims), not like a product page 
 1. Read the English string and `context.json` for the key, then write the Portuguese from the
    meaning, not word by word.
 2. Read it aloud in your head as a carioca or a manezinho would; if it sounds dubbed, rewrite.
-3. Rebuild the bundle, run `node scripts/site_check.js` and update the needles it holds for the
+3. Rebuild the bundle, run `npm test` and update the needles `tests/map.test.ts` holds for the
    strings you changed (they are pt-BR on purpose: they pin the visible copy).
 4. Screenshot the pt-BR page at 390 px: longer strings must still fit their pills and rows.

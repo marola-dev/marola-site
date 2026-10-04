@@ -1,0 +1,23 @@
+{
+  "name": "marola-site",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "build": "esbuild site/src/app.ts site/src/ui.ts site/src/chat.ts --bundle --minify --format=iife --target=es2020 --outdir=site/static --log-level=warning",
+    "typecheck": "tsc",
+    "lint": "eslint --flag unstable_native_nodejs_ts_config",
+    "test": "node --test 'tests/**/*.test.ts'",
+    "check": "npm run typecheck && npm run lint && npm run build && npm test"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "22.20.5",
+    "esbuild": "0.28.2",
+    "eslint": "10.4.1",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.71.0"
+  }
+}

@@ -9,14 +9,12 @@ index="$dist/index.html"
 
 version="$(git rev-parse --short HEAD 2>/dev/null || date -u +%Y%m%d%H%M%S)"
 
-# about.html and support.html load the same catalog (i18n.js), so they are stamped too.
-for page in "$index" "$dist/about.html" "$dist/support.html"; do
-  [ -f "$page" ] || continue
+for page in "$dist"/*.html; do
   sed -i -E \
     -e "s#(href=\"style\.css)\"#\\1?v=${version}\"#" \
     -e "s#(href=\"vendor/mapbox-gl\.css)\"#\\1?v=${version}\"#" \
     -e "s#(src=\"vendor/mapbox-gl-csp\.js)\"#\\1?v=${version}\"#" \
-    -e "s#(src=\"(app|ui|i18n|flow|mapbox-config)\.js)\"#\\1?v=${version}\"#" \
+    -e "s#(src=\"(app|ui|chat|mapbox-config|chatbot-config)\.js)\"#\\1?v=${version}\"#" \
     "$page"
   echo "stamped $page with ?v=$version"
 done

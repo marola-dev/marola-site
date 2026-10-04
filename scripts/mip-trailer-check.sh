@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# mip-trailer-check — a commit touching site/static/** carries `MIP: MIP-NNNN` or
+# mip-trailer-check — a commit touching site/static/** or site/src/** carries `MIP: MIP-NNNN` or
 # `MIP: none — <reason>` (the rule marola's pre-push hook enforced; MIP-0070 §5.6 keeps it here).
 #
 #   scripts/mip-trailer-check.sh [<rev-list args>]   check those commits
@@ -45,12 +45,12 @@ check() {
     # shellcheck disable=SC2086  # each entry is a list of rev-list arguments
     while read -r sha; do
       [ -n "$sha" ] || continue
-      git diff-tree -m --first-parent --no-commit-id --name-only -r --root "$sha" | grep -q '^site/static/' || continue
+      git diff-tree -m --first-parent --no-commit-id --name-only -r --root "$sha" | grep -qE '^site/(static|src)/' || continue
       git log -1 --format=%B "$sha" | grep -qE '^MIP: (MIP-[0-9]{4}|none — .+)$' || bad+=("$sha")
     done < <(git rev-list $r)
   done
   [ "${#bad[@]}" -gt 0 ] || return 0
-  echo "mip-trailer-check: commit(s) touching site/static/** with no 'MIP:' trailer:" >&2
+  echo "mip-trailer-check: commit(s) touching site/static/** or site/src/** with no 'MIP:' trailer:" >&2
   for sha in $(printf '%s\n' "${bad[@]}" | sort -u); do echo "  $(git log -1 --format='%h %s' "$sha")" >&2; done
   echo "Add 'MIP: MIP-NNNN' (the design it is for) or 'MIP: none — <reason>' (a fix, typo or" >&2
   echo "refactor with no behaviour change; the mip skill's 'Not for' list) to each commit's trailers." >&2
@@ -64,7 +64,7 @@ self_test() {
   git init -q -b main "$t/r"
   g() { git -C "$t/r" -c user.name=t -c user.email=t@t "$@"; }
   c() { (cd "$t/r" && check "$@") >/dev/null 2>&1; }
-  mkdir -p "$t/r/site/static" "$t/r/scripts"
+  mkdir -p "$t/r/site/static" "$t/r/site/src" "$t/r/scripts"
   echo a >"$t/r/README.md"; g add -A; g commit -qm root
   base="$(g rev-parse HEAD)"
   echo b >"$t/r/scripts/x.sh"; g add -A; g commit -qm "not the page"
@@ -74,6 +74,9 @@ self_test() {
   echo e >>"$t/r/site/static/app.js"; g add -A; g commit -qm "page, no trailer" -m "MIP: maybe"
   page="$(g rev-parse HEAD)"
   c "$base..HEAD" </dev/null && { echo "FAIL: a page commit with no valid trailer passed"; f=1; }
+  echo s >"$t/r/site/src/app.ts"; g add -A; g commit -qm "source, no trailer"
+  c HEAD~1..HEAD </dev/null && { echo "FAIL: a site/src commit with no trailer passed"; f=1; }
+  g reset -q --hard HEAD~1
   c </dev/null && { echo "FAIL: with no origin/main, HEAD's unpushed commits went unchecked"; f=1; }
   echo "refs/heads/main $page refs/heads/main $zero" | c && { echo "FAIL: a new branch's pushed commits went unchecked"; f=1; }
   echo "refs/heads/main $page refs/heads/main $page~1" | c && { echo "FAIL: the pushed range missed its untrailered commit"; f=1; }

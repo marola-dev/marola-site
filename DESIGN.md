@@ -34,7 +34,7 @@ as defaults to avoid.
 | `--accent-hover` | `#164e9e` | hover on accent |
 | `--accent-soft` | `#e9f0fb` | pressed toggles, the visitor's chat messages |
 | `--c70 … --cna` | score colours | data only: dots, chips, legend. A change needs a MIP note |
-| `--flow-wind-0 … 5` | `#5b6db3` → `#a8566a` | the wind field, calm to 40 km/h (`flow.js`, the key's ramp) |
+| `--flow-wind-0 … 5` | `#5b6db3` → `#a8566a` | the wind field, calm to 40 km/h (`flow.ts`, the key's ramp) |
 | `--flow-wave-0 … 5` | `#2f5a9e` → `#c86e6e` | the wave field, flat to 3 m |
 | `--sst-0 … 5`, `--anom-*` | GIBS-like | the satellite layers' key ramps, after GIBS's own palettes |
 | `--glass`, `--glass-*` | `rgb(255 255 255 / .9)`, … | what floats over the map: layer rail, key, zoom buttons, popups |
@@ -42,7 +42,7 @@ as defaults to avoid.
 The flow ramps are data too. They follow Windy's muted scales, which visitors already read; a
 score is never told by the field's colour alone, because the beach dots sit on top with a ring
 and the selected one with its number.
-No other hex in a rule. The marker rim (`#1d2733`) and the score colours live in `app.js`'s SVG,
+No other hex in a rule. The marker rim (`#1d2733`) and the score colours live in `view.ts`'s SVG,
 where CSS variables do not reach.
 
 ## Type
@@ -77,7 +77,7 @@ from a CDN. Inter is the deliberate pick for a public-information, accessibility
 - **Control**: 36 px, 8 px radius, 1 px `--line-strong`, white, 14/500. Hover `--surface`.
   Pressed (`aria-pressed`, `aria-expanded`): `--accent-soft` fill, accent border and text.
   `:active` nudges 1 px down.
-- **Area picker**: the control showing a two-letter code (FL, RJ, BA; `AREA_CODES` in `app.js`), the full name in its title and accessible name.
+- **Area picker**: the control showing a two-letter code (FL, RJ, BA; `AREA_CODES` in `board.ts`), the full name in its title and accessible name.
 - **Segmented** (day, language): a `--surface` track; the picked segment is white, raised.
 - **Primary action**: accent fill, white text. One per surface (chat open, chat send).
 - **Hour bar**: label, slider (accent), legend pushed right.
@@ -96,7 +96,7 @@ from a CDN. Inter is the deliberate pick for a public-information, accessibility
   field at 65% opacity (the light base map shows through), fading out 18 km past the last beach, with a thin dark coastline over
   it on Mapbox's own styles. Balneabilidade stops the particles, draws every sampling point in
   the area and dims the beach dots.
-- **Icons**: Lucide line icons through `icon(name)` in `app.js` (ISC, `vendor/icons/LICENSE.lucide`),
+- **Icons**: Lucide line icons through `icon(name)` in `icons.ts` (ISC, `vendor/icons/LICENSE.lucide`),
   16 px, 1.75 stroke, in `--accent`; `aria-hidden` with the word next to it. Never emoji.
 
 ## Copy
