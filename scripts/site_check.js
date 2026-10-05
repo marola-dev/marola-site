@@ -223,7 +223,8 @@ function stubStorage(sandbox, store, throws) {
 // --- run the page once against a board
 // -----------------------------------------------------------.
 // opts: search ('?lang=en'), languages (navigator.languages), store ({'marola.lang': 'en'}),
-// storeThrows, geolocation (a navigator.geolocation stub), noBoard (latest.json names a missing file).
+// storeThrows, geolocation (a navigator.geolocation stub), noBoard (latest.json names a missing file),
+// extraAreas (listed after the fixture in areas.json, each served the same board).
 async function runPage(board, opts) {
   opts = opts || {};
   const els = {}; IDS.forEach(id => { els[id] = new El(id); });
@@ -232,6 +233,11 @@ async function runPage(board, opts) {
     'data/fixture/latest.json': { days: [{ day: board.day, file: board.day + '.json' }] }
   };
   if (!opts.noBoard) files['data/fixture/' + board.day + '.json'] = board;
+  (opts.extraAreas || []).forEach(id => {
+    files['data/areas.json'].areas.push({ id, name: id, lat: -22.98, lon: -43.19 });
+    files['data/' + id + '/latest.json'] = files['data/fixture/latest.json'];
+    files['data/' + id + '/' + board.day + '.json'] = board;
+  });
   const M = makeMapbox();
   if (opts.styleStatus) M.styleStatus = opts.styleStatus;
   flowPanel(els.flow, els.flowkeys);
@@ -888,8 +894,15 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   const pinned = await runPage(BOARD, { search: '?lang=pt-BR', store: { 'marola.lang': 'en' }, languages: ['en-US'] });
   ok(pinned.els['hour-label'].textContent === 'melhor horário de cada praia', 'a stored en plus ?lang=pt-BR renders Portuguese');
   const browserEn = await runPage(BOARD, { languages: ['en-US'], store: {} });
-  ok(browserEn.els['hour-label'].textContent === 'best hour per beach' && browserEn.els.days.innerHTML.includes('>today <small>'),
-    'navigator.languages en-US with nothing stored renders English');
+  ok(browserEn.els['hour-label'].textContent === 'melhor horário de cada praia',
+    'navigator.languages en-US with nothing stored still renders Portuguese');
+  const rioFirst = await runPage(BOARD, { extraAreas: ['rio'] });
+  ok(rioFirst.fetched.includes('data/rio/latest.json') && !rioFirst.fetched.includes('data/fixture/latest.json'),
+    'with no ?area=, the first visit opens on rio even when it is not first in areas.json', rioFirst.fetched.join(', '));
+  const pickedArea = await runPage(BOARD, { search: '?area=fixture', extraAreas: ['rio'] });
+  ok(pickedArea.fetched.includes('data/fixture/latest.json'), '?area= still picks the area', pickedArea.fetched.join(', '));
+  const storedEn = await runPage(BOARD, { languages: ['pt-BR'], store: { 'marola.lang': 'en' } });
+  ok(storedEn.els['hour-label'].textContent === 'best hour per beach', 'a stored en (the toggle) renders English');
 
   // 6. a flip re-renders what app.js built, in place, from state: no fetch.
   const flip = await runPage(BOARD, {});
