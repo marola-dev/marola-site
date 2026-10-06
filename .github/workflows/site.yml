@@ -15,6 +15,9 @@ on:
       - "scripts/board-schema.sh"
       - "scripts/stamp_site_version.sh"
       - "scripts/mapbox_config.sh"
+      - "scripts/br-proxy.sh"
+      - "scripts/br-proxy-preflight.sh"
+      - "ops/br-proxy/hosts"
       - ".github/workflows/site.yml"
   # The app's CI and docker-smoke.yml push coverage/ and smoke/ to site-data, the umbrella pushes
   # stats/, then each sends this so the panels refresh without waiting for the schedule.
@@ -29,6 +32,9 @@ on:
       - "scripts/board-schema.sh"
       - "scripts/stamp_site_version.sh"
       - "scripts/mapbox_config.sh"
+      - "scripts/br-proxy.sh"
+      - "scripts/br-proxy-preflight.sh"
+      - "ops/br-proxy/hosts"
       - ".github/workflows/site.yml"
   workflow_dispatch:
     inputs:
@@ -59,6 +65,8 @@ jobs:
     permissions:
       contents: read
       packages: read
+    env:
+      HAS_TAILSCALE: ${{ secrets.TS_OAUTH_CLIENT_ID != '' && secrets.TS_OAUTH_SECRET != '' }}
     steps:
       - uses: actions/checkout@v7
 
@@ -94,9 +102,50 @@ jobs:
           node --check site/static/flow.js
           BOARD_SCHEMA="$RUNNER_TEMP/board.schema.json" node scripts/site_check.js
 
+      # #4: INEA (Rio) and INEMA (Bahia) answer only Brazilian addresses, so they go through a
+      # node of the Brazilian proxy pool (ops/br-proxy/JOIN.md), reached over the org's tailnet.
+      # The next two steps are optional and can never fail the build: without their secrets, or
+      # with no healthy node, no JVM options are set and the build runs exactly as it did without
+      # them (those agencies "no data"). A PR never joins the tailnet: it checks the build itself.
+      - name: Join the tailnet (optional, TS_OAUTH_CLIENT_ID/TS_OAUTH_SECRET)
+        id: tailscale
+        if: github.event_name != 'pull_request' && env.HAS_TAILSCALE == 'true'
+        continue-on-error: true
+        timeout-minutes: 3
+        uses: tailscale/github-action@d1b6cd204f8dceda5b3eaad7f1f767be390056cd # v4.2.0
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+
+      # The flight check: the first pool node that really reaches INEA becomes the upstream.
+      # MAROLA_BR_PROXY, if set, overrides the pool with any HTTP proxy in Brazil.
+      - name: Flight check, then route the Brazil-only agencies (optional)
+        continue-on-error: true
+        timeout-minutes: 4
+        env:
+          MAROLA_BR_PROXY: ${{ secrets.MAROLA_BR_PROXY }}
+          TAILSCALE: ${{ steps.tailscale.outcome }}
+        run: |
+          upstream="$MAROLA_BR_PROXY"
+          if [ -z "$upstream" ] && [ "$TAILSCALE" = success ]; then
+            upstream="$(scripts/br-proxy-preflight.sh)"
+          fi
+          if [ -z "$upstream" ]; then
+            echo "no Brazilian proxy (tailnet: ${TAILSCALE:-skipped}): no route, the build runs as before"
+            exit 0
+          fi
+          command -v tinyproxy >/dev/null || { sudo apt-get update -qq && sudo apt-get install -y -qq tinyproxy >/dev/null; } \
+            || { echo "::warning::br-proxy: could not install tinyproxy; no route"; exit 0; }
+          opts="$(MAROLA_BR_PROXY="$upstream" scripts/br-proxy.sh start)"
+          [ -z "$opts" ] || echo "BR_PROXY_JVM_OPTIONS=$opts" >>"$GITHUB_ENV"
+
       # `--site` with no id builds every area; the water-quality provider is picked per area origin
-      # (IMA/SC inside Santa Catarina, "no data" elsewhere). The image runs as uid 10001, which
-      # cannot write the runner's checkout, hence --user.
+      # (IMA/SC in Santa Catarina, INEA in Rio, INEMA in Bahia). The image runs as uid 10001, which
+      # cannot write the runner's checkout, hence --user. With the route up, the container shares
+      # the runner's network to reach it on 127.0.0.1, and JDK_JAVA_OPTIONS adds the proxy to the
+      # image's own JAVA_TOOL_OPTIONS rather than replacing them. The second attempt drops the
+      # route, so a broken proxy costs at most Rio's and Bahia's water quality, never the deploy.
       - name: Build the boards (one Overpass query per area, no LLM)
         env:
           IMAGE: ${{ steps.image.outputs.ref }}
@@ -104,17 +153,27 @@ jobs:
         run: |
           args=(--site)
           [ -z "$AREA" ] || args+=("$AREA")
+          br=()
+          [ -z "${BR_PROXY_JVM_OPTIONS:-}" ] || br=(--network host -e "JDK_JAVA_OPTIONS=$BR_PROXY_JVM_OPTIONS")
           mkdir -p site/dist
           for attempt in 1 2; do
-            if docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp \
+            if docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp "${br[@]}" \
                  -v "$PWD/site:/work/site" -w /work "$IMAGE" \
                  "${args[@]}" --areas site/areas.json --site-out site/dist; then
               exit 0
             fi
             echo "site build attempt $attempt failed"
+            br=()
             [ "$attempt" -eq 2 ] || sleep 60
           done
           exit 1
+
+      - name: What went through the Brazilian proxy
+        if: always() && env.BR_PROXY_JVM_OPTIONS != ''
+        continue-on-error: true
+        run: |
+          grep -aE 'upstream proxy for' "$RUNNER_TEMP/marola-br-proxy/tinyproxy.log" | sed 's/.*]: //' | sort | uniq -c || true
+          scripts/br-proxy.sh stop
 
       # SiteBuilder writes board data only (MIP-0070 §5.4).
       - name: Copy the static page into dist
