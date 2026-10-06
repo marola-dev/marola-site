@@ -224,8 +224,13 @@ button[aria-pressed="true"], button[aria-expanded="true"] {
 .footer p { margin: 4px 0; max-width: 75ch; }
 .footer .lore { font-size: 15px; color: var(--ink); }
 /* the lore and the score note fold behind compact controls (#59); open, they take the pressed look */
-.folds { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-.footer .fold { min-height: 32px; padding: 0 10px 0 9px; gap: 8px; font-size: 13px; }
+.folds { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+/* three fit one row at 390 px: tight padding, the label never wraps */
+.footer .fold { min-height: 32px; padding: 0 8px 0 7px; gap: 6px; font-size: 13px; white-space: nowrap; }
+/* not built yet: reads as a control, muted, and does nothing (no pressed look, no press nudge) */
+.footer .fold.soon, .footer .fold.soon:hover { color: var(--muted); background: var(--bg); border-color: var(--line-strong); cursor: default; }
+.footer .fold.soon:active { transform: none; }
+.footer .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .fold .pm { position: relative; width: 10px; height: 10px; flex: none; }
 .fold .pm::before, .fold .pm::after { content: ""; position: absolute; left: 0; top: 4px; width: 10px; height: 2px; border-radius: 1px; background: currentColor; }
 .fold .pm::after { transform: rotate(90deg); }

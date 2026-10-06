@@ -919,7 +919,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   const toggleOf = k => (foot().match(new RegExp('<button type="button" class="fold" data-fold="' + k + '"[^>]*>')) || [''])[0];
   const panelOf = id => (foot().match(new RegExp('<p id="' + id + '" class="fold-panel[^"]*"[^>]*>')) || [''])[0];
   ok(foot().includes('<p id="status">atualizado em '), '#59: the status line stays visible', foot().slice(0, 200));
-  [['lore', 'footer-lore', 'vida marinha'], ['blurb', 'footer-blurb', 'pontuação e privacidade']].forEach(([k, id, label]) => {
+  [['lore', 'footer-lore', 'vida marinha'], ['blurb', 'footer-blurb', 'privacidade']].forEach(([k, id, label]) => {
     ok(/aria-expanded="false"/.test(toggleOf(k)) && toggleOf(k).includes('aria-controls="' + id + '"') &&
       foot().includes(toggleOf(k) + '<span class="pm" aria-hidden="true"></span>' + label + '</button>'),
       '#59: the ' + k + ' toggle is a collapsed button controlling #' + id + ', labelled "' + label + '"', toggleOf(k));
@@ -934,6 +934,18 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
     fd.els.footer.fire('click', { target: btn });
     ok(btn.getAttribute('aria-expanded') === 'true' && panel.hidden === false, '#59: a click on the ' + k + ' toggle expands it and shows #' + id);
   }
+  // the local-artists toggle is a placeholder: a real, focusable button that opens nothing yet
+  const artists = (foot().match(/<button type="button" class="fold soon"[^>]*>[\s\S]*?<\/button>/) || [''])[0];
+  ok(artists.includes('aria-disabled="true"') && !/ disabled[ >=]/.test(artists) && !artists.includes('aria-expanded') && !artists.includes('aria-controls') &&
+    artists.includes('aria-describedby="footer-artists-soon"') && artists.includes('title="em breve"') && artists.endsWith('artistas locais</button>') &&
+    foot().includes('<span id="footer-artists-soon" class="vh">em breve</span>'),
+    '#59: the artists toggle is an aria-disabled (still focusable) button with no panel, described as "em breve"', artists);
+  const footBefore = foot(), folds = JSON.stringify([fd.els['footer-lore'].hidden, fd.els['footer-blurb'].hidden]);
+  const placeholder = Object.assign(new El('fold-artists'), { dataset: {} });
+  placeholder.setAttribute('aria-disabled', 'true');
+  fd.els.footer.fire('click', { target: placeholder });
+  ok(foot() === footBefore && JSON.stringify([fd.els['footer-lore'].hidden, fd.els['footer-blurb'].hidden]) === folds &&
+    placeholder.getAttribute('aria-expanded') === undefined, '#59: a click on the artists toggle changes nothing: no panel, the other toggles as they were');
   ok(fd.errors.length === 0, '#59: toggling throws nothing', fd.errors.join(' | '));
   fd.api.setLang('en');
   ok(/aria-expanded="true"/.test(toggleOf('lore')) && /aria-expanded="true"/.test(toggleOf('blurb')) &&

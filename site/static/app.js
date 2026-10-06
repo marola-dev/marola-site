@@ -665,7 +665,11 @@
       '<div class="folds">' + folds.map(function (f) {
         return '<button type="button" class="fold" data-fold="' + f[0] + '" aria-controls="footer-' + f[0] + '" aria-expanded="' +
           !!state.folds[f[0]] + '"><span class="pm" aria-hidden="true"></span>' + f[1] + '</button>';
-      }).join('') + '</div>' +
+      }).join('') +
+      // a placeholder for a feature not built yet: focusable and named, but it opens nothing
+      '<button type="button" class="fold soon" aria-disabled="true" aria-describedby="footer-artists-soon" title="' + tx('footer.artists_soon') +
+        '"><span class="pm" aria-hidden="true"></span>' + tx('footer.artists') + '</button>' +
+      '<span id="footer-artists-soon" class="vh">' + tx('footer.artists_soon') + '</span></div>' +
       folds.map(function (f) { return f[2]; }).join('');
     el.status = document.getElementById('status');
   }
@@ -714,7 +718,7 @@
   });
   el.footer.addEventListener('click', function (e) {
     var btn = e.target && e.target.closest && e.target.closest('button[data-fold]');
-    if (!btn) return;
+    if (!btn || !btn.dataset || !btn.dataset.fold) return; // the artists placeholder has no fold
     var key = btn.dataset.fold, open = !state.folds[key], panel = document.getElementById(btn.getAttribute('aria-controls'));
     // The map keeps its height while a panel is open: the page grows below it instead of the map shrinking.
     var main = el.map.parentNode;
