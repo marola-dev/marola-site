@@ -726,7 +726,7 @@
     state.folds[key] = open;
     btn.setAttribute('aria-expanded', String(open));
     if (panel) panel.hidden = !open;
-    if (main && main.style && !state.folds.lore && !state.folds.blurb) main.style.minHeight = '';
+    if (main && main.style && !el.footer.querySelector('.fold-panel:not([hidden])')) main.style.minHeight = '';
     if (open && panel && panel.scrollIntoView) panel.scrollIntoView({ block: 'nearest', behavior: reducedMotion() ? 'auto' : 'smooth' });
   });
   el.hour.addEventListener('input', function () { state.hourIndex = parseInt(el.hour.value, 10); render(); });
