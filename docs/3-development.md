@@ -25,6 +25,24 @@ into `site/dist` → write the Mapbox token and style into `mapbox-config.js` �
 the publish allowlist (only the page, its assets and `data/`, `smoke/`, `coverage/`, `stats/` go
 out) → a `CNAME` file → deploy to GitHub Pages.
 
+A PR that touches what a push to `main` deploys runs the same build with no deploy job (plain
+`pull_request`, a read-only token, its own concurrency group), so a broken build fails before it
+merges. A fork's PR skips it: it cannot pull the private image.
+
+### The Brazilian proxy (optional)
+
+INEA (Rio) and INEMA (Bahia) answer only Brazilian addresses, and the runners are not in Brazil.
+Before the board build, `site.yml` can join the org's tailnet (`TS_OAUTH_CLIENT_ID` and
+`TS_OAUTH_SECRET`), run the flight check (`scripts/br-proxy-preflight.sh`: the first online
+`tag:br-proxy` node through which INEA really answers) and route those two hosts, and only those,
+through it (`scripts/br-proxy.sh`, with the app's JVM pointed at it). The `MAROLA_BR_PROXY` secret
+overrides the pool with any HTTP proxy in Brazil. All of it is optional and can never fail the
+deploy: with no secrets, no healthy node, or a proxy that stops answering, the build runs as before
+and those agencies read "no data". `just site-build` routes the same way when `MAROLA_BR_PROXY` is
+set in your shell. The pool, its nodes and how a machine joins:
+[`ops/br-proxy/README.md`](../ops/br-proxy/README.md) and
+[`ops/br-proxy/JOIN.md`](../ops/br-proxy/JOIN.md).
+
 ## The `site-data` branch layout
 
 An orphan branch, never deployed by the workflows that write it: `coverage/` and `smoke/` (the

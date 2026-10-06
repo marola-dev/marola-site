@@ -38,6 +38,7 @@ against the image's board schema, builds every area's boards, adds the page and 
 | The areas | [`site/areas.json`](https://github.com/marola-dev/marola-site/blob/main/site/areas.json) |
 | The board contract | the image's `board.schema.json`, vendored as [`site/board.schema.json`](https://github.com/marola-dev/marola-site/blob/main/site/board.schema.json) |
 | The deploy workflow | [`site.yml`](https://github.com/marola-dev/marola-site/blob/main/.github/workflows/site.yml) |
+| The Brazilian proxy pool (optional, for INEA and INEMA) | [`ops/br-proxy/`](https://github.com/marola-dev/marola-site/tree/main/ops/br-proxy); join it: [`JOIN.md`](https://github.com/marola-dev/marola-site/blob/main/ops/br-proxy/JOIN.md) |
 
 ## Contracts
 
