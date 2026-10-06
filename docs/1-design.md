@@ -30,7 +30,8 @@ bar's legend shows. A map marker is a 16 px SVG dot (`waveIcon`) with a white ri
 colour ([`DESIGN.md`](../DESIGN.md)'s `--c70`…`--cna` tokens) written straight into its `fill`
 attribute; the selected beach grows to 32 px and shows its score. Everywhere else the band is a
 CSS class, never inline `style=` (which the CSP below blocks): list/card score chips use
-`.c70`/`.c40`/`.c1`/`.c0`/`.cna`; the `water` layer's sampling-point markers use
+`.c70`/`.c40`/`.c1`/`.c0`/`.cna`; the `water` layer's sampling-point markers are a droplet
+(`waterDrop`), not a dot, so they never pass for a beach, filled through
 `wpoint c0`/`wpoint cna`/`wpoint c70`; a beach's tooltip and its card's inline water-status dot use
 `wdot c0`/`wdot cna`/`wdot c70` (`waterDotClass`). The `water` layer draws every sampling point in
 the area, in the same three bands (proper, improper, unclassified).

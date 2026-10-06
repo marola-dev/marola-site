@@ -96,6 +96,10 @@ from a CDN. Inter is the deliberate pick for a public-information, accessibility
   field at 65% opacity (the light base map shows through), fading out 18 km past the last beach, with a thin dark coastline over
   it on Mapbox's own styles. Balneabilidade stops the particles, draws every sampling point in
   the area and dims the beach dots.
+- **Water-sampling marker**: Lucide's droplet, 18 px (22 px on the balneabilidade layer), filled
+  with the point's status (`--c70` própria, `--c0` imprópria, `--cna` sem classificação) and
+  ringed like the beach dot, so a sampling point never reads as a beach. The balneabilidade key
+  draws the same drops.
 - **Footer**: `--surface`, 13 px. The status line (freshness and linked sources) always shows; the day's
   sea lore and the score note (method, privacy, the code) fold behind compact controls (32 px, 13 px)
   with a plus that turns into a minus, collapsed by default. Open, a control takes the pressed look;
