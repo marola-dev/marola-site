@@ -101,6 +101,7 @@ from a CDN. Inter is the deliberate pick for a public-information, accessibility
   with a plus that turns into a minus, collapsed by default. Open, a control takes the pressed look;
   the map keeps its height and the page grows below it. A third, "artistas locais", is a placeholder:
   muted, `aria-disabled`, titled "em breve", it opens nothing. All three stay on one row at 390 px.
+  From 840 px the toggles sit at the right of the status line; narrower, they take their own row under it.
 - **Icons**: Lucide line icons through `icon(name)` in `app.js` (ISC, `vendor/icons/LICENSE.lucide`),
   16 px, 1.75 stroke, in `--accent`; `aria-hidden` with the word next to it. Never emoji.
 

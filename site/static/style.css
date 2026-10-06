@@ -236,6 +236,14 @@ button[aria-pressed="true"], button[aria-expanded="true"] {
 .fold .pm::after { transform: rotate(90deg); }
 .fold[aria-expanded="true"] .pm::after { transform: rotate(180deg); } /* lies on the bar: [+] turns into [−] */
 .footer .fold-panel { margin: 10px 0 2px; }
+/* 840 px and up: the status at left, the toggles at right on its line; the status wraps before they do.
+ * Measured on the longest real status (salvador, pt-BR): from 840 px it keeps >= 400 px and <= 3 lines;
+ * narrower, it turns into a sliver, so the toggles drop to their own row under it. */
+@media (min-width: 840px) {
+  .footbar { display: flex; align-items: center; justify-content: space-between; gap: 8px 24px; }
+  .footbar #status { flex: 1 1 auto; min-width: 0; max-width: none; margin: 0; }
+  .footbar .folds { flex: none; flex-wrap: nowrap; margin-top: 0; }
+}
 /* Lowercase house style, except names marola did not choose: providers, the agency's verbatim
  * PRÓPRIA/IMPRÓPRIA verdict (MIP-0001), beaches, and literal text in <code> (a `Cost:` trailer; an
  * EIP-55 address, whose letter case is its checksum). Containers are exempted because app.js emits
