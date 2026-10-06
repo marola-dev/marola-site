@@ -57,8 +57,6 @@ concurrency:
 
 jobs:
   build:
-    # A fork's PR cannot pull the private image; its build is skipped, not red.
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 20
     # The build needs no Pages rights; only the deploy job below has them.
@@ -69,6 +67,51 @@ jobs:
       HAS_TAILSCALE: ${{ secrets.TS_OAUTH_CLIENT_ID != '' && secrets.TS_OAUTH_SECRET != '' }}
     steps:
       - uses: actions/checkout@v7
+
+      # #4: INEA (Rio) and INEMA (Bahia) answer only Brazilian addresses, so the build reaches them
+      # through a node of the Brazilian proxy pool (ops/br-proxy/JOIN.md), over the org's tailnet.
+      # The flight check fails closed: with no healthy node it stops the job here, before any board
+      # is built, so nothing deploys and marola.dev keeps serving the last deployed site. The repo
+      # variable BR_PROXY_REQUIRED=false (break glass) lets the build go on without the proxy.
+      # The join's own failure is left to the flight check, which names it.
+      - name: Join the tailnet (TS_OAUTH_CLIENT_ID/TS_OAUTH_SECRET)
+        id: tailscale
+        if: env.HAS_TAILSCALE == 'true'
+        continue-on-error: true
+        timeout-minutes: 2
+        uses: tailscale/github-action@d1b6cd204f8dceda5b3eaad7f1f767be390056cd # v4.2.0
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+
+      # The first pool node that really reaches INEA becomes the upstream of a router on the
+      # runner that sends only ops/br-proxy/hosts through it. MAROLA_BR_PROXY, if set, overrides
+      # the pool with any HTTP proxy in Brazil.
+      - name: Flight check, then route the Brazil-only agencies through the pool
+        timeout-minutes: 3
+        env:
+          MAROLA_BR_PROXY: ${{ secrets.MAROLA_BR_PROXY }}
+          BR_TAILNET: ${{ steps.tailscale.outcome }}
+          BR_FORK_PR: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}
+          BR_PROXY_REQUIRED: ${{ vars.BR_PROXY_REQUIRED }}
+        run: |
+          if [ -n "$MAROLA_BR_PROXY" ]; then
+            upstream="$MAROLA_BR_PROXY"
+          else
+            upstream="$(scripts/br-proxy-preflight.sh)"
+          fi
+          [ -n "$upstream" ] || exit 0 # BR_PROXY_REQUIRED=false, already warned
+          if ! command -v tinyproxy >/dev/null && ! { sudo apt-get update -qq && sudo apt-get install -y -qq tinyproxy >/dev/null; }; then
+            scripts/br-proxy-preflight.sh --fail "could not install tinyproxy on the runner"
+            exit
+          fi
+          opts="$(MAROLA_BR_PROXY="$upstream" scripts/br-proxy.sh start)"
+          if [ -z "$opts" ]; then
+            scripts/br-proxy-preflight.sh --fail "the runner's router did not come up through the chosen proxy"
+            exit
+          fi
+          echo "BR_PROXY_JVM_OPTIONS=$opts" >>"$GITHUB_ENV"
 
       - name: The pinned app image (marola-image)
         id: image
@@ -102,50 +145,11 @@ jobs:
           node --check site/static/flow.js
           BOARD_SCHEMA="$RUNNER_TEMP/board.schema.json" node scripts/site_check.js
 
-      # #4: INEA (Rio) and INEMA (Bahia) answer only Brazilian addresses, so they go through a
-      # node of the Brazilian proxy pool (ops/br-proxy/JOIN.md), reached over the org's tailnet.
-      # The next two steps are optional and can never fail the build: without their secrets, or
-      # with no healthy node, no JVM options are set and the build runs exactly as it did without
-      # them (those agencies "no data"). A PR never joins the tailnet: it checks the build itself.
-      - name: Join the tailnet (optional, TS_OAUTH_CLIENT_ID/TS_OAUTH_SECRET)
-        id: tailscale
-        if: github.event_name != 'pull_request' && env.HAS_TAILSCALE == 'true'
-        continue-on-error: true
-        timeout-minutes: 3
-        uses: tailscale/github-action@d1b6cd204f8dceda5b3eaad7f1f767be390056cd # v4.2.0
-        with:
-          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
-          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
-          tags: tag:ci
-
-      # The flight check: the first pool node that really reaches INEA becomes the upstream.
-      # MAROLA_BR_PROXY, if set, overrides the pool with any HTTP proxy in Brazil.
-      - name: Flight check, then route the Brazil-only agencies (optional)
-        continue-on-error: true
-        timeout-minutes: 4
-        env:
-          MAROLA_BR_PROXY: ${{ secrets.MAROLA_BR_PROXY }}
-          TAILSCALE: ${{ steps.tailscale.outcome }}
-        run: |
-          upstream="$MAROLA_BR_PROXY"
-          if [ -z "$upstream" ] && [ "$TAILSCALE" = success ]; then
-            upstream="$(scripts/br-proxy-preflight.sh)"
-          fi
-          if [ -z "$upstream" ]; then
-            echo "no Brazilian proxy (tailnet: ${TAILSCALE:-skipped}): no route, the build runs as before"
-            exit 0
-          fi
-          command -v tinyproxy >/dev/null || { sudo apt-get update -qq && sudo apt-get install -y -qq tinyproxy >/dev/null; } \
-            || { echo "::warning::br-proxy: could not install tinyproxy; no route"; exit 0; }
-          opts="$(MAROLA_BR_PROXY="$upstream" scripts/br-proxy.sh start)"
-          [ -z "$opts" ] || echo "BR_PROXY_JVM_OPTIONS=$opts" >>"$GITHUB_ENV"
-
       # `--site` with no id builds every area; the water-quality provider is picked per area origin
       # (IMA/SC in Santa Catarina, INEA in Rio, INEMA in Bahia). The image runs as uid 10001, which
       # cannot write the runner's checkout, hence --user. With the route up, the container shares
       # the runner's network to reach it on 127.0.0.1, and JDK_JAVA_OPTIONS adds the proxy to the
-      # image's own JAVA_TOOL_OPTIONS rather than replacing them. The second attempt drops the
-      # route, so a broken proxy costs at most Rio's and Bahia's water quality, never the deploy.
+      # image's own JAVA_TOOL_OPTIONS rather than replacing them.
       - name: Build the boards (one Overpass query per area, no LLM)
         env:
           IMAGE: ${{ steps.image.outputs.ref }}
@@ -163,7 +167,6 @@ jobs:
               exit 0
             fi
             echo "site build attempt $attempt failed"
-            br=()
             [ "$attempt" -eq 2 ] || sleep 60
           done
           exit 1

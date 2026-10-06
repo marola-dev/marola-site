@@ -1,13 +1,20 @@
 #!/usr/bin/env bash
-# br-proxy-preflight — find a working node in the Brazilian proxy pool (#4): the tailnet's online
-# peers tagged tag:br-proxy (ops/br-proxy/JOIN.md), each tried with a real request through it to an
-# allowlisted agency. Prints the first healthy one as http://<tailnet IP>:8888, for
-# `MAROLA_BR_PROXY=... scripts/br-proxy.sh start`, and nothing when none is healthy.
+# br-proxy-preflight — the flight check before site.yml's board build (#4): find a working node in
+# the Brazilian proxy pool, the tailnet's online peers tagged tag:br-proxy (ops/br-proxy/JOIN.md),
+# each tried with a real request through it to an allowlisted agency. Prints the first healthy one
+# as http://<tailnet IP>:8888, for `MAROLA_BR_PROXY=... scripts/br-proxy.sh start`.
 #
-#   scripts/br-proxy-preflight.sh
+#   scripts/br-proxy-preflight.sh               find a node, or fail
+#   scripts/br-proxy-preflight.sh --fail CAUSE  fail for CAUSE (site.yml's own causes)
 #   scripts/br-proxy-preflight.sh --self-test
 #
-# Always exits 0: no node means no route, and the build runs as it would without the pool.
+# Fails closed: with no healthy node it exits 1 with an ::error:: naming the cause, and the build
+# stops before any board is built, so nothing deploys and marola.dev keeps the last deployed site.
+# BR_PROXY_REQUIRED=false (the repo variable, a break-glass switch) turns that into a warning and
+# exit 0, and the build runs without the proxy (INEA and INEMA "no data").
+#
+# BR_TAILNET is the outcome of site.yml's tailnet step (success, skipped, failure, cancelled; empty
+# when run by hand) and BR_FORK_PR=true marks a fork's PR, which gets no secrets.
 set -euo pipefail
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -16,9 +23,21 @@ curl="${CURL:-curl}"
 node_port="${BR_PROXY_NODE_PORT:-8888}"
 per_node="${BR_PREFLIGHT_TIMEOUT:-10}"
 budget="${BR_PREFLIGHT_BUDGET:-60}"
+required="${BR_PROXY_REQUIRED:-true}"
+tailnet="${BR_TAILNET:-}"
+fork_pr="${BR_FORK_PR:-false}"
 
 say() { echo "br-proxy-preflight: $*" >&2; }
-warn() { echo "::warning::br-proxy-preflight: $*" >&2; }
+
+# Only an explicit "false" lets the build go on without the proxy; unset or anything else is true.
+fail() {
+  if [ "$required" = false ]; then
+    echo "::warning::br-proxy flight check: $*. BR_PROXY_REQUIRED=false, so the build goes on without the proxy: INEA (Rio) and INEMA (Bahia) read 'no data'." >&2
+    return 0
+  fi
+  echo "::error::br-proxy flight check: $*. The build stops here: no boards, no deploy, and marola.dev keeps serving the last deployed site. Fix the pool (ops/br-proxy/JOIN.md), or, to deploy without it for now (Rio and Salvador water quality 'no data'), set the repo variable BR_PROXY_REQUIRED=false and set it back afterwards." >&2
+  return 1
+}
 
 # The first host in ops/br-proxy/hosts, over HTTPS: the request the build itself will make.
 target() { echo "https://$(grep -v '^[[:space:]]*\(#\|$\)' "$root/ops/br-proxy/hosts" | head -n 1)/"; }
@@ -37,24 +56,39 @@ for p in (json.load(sys.stdin).get("Peer") or {}).values():
 
 preflight() {
   local status nodes ip name out code secs url
+  if [ "$fork_pr" = true ]; then
+    fail "this is a fork's PR: no secrets reach it, so it cannot join the tailnet and cannot run the build check; a maintainer must run it from a branch of this repo"
+    return
+  fi
+  case "$tailnet" in
+    "" | success) ;;
+    skipped)
+      fail "TS_OAUTH_CLIENT_ID/TS_OAUTH_SECRET are not set, so the runner did not join the tailnet"
+      return
+      ;;
+    *)
+      fail "the tailnet join failed ($tailnet): see the 'Join the tailnet' step"
+      return
+      ;;
+  esac
   if ! command -v "$tailscale" >/dev/null; then
-    warn "no tailscale on this machine (the tailnet step did not run or failed): no pool, no route"
-    return 0
+    fail "no tailscale on this machine, so no tailnet"
+    return
   fi
   if ! status="$("$tailscale" status --json 2>/dev/null)"; then
-    warn "tailscale status failed (not connected?): no pool, no route"
-    return 0
+    fail "tailscale status failed: the runner is not connected to the tailnet"
+    return
   fi
   nodes="$(pool <<<"$status" || true)"
   if [ -z "$nodes" ]; then
-    warn "no online tag:br-proxy node in the tailnet: no route"
-    return 0
+    fail "no tag:br-proxy node is online in the tailnet"
+    return
   fi
   url="$(target)"
   SECONDS=0
   while read -r ip name; do
     if [ "$SECONDS" -ge "$budget" ]; then
-      warn "out of time (${budget}s) before trying $name"
+      say "out of time (${budget}s) before trying $name"
       break
     fi
     out="$("$curl" -x "http://$ip:$node_port" -sS -m "$per_node" -o /dev/null \
@@ -68,7 +102,7 @@ preflight() {
     fi
     say "skipping $name ($ip): $url gave HTTP ${code:-none}"
   done <<<"$nodes"
-  warn "no healthy tag:br-proxy node: no route"
+  fail "tag:br-proxy nodes are online, but none passed the request to $url through it"
 }
 
 self_test() {
@@ -102,7 +136,8 @@ for kv in \$HEALTHY; do [ "\${kv%%=*}" = "\$ip" ] && { printf '%s 0.25' "\${kv#*
 printf '000 10.0'; exit 28
 EOF
   chmod +x "$t/tailscale" "$t/curl"
-  run() { rm -f "$t/tries"; HEALTHY="$1" tailscale="$t/tailscale" curl="$t/curl" preflight 2>/dev/null; }
+  run() { rm -f "$t/tries"; HEALTHY="$1" tailscale="$t/tailscale" curl="$t/curl" preflight 2>"$t/err"; }
+  rc() { "$@" >/dev/null && echo 0 || echo "$?"; }
 
   check "the pool is the online tag:br-proxy peers, by IPv4" "$(pool <"$t/status.json" | tr '\n' ' ')" \
     "100.64.0.1 br-a.example.ts.net 100.64.0.2 br-b.example.ts.net "
@@ -111,13 +146,36 @@ EOF
   check "first node healthy: it is the upstream" "$got" "http://100.64.0.1:8888"
   check "and the second is never tried" "$(tr '\n' ' ' <"$t/tries")" "100.64.0.1 "
   check "first node dead, second healthy (a redirect): the second" "$(run "100.64.0.2=301")" "http://100.64.0.2:8888"
-  check "a node refusing the host (403) is not healthy" "$(run "100.64.0.1=403 100.64.0.2=407")" ""
-  check "none healthy: nothing, status 0" "$(run "" && echo exit0)" "exit0"
+  check "a node refusing the host (403) is not healthy: exit 1" "$(rc run "100.64.0.1=403 100.64.0.2=407")" 1
+  check "none healthy: exit 1" "$(rc run "")" 1
+  check "and the ::error:: names the cause and the consequence" \
+    "$(grep -c '^::error::.*none passed the request.*no deploy.*BR_PROXY_REQUIRED=false' "$t/err")" 1
   check "the offline and the untagged peers are never tried" "$(sort "$t/tries" | tr '\n' ' ')" "100.64.0.1 100.64.0.2 "
-  check "tailscale missing: nothing, status 0" "$(tailscale="$t/none" preflight 2>/dev/null && echo exit0)" "exit0"
+  printf '#!/usr/bin/env bash\necho %q\n' '{"Peer": {}}' >"$t/ts-empty" && chmod +x "$t/ts-empty"
+  check "no node online at all: exit 1, said so" \
+    "$(tailscale="$t/ts-empty" rc preflight 2>"$t/err"; grep -c 'no tag:br-proxy node is online' "$t/err")" "1
+1"
+  check "tailscale missing: exit 1" "$(tailscale="$t/none" rc preflight 2>"$t/err")" 1
+  check "and the error says so" "$(grep -c '^::error::.*no tailscale' "$t/err")" 1
   printf '#!/usr/bin/env bash\nexit 1\n' >"$t/ts-down" && chmod +x "$t/ts-down"
-  check "tailscale not connected: nothing, status 0" "$(tailscale="$t/ts-down" preflight 2>/dev/null && echo exit0)" "exit0"
-  check "out of time: no further node is tried" "$(budget=0 run "100.64.0.1=200")" ""
+  check "tailscale not connected: exit 1" "$(tailscale="$t/ts-down" rc preflight 2>/dev/null)" 1
+  check "the tailnet step skipped (no secrets): exit 1, naming the secrets" \
+    "$(tailnet=skipped rc preflight 2>"$t/err"; grep -c 'TS_OAUTH_CLIENT_ID/TS_OAUTH_SECRET are not set' "$t/err")" "1
+1"
+  check "the tailnet join failed: exit 1, naming the step" \
+    "$(tailnet=failure rc preflight 2>"$t/err"; grep -c 'the tailnet join failed (failure)' "$t/err")" "1
+1"
+  check "a fork's PR: exit 1, saying a maintainer must run it" \
+    "$(fork_pr=true tailscale="$t/tailscale" rc preflight 2>"$t/err"; grep -c "fork's PR.*a maintainer must run it" "$t/err")" "1
+1"
+  check "out of time: no further node is tried, exit 1" "$(budget=0 rc run "100.64.0.1=200")" 1
+  check "BR_PROXY_REQUIRED=false and no healthy node: exit 0, nothing printed" \
+    "$(required=false run "" && echo exit0)" "exit0"
+  check "with a ::warning::, not an ::error::" "$(grep -c '^::warning::.*BR_PROXY_REQUIRED=false' "$t/err")/$(grep -c '^::error::' "$t/err" || true)" "1/0"
+  check "BR_PROXY_REQUIRED=false with no tailscale: exit 0" "$(required=false tailscale="$t/none" rc preflight 2>/dev/null)" 0
+  check "any other value is still required" "$(required=no tailscale="$t/none" rc preflight 2>/dev/null)" 1
+  check "--fail CAUSE fails with that cause" "$(rc fail "the override MAROLA_BR_PROXY did not answer" 2>"$t/err"; grep -c 'the override MAROLA_BR_PROXY did not answer' "$t/err")" "1
+1"
 
   if [ "$fails" -eq 0 ]; then echo "br-proxy-preflight self-test: ok"; else
     echo "br-proxy-preflight self-test: $fails failure(s)" >&2
@@ -127,9 +185,10 @@ EOF
 
 case "${1:-}" in
   "") preflight ;;
+  --fail) fail "${2:?--fail needs a cause}" ;;
   --self-test) self_test ;;
   *)
-    echo "usage: scripts/br-proxy-preflight.sh [--self-test]" >&2
+    echo "usage: scripts/br-proxy-preflight.sh [--fail CAUSE | --self-test]" >&2
     exit 2
     ;;
 esac
