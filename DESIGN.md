@@ -101,12 +101,12 @@ from a CDN. Inter is the deliberate pick for a public-information, accessibility
   ringed like the beach dot, so a sampling point never reads as a beach. The balneabilidade key
   draws the same drops.
 - **Footer**: `--surface`, 13 px. The status line (freshness and linked sources) always shows; the day's
-  sea lore and the score note (method, privacy, the code) fold behind compact controls (32 px, 13 px)
-  with a plus that turns into a minus, collapsed by default. Open, a control takes the pressed look;
+  sea lore and the score note (method, privacy, the code) fold behind compact controls (32 px, 13 px;
+  on a phone 44 px, 15 px, the sign in a 20 px `--accent` circle) with a plus that turns into a minus, collapsed by default. Open, a control takes the pressed look;
   the map keeps its height and the page grows below it. A third, "artistas locais", opens the
   artists in `artists.json`, one line each: the name (600, `--ink`, its own case), the description,
   then a globe (website) and the Instagram icon, each a 32 px target. With no artist listed it is a
-  placeholder: muted, `aria-disabled`, titled "em breve", it opens nothing. All three stay on one row at 390 px.
+  placeholder: muted, `aria-disabled`, titled "em breve", it opens nothing. On a phone they wrap to a second row when they do not fit.
   From 840 px the toggles sit at the right of the status line; narrower, they take their own row under it.
 - **Icons**: Lucide line icons through `icon(name)` in `app.js` (ISC, `vendor/icons/LICENSE.lucide`),
   16 px, 1.75 stroke, in `--accent`; `aria-hidden` with the word next to it. Never emoji.
