@@ -96,6 +96,10 @@ from a CDN. Inter is the deliberate pick for a public-information, accessibility
   field at 65% opacity (the light base map shows through), fading out 18 km past the last beach, with a thin dark coastline over
   it on Mapbox's own styles. Balneabilidade stops the particles, draws every sampling point in
   the area and dims the beach dots.
+- **Footer**: `--surface`, 13 px. The status line (freshness and linked sources) always shows; the day's
+  sea lore and the score note (method, privacy, the code) fold behind compact controls (32 px, 13 px)
+  with a plus that turns into a minus, collapsed by default. Open, a control takes the pressed look;
+  the map keeps its height and the page grows below it.
 - **Icons**: Lucide line icons through `icon(name)` in `app.js` (ISC, `vendor/icons/LICENSE.lucide`),
   16 px, 1.75 stroke, in `--accent`; `aria-hidden` with the word next to it. Never emoji.
 
@@ -107,7 +111,8 @@ colon, a semicolon, a comma or a period. At most one `·` per line, and only in 
 ## Motion
 
 Only state changes: colour and border 150 ms ease-out, the press 100 ms, all inside
-`prefers-reduced-motion: no-preference`. No entrance animations. The one ambient motion is the
+`prefers-reduced-motion: no-preference`. A footer panel fades in under its control (150 ms, 4 px) and
+closes at once. No entrance animations. The one ambient motion is the
 flow layer's particles, which are data (direction and speed); under `prefers-reduced-motion:
 reduce` they are drawn once as still streaks.
 

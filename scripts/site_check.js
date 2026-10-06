@@ -910,6 +910,40 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(flip.M.created.filter(l => isPoint(l) && tipOf(l).includes('Ponto 33')).length === 1,
     'two flips leave one water-point marker, not three');
 
+  // 6b. #59: the sea lore and the score note fold behind [+] toggles, collapsed by default; a click opens each,
+  // and a re-render (here a language flip) keeps what the visitor opened.
+  const folded = structuredClone(BOARD);
+  folded.lore = { kind: 'creature', text: 'Humpback whales sing in winter.', source: 'https://example.test/lore', lang: 'en' };
+  const fd = await runPage(folded, {});
+  const foot = () => fd.els.footer.innerHTML;
+  const toggleOf = k => (foot().match(new RegExp('<button type="button" class="fold" data-fold="' + k + '"[^>]*>')) || [''])[0];
+  const panelOf = id => (foot().match(new RegExp('<p id="' + id + '" class="fold-panel[^"]*"[^>]*>')) || [''])[0];
+  ok(foot().includes('<p id="status">atualizado em '), '#59: the status line stays visible', foot().slice(0, 200));
+  [['lore', 'footer-lore', 'vida marinha'], ['blurb', 'footer-blurb', 'pontuação e privacidade']].forEach(([k, id, label]) => {
+    ok(/aria-expanded="false"/.test(toggleOf(k)) && toggleOf(k).includes('aria-controls="' + id + '"') &&
+      foot().includes(toggleOf(k) + '<span class="pm" aria-hidden="true"></span>' + label + '</button>'),
+      '#59: the ' + k + ' toggle is a collapsed button controlling #' + id + ', labelled "' + label + '"', toggleOf(k));
+    ok(/ hidden>$/.test(panelOf(id)), '#59: #' + id + ' is hidden by default', panelOf(id));
+  });
+  ok(foot().includes('Humpback whales sing in winter.') && foot().includes('href="https://example.test/lore"') &&
+    foot().includes('href="' + REPO_URL + '"'), '#59: the lore, its source and the GitHub link are in the page, one click away');
+  for (const [k, id] of [['lore', 'footer-lore'], ['blurb', 'footer-blurb']]) {
+    const btn = Object.assign(new El('fold-' + k), { dataset: { fold: k } });
+    btn.setAttribute('aria-expanded', 'false'); btn.setAttribute('aria-controls', id);
+    const panel = fd.els[id] = Object.assign(new El(id), { hidden: true });
+    fd.els.footer.fire('click', { target: btn });
+    ok(btn.getAttribute('aria-expanded') === 'true' && panel.hidden === false, '#59: a click on the ' + k + ' toggle expands it and shows #' + id);
+  }
+  ok(fd.errors.length === 0, '#59: toggling throws nothing', fd.errors.join(' | '));
+  fd.api.setLang('en');
+  ok(/aria-expanded="true"/.test(toggleOf('lore')) && /aria-expanded="true"/.test(toggleOf('blurb')) &&
+    !/ hidden>$/.test(panelOf('footer-lore')) && !/ hidden>$/.test(panelOf('footer-blurb')) && foot().includes('>sea life</button>'),
+    '#59: a re-render keeps both panels open', foot());
+  const again = Object.assign(new El('fold-lore'), { dataset: { fold: 'lore' } });
+  again.setAttribute('aria-controls', 'footer-lore');
+  fd.els.footer.fire('click', { target: again });
+  ok(again.getAttribute('aria-expanded') === 'false' && fd.els['footer-lore'].hidden === true, '#59: a second click collapses it again');
+
   // 7. note codes (task 3's table): rendered per language when present, `notes` verbatim otherwise.
   const unfitArgs = { source: 'IMA/SC', sampled_on: '2026-08-25', point: 'Ponto 12', location: 'Brava' };
   const CASES = [
