@@ -1,0 +1,4 @@
+# The hosts that answer only Brazilian addresses (#4): scripts/br-proxy.sh sends these, and
+# nothing else, through MAROLA_BR_PROXY. Keep ./filter (the Brazilian end's allowlist) in step.
+www.inea.rj.gov.br
+balneabilidade.inema.ba.gov.br

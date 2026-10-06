@@ -40,6 +40,8 @@ jobs:
         scripts/board-schema.sh --self-test
         scripts/mapbox_config.sh --self-test
         scripts/mip-trailer-check.sh --self-test
+        scripts/br-proxy.sh --self-test
+        scripts/br-proxy-preflight.sh --self-test
 
   agents:
     uses: marola-dev/marola-devkit/.github/workflows/agents-check.yml@v0.3.1

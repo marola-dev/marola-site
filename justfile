@@ -8,17 +8,26 @@ default:
     @just --list
 
 # Build the boards with the pinned app image into site/dist, plus the page (needs docker, network).
+# With MAROLA_BR_PROXY set (and tinyproxy installed), INEA and INEMA go through it, as in site.yml.
 site-build area="":
     #!/usr/bin/env bash
     set -euo pipefail
     image="$(scripts/board-schema.sh --image)"
     args=(--site); [ -z "{{ area }}" ] || args+=("{{ area }}")
+    br=()
+    opts="$(scripts/br-proxy.sh start)"
+    [ -z "$opts" ] || { br=(--network host -e "JDK_JAVA_OPTIONS=$opts"); trap 'scripts/br-proxy.sh stop' EXIT; }
     mkdir -p site/dist
-    docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp -v "$PWD/site:/work/site" -w /work "$image" \
+    docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp "${br[@]}" -v "$PWD/site:/work/site" -w /work "$image" \
       "${args[@]}" --areas site/areas.json --site-out site/dist
     cp -r site/static/. site/dist/
     scripts/mapbox_config.sh site/dist  # MAPBOX_PUBLIC_TOKEN=pk.… from your shell, or no base map
     scripts/stamp_site_version.sh site/dist
+
+# Run this machine as a Brazilian proxy pool node, in containers: up | down | status | check
+# (ops/br-proxy/JOIN.md; needs docker and compose, installs nothing).
+br-proxy-node action="status":
+    scripts/br-proxy-node.sh {{ action }}
 
 # Serve site/dist at http://localhost:8000.
 site-serve port="8000":
@@ -58,6 +67,8 @@ quality:
     scripts/board-schema.sh --self-test
     scripts/mapbox_config.sh --self-test
     scripts/mip-trailer-check.sh --self-test
+    scripts/br-proxy.sh --self-test
+    scripts/br-proxy-preflight.sh --self-test
     agents-check
     docs-lint
 

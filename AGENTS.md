@@ -35,7 +35,15 @@ map-load tier, billed above it).
   (the public Mapbox token into `mapbox-config.js` at deploy), `redirect_check.js` (the 404
   forwarder), `board-schema.sh` (the image pin and its schema), `stamp_site_version.sh`,
   `site_live_check.py` (what marola.dev actually serves), `site-data-push.sh` (the retrying push
-  every `site-data` writer uses), `mip-trailer-check.sh`.
+  every `site-data` writer uses), `mip-trailer-check.sh`, and the Brazilian proxy's
+  `br-proxy.sh` (the runner's router), `br-proxy-preflight.sh` (the flight check) and
+  `br-proxy-node.sh` (`just br-proxy-node`).
+- `ops/br-proxy/`: the Brazilian proxy pool that INEA and INEMA, which answer only Brazilian
+  addresses, are reached through (#4): a volunteer node's compose file and allowlist, and
+  [`JOIN.md`](ops/br-proxy/JOIN.md). `site.yml`'s flight check fails closed without a healthy
+  node (secrets `TAILSCALE_OAUTH_CLIENT_ID`/`TAILSCALE_OAUTH_SECRET`, or the `MAROLA_BR_PROXY`
+  override); the repo variable `BR_PROXY_REQUIRED=false` is a break glass, never a default. An
+  agent never sets it.
 - `DESIGN.md`: the visual system (tokens, type, components); Inter is self-hosted in
   `site/static/vendor/fonts/`.
 - `.claude/skills/site-frontend/`: the entry point for anything a visitor sees; it orders the
@@ -92,7 +100,8 @@ As in the umbrella. `site.yml` deploys to GitHub Pages (free) on a schedule and 
 does not trigger a deploy by hand (`just site-deploy` is denied in `.claude/settings.json`).
 
 The base map is Mapbox's, billed per map load above its free tier: the account, the token and
-any billing setting are a human's. The token is a public `pk.` token restricted to marola.dev's
+any billing setting are a human's. So are the Tailscale tailnet, its OAuth client and every pool
+node's auth key (`ops/br-proxy/JOIN.md`). The token is a public `pk.` token restricted to marola.dev's
 URLs, kept in the repo variable (or secret) `MAPBOX_PUBLIC_TOKEN` and written into
 `mapbox-config.js` only at deploy; never commit one, and never an `sk.` token anywhere in the page.
 

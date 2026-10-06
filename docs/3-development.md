@@ -25,6 +25,24 @@ into `site/dist` → write the Mapbox token and style into `mapbox-config.js` �
 the publish allowlist (only the page, its assets and `data/`, `smoke/`, `coverage/`, `stats/` go
 out) → a `CNAME` file → deploy to GitHub Pages.
 
+### The Brazilian proxy and the flight check
+
+INEA (Rio) and INEMA (Bahia) answer only Brazilian addresses, and the runners are not in Brazil.
+Before the image is pulled, `site.yml` joins the org's tailnet (`TAILSCALE_OAUTH_CLIENT_ID` and
+`TAILSCALE_OAUTH_SECRET`), runs the flight check (`scripts/br-proxy-preflight.sh`: the first online
+`tag:br-proxy` node through which INEA really answers) and routes those two hosts, and only those,
+through it (`scripts/br-proxy.sh`, with the app's JVM pointed at it). The `MAROLA_BR_PROXY` secret
+overrides the pool with any HTTP proxy in Brazil.
+
+The flight check **fails closed**, on every trigger: no tailnet or no healthy node stops the job with an `::error::` naming the cause, before any board is
+built. Nothing deploys, and marola.dev keeps serving the last deployed site, for every area. The
+repo variable `BR_PROXY_REQUIRED=false` is the break glass: the build then goes on without the
+proxy and those two agencies read "no data". Unset means required; set it only while the pool is
+down. `just site-build` routes the same way when `MAROLA_BR_PROXY` is set in your shell, and
+without it builds as before. The pool, its nodes and the whole Tailscale setup:
+[`ops/br-proxy/README.md`](../ops/br-proxy/README.md) and
+[`ops/br-proxy/JOIN.md`](../ops/br-proxy/JOIN.md).
+
 ## The `site-data` branch layout
 
 An orphan branch, never deployed by the workflows that write it: `coverage/` and `smoke/` (the
