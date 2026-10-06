@@ -15,15 +15,26 @@ PRs: the app's first, then this bump.
 Runs on a schedule (every three hours), on a push to `main` touching `site/**`, `marola-image` or
 the workflow itself, on `repository_dispatch: site-data-updated` (sent by every `site-data`
 writer), and on `workflow_dispatch` (optionally one area). `concurrency: site` queues a run rather
-than cancelling one that already paid for its Overpass query.
+than cancelling one that is already building.
 
 The job: pull the pinned image (two tries) → check the harness and the page against the image's
-own board schema → build every area's boards (or one, with an area input) → copy the static page
+own board schema → restore the beach lists → build every area's boards (or one, with an area input) → copy the static page
 into `site/dist` → write the Mapbox token and style into `mapbox-config.js` → cache-bust
 `index.html`'s script/style tags with `?v=<sha>` (Pages caches each file independently) → add the
 `site-data` branch's panels → a required-files check (a half-built site must never reach Pages) →
 the publish allowlist (only the page, its assets and `data/`, `smoke/`, `coverage/`, `stats/` go
 out) → a `CNAME` file → deploy to GitHub Pages.
+
+### Beach lists and Overpass
+
+The app keeps each area's beach list in `site/beaches/<lat>_<lon>_r<radius>_n<limit>.json` and asks
+Overpass only for an area without one, writing the file when the query succeeds. `site.yml` keeps
+that directory in the Actions cache (`beaches-<hash>`, restored newest first, saved after every
+run, a failed one included), so once every area has a list the build no longer depends on the
+public Overpass mirrors, whose timeouts used to fail whole builds (#63). Trails still come from
+Overpass, but a failure there only leaves them off the board. A list refreshes when its area's
+`lat`, `lon`, `radius_km` or `beach_limit` changes (that is the file name); to refetch otherwise,
+delete the `beaches-` entries under Actions → Caches. OSM beaches change over years, not hours.
 
 ### The Brazilian proxy and the flight check
 
