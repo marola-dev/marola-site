@@ -20,6 +20,16 @@ on:
   # stats/, then each sends this so the panels refresh without waiting for the schedule.
   repository_dispatch:
     types: [site-data-updated]
+  # A PR that touches what the push above deploys runs the same build without the deploy job, so a
+  # broken build shows up before it merges (#4). Plain pull_request: a read-only token, no deploy.
+  pull_request:
+    paths:
+      - "site/**"
+      - "marola-image"
+      - "scripts/board-schema.sh"
+      - "scripts/stamp_site_version.sh"
+      - "scripts/mapbox_config.sh"
+      - ".github/workflows/site.yml"
   workflow_dispatch:
     inputs:
       area:
@@ -34,15 +44,21 @@ permissions:
   id-token: write
 
 # Never two deploys at once; a queued run waits rather than cancelling a build that already paid
-# for its Overpass query.
+# for its Overpass query. A PR's build has its own group, so it never displaces a queued deploy.
 concurrency:
-  group: site
-  cancel-in-progress: false
+  group: ${{ github.event_name == 'pull_request' && format('site-pr-{0}', github.event.pull_request.number) || 'site' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
+    # A fork's PR cannot pull the private image; its build is skipped, not red.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # The build needs no Pages rights; only the deploy job below has them.
+    permissions:
+      contents: read
+      packages: read
     steps:
       - uses: actions/checkout@v7
 
@@ -180,6 +196,7 @@ jobs:
 
   deploy:
     needs: build
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     environment:
