@@ -6,14 +6,20 @@ Salvador's beaches "no data". This directory is the help: a pool of small proxie
 machines in Brazil, reached over the org's Tailscale network (the tailnet), that the build sends
 those two agencies through, and nothing else.
 
-All of it is optional. With no pool, no healthy node, or no secrets, the build runs exactly as it
-did before (#4's "no data" for those agencies) and stays green.
+The build depends on it, and fails closed. Its flight check runs before any board is built: when
+the runner cannot join the tailnet, or no node passes a real request to INEA, the job stops with an
+`::error::` naming the cause. Nothing deploys, and marola.dev keeps serving the last deployed site.
+While no node is healthy, that holds for **every** area, Florianópolis's forecast too. The repo
+variable `BR_PROXY_REQUIRED=false` is the break glass: the build then goes on without the proxy
+(Rio and Salvador water quality "no data"). Unset means required; set it only while the pool is
+down, and delete it afterwards.
 
 ```
 site.yml build job (GitHub runner)
   ├─ tailscale/github-action: joins the tailnet as tag:ci (TS_OAUTH_CLIENT_ID / TS_OAUTH_SECRET)
   ├─ scripts/br-proxy-preflight.sh: the flight check, the first online tag:br-proxy node through
-  │    which https://www.inea.rj.gov.br/ really answers (2xx/3xx), ~10 s per node, 60 s in all
+  │    which https://www.inea.rj.gov.br/ really answers (2xx/3xx), ~10 s per node, 60 s in all;
+  │    none, or no tailnet: exit 1, the job stops (unless BR_PROXY_REQUIRED=false)
   ├─ scripts/br-proxy.sh start: a tinyproxy on the runner's 127.0.0.1:8899 that sends the hosts in
   │    ./hosts through that node and everything else (Overpass, Open-Meteo) direct
   └─ the app image, with --network host and JDK_JAVA_OPTIONS pointing its JVM at 127.0.0.1:8899
@@ -30,12 +36,13 @@ site.yml build job (GitHub runner)
 | `.env.example` | The node's one-off auth key placeholder; copy to `.env` (gitignored) |
 | [`JOIN.md`](JOIN.md) | How to add a machine to the pool, safely (the admin's one-time setup and the volunteer's steps) |
 
-## Secrets (all optional)
+## Secrets and the variable
 
-| Repo secret | What |
+| Setting | What |
 |---|---|
-| `TS_OAUTH_CLIENT_ID`, `TS_OAUTH_SECRET` | A Tailscale OAuth client (`auth_keys` scope, tag `tag:ci`). With both set, `site.yml` joins the tailnet and runs the flight check; never on a PR |
-| `MAROLA_BR_PROXY` | An override: any HTTP forward proxy in Brazil reachable from the runner, as `http://[user:pass@]host:port`. When set, it is used instead of the pool (still checked first; a dead one means no route) |
+| `TS_OAUTH_CLIENT_ID`, `TS_OAUTH_SECRET` (secrets, required) | A Tailscale OAuth client (`auth_keys` scope, tag `tag:ci`). `site.yml` joins the tailnet with it on every run, same-repo PRs included. Missing: the flight check fails |
+| `MAROLA_BR_PROXY` (secret, optional) | An override: any HTTP forward proxy in Brazil reachable from the runner, as `http://[user:pass@]host:port`, used instead of the pool. It is still probed; a dead one fails the flight check |
+| `BR_PROXY_REQUIRED` (variable, unset) | The break glass: `false` turns every flight-check failure into a warning and the build runs without the proxy. Anything else, or unset, is required |
 
 ## The Brazilian end: Tailscale (free)
 
@@ -52,8 +59,8 @@ ephemeral node and is removed after the job ([pricing](https://tailscale.com/pri
   `{"src": ["tag:ci"], "dst": ["tag:br-proxy"], "ip": ["tcp:8888"]}`
   ([grants](https://tailscale.com/kb/1324/grants)). CI reaches only port 8888 on the nodes; the
   nodes reach nothing.
-- Uptime: no node has to be up all the time. A run that finds no healthy node is "no data" for
-  those two agencies until the next run three hours later, and the build stays green.
+- Uptime: one healthy node at each 3-hourly run is enough, and more nodes make that likelier. A
+  run that finds none deploys nothing; the site stays as last deployed until a run finds one.
 
 The admin's one-time setup and a volunteer's steps are in [JOIN.md](JOIN.md). Creating the
 tailnet, the OAuth client and the keys is a person's job: AGENTS.md's cost rule keeps provisioning
@@ -77,7 +84,9 @@ Brazil), but marola-app's `InemaBaWaterQualityClient` still requests
 `http://balneabilidade.inema.ba.gov.br/...`. Through the pool, that first request is plain HTTP, so
 a node's operator could read or alter it before the redirect. The fix belongs in marola-app (request
 `https://`). Until it lands, the node allows plain `http://` to INEMA; tunnels (`CONNECT`) go to
-port 443 only.
+port 443 only. The same app code also does not follow that redirect: on this PR's CI run INEMA
+failed with `HTTP 301 for http://balneabilidade.inema.ba.gov.br/...`, so Salvador reads "no data"
+with or without the pool until marola-app requests `https://`.
 
 ## Checking it
 
