@@ -497,6 +497,8 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
       "opening Joaquina's card plots its one real water-sampling point as a marker at its real coordinates",
       JSON.stringify(waterPts.map(p => p.lngLat)));
     ok(waterPts[0] && tipOf(waterPts[0]).includes('PRÓPRIA'), "the point marker's own tooltip carries its real condition", waterPts[0] && tipOf(waterPts[0]));
+    ok(waterPts[0] && /<path class="fill" d="M12 22a7/.test(waterPts[0].element.innerHTML) && !/<circle/.test(waterPts[0].element.innerHTML),
+      'a water-sampling point is a drop, not the round beach dot (#65)', waterPts[0] && waterPts[0].element.innerHTML);
     // Selecting a different beach swaps the plotted points, rather than accumulating them — the
     // stub DOM's querySelector can't re-find renderCard's own close-button listener (it returns a
     // fresh element each call), so this exercises the same clear-and-replot path

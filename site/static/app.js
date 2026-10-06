@@ -559,10 +559,15 @@
     var beaches = state.layer === 'water' && state.board ? state.board.beaches : beach ? [beach] : [];
     beaches.forEach(function (b) { if (b.water && b.water.points) b.water.points.forEach(addWaterPoint); });
   }
+  // Lucide's droplet, so a sampling point never reads as a beach dot; style.css fills it by band.
+  var DROP = 'M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z';
+  function waterDrop() {
+    return '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path class="rim" d="' + DROP + '"/><path class="fill" d="' + DROP + '"/></svg>';
+  }
   function addWaterPoint(p) {
     var band = p.condition === 'improper' ? 'c0' : p.condition === 'proper' ? 'c70' : 'cna';
     var text = esc(p.point) + ' (' + esc(p.location) + '): ' + esc(condLabel(p.condition)) + ', ' + esc(p.sampled_on);
-    var m = domMarker('wpoint ' + band, '', p.point, [p.lon, p.lat]);
+    var m = domMarker('wpoint ' + band, waterDrop(), p.point, [p.lon, p.lat]);
     m.tip = hoverTip(m.node, [p.lon, p.lat], '<span class="water">' + text + '</span>', '', 8);
     state.waterPointMarkers.push(m);
   }
