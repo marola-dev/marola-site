@@ -88,6 +88,8 @@
   "flow.wind": "vento",
   "flow.wind_soon": "vento (em breve)",
   "footer.about": "privacidade",
+  "footer.artist_instagram": "{name} no Instagram",
+  "footer.artist_site": "site de {name}",
   "footer.artists": "artistas locais",
   "footer.artists_soon": "em breve",
   "footer.blurb": "a pontuação (de 0 a 100) é uma estimativa feita a partir da previsão do Open-Meteo e dos laudos de balneabilidade do órgão ambiental. quando a água está imprópria, a praia aparece em vermelho com o motivo. sem cookies e sem rastreamento próprio; o mapa de fundo é do Mapbox. o mesmo cálculo responde praia por praia na linha de comando e, em breve, num bot do telegram. o código é aberto:",

@@ -222,7 +222,7 @@ function stubStorage(sandbox, store, throws) {
 
 // --- run the page once against a board
 // -----------------------------------------------------------.
-// opts: search ('?lang=en'), languages (navigator.languages), store ({'marola.lang': 'en'}),
+// opts: artists (artists.json; none = a 404, the placeholder), search ('?lang=en'), languages (navigator.languages), store ({'marola.lang': 'en'}),
 // storeThrows, geolocation (a navigator.geolocation stub), noBoard (latest.json names a missing file).
 async function runPage(board, opts) {
   opts = opts || {};
@@ -232,6 +232,7 @@ async function runPage(board, opts) {
     'data/fixture/latest.json': { days: [{ day: board.day, file: board.day + '.json' }] }
   };
   if (!opts.noBoard) files['data/fixture/' + board.day + '.json'] = board;
+  if (opts.artists) files['artists.json'] = opts.artists;
   const M = makeMapbox();
   if (opts.styleStatus) M.styleStatus = opts.styleStatus;
   flowPanel(els.flow, els.flowkeys);
@@ -829,7 +830,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(probe.t('footer.generated', { when: 'w', area: 'a', day: 'd', n: 2, sources: 's' }).includes('· 2 praias ·'),
     'the real catalog pluralises footer.generated');
   // Lowercase house style in the catalogs; these are names marola did not choose.
-  const CASE_OK = ['°C', 'UV', 'km/h', 'mL', 'PRÓPRIA', 'IMPRÓPRIA', 'GitHub', 'Open-Meteo', 'IMA/SC', 'OpenStreetMap', 'Mapbox', 'NASA', 'VIIRS', 'MUR', 'El Niño', 'La Niña', 'Niño'];
+  const CASE_OK = ['°C', 'UV', 'km/h', 'mL', 'PRÓPRIA', 'IMPRÓPRIA', 'GitHub', 'Open-Meteo', 'IMA/SC', 'OpenStreetMap', 'Mapbox', 'NASA', 'VIIRS', 'MUR', 'El Niño', 'La Niña', 'Niño', 'Instagram'];
   for (const [lang, cat] of Object.entries(CATALOGS)) {
     const shouty = Object.entries(cat).filter(([k, v]) => {
       if (/^dir\./.test(k)) return !/^[A-Z]{1,2}$/.test(v); // compass abbreviations, shown uppercase
@@ -959,6 +960,41 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   again.setAttribute('aria-controls', 'footer-lore');
   fd.els.footer.fire('click', { target: again });
   ok(again.getAttribute('aria-expanded') === 'false' && fd.els['footer-lore'].hidden === true, '#59: a second click collapses it again');
+
+  // 6c. #67: site/static/artists.json fills the local-artists toggle; the placeholder above is what a missing file leaves.
+  const ARTISTS = JSON.parse(fs.readFileSync(path.join(ROOT, 'site/static/artists.json'), 'utf8'));
+  const badArtists = (ARTISTS.artists || []).filter(a => !a || typeof a.name !== 'string' || !a.name.trim() ||
+    !a.description || ['pt-BR', 'en'].some(l => typeof a.description[l] !== 'string' || !a.description[l].trim()) ||
+    Object.keys(a).some(k => !['name', 'description', 'website', 'instagram'].includes(k)) ||
+    (a.website !== undefined && !/^https:\/\/[^\s"<>]+$/.test(a.website)) ||
+    (a.instagram !== undefined && !/^https:\/\/www\.instagram\.com\/[\w.]+\/?$/.test(a.instagram)));
+  ok(Array.isArray(ARTISTS.artists) && ARTISTS.artists.length > 0 && badArtists.length === 0,
+    'artists.json: each artist has a name, a pt-BR and an en description, an optional https website and an optional instagram.com profile, nothing else',
+    JSON.stringify(badArtists));
+  ok(/! -name artists\.json\b/.test(fs.readFileSync(path.join(ROOT, '.github/workflows/site.yml'), 'utf8')), "site.yml's publish allowlist keeps artists.json");
+  const art = await runPage(folded, { artists: { artists: [
+    { name: 'Ana <Mar>', description: { 'pt-BR': 'aquarelas do mar', en: 'sea watercolours' }, website: 'https://ana.example/', instagram: 'https://www.instagram.com/ana/' },
+    { name: 'Bia', description: { 'pt-BR': 'só pt' } }] } });
+  const afoot = () => art.els.footer.innerHTML;
+  const artToggle = (afoot().match(/<button type="button" class="fold" data-fold="artists"[^>]*>[\s\S]*?<\/button>/) || [''])[0];
+  const artPanel = (afoot().match(/<ul id="footer-artists"[\s\S]*?<\/ul>/) || [''])[0];
+  ok(artToggle.includes('aria-controls="footer-artists"') && artToggle.includes('aria-expanded="false"') && artToggle.endsWith('artistas locais</button>') &&
+    !afoot().includes('fold soon') && !afoot().includes('footer-artists-soon'), '#67: with artists listed, the toggle is a real fold and the placeholder is gone', artToggle);
+  ok(/^<ul id="footer-artists" class="fold-panel artists" hidden>/.test(artPanel), '#67: the artists panel is hidden by default', artPanel.slice(0, 80));
+  ok(artPanel.includes('<li><span class="artist-name">Ana &lt;Mar&gt;</span> aquarelas do mar <a class="artist-link" href="https://ana.example/" target="_blank" rel="noopener" aria-label="site de Ana &lt;Mar&gt;" title="site de Ana &lt;Mar&gt;"><svg class="ic ic-globe"') &&
+    artPanel.includes('<a class="artist-link" href="https://www.instagram.com/ana/" target="_blank" rel="noopener" aria-label="Ana &lt;Mar&gt; no Instagram" title="Ana &lt;Mar&gt; no Instagram"><svg class="ic ic-instagram"'),
+    '#67: each artist reads name, description, then a labelled globe (website) and Instagram icon, escaped', artPanel);
+  ok(artPanel.includes('<li><span class="artist-name">Bia</span> só pt</li>') && !/<img/.test(artPanel), '#67: both links are optional; no image from anyone\'s site', artPanel);
+  const artBtn = Object.assign(new El('fold-artists'), { dataset: { fold: 'artists' } });
+  artBtn.setAttribute('aria-expanded', 'false'); artBtn.setAttribute('aria-controls', 'footer-artists');
+  art.els['footer-artists'] = Object.assign(new El('footer-artists'), { hidden: true });
+  art.els.footer.fire('click', { target: artBtn });
+  ok(artBtn.getAttribute('aria-expanded') === 'true' && art.els['footer-artists'].hidden === false, '#67: a click opens the artists panel');
+  art.api.setLang('en');
+  ok(/<ul id="footer-artists" class="fold-panel artists">/.test(afoot()) && afoot().includes('</span> sea watercolours <a') &&
+    afoot().includes('aria-label="Ana &lt;Mar&gt; on Instagram"') && afoot().includes('<span class="artist-name">Bia</span> só pt</li>') &&
+    afoot().includes('>local artists</button>'), '#67: in English the panel stays open, the description follows the language, pt-BR fills a missing one', afoot());
+  ok(art.errors.length === 0 && fd.errors.length === 0, '#67: the artists panel, with or without artists.json, logs nothing', art.errors.concat(fd.errors).join(' | '));
 
   // 7. note codes (task 3's table): rendered per language when present, `notes` verbatim otherwise.
   const unfitArgs = { source: 'IMA/SC', sampled_on: '2026-08-25', point: 'Ponto 12', location: 'Brava' };

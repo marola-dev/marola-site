@@ -88,6 +88,8 @@
   "flow.wind": "wind",
   "flow.wind_soon": "wind (soon)",
   "footer.about": "privacy",
+  "footer.artist_instagram": "{name} on Instagram",
+  "footer.artist_site": "{name}'s website",
   "footer.artists": "local artists",
   "footer.artists_soon": "coming soon",
   "footer.blurb": "scores are a heuristic (0-100) from Open-Meteo's forecast and the agency's bathing-water classification; unfit water is red and says why. no cookies, no tracking of its own; the base map is Mapbox's. the same pipeline answers one beach at a time on the command line and, soon, in a telegram bot. the code is open:",

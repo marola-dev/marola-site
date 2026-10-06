@@ -22,8 +22,8 @@ own board schema → restore the beach lists → build every area's boards (or o
 into `site/dist` → write the Mapbox token and style into `mapbox-config.js` → cache-bust
 `index.html`'s script/style tags with `?v=<sha>` (Pages caches each file independently) → add the
 `site-data` branch's panels → a required-files check (a half-built site must never reach Pages) →
-the publish allowlist (only the page, its assets and `data/`, `smoke/`, `coverage/`, `stats/` go
-out) → a `CNAME` file → deploy to GitHub Pages.
+the publish allowlist (only the page, its assets, `artists.json` and `data/`, `smoke/`, `coverage/`,
+`stats/` go out) → a `CNAME` file → deploy to GitHub Pages.
 
 ### Beach lists and Overpass
 

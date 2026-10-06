@@ -18,6 +18,19 @@ requires; a malformed entry is silently dropped there rather than failing.
 | `tiles` | string | A tile-server URL template. Read by the app side, not by this repo's own map any more: since the Mapbox GL switch ([libraries](2-libraries.md#what-mapbox-replaced)), `app.js` builds its base map from `mapbox-config.js` instead |
 | `tiles_attribution` | string | Pairs with `tiles`, same app-side status |
 
+## Local artists
+
+`site/static/artists.json` lists the artists the footer's "artistas locais" toggle opens, in file
+order (MIP-0058). Adding one is a PR that appends an entry; `scripts/site_check.js` checks every
+entry. Links only: never an image copied or hotlinked from the artist's site.
+
+| Field | Type | Notes |
+|---|---|---|
+| `name` | string | Shown as written, never lowercased |
+| `description` | object, `pt-BR` and `en` strings | One short line in each language, taken from what the artist publishes about their own work |
+| `website` | string, `https://…`, optional | Shown as a globe icon |
+| `instagram` | string, `https://www.instagram.com/<handle>/`, optional | Shown as the Instagram icon |
+
 ## Tile policy
 
 The page's base map and its CSP are [design.md](1-design.md#csp-and-the-no-third-party-rule)'s;

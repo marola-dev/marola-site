@@ -37,6 +37,7 @@ cache, so Overpass is asked only for an area without one), adds the page and the
 |---|---|
 | The page | [`site/static/`](https://github.com/marola-dev/marola-site/tree/main/site/static) |
 | The areas | [`site/areas.json`](https://github.com/marola-dev/marola-site/blob/main/site/areas.json) |
+| The local artists (the footer's "artistas locais") | [`site/static/artists.json`](https://github.com/marola-dev/marola-site/blob/main/site/static/artists.json); adding one: [reference](docs/4-reference.md#local-artists) |
 | The board contract | the image's `board.schema.json`, vendored as [`site/board.schema.json`](https://github.com/marola-dev/marola-site/blob/main/site/board.schema.json) |
 | The deploy workflow | [`site.yml`](https://github.com/marola-dev/marola-site/blob/main/.github/workflows/site.yml) |
 | The Brazilian proxy pool (INEA and INEMA; the build's flight check needs it) | [`ops/br-proxy/`](https://github.com/marola-dev/marola-site/tree/main/ops/br-proxy); join it: [`JOIN.md`](https://github.com/marola-dev/marola-site/blob/main/ops/br-proxy/JOIN.md) |
@@ -64,7 +65,7 @@ sibling [docs/1-design_chat-widget.md](docs/1-design_chat-widget.md) (the chat w
 [docs/2-libraries.md](docs/2-libraries.md) (vendored Mapbox GL JS and the rest of `vendor/`, no
 build step), [docs/3-development.md](docs/3-development.md) (the build and deploy, the `site-data`
 layout, health checks, i18n, bumping the app image, the `MIP:` trailer),
-[docs/4-reference.md](docs/4-reference.md) (`areas.json` fields, the tile policy, the board schema
+[docs/4-reference.md](docs/4-reference.md) (`areas.json` and `artists.json` fields, the tile policy, the board schema
 pin), and [AGENTS.md](https://github.com/marola-dev/marola-site/blob/main/AGENTS.md).
 
 ## Gemini review

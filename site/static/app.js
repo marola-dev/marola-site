@@ -29,7 +29,8 @@
     layer: 'off',       // the map layer: 'off' or one of LAYERS whose button is enabled
     beaches: true,      // the beach dots and the coastal trails: toggles over any layer
     trails: true,
-    folds: { lore: false, blurb: false } // the footer's disclosures, kept across re-renders
+    artists: [],        // artists.json, the footer's local-artists panel (#67)
+    folds: { lore: false, blurb: false, artists: false } // the footer's disclosures, kept across re-renders
   };
   // site.yml writes mapbox-config.js from the repo's MAPBOX_PUBLIC_TOKEN at deploy (AGENTS.md).
   var MAPBOX = window.MAROLA_MAPBOX || {};
@@ -359,6 +360,8 @@
     toilets: '<path d="M7 12h13a1 1 0 0 1 1 1 5 5 0 0 1-5 5h-.598a.5.5 0 0 0-.424.765l1.544 2.47a.5.5 0 0 1-.424.765H5.402a.5.5 0 0 1-.424-.765L7 18"/><path d="M8 18a5 5 0 0 1-5-5V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8"/>',
     shower: '<path d="m4 4 2.5 2.5"/><path d="M13.5 6.5a4.95 4.95 0 0 0-7 7"/><path d="M15 5 5 15"/><path d="M14 17v.01"/><path d="M10 16v.01"/><path d="M13 13v.01"/><path d="M16 10v.01"/>',
     lifeguard: '<circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/><circle cx="12" cy="12" r="4"/>',
+    globe: '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
+    instagram: '<rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><path d="M17.5 6.5h.01"/>',
     book: '<path d="M12 5v16"/><path d="M20 19a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-4a5 5 0 0 0-4 2 5 5 0 0 0-4-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4a5 5 0 0 1 4 2 5 5 0 0 1 4-2z"/>'
   };
   function icon(name) {
@@ -664,6 +667,9 @@
     folds.push(['blurb', tx('footer.about'),
       '<p id="footer-blurb" class="fold-panel"' + (state.folds.blurb ? '' : ' hidden') + '>' + tx('footer.blurb') +
       ' <a href="' + REPO + '" target="_blank" rel="noopener">' + tx('footer.github') + '</a>.</p>']);
+    if (state.artists.length) folds.push(['artists', tx('footer.artists'),
+      '<ul id="footer-artists" class="fold-panel artists"' + (state.folds.artists ? '' : ' hidden') + '>' +
+      state.artists.map(artistItem).join('') + '</ul>']);
     el.footer.innerHTML =
       // status first in reading order; .footbar sets it beside the toggles on a wide screen
       '<div class="footbar"><p id="status">' + t('footer.generated', { when: esc(b.generated_at.replace('T', ' ').slice(0, 16)), area: esc(state.area.name),
@@ -672,12 +678,31 @@
         return '<button type="button" class="fold" data-fold="' + f[0] + '" aria-controls="footer-' + f[0] + '" aria-expanded="' +
           !!state.folds[f[0]] + '"><span class="pm" aria-hidden="true"></span>' + f[1] + '</button>';
       }).join('') +
-      // a placeholder for a feature not built yet: focusable and named, but it opens nothing
-      '<button type="button" class="fold soon" aria-disabled="true" aria-describedby="footer-artists-soon" title="' + tx('footer.artists_soon') +
+      // with no artist listed, a placeholder: focusable and named, but it opens nothing
+      (state.artists.length ? '' :
+        '<button type="button" class="fold soon" aria-disabled="true" aria-describedby="footer-artists-soon" title="' + tx('footer.artists_soon') +
         '"><span class="pm" aria-hidden="true"></span>' + tx('footer.artists') + '</button>' +
-      '<span id="footer-artists-soon" class="vh">' + tx('footer.artists_soon') + '</span></div></div>' +
+        '<span id="footer-artists-soon" class="vh">' + tx('footer.artists_soon') + '</span>') + '</div></div>' +
       folds.map(function (f) { return f[2]; }).join('');
     el.status = document.getElementById('status');
+  }
+
+  function artistItem(a) {
+    var desc = (a.description && (a.description[I.lang()] || a.description['pt-BR'])) || '';
+    function link(href, name, key) {
+      if (!/^https:\/\//.test(href || '')) return '';
+      var label = tx(key, { name: a.name });
+      return ' <a class="artist-link" href="' + esc(href) + '" target="_blank" rel="noopener" aria-label="' + label + '" title="' + label + '">' + icon(name) + '</a>';
+    }
+    return '<li><span class="artist-name">' + esc(a.name) + '</span> ' + esc(desc) +
+      link(a.website, 'globe', 'footer.artist_site') + link(a.instagram, 'instagram', 'footer.artist_instagram') + '</li>';
+  }
+  function loadArtists() {
+    // optional: without the file the toggle stays "em breve", and the map never waits on it
+    return fetchJson('artists.json').then(function (j) {
+      state.artists = (j.artists || []).filter(function (a) { return a && a.name; });
+      if (state.board && state.artists.length) renderFooter();
+    }, function () {});
   }
 
   // --- ambient wave sound: a recorded loop (vendor/sounds/LICENSE.waves), fetched on first use ----.
@@ -814,5 +839,6 @@
   if (param('beaches') === '0') state.beaches = false;
   if (param('trails') === '0' || !enabled('toggle', 'trails')) state.trails = false;
 
+  loadArtists();
   loadAreas().catch(fail);
 })();

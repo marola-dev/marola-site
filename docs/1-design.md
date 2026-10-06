@@ -15,6 +15,8 @@
   (`scripts/mapbox_config.sh`). `site/static/chatbot-config.js` and `chat.js`: the chat widget
   ([the chat widget](1-design_chat-widget.md)).
 - `site/static/vendor/`: vendored third-party assets, no build step ([libraries](2-libraries.md)).
+- `site/static/artists.json`: the local artists the footer's "artistas locais" panel lists, fetched
+  once on load; without it the toggle stays "em breve" ([reference](4-reference.md#local-artists)).
 - `site/areas.json`: the areas the boards are built for ([reference](4-reference.md)).
   `site/fixtures/`: the board the test harness (`scripts/site_check.js`) renders, plus a schema
   fixture. `site/board.schema.json`: the board contract, vendored from the pinned image
