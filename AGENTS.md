@@ -41,9 +41,9 @@ map-load tier, billed above it).
 - `ops/br-proxy/`: the Brazilian proxy pool that INEA and INEMA, which answer only Brazilian
   addresses, are reached through (#4): a volunteer node's compose file and allowlist, and
   [`JOIN.md`](ops/br-proxy/JOIN.md). `site.yml`'s flight check fails closed without a healthy
-  node (secrets `TS_OAUTH_CLIENT_ID`/`TS_OAUTH_SECRET`, or the `MAROLA_BR_PROXY` override); the
-  repo variable `BR_PROXY_REQUIRED=false` is a break glass, never a default. An agent never sets
-  it.
+  node (secrets `TAILSCALE_OAUTH_CLIENT_ID`/`TAILSCALE_OAUTH_SECRET`, or the `MAROLA_BR_PROXY`
+  override); the repo variable `BR_PROXY_REQUIRED=false` is a break glass, never a default. An
+  agent never sets it.
 - `DESIGN.md`: the visual system (tokens, type, components); Inter is self-hosted in
   `site/static/vendor/fonts/`.
 - `.claude/skills/site-frontend/`: the entry point for anything a visitor sees; it orders the

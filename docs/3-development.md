@@ -32,8 +32,8 @@ merges. A fork's PR fails at the flight check: it gets no secrets, so a maintain
 ### The Brazilian proxy and the flight check
 
 INEA (Rio) and INEMA (Bahia) answer only Brazilian addresses, and the runners are not in Brazil.
-Before the image is pulled, `site.yml` joins the org's tailnet (`TS_OAUTH_CLIENT_ID` and
-`TS_OAUTH_SECRET`), runs the flight check (`scripts/br-proxy-preflight.sh`: the first online
+Before the image is pulled, `site.yml` joins the org's tailnet (`TAILSCALE_OAUTH_CLIENT_ID` and
+`TAILSCALE_OAUTH_SECRET`), runs the flight check (`scripts/br-proxy-preflight.sh`: the first online
 `tag:br-proxy` node through which INEA really answers) and routes those two hosts, and only those,
 through it (`scripts/br-proxy.sh`, with the app's JVM pointed at it). The `MAROLA_BR_PROXY` secret
 overrides the pool with any HTTP proxy in Brazil.

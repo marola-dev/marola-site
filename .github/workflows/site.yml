@@ -64,7 +64,7 @@ jobs:
       contents: read
       packages: read
     env:
-      HAS_TAILSCALE: ${{ secrets.TS_OAUTH_CLIENT_ID != '' && secrets.TS_OAUTH_SECRET != '' }}
+      HAS_TAILSCALE: ${{ secrets.TAILSCALE_OAUTH_CLIENT_ID != '' && secrets.TAILSCALE_OAUTH_SECRET != '' }}
     steps:
       - uses: actions/checkout@v7
 
@@ -74,15 +74,15 @@ jobs:
       # is built, so nothing deploys and marola.dev keeps serving the last deployed site. The repo
       # variable BR_PROXY_REQUIRED=false (break glass) lets the build go on without the proxy.
       # The join's own failure is left to the flight check, which names it.
-      - name: Join the tailnet (TS_OAUTH_CLIENT_ID/TS_OAUTH_SECRET)
+      - name: Join the tailnet (TAILSCALE_OAUTH_CLIENT_ID/TAILSCALE_OAUTH_SECRET)
         id: tailscale
         if: env.HAS_TAILSCALE == 'true'
         continue-on-error: true
         timeout-minutes: 2
         uses: tailscale/github-action@d1b6cd204f8dceda5b3eaad7f1f767be390056cd # v4.2.0
         with:
-          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
-          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          oauth-client-id: ${{ secrets.TAILSCALE_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TAILSCALE_OAUTH_SECRET }}
           tags: tag:ci
 
       # The first pool node that really reaches INEA becomes the upstream of a router on the

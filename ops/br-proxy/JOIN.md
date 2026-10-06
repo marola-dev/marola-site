@@ -61,7 +61,8 @@ without an account; the page names are the ones Tailscale's docs use (checked 20
    <https://login.tailscale.com/admin/settings/trust-credentials> → *Credential* → *OAuth*;
    scope `auth_keys` (write), tag `tag:ci`
    ([OAuth clients](https://tailscale.com/kb/1215/oauth-clients)). Copy its ID and secret into
-   marola-site's repo secrets **`TS_OAUTH_CLIENT_ID`** and **`TS_OAUTH_SECRET`**:
+   the secrets **`TAILSCALE_OAUTH_CLIENT_ID`** and **`TAILSCALE_OAUTH_SECRET`**, as org secrets
+   that include marola-site or as marola-site's repo secrets:
    <https://github.com/marola-dev/marola-site/settings/secrets/actions> (Settings → Secrets and
    variables → Actions; needs repo admin).
 5. **One auth key per volunteer**: the *Keys* page, <https://login.tailscale.com/admin/settings/keys>
@@ -139,7 +140,7 @@ outside these containers.
 Every `site.yml` run (schedule, push, dispatch, and same-repo PRs):
 
 1. `tailscale/github-action` (pinned by commit SHA) joins as an ephemeral `tag:ci` node with
-   `TS_OAUTH_CLIENT_ID` / `TS_OAUTH_SECRET`
+   `TAILSCALE_OAUTH_CLIENT_ID` / `TAILSCALE_OAUTH_SECRET`
    ([GitHub Action](https://tailscale.com/kb/1276/tailscale-github-action),
    [ephemeral nodes](https://tailscale.com/docs/features/ephemeral-nodes)).
 2. The flight check (`scripts/br-proxy-preflight.sh`) lists the online `tag:br-proxy` peers and
@@ -158,7 +159,7 @@ with what happens next (no boards, no deploy, the last site stays up, the break 
 
 | The error says | It means | Do |
 |---|---|---|
-| `TS_OAUTH_CLIENT_ID/TS_OAUTH_SECRET are not set` | the secrets are missing | step 1.4 |
+| `TAILSCALE_OAUTH_CLIENT_ID/TAILSCALE_OAUTH_SECRET are not set` | the secrets are missing | step 1.4 |
 | `the tailnet join failed (failure)` | the OAuth client was refused, or Tailscale was unreachable | check the "Join the tailnet" step, the client's scope and tag |
 | `no tag:br-proxy node is online in the tailnet` | no volunteer node is up | `just br-proxy-node up` on a node; `status` there |
 | `tag:br-proxy nodes are online, but none passed the request to …` | a node is up but cannot reach INEA (or the grant is wrong) | `just br-proxy-node check` on the node; the policy in step 1.2 |
