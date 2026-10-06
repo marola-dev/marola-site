@@ -131,12 +131,22 @@ jobs:
           node --check site/static/flow.js
           BOARD_SCHEMA="$RUNNER_TEMP/board.schema.json" node scripts/site_check.js
 
+      # The app reads site/beaches/<key>.json instead of asking Overpass, and writes one whenever a
+      # query succeeds (marola-app's BeachSnapshot): the public mirrors time out often enough to
+      # fail whole builds (#63). The lists live in the Actions cache, newest entry first.
+      - name: Beach lists from earlier runs
+        uses: actions/cache/restore@v6
+        with:
+          path: site/beaches
+          key: beaches-
+          restore-keys: beaches-
+
       # `--site` with no id builds every area; the water-quality provider is picked per area origin
       # (IMA/SC in Santa Catarina, INEA in Rio, INEMA in Bahia). The image runs as uid 10001, which
       # cannot write the runner's checkout, hence --user. With the route up, the container shares
       # the runner's network to reach it on 127.0.0.1, and JDK_JAVA_OPTIONS adds the proxy to the
       # image's own JAVA_TOOL_OPTIONS rather than replacing them.
-      - name: Build the boards (one Overpass query per area, no LLM)
+      - name: Build the boards (Overpass only for an area with no saved beach list, no LLM)
         env:
           IMAGE: ${{ steps.image.outputs.ref }}
           AREA: ${{ inputs.area }}
@@ -145,7 +155,7 @@ jobs:
           [ -z "$AREA" ] || args+=("$AREA")
           br=()
           [ -z "${BR_PROXY_JVM_OPTIONS:-}" ] || br=(--network host -e "JDK_JAVA_OPTIONS=$BR_PROXY_JVM_OPTIONS")
-          mkdir -p site/dist
+          mkdir -p site/dist site/beaches
           for attempt in 1 2; do
             if docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp "${br[@]}" \
                  -v "$PWD/site:/work/site" -w /work "$IMAGE" \
@@ -156,6 +166,15 @@ jobs:
             [ "$attempt" -eq 2 ] || sleep 60
           done
           exit 1
+
+      # Even after a failed build: a list written for one area before another timed out is kept.
+      - name: Keep the beach lists
+        if: always() && hashFiles('site/beaches/*.json') != ''
+        continue-on-error: true
+        uses: actions/cache/save@v6
+        with:
+          path: site/beaches
+          key: beaches-${{ hashFiles('site/beaches/*.json') }}
 
       - name: What went through the Brazilian proxy
         if: always() && env.BR_PROXY_JVM_OPTIONS != ''
