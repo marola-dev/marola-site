@@ -149,7 +149,8 @@ Every `site.yml` run (schedule, push, dispatch, and same-repo PRs):
 3. A tinyproxy on the runner sends only INEA's and INEMA's hosts through that node, everything
    else direct, and the board build runs. When the job ends, the ephemeral node disappears.
 
-**Verifying it:** re-run the PR's `build` check (or wait for the next scheduled run) and look for
+**Verifying it:** wait for the next scheduled `site.yml` run (or start one from Actions → site →
+*Run workflow*, which also deploys) and look for
 `br-proxy-preflight: using <node> (<ip>): https://www.inea.rj.gov.br/ answered HTTP 200 in 0.4s`
 in the "Flight check" step, and for "What went through the Brazilian proxy" listing INEA's host.
 On Machines, an ephemeral `tag:ci` node appears during the run and goes away after it.
@@ -163,7 +164,6 @@ with what happens next (no boards, no deploy, the last site stays up, the break 
 | `the tailnet join failed (failure)` | the OAuth client was refused, or Tailscale was unreachable | check the "Join the tailnet" step, the client's scope and tag |
 | `no tag:br-proxy node is online in the tailnet` | no volunteer node is up | `just br-proxy-node up` on a node; `status` there |
 | `tag:br-proxy nodes are online, but none passed the request to …` | a node is up but cannot reach INEA (or the grant is wrong) | `just br-proxy-node check` on the node; the policy in step 1.2 |
-| `this is a fork's PR …` | fork PRs get no secrets | a maintainer runs the check from a branch of this repo |
 | `the runner's router did not come up through the chosen proxy` | the node passed the check but failed the second probe | re-run; then `check` on the node |
 
 ## 4. Turning the pool on, in order
@@ -172,7 +172,8 @@ with what happens next (no boards, no deploy, the last site stays up, the break 
    repo secrets).
 2. Admin: step 1.5, one key for the first node (the maintainer's own machine is fine).
 3. Volunteer: section 2 (`up`, then `check` all ok, then `status` shows `tag:br-proxy`).
-4. Re-run a `site.yml` build (a PR's `build` check, or the next scheduled run) and confirm
+4. Wait for the next scheduled `site.yml` run (or start one from Actions → site → *Run workflow*)
+   and confirm
    section 3's log line naming the node.
 
 ## What each side trusts (threat model)

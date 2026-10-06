@@ -25,10 +25,6 @@ into `site/dist` → write the Mapbox token and style into `mapbox-config.js` �
 the publish allowlist (only the page, its assets and `data/`, `smoke/`, `coverage/`, `stats/` go
 out) → a `CNAME` file → deploy to GitHub Pages.
 
-A PR that touches what a push to `main` deploys runs the same build with no deploy job (plain
-`pull_request`, a read-only token, its own concurrency group), so a broken build fails before it
-merges. A fork's PR fails at the flight check: it gets no secrets, so a maintainer runs the check.
-
 ### The Brazilian proxy and the flight check
 
 INEA (Rio) and INEMA (Bahia) answer only Brazilian addresses, and the runners are not in Brazil.
@@ -38,8 +34,7 @@ Before the image is pulled, `site.yml` joins the org's tailnet (`TAILSCALE_OAUTH
 through it (`scripts/br-proxy.sh`, with the app's JVM pointed at it). The `MAROLA_BR_PROXY` secret
 overrides the pool with any HTTP proxy in Brazil.
 
-The flight check **fails closed**, on every trigger: no tailnet, no healthy node, or a fork's PR
-(which gets no secrets) stops the job with an `::error::` naming the cause, before any board is
+The flight check **fails closed**, on every trigger: no tailnet or no healthy node stops the job with an `::error::` naming the cause, before any board is
 built. Nothing deploys, and marola.dev keeps serving the last deployed site, for every area. The
 repo variable `BR_PROXY_REQUIRED=false` is the break glass: the build then goes on without the
 proxy and those two agencies read "no data". Unset means required; set it only while the pool is

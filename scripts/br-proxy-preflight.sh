@@ -14,7 +14,7 @@
 # exit 0, and the build runs without the proxy (INEA and INEMA "no data").
 #
 # BR_TAILNET is the outcome of site.yml's tailnet step (success, skipped, failure, cancelled; empty
-# when run by hand) and BR_FORK_PR=true marks a fork's PR, which gets no secrets.
+# when run by hand).
 set -euo pipefail
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -25,7 +25,6 @@ per_node="${BR_PREFLIGHT_TIMEOUT:-10}"
 budget="${BR_PREFLIGHT_BUDGET:-60}"
 required="${BR_PROXY_REQUIRED:-true}"
 tailnet="${BR_TAILNET:-}"
-fork_pr="${BR_FORK_PR:-false}"
 
 say() { echo "br-proxy-preflight: $*" >&2; }
 
@@ -56,10 +55,6 @@ for p in (json.load(sys.stdin).get("Peer") or {}).values():
 
 preflight() {
   local status nodes ip name out code secs url
-  if [ "$fork_pr" = true ]; then
-    fail "this is a fork's PR: no secrets reach it, so it cannot join the tailnet and cannot run the build check; a maintainer must run it from a branch of this repo"
-    return
-  fi
   case "$tailnet" in
     "" | success) ;;
     skipped)
@@ -164,9 +159,6 @@ EOF
 1"
   check "the tailnet join failed: exit 1, naming the step" \
     "$(tailnet=failure rc preflight 2>"$t/err"; grep -c 'the tailnet join failed (failure)' "$t/err")" "1
-1"
-  check "a fork's PR: exit 1, saying a maintainer must run it" \
-    "$(fork_pr=true tailscale="$t/tailscale" rc preflight 2>"$t/err"; grep -c "fork's PR.*a maintainer must run it" "$t/err")" "1
 1"
   check "out of time: no further node is tried, exit 1" "$(budget=0 rc run "100.64.0.1=200")" 1
   check "BR_PROXY_REQUIRED=false and no healthy node: exit 0, nothing printed" \

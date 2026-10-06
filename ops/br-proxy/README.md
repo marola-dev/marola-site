@@ -40,7 +40,7 @@ site.yml build job (GitHub runner)
 
 | Setting | What |
 |---|---|
-| `TAILSCALE_OAUTH_CLIENT_ID`, `TAILSCALE_OAUTH_SECRET` (secrets, required) | A Tailscale OAuth client (`auth_keys` scope, tag `tag:ci`). `site.yml` joins the tailnet with it on every run, same-repo PRs included. Missing: the flight check fails |
+| `TAILSCALE_OAUTH_CLIENT_ID`, `TAILSCALE_OAUTH_SECRET` (secrets, required) | A Tailscale OAuth client (`auth_keys` scope, tag `tag:ci`). `site.yml` joins the tailnet with it on every run. Missing: the flight check fails |
 | `MAROLA_BR_PROXY` (secret, optional) | An override: any HTTP forward proxy in Brazil reachable from the runner, as `http://[user:pass@]host:port`, used instead of the pool. It is still probed; a dead one fails the flight check |
 | `BR_PROXY_REQUIRED` (variable, unset) | The break glass: `false` turns every flight-check failure into a warning and the build runs without the proxy. Anything else, or unset, is required |
 
