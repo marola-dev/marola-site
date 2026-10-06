@@ -28,7 +28,8 @@
     waterPointMarkers: [],
     layer: 'off',       // the map layer: 'off' or one of LAYERS whose button is enabled
     beaches: true,      // the beach dots and the coastal trails: toggles over any layer
-    trails: true
+    trails: true,
+    folds: { lore: false, blurb: false } // the footer's disclosures, kept across re-renders
   };
   // site.yml writes mapbox-config.js from the repo's MAPBOX_PUBLIC_TOKEN at deploy (AGENTS.md).
   var MAPBOX = window.MAROLA_MAPBOX || {};
@@ -649,12 +650,27 @@
       var label = href ? '<a href="' + href + '" target="_blank" rel="noopener">' + esc(s) + '</a>' : esc(s);
       return '<span class="src">' + label + '</span>';
     }).join(' · ');
-    var lore = b.lore ? '<p class="lore">' + (b.lore.kind === 'creature' ? icon('fish') + ' ' + tx('lore.creature') : icon('book') + ' ' + tx('lore.fact')) + ' ' + esc(b.lore.text) +
-      ' <a href="' + esc(b.lore.source) + '" target="_blank" rel="noopener">[' + tx('lore.source') + ']</a></p>' : '';
+    // The lore and the score note fold behind toggles (#59): the map gets the room, both stay one click away.
+    var folds = [];
+    if (b.lore) folds.push(['lore', tx(b.lore.kind === 'creature' ? 'lore.creature' : 'lore.fact'),
+      '<p id="footer-lore" class="fold-panel lore"' + (state.folds.lore ? '' : ' hidden') + '>' +
+      icon(b.lore.kind === 'creature' ? 'fish' : 'book') + ' ' + esc(b.lore.text) +
+      ' <a href="' + esc(b.lore.source) + '" target="_blank" rel="noopener">[' + tx('lore.source') + ']</a></p>']);
+    folds.push(['blurb', tx('footer.about'),
+      '<p id="footer-blurb" class="fold-panel"' + (state.folds.blurb ? '' : ' hidden') + '>' + tx('footer.blurb') +
+      ' <a href="' + REPO + '" target="_blank" rel="noopener">' + tx('footer.github') + '</a>.</p>']);
     el.footer.innerHTML =
       '<p id="status">' + t('footer.generated', { when: esc(b.generated_at.replace('T', ' ').slice(0, 16)), area: esc(state.area.name),
-        day: esc(b.day), n: b.beaches.length, sources: srcs }) + '</p>' + lore +
-      '<p>' + tx('footer.blurb') + ' <a href="' + REPO + '" target="_blank" rel="noopener">' + tx('footer.github') + '</a>.</p>';
+        day: esc(b.day), n: b.beaches.length, sources: srcs }) + '</p>' +
+      '<div class="folds">' + folds.map(function (f) {
+        return '<button type="button" class="fold" data-fold="' + f[0] + '" aria-controls="footer-' + f[0] + '" aria-expanded="' +
+          !!state.folds[f[0]] + '"><span class="pm" aria-hidden="true"></span>' + f[1] + '</button>';
+      }).join('') +
+      // a placeholder for a feature not built yet: focusable and named, but it opens nothing
+      '<button type="button" class="fold soon" aria-disabled="true" aria-describedby="footer-artists-soon" title="' + tx('footer.artists_soon') +
+        '"><span class="pm" aria-hidden="true"></span>' + tx('footer.artists') + '</button>' +
+      '<span id="footer-artists-soon" class="vh">' + tx('footer.artists_soon') + '</span></div>' +
+      folds.map(function (f) { return f[2]; }).join('');
     el.status = document.getElementById('status');
   }
 
@@ -699,6 +715,19 @@
   el.days.addEventListener('click', function (e) {
     var btn = e.target.closest('button'); if (!btn) return;
     selectDay({ day: btn.dataset.day, file: btn.dataset.file }).catch(fail);
+  });
+  el.footer.addEventListener('click', function (e) {
+    var btn = e.target && e.target.closest && e.target.closest('button[data-fold]');
+    if (!btn || !btn.dataset || !btn.dataset.fold) return; // the artists placeholder has no fold
+    var key = btn.dataset.fold, open = !state.folds[key], panel = document.getElementById(btn.getAttribute('aria-controls'));
+    // The map keeps its height while a panel is open: the page grows below it instead of the map shrinking.
+    var main = el.map.parentNode;
+    if (open && main && main.style && !main.style.minHeight && main.getBoundingClientRect) main.style.minHeight = main.getBoundingClientRect().height + 'px';
+    state.folds[key] = open;
+    btn.setAttribute('aria-expanded', String(open));
+    if (panel) panel.hidden = !open;
+    if (main && main.style && !el.footer.querySelector('.fold-panel:not([hidden])')) main.style.minHeight = '';
+    if (open && panel && panel.scrollIntoView) panel.scrollIntoView({ block: 'nearest', behavior: reducedMotion() ? 'auto' : 'smooth' });
   });
   el.hour.addEventListener('input', function () { state.hourIndex = parseInt(el.hour.value, 10); render(); });
   el.flow.addEventListener('click', function (e) {
