@@ -919,6 +919,8 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   const toggleOf = k => (foot().match(new RegExp('<button type="button" class="fold" data-fold="' + k + '"[^>]*>')) || [''])[0];
   const panelOf = id => (foot().match(new RegExp('<p id="' + id + '" class="fold-panel[^"]*"[^>]*>')) || [''])[0];
   ok(foot().includes('<p id="status">atualizado em '), '#59: the status line stays visible', foot().slice(0, 200));
+  ok(/^<div class="footbar"><p id="status">[\s\S]*?<\/p><div class="folds">[\s\S]*?<\/div><\/div><p id="footer-lore" class="fold-panel/.test(foot()),
+    '#59: the status, then the toggles, share .footbar (one line on a wide screen); the panels come after the whole row', foot().slice(0, 300));
   [['lore', 'footer-lore', 'vida marinha'], ['blurb', 'footer-blurb', 'privacidade']].forEach(([k, id, label]) => {
     ok(/aria-expanded="false"/.test(toggleOf(k)) && toggleOf(k).includes('aria-controls="' + id + '"') &&
       foot().includes(toggleOf(k) + '<span class="pm" aria-hidden="true"></span>' + label + '</button>'),

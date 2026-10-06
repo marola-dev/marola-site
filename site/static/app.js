@@ -660,7 +660,8 @@
       '<p id="footer-blurb" class="fold-panel"' + (state.folds.blurb ? '' : ' hidden') + '>' + tx('footer.blurb') +
       ' <a href="' + REPO + '" target="_blank" rel="noopener">' + tx('footer.github') + '</a>.</p>']);
     el.footer.innerHTML =
-      '<p id="status">' + t('footer.generated', { when: esc(b.generated_at.replace('T', ' ').slice(0, 16)), area: esc(state.area.name),
+      // status first in reading order; .footbar sets it beside the toggles on a wide screen
+      '<div class="footbar"><p id="status">' + t('footer.generated', { when: esc(b.generated_at.replace('T', ' ').slice(0, 16)), area: esc(state.area.name),
         day: esc(b.day), n: b.beaches.length, sources: srcs }) + '</p>' +
       '<div class="folds">' + folds.map(function (f) {
         return '<button type="button" class="fold" data-fold="' + f[0] + '" aria-controls="footer-' + f[0] + '" aria-expanded="' +
@@ -669,7 +670,7 @@
       // a placeholder for a feature not built yet: focusable and named, but it opens nothing
       '<button type="button" class="fold soon" aria-disabled="true" aria-describedby="footer-artists-soon" title="' + tx('footer.artists_soon') +
         '"><span class="pm" aria-hidden="true"></span>' + tx('footer.artists') + '</button>' +
-      '<span id="footer-artists-soon" class="vh">' + tx('footer.artists_soon') + '</span></div>' +
+      '<span id="footer-artists-soon" class="vh">' + tx('footer.artists_soon') + '</span></div></div>' +
       folds.map(function (f) { return f[2]; }).join('');
     el.status = document.getElementById('status');
   }
