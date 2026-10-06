@@ -24,6 +24,11 @@ site-build area="":
     scripts/mapbox_config.sh site/dist  # MAPBOX_PUBLIC_TOKEN=pk.… from your shell, or no base map
     scripts/stamp_site_version.sh site/dist
 
+# Run this machine as a Brazilian proxy pool node, in containers: up | down | status | check
+# (ops/br-proxy/JOIN.md; needs docker and compose, installs nothing).
+br-proxy-node action="status":
+    scripts/br-proxy-node.sh {{ action }}
+
 # Serve site/dist at http://localhost:8000.
 site-serve port="8000":
     python3 -m http.server -d site/dist {{ port }}

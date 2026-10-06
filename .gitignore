@@ -7,3 +7,6 @@ __pycache__/
 # `just site-build` output (boards + a copy of site/static/): derived, deployed, not committed
 /site/dist/*
 !/site/dist/.gitkeep
+
+# a pool node's auth key (ops/br-proxy/JOIN.md)
+/ops/br-proxy/.env
