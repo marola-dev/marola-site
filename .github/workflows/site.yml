@@ -175,7 +175,7 @@ jobs:
         if: always() && env.BR_PROXY_JVM_OPTIONS != ''
         continue-on-error: true
         run: |
-          grep -aE 'upstream proxy for' "$RUNNER_TEMP/marola-br-proxy/tinyproxy.log" | sed 's/.*]: //' | sort | uniq -c || true
+          grep -aE '(Found|No) upstream proxy .*for ' "$RUNNER_TEMP/marola-br-proxy/tinyproxy.log" | sed 's/.*]: //' | sort | uniq -c || true
           scripts/br-proxy.sh stop
 
       # SiteBuilder writes board data only (MIP-0070 §5.4).
