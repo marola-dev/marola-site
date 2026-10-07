@@ -25,8 +25,9 @@ map-load tier, billed above it).
 
 - `site/static/`: the page (`index.html`, `about.html`, `support.html` behind Donate, `app.js`,
   `ui.js`, `style.css`, `flow.js` (the WebGL wind and wave layer), `mapbox-config.js`, the chat
-  widget, vendored Mapbox GL JS (its CSP build), Inter and the wave loop under `vendor/`) and
-  `404.html`, which forwards the old `marola.dev/docs/*` links to `docs.marola.dev`.
+  widget, vendored Mapbox GL JS (its CSP build), Inter and the wave loop under `vendor/`, the
+  about page's repo diagram under `img/`) and `404.html`, which forwards the old
+  `marola.dev/docs/*` links to `docs.marola.dev`.
 - `site/i18n/`: the pt-BR and English catalogs (MIP-0054). `scripts/i18n_bundle.py` checks them
   and writes `site/static/i18n.js`; edit the catalogs, never `i18n.js`.
 - `site/areas.json`: the areas the boards are built for. `site/fixtures/board.json`: the board the
@@ -115,6 +116,16 @@ Commits carry `Tested:`, `Cost:` and `Co-Authored-By: Claude <noreply@anthropic.
 **Stricter here:** a commit touching `site/static/**` also carries `MIP: MIP-NNNN` or
 `MIP: none — <reason>`; `just prepush` runs `scripts/mip-trailer-check.sh` over the pushed
 commits (`origin/main..HEAD` when the hook does not pass the pushed refs on).
+
+## Screenshots in the PR (hard rule)
+
+A PR that changes anything a visitor sees shows it in its own body, not only in a chat thread:
+before and after, desktop (1280 × 800) and phone (390 × 844), of every page the change touches.
+Push the PNGs to the orphan `pr-screenshots` branch under `<pr-number>/` and embed them by their
+`https://raw.githubusercontent.com/marola-dev/marola-site/pr-screenshots/<pr-number>/<file>.png`
+URL, in a Before | After table. Images never go on `main`. A screenshot taken on a stand-in map
+style (the sandbox can't reach Mapbox) says so under the table. No screenshots in the body, the
+PR is not ready for review.
 
 ## Phase discipline (hard rule)
 

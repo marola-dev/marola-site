@@ -3,7 +3,9 @@
 ## Files
 
 - `site/static/`: `index.html` (the map), `about.html`, `support.html` (behind "apoie"/Donate),
-  `404.html` (forwards old `marola.dev/docs/*` links to `docs.marola.dev`), `favicon.svg`.
+  `404.html` (forwards old `marola.dev/docs/*` links to `docs.marola.dev`), `favicon.svg`, and
+  `img/umbrella{,.pt-BR}.svg`, the umbrella README's repo diagram that `about.html` shows (copied
+  from marola-dev/marola `docs/img/`; recopy it when that one changes).
 - `site/static/app.js`: fetches `data/areas.json` and each area's board, builds the map (Mapbox GL
   JS), the beach markers, the list, the card, the hour slider and the satellite/NASA GIBS raster
   layers. `ui.js`: language resolution and `t()` (MIP-0054), and the emergency numbers panel's open and close (#76). `flow.js`: the WebGL wind/wave

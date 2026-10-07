@@ -834,6 +834,12 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(sosEn.length === 9 && sosEn.every(n => n.textContent === CATALOGS.en[n.attrs['data-i18n']]), 'the emergency panel follows ?lang=en');
   ok((ABOUT.match(/href="https:\/\/github\.com\/carlostoledo1891"/g) || []).length === 2 && (ABOUT.match(/href="https:\/\/swell-floripa\.vercel\.app\/"/g) || []).length === 2,
     'about.html credits Carlos Toledo and swell-floripa in both languages');
+  // The umbrella's README diagram (marola-dev/marola docs/img/), copied: one per language (#79).
+  ok(['umbrella.pt-BR.svg', 'umbrella.svg'].every(f => fs.existsSync(path.join(ROOT, 'site/static/img', f))) &&
+    /<article class="about-body" lang="pt-BR">[\s\S]*?<img src="img\/umbrella\.pt-BR\.svg"[^>]* alt="[^"]+"/.test(ABOUT) &&
+    /<article class="about-body" lang="en">[\s\S]*?<img src="img\/umbrella\.svg"[^>]* alt="[^"]+"/.test(ABOUT) &&
+    /-path \.\/img \\\)/.test(fs.readFileSync(path.join(ROOT, '.github/workflows/site.yml'), 'utf8')),
+    "about.html shows the repo diagram in each article's language, and site.yml's publish allowlist keeps img/");
   const syn = runUi(ABOUT, { catalog: {
     'pt-BR': { n: '{n, plural, one {# praia} other {# praias}}', x: 'ondas {x} m', only: 'só pt', s: '{w, select, yes {sim} other {não}}' },
     en: { n: '{n, plural, one {# beach} other {# beaches}}', x: 'waves {x} m', s: '{w, select, yes {yes} other {no}}' }

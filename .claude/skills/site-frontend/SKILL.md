@@ -81,7 +81,8 @@ overrides live here, not in their files.
 5. **Copy** through `ptbr-humanizer`; edit `site/i18n/*.json`, run `python3 scripts/i18n_bundle.py`.
 6. **Verify**: `node --check site/static/app.js`, `node scripts/site_check.js`,
    `node scripts/redirect_check.js`, `python3 scripts/i18n_bundle.py --check`, `ruff check .`,
-   then before/after screenshots in the PR. No screenshot, not done.
+   then before/after screenshots in the PR body, pushed to the `pr-screenshots` branch and embedded
+   by raw URL (AGENTS.md, "Screenshots in the PR"). No screenshot in the PR, not done.
 
 ## The map: Mapbox GL and the flow layer
 
