@@ -149,6 +149,21 @@
     if (b && b.getAttribute('data-lang') !== current) setLang(b.getAttribute('data-lang'));
   });
 
+  // The emergency numbers (#76): the panel opens from #sos and closes on ×, Escape or a click outside.
+  var sos = document.getElementById('sos'), sosPanel = document.getElementById('sos-panel');
+  if (sos && sosPanel) {
+    var setSos = function (open) { sosPanel.hidden = !open; sos.setAttribute('aria-expanded', String(open)); };
+    sos.addEventListener('click', function () { setSos(sos.getAttribute('aria-expanded') !== 'true'); });
+    var sosClose = document.getElementById('sos-close');
+    if (sosClose) sosClose.addEventListener('click', function () { setSos(false); sos.focus(); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && sos.getAttribute('aria-expanded') === 'true') { setSos(false); sos.focus(); }
+    });
+    document.addEventListener('click', function (e) {
+      if (sos.getAttribute('aria-expanded') === 'true' && !sosPanel.contains(e.target) && !sos.contains(e.target)) setSos(false);
+    });
+  }
+
   window.marolaI18n = {
     t: t,
     lang: function () { return current; },

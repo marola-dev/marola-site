@@ -4,6 +4,9 @@ The map at [marola.dev](https://marola.dev): every beach in an area ranked hour 
 wind, waves, water quality and tide, computed a few times a day and served as a static page, over
 a Mapbox base map with animated wind and wave layers drawn from the same boards. No server, no
 tracking of its own, and no per-visitor cost while Mapbox's map loads stay in its free tier.
+An emergency button at the top of the map lists Brazil's free emergency numbers (193, 190, 192,
+185, 199), each a tap to call, an idea from Carlos Toledo's
+[swell-floripa](https://swell-floripa.vercel.app/) ([@carlostoledo1891](https://github.com/carlostoledo1891)).
 
 **Live, rebuilt every three hours** (MIP-0005, split out by MIP-0070). This repo holds the page,
 the areas it covers and the workflow that publishes it. The boards themselves are written by the

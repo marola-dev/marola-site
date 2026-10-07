@@ -286,13 +286,15 @@ function pageDom(html) {
       getAttribute(k) { return k in this.attrs ? this.attrs[k] : null; },
       setAttribute(k, v) { this.attrs[k] = String(v); },
       addEventListener(type, fn) { (this.listeners[type] = this.listeners[type] || []).push(fn); },
+      focus() {},
       closest(sel) { return sel === 'button[data-lang]' && 'data-lang' in this.attrs ? this : null; }
     };
     nodes.push(node);
   }
   const documentElement = { lang: (/<html lang="([^"]*)"/.exec(html) || [])[1] };
   return {
-    nodes, documentElement,
+    nodes, documentElement, listeners: {},
+    addEventListener(type, fn) { (this.listeners[type] = this.listeners[type] || []).push(fn); },
     getElementById: id => nodes.find(n => n.attrs.id === id) || null,
     querySelectorAll(sel) {
       if (sel === '#lang button[data-lang]') return nodes.filter(n => 'data-lang' in n.attrs);
@@ -816,6 +818,22 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(rl({ param: 'x-pseudo' }) === 'x-pseudo', 'resolveLang: x-pseudo from the param');
   ok(rl({ stored: 'x-pseudo', languages: ['x-pseudo'] }) === 'pt-BR', 'resolveLang: x-pseudo never from the store or the browser');
   ok(rl({ param: 'de' }) === 'pt-BR', 'resolveLang: an unshipped ?lang= falls through');
+
+  // --- the emergency numbers, after Carlos Toledo's swell-floripa (#76) -----------------------
+  const SOS = (/<section id="sos-panel"[\s\S]*?<\/section>/.exec(INDEX) || [''])[0];
+  const tels = [...SOS.matchAll(/<a href="tel:(\d+)"><b>(\d+)<\/b>/g)].filter(m => m[1] === m[2]).map(m => m[1]);
+  ok(tels.join() === '193,190,192,185,199', 'the emergency panel lists 193, 190, 192, 185 and 199, each a tel: link to the number it shows', tels.join());
+  ok(/<button id="sos" type="button"[^>]*aria-controls="sos-panel" aria-expanded="false"/.test(INDEX) && /<section id="sos-panel"[^>]* hidden/.test(INDEX),
+    'the emergency button controls its panel, which starts hidden');
+  const sosRun = runUi(INDEX), sosBtn = sosRun.document.getElementById('sos'), sosPanel = sosRun.document.getElementById('sos-panel');
+  sosBtn.listeners.click.forEach(fn => fn());
+  const opened = sosPanel.hidden === false && sosBtn.attrs['aria-expanded'] === 'true';
+  sosRun.document.listeners.keydown.forEach(fn => fn({ key: 'Escape' }));
+  ok(opened && sosPanel.hidden === true && sosBtn.attrs['aria-expanded'] === 'false', 'the emergency button opens the panel and Escape closes it');
+  const sosEn = runUi(INDEX, { search: '?lang=en' }).document.nodes.filter(n => /^sos\./.test(n.attrs['data-i18n'] || ''));
+  ok(sosEn.length === 8 && sosEn.every(n => n.textContent === CATALOGS.en[n.attrs['data-i18n']]), 'the emergency panel follows ?lang=en');
+  ok((ABOUT.match(/href="https:\/\/github\.com\/carlostoledo1891"/g) || []).length === 2 && (ABOUT.match(/href="https:\/\/swell-floripa\.vercel\.app\/"/g) || []).length === 2,
+    'about.html credits Carlos Toledo and swell-floripa in both languages');
   const syn = runUi(ABOUT, { catalog: {
     'pt-BR': { n: '{n, plural, one {# praia} other {# praias}}', x: 'ondas {x} m', only: 'só pt', s: '{w, select, yes {sim} other {não}}' },
     en: { n: '{n, plural, one {# beach} other {# beaches}}', x: 'waves {x} m', s: '{w, select, yes {yes} other {no}}' }

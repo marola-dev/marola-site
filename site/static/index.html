@@ -87,6 +87,22 @@
       <p class="flowkey" data-key="anomaly" hidden><span class="ramp anomaly" aria-hidden="true"></span><span class="ends"><span data-i18n="flow.colder">mais fria</span><span data-i18n="flow.warmer">mais quente</span></span><span><span data-i18n="flow.key_anomaly">que a média do mar para a data, dia</span> <span data-when="anomaly"></span></span></p>
       <p class="flowkey" data-key="elnino" hidden><span class="ramp anomaly" aria-hidden="true"></span><span class="ends"><span data-i18n="flow.colder">mais fria</span><span data-i18n="flow.warmer">mais quente</span></span><span data-i18n="flow.key_elnino">a caixa é a região Niño 3.4: quente ali por meses é El Niño, fria é La Niña</span></p>
     </div>
+    <!-- The numbers and the idea are Carlos Toledo's swell-floripa (#76); tel: links dial on a phone. -->
+    <button id="sos" type="button" class="sos" aria-controls="sos-panel" aria-expanded="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"/></svg><span data-i18n="sos.open">emergência</span></button>
+    <section id="sos-panel" class="sos-panel" hidden aria-labelledby="sos-title">
+      <header>
+        <h2 id="sos-title" data-i18n="sos.title">em caso de emergência</h2>
+        <button id="sos-close" type="button" aria-label="fechar" data-i18n-aria-label="sos.close">×</button>
+      </header>
+      <p data-i18n="sos.free">ligações gratuitas, de qualquer telefone.</p>
+      <ul>
+        <li><a href="tel:193"><b>193</b><span data-i18n="sos.193">bombeiros e guarda-vidas</span></a></li>
+        <li><a href="tel:190"><b>190</b><span data-i18n="sos.190">polícia militar</span></a></li>
+        <li><a href="tel:192"><b>192</b><span data-i18n="sos.192">samu (ambulância)</span></a></li>
+        <li><a href="tel:185"><b>185</b><span data-i18n="sos.185">marinha: salvamento no mar</span></a></li>
+        <li><a href="tel:199"><b>199</b><span data-i18n="sos.199">defesa civil</span></a></li>
+      </ul>
+    </section>
     <p id="map-note" class="map-note" hidden aria-live="polite"></p>
     <aside id="list" class="list" hidden></aside>
     <section id="card" class="card" hidden aria-live="polite"></section>
