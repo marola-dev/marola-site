@@ -355,7 +355,6 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   border-top: 1px solid var(--line); color: var(--ink); text-decoration: none; font-size: 14px; line-height: 1.35; }
 .sos-panel a:hover { background: var(--surface); color: var(--ink); }
 .sos-panel a b { flex: none; min-width: 2.25em; font-weight: 650; font-variant-numeric: tabular-nums; }
-.sos-panel .sos-cvv a { border-top-color: var(--line-strong); }
 .sos-panel .sos-note { margin: 0; padding: 8px 16px 12px; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted); }
 
 /* Chat widget: MIP-0033 §5.2. */

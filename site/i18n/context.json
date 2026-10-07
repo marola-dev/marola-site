@@ -145,7 +145,6 @@
   "note.water_stale": "scoring note: the latest bathing-water sample is too old to trust; sampled_on = its date, day and short month",
   "note.water_unfit": "scoring note: the agency classified the water unfit; source = agency, sampled_on = sample date, point and location = the sampling point's name and place, enterococci_per_100ml = bacteria count or na when unknown",
   "sos.185": "emergency panel: who 185 reaches (the Navy's sea rescue)",
-  "sos.188": "emergency panel, last row after a divider: who 188 reaches (CVV, Centro de Valorização da Vida, a free 24 h crisis line); not a beach-rescue number",
   "sos.190": "emergency panel: who 190 reaches (Polícia Militar)",
   "sos.192": "emergency panel: who 192 reaches (SAMU, the public ambulance service; keep the acronym)",
   "sos.193": "emergency panel: who 193 reaches (Corpo de Bombeiros, which runs the lifeguards)",

@@ -83,8 +83,7 @@ from a CDN. Inter is the deliberate pick for a public-information, accessibility
 - **Primary action**: accent fill, white text. One per surface (chat open, chat send).
 - **Emergency button** (`#sos`): a map control in white glass, 32 px, 13 px, Lucide's phone in `--emergency`,
   top centre of the map (between the zoom buttons and the layer rail), above every panel. Its panel is
-  18 rem under it (a bottom sheet under 640 px): 193, 190, 192, 185 and 199, then CVV's 188 under a
-  `--line-strong` rule, each a 44 px `tel:` row with the number in 650 weight, and a 12 px note on 112/911.
+  18 rem under it (a bottom sheet under 640 px): 193, 190, 192, 185 and 199, each a 44 px `tel:` row with the number in 650 weight, and a 12 px note on 112/911.
   It fades in like a footer panel. From Carlos Toledo's swell-floripa (#76).
 - **Hour bar**: label, slider (accent), legend pushed right.
 - **Panels**: white, 1 px `--line`, 12 px radius, `--shadow-float`; bottom sheets under 640 px.

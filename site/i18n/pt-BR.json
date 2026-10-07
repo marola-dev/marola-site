@@ -145,7 +145,6 @@
   "note.water_stale": "laudo de balneabilidade antigo ({sampled_on})",
   "note.water_unfit": "água imprópria para banho: {source}, {sampled_on}, {point} ({location}), {enterococci_per_100ml, select, na {contagem n/d} other {{enterococci_per_100ml} enterococos/100 mL}}",
   "sos.185": "marinha: salvamento no mar",
-  "sos.188": "cvv: apoio emocional",
   "sos.190": "polícia militar",
   "sos.192": "samu (ambulância)",
   "sos.193": "bombeiros e guarda-vidas",

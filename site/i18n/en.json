@@ -145,7 +145,6 @@
   "note.water_stale": "water quality data stale ({sampled_on})",
   "note.water_unfit": "water unfit for bathing: {source} {sampled_on}, {point} ({location}), {enterococci_per_100ml, select, na {count n/a} other {{enterococci_per_100ml} enterococci/100mL}}",
   "sos.185": "navy: rescue at sea",
-  "sos.188": "cvv: emotional support",
   "sos.190": "military police",
   "sos.192": "samu (ambulance)",
   "sos.193": "fire brigade and lifeguards",
