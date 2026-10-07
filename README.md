@@ -31,8 +31,9 @@ Without docker, `node scripts/site_check.js` renders `site/static/app.js` agains
 a `site-data` writer dispatches `site-data-updated`. It pulls the pinned image, checks the page
 against the image's board schema, builds every area's boards (beach lists come from the Actions
 cache, so Overpass is asked only for an area without one), adds the page and the `coverage/`,
-`smoke/` and `stats/` panels from the `site-data` branch, and deploys to GitHub Pages under
-`marola.dev`. `404.html` forwards `marola.dev/docs/*` to [docs.marola.dev](https://docs.marola.dev).
+`smoke/` and `stats/` panels from the `site-data` branch, and deploys to the Cloudflare Worker
+that serves `marola.dev` (static assets on the free plan, `wrangler.jsonc`), with the same files on
+GitHub Pages as a fallback. `404.html` forwards `marola.dev/docs/*` to [docs.marola.dev](https://docs.marola.dev).
 
 ## Repo map
 
