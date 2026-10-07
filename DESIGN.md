@@ -51,17 +51,32 @@ where CSS variables do not reach.
 Inter only, self-hosted (`vendor/fonts/inter-latin-wght-normal.woff2`, variable weight), never
 from a CDN. Inter is the deliberate pick for a public-information, accessibility-first page.
 
-| Role | Size / weight | Where |
-|---|---|---|
-| Page title | 34 px / 650, -0.025em (28 px on phones) | first heading of about/support |
-| Wordmark | 22 px / 650, -0.02em (20 px) | header |
-| Panel title | 20 px / 650 (18 px) | card h2, about section h2 |
-| Body | 15 px / 400, 1.5 | map page; 16 px / 1.65 in reading columns |
-| UI | 14 px / 500 | controls, list rows, card readings |
-| Meta | 13 px / 400-500 | hour bar, legend, footer, labels |
-| Caption | 12 px | ranks, chips, day dates |
+Sizes are `--fs-*` tokens and each has a `--tr-*` tracking that follows Inter's dynamic metrics
+(`-0.0223 + 0.185 * e^(-0.1745 * px)` em): small text stays open, large text tightens. A rule that
+sets a size sets its tracking too, since `letter-spacing` inherits as a length.
 
-`tabular-nums` on scores, hours and distances. Prose ≤ 65ch. Weight, not size, makes hierarchy.
+| Role | Token | Size / weight / line-height | Tracking | Where |
+|---|---|---|---|---|
+| Display | `--fs-display` | 36 to 56 px (`clamp`) / 700 / 1.05 | -0.022em | page title of about and support |
+| Section | `--fs-28` | 28 px / 650 / 1.15 (24 px on phones) | -0.021em | reading-column h2 |
+| Wordmark | `--fs-22` | 22 px / 650 / 1.2 (20 px) | -0.018em | header |
+| Lede | `--fs-21` | 21 px / 400 / 1.45, `--muted` (19 px) | -0.018em | the paragraph under a page title |
+| Panel title | `--fs-20` | 20 px / 650 / 1.25 (18 px) | -0.017em | card h2 |
+| Quote | `--fs-19` | 19 px / 400 / 1.5 | -0.016em | a short cited quote in a reading column |
+| Reading | `--fs-17` | 17 px / 400 / 1.6; h3 at 600 / 1.4 | -0.013em | about and support body |
+| Body | `--fs-15` | 15 px / 400 / 1.5 | -0.009em | map page, panel titles in sos and chat |
+| UI | `--fs-14` | 14 px / 500 | -0.006em | controls, list rows, card readings |
+| Meta | `--fs-13` | 13 px / 400-500 | -0.003em | hour bar, legend, footer, labels, captions |
+| Caption | `--fs-12` | 12 px | 0 | ranks, chips, day dates, layer key |
+
+Headings get `text-wrap: balance` and `optimizeLegibility`, reading paragraphs `text-wrap:
+pretty`, and the whole page `font-kerning: normal`. `tabular-nums` on scores, hours and distances.
+Prose ≤ 65ch (the reading column is 40 rem). The two-letter area code keeps a wider +0.02em.
+
+The map page is a dense tool: weight, not size, makes its hierarchy, and it stays at 12 to 22 px.
+The reading pages (about, support) are where size works: a display title, a muted lede, 28 px
+section heads with 72 px above them (56 px on phones), and figures and quotes that take the full
+column.
 
 ## Space and shape
 

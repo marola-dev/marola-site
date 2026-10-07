@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title data-i18n="title.about">sobre o marola</title>
-  <meta name="description" content="O que é o marola, como a pontuação é calculada e de onde vêm os dados.">
+  <meta name="description" content="O que é o marola, por que é aberto e sem fins lucrativos, como funciona por dentro e de onde vêm os dados.">
   <meta name="theme-color" content="#ffffff">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https:; object-src 'none'">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -43,85 +43,209 @@
   <main class="main about">
     <article class="about-body" lang="pt-BR">
       <h2>o que é o marola</h2>
-      <p>o marola mostra, para cada praia da região, se o mar está bom para nadar agora e qual é o
-      melhor horário amanhã. ele junta a previsão de mar, vento e ondas com os laudos oficiais de
-      balneabilidade, leva em conta a chance de água-viva e de baleias, e resume tudo numa pontuação
-      por praia e por hora. o cálculo roda uma vez, fica guardado em cache, e você não precisa de
-      conta nem é rastreado.</p>
+      <p class="lede">imagine um amigo que conhece bem o mar. você pergunta "dá pra nadar amanhã? que
+      horas?". ele olha as ondas, o vento e a maré, vê se a água está própria para banho e até se tem
+      água-viva por perto. depois te diz o melhor horário, e por quê.</p>
+      <p>esse amigo é o marola. por enquanto, ele é um mapa das praias de Florianópolis, do Rio de
+      Janeiro e de Salvador, e cada praia tem uma nota para hoje e outra para amanhã. ele não inventa
+      nada: todo número vem de dados públicos. quando o assunto é risco, quem decide são regras
+      simples, que qualquer pessoa pode ler. e quando não sabe, ele diz "sem dados".</p>
 
-      <h2>como funciona a pontuação</h2>
-      <p>cada praia recebe um número numa das cinco faixas da legenda do mapa: <b>≥70</b> bom,
+      <h2>por que aberto e sem fins lucrativos</h2>
+      <p>boa parte dos dados do mar brasileiro está na mão de empresas e instituições privadas. sem
+      esses dados, não dá para prever a qualidade da água, os desastres climáticos nem os acidentes
+      ambientais.</p>
+      <p>por isso o marola é aberto e não tem fins lucrativos. a promessa é devolver tudo para todo
+      mundo, do melhor jeito que a gente conseguir. se a gente fosse só mais uma empresa, ficaria
+      difícil pedir esses dados para quem está com eles.</p>
+
+      <h2>balneabilidade primeiro</h2>
+      <p>o saneamento básico no Brasil ainda está longe de ser resolvido. o assunto é grande demais
+      para esta página, mas é ele que define por onde o marola começa: pela qualidade da água. antes do
+      surfe, da pesca ou do mergulho, vem a pergunta "posso entrar nessa água?".</p>
+      <p>uma das ideias é um ranking nacional de balneabilidade, que já está
+      <a href="https://github.com/marola-dev/marola/discussions/676">em discussão aberta</a>. a gente
+      ainda vai escrever muito sobre isso: quem cuida bem da água, quem cuida mal, como e por quê.</p>
+
+      <h2>um super app da água</h2>
+      <p>a gente vive a era dos super apps, e o marola vai acabar virando um super app da água. um
+      lugar só para tudo o que envolve a água: a praia, o mar, a balneabilidade e os riscos. não um app
+      que te dá ferramentas para você se virar, e sim um que te entrega a resposta pronta.</p>
+      <p>a Sequoia Capital, um dos maiores fundos de investimento do Vale do Silício, chama essa
+      mudança de "serviço como software". o software deixa de vender a ferramenta e passa a entregar
+      o trabalho feito.</p>
+      <blockquote lang="en">
+        <p>"A copilot sells the tool. An autopilot sells the work."</p>
+        <footer>Julien Bek, <a href="https://sequoiacap.com/article/services-the-new-software">Services: The New Software</a>, Sequoia Capital, 2026. a ideia vem de <a href="https://sequoiacap.com/article/generative-ais-act-o1">Generative AI's Act o1</a>, de Sonya Huang e Pat Grady, 2024.</footer>
+      </blockquote>
+
+      <h2>por que código aberto</h2>
+      <p>em 2026, não tem mais motivo para fazer código fechado. com a IA, nunca foi tão fácil criar
+      uma funcionalidade nova, e o código já não é o segredo. o Brasil precisa é de projetos de longo
+      prazo, que não dependam do calendário eleitoral nem morram quando o governo muda. com o código
+      aberto, o projeto segue vivo mesmo depois que quem começou vai embora.</p>
+
+      <h2>parcerias sem dinheiro</h2>
+      <p>o marola precisa de computação em nuvem: espaço para guardar os dados e placas de vídeo para
+      treinar e rodar os modelos. mesmo sem fins lucrativos, ele aceita parcerias com empresas que
+      cedam esses recursos, ou dados, sem passar dinheiro. em troca, a empresa ganha um crédito
+      discreto no site. nada de anúncio, banner ou rastreamento.</p>
+
+      <h2>como o marola é montado</h2>
+      <p>pense numa cozinha de restaurante. em vez de um cozinheiro fazer tudo sozinho, cada bancada
+      cuida de uma tarefa. no marola, cada bancada é um repositório de código:</p>
+      <ul>
+        <li><b>marola-app</b> é o fogão: junta a previsão do mar, as praias e a balneabilidade, e calcula a nota.</li>
+        <li><b>marola-site</b> é o salão: o mapa que você está usando.</li>
+        <li><b>marola-corpus</b> é o caderno de receitas: as anotações sobre o mar, cada uma com a sua fonte.</li>
+        <li><b>marola-ml</b> é a cozinha de testes: ali a IA treina e é provada antes de ir para o fogão.</li>
+        <li><b>marola-oods</b> é a despensa: um arquivo aberto com o histórico das praias e da água.</li>
+        <li><b>marola-devkit</b> é a caixa de ferramentas que todas as bancadas usam.</li>
+        <li><b>marola</b>, o repositório guarda-chuva, é o caderno do chef: os planos, as regras e o lugar de cada bancada.</li>
+      </ul>
+      <figure>
+        <a href="img/umbrella.pt-BR.svg"><img src="img/umbrella.pt-BR.svg" width="1000" height="620" alt="como os repositórios do marola dependem uns dos outros. o marola-corpus entrega anotações sobre o mar ao marola-app e ao marola-ml. a imagem Docker do marola-app monta o mapa do marola-site e roda o teste do marola-ml. o marola-ml devolve prompts compilados, e o marola-app grava no lago de dados do marola-oods. todos usam o marola-devkit."></a>
+        <figcaption>os repositórios do marola e o que cada um entrega aos outros. a mesma figura está no <a href="https://github.com/marola-dev/marola/blob/main/README.pt-BR.md">README do projeto</a>.</figcaption>
+      </figure>
+      <p>o nome disso é monólito distribuído. monólito porque funciona como uma peça só: um projeto,
+      um plano, um jeito de trabalhar, e as versões das partes andam juntas. distribuído porque cada
+      parte fica no seu próprio repositório, com os seus testes, e lança as suas próprias versões.</p>
+      <p>a gente fez assim por dois motivos. o primeiro: a gente escreve boa parte do código com
+      agentes de IA. eles trabalham melhor quando enxergam o projeto inteiro de cima, com um plano e
+      regras por escrito, e mexem numa parte pequena de cada vez. o segundo: cada parte também anda
+      sozinha, até certo ponto. quem só quer os dados de balneabilidade pode usar o marola-oods sem o
+      resto, e um erro numa bancada não derruba as outras. uma parte nunca usa o código da outra
+      direto: ela pega uma versão publicada e só troca de versão quando decide trocar.</p>
+
+      <h2>como funciona a nota</h2>
+      <p>cada praia cai numa das cinco faixas da legenda do mapa: <b>≥70</b> bom,
       <b>40–69</b> razoável, <b>1–39</b> ruim, <b>0</b> imprópria, ou <b>sem dados</b> quando alguma
-      fonte não respondeu. a pontuação considera o estado do mar, o vento, as ondas, a maré e a
-      qualidade da água. um modelo de linguagem escreve um resumo curto das condições, e uma segunda
-      revisão, também automática, confere esse resumo com os números antes de ele aparecer.</p>
+      fonte não respondeu. a nota leva em conta o mar, o vento, as ondas, a maré e a qualidade da
+      água. um modelo de linguagem escreve um resumo curto, e uma segunda revisão automática confere
+      se o resumo bate com os números. a IA só explica: ela nunca muda uma nota nem derruba um
+      alerta.</p>
 
       <h2>de onde vêm os dados</h2>
-      <p>a localização e o contorno das praias vêm do <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>.
-      as condições do mar e do tempo vêm do <a href="https://open-meteo.com/">Open-Meteo</a>. as duas
-      fontes são públicas e gratuitas, e o marola não usa nenhuma fonte de dados paga ou privada.
-      o mapa de fundo é do <a href="https://www.mapbox.com/about/maps/">Mapbox</a>, feito sobre o
-      OpenStreetMap. por enquanto, das camadas do mapa só a de balneabilidade está ligada; as outras
-      chegam em breve. as cores e as partículas de vento e de ondas são estimadas entre as praias a
-      partir da mesma previsão, e não de uma grade meteorológica: longe das praias elas somem.
-      as camadas de satélite, temperatura do mar, anomalias e El Niño são imagens públicas da NASA
-      (<a href="https://www.earthdata.nasa.gov/gibs">GIBS</a>): a foto VIIRS do dia anterior e a
-      temperatura da superfície do mar MUR, com cerca de dois dias de atraso.</p>
-      <p>o som do botão "som" é uma gravação de ondas feita por Luftrum
-      (<a href="https://freesound.org/s/48412/">freesound</a>, licença
-      <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>), em loop editado por
-      Porrumentzio para o <a href="https://github.com/rafaelmardojai/blanket">Blanket</a>.</p>
-      <p>o botão "emergência" e a sua lista de números gratuitos vêm do
-      <a href="https://swell-floripa.vercel.app/">swell-floripa</a>, de Carlos Toledo
-      (<a href="https://github.com/carlostoledo1891">@carlostoledo1891</a>).</p>
+      <p>as praias vêm do <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, a
+      previsão do mar e do tempo vem do <a href="https://open-meteo.com/">Open-Meteo</a>, e a
+      balneabilidade, dos boletins oficiais do IMA/SC, do INEA (RJ) e do INEMA (BA). são fontes
+      públicas e gratuitas. o mapa de fundo é do <a href="https://www.mapbox.com/about/maps/">Mapbox</a>,
+      feito a partir do OpenStreetMap. por enquanto, só as camadas de praias e de balneabilidade estão
+      ligadas. vento, ondas e as imagens de satélite da NASA
+      (<a href="https://www.earthdata.nasa.gov/gibs">GIBS</a>) chegam em breve.</p>
 
       <h2>privacidade</h2>
-      <p>o marola não usa cookies nem rastreamento próprio. o mapa de fundo é a exceção: para desenhá-lo,
-      o navegador busca o estilo, os pedaços do mapa e as fontes nos servidores do
-      <a href="https://www.mapbox.com/legal/privacy">Mapbox</a>, que recebem o seu endereço IP e contam
-      cada vez que o mapa abre (é assim que o Mapbox cobra). para essa contagem, o Mapbox guarda no seu
-      navegador um identificador aleatório, sem nome nem e-mail. quando você escolhe uma camada de
-      satélite, as imagens vêm dos servidores da NASA, que também veem o seu endereço IP. a opção "perto de mim" usa a sua
-      localização só dentro do navegador, e ela nunca é enviada para lugar nenhum. os dados das praias
-      são calculados em horários fixos e publicados como arquivos estáticos.</p>
+      <p>o marola não usa cookies nem rastreamento próprio. o mapa de fundo é a exceção. para desenhar
+      o mapa, o seu navegador busca o estilo, os pedaços do mapa e as fontes nos servidores do
+      <a href="https://www.mapbox.com/legal/privacy">Mapbox</a>. esses servidores recebem o seu
+      endereço IP e contam cada vez que o mapa abre, porque é assim que o Mapbox cobra. para essa
+      contagem, o Mapbox guarda no seu navegador um identificador aleatório, sem nome nem e-mail.
+      quando você escolhe uma camada de satélite, as imagens vêm dos servidores da NASA, que também
+      veem o seu endereço IP. a opção "perto de mim" usa a sua localização só dentro do navegador, e
+      ela nunca sai dali.</p>
 
-      <h2>quem faz o marola</h2>
-      <p>o marola é um projeto aberto e ainda em construção. o código, as propostas de design e as
-      notas de arquitetura estão públicos no <a href="https://github.com/marola-dev/marola">repositório no GitHub</a>.
-      <a href="https://docs.marola.dev/">a documentação</a> mostra o que já funciona hoje e o que ainda
-      é só proposta.</p>
+      <h2>agradecimentos</h2>
+      <p>a ideia do botão de emergência veio do <a href="https://swell-floripa.vercel.app/">swell-floripa</a>,
+      de Carlos Toledo (<a href="https://github.com/carlostoledo1891">@carlostoledo1891</a>).</p>
+      <p>o som das ondas é uma gravação de Luftrum (<a href="https://freesound.org/s/48412/">freesound</a>,
+      licença <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>), que Porrumentzio
+      editou em loop para o <a href="https://github.com/rafaelmardojai/blanket">Blanket</a>.</p>
+
+      <h2>como ajudar</h2>
+      <p>use o mapa e avise quando ele errar. conte também o que você vê na água, como água-viva, ou
+      se está faltando alguma praia. abra uma <a href="https://github.com/marola-dev/marola/issues">issue</a>,
+      em português ou em inglês. o código, os planos e cada decisão estão no
+      <a href="https://github.com/marola-dev/marola">GitHub</a>. <a href="https://docs.marola.dev/">a
+      documentação</a> mostra o que já funciona e o que ainda é plano.</p>
     </article>
     <article class="about-body" lang="en">
-      <h2>What this is</h2>
-      <p>marola ranks every beach nearby by whether it's good to swim right now, and tells you the
-      best hour tomorrow. It pulls live sea, wind, wave and water-quality conditions, checks them
-      against a jellyfish/whale heuristic, and turns the result into one score per beach per hour,
-      computed once, cached, no tracking, no account.</p>
+      <h2>What marola is</h2>
+      <p class="lede">Picture a friend who knows the sea well. You ask "can I swim tomorrow? when?",
+      and they check the waves, the wind, the tide, whether the water is fit for swimming and even
+      whether there are jellyfish around. Then they tell you the best hour, and why.</p>
+      <p>That friend is marola. Today it is a map of the beaches of Florianópolis, Rio de Janeiro and
+      Salvador, each with a score for today and tomorrow. It never makes things up: every number comes
+      from public data, and anything that could put you at risk is decided by simple rules anyone can
+      read. When it does not know, it says "no data".</p>
+
+      <h2>Why open and non-profit</h2>
+      <p>Much of Brazil's ocean data is held by private companies and institutions. Without that data
+      nobody can forecast water quality, climate disasters or environmental accidents.</p>
+      <p>That is why marola is open and non-profit. Our promise is to share everything with everyone,
+      as well as we can. As just another company, it would be hard to ask the people holding that data
+      for it.</p>
+
+      <h2>Water quality first</h2>
+      <p>Basic sanitation in Brazil is far from solved. That is too big a can of worms for this page,
+      but it decides where marola starts: with water quality. Before surfing, fishing or diving comes
+      the question "can I go in this water?".</p>
+      <p>One idea is a national bathing-water ranking, already
+      <a href="https://github.com/marola-dev/marola/discussions/676">under open discussion</a>. Many posts
+      will follow: who is looking after the water well, who is not, how and why.</p>
+
+      <h2>A water super app</h2>
+      <p>This is the era of super apps, and marola will inevitably be a super app for water: one place
+      for everything about water: the beach, the sea, water quality and hazards. Not an app that hands you tools to work it out
+      yourself, but one that hands you the answer.</p>
+      <p>It is the shift Sequoia Capital, one of Silicon Valley's largest venture funds, calls "service as
+      software": software stops selling the tool and starts delivering the work.</p>
+      <blockquote>
+        <p>"A copilot sells the tool. An autopilot sells the work."</p>
+        <footer>Julien Bek, <a href="https://sequoiacap.com/article/services-the-new-software">Services: The New Software</a>, Sequoia Capital, 2026. The idea goes back to <a href="https://sequoiacap.com/article/generative-ais-act-o1">Generative AI's Act o1</a> by Sonya Huang and Pat Grady, 2024.</footer>
+      </blockquote>
+
+      <h2>Why open source</h2>
+      <p>In 2026 there is no reason to write closed code. With AI, building a new feature has never been
+      easier; the code itself is no longer the secret. What Brazil needs are long-term projects that do
+      not hang on the election calendar or end when the government changes. Open source is what lets a
+      project outlive the people who started it.</p>
+
+      <h2>Partnerships without money</h2>
+      <p>marola needs compute and cloud: room to store data and graphics cards to train and run models.
+      Even as a non-profit, it is open to partnerships with companies that donate those resources, or
+      data, with no money changing hands. In return, the company gets a discreet credit on the site. No
+      ads, banners or tracking.</p>
+
+      <h2>How marola is built</h2>
+      <p>Think of a restaurant kitchen. Instead of one cook doing everything, each station has one job.
+      In marola, each station is a code repository:</p>
+      <ul>
+        <li><b>marola-app</b> is the stove: it brings together the sea forecast, the beaches and the water quality, and works out the score.</li>
+        <li><b>marola-site</b> is the dining room: the map you are using.</li>
+        <li><b>marola-corpus</b> is the recipe book: notes about the sea, each with its source.</li>
+        <li><b>marola-ml</b> is where the AI trains and gets tested before it reaches the stove.</li>
+        <li><b>marola-oods</b> is the pantry: an open archive of the beaches' and the water's history.</li>
+        <li><b>marola-devkit</b> is the toolbox every station uses.</li>
+        <li><b>marola</b>, the umbrella, is the chef's notebook: the plans, the rules and where each station sits.</li>
+      </ul>
+      <figure>
+        <a href="img/umbrella.svg"><img src="img/umbrella.svg" width="1000" height="620" alt="How marola's repositories depend on each other: marola-corpus feeds notes to marola-app and marola-ml, marola-app's image builds marola-site's map and runs marola-ml's benchmark, marola-ml returns compiled prompts, marola-app writes marola-oods' data lake; all of them use marola-devkit"></a>
+        <figcaption>marola's repositories and what each hands to the next. The same picture is in the <a href="https://github.com/marola-dev/marola/blob/main/README.md">project's README</a>.</figcaption>
+      </figure>
+      <p>We call this a distributed monolith. It is one project, with one plan, one way of working and
+      versions that move together, as if it were a single system. But each part lives in its own
+      repository, with its own tests and releases.</p>
+      <p>We built it this way for two reasons. First, much of the code is written with AI agents, and they
+      work best when they can see the whole project from above, with a plan and written rules, and
+      change one small part at a time. Second, each part keeps some autonomy outside the umbrella.
+      Someone who only wants the water-quality data can use marola-oods without the rest, and a mistake
+      at one station does not take down the others. No part reads another's code: it uses a published
+      version and moves to a new one only when it decides to.</p>
 
       <h2>How the score works</h2>
-      <p>Each beach gets a number from the same five bands shown on the map legend: <b>≥70</b>
-      good, <b>40–69</b> fair, <b>1–39</b> poor, <b>0</b> unfit, or <b>no data</b> when a source
-      didn't answer. The score folds together sea state, wind, waves, tide, and water quality;
-      an LLM writes a short plain-language summary of the conditions, and a second LLM pass checks
-      that summary against the numbers before it's shown.</p>
+      <p>Each beach gets a number in one of the five bands on the map legend: <b>≥70</b> good,
+      <b>40–69</b> fair, <b>1–39</b> poor, <b>0</b> unfit, or <b>no data</b> when a source did not
+      answer. The score folds together the sea, wind, waves, tide and water quality. A language model
+      writes a short summary, and a second automatic pass checks it against the numbers. The AI only
+      explains: it never changes a score or overrides a warning.</p>
 
       <h2>Where the data comes from</h2>
-      <p>Beach locations and shapes come from <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>.
-      Sea and weather conditions come from <a href="https://open-meteo.com/">Open-Meteo</a>. Both are
-      free, public sources; marola adds no private or paid data feed by default. The base map is
-      <a href="https://www.mapbox.com/about/maps/">Mapbox</a>'s, built on OpenStreetMap. For now, of the map's
-      layers only water quality is on; the others are coming soon. The wind and
-      wave colours and particles are estimated between beaches from the same forecast, not from a
-      weather grid, so they fade out away from the beaches. The satellite, sea temperature, anomaly
-      and El Niño layers are NASA's public imagery (<a href="https://www.earthdata.nasa.gov/gibs">GIBS</a>):
-      the previous day's VIIRS picture and the MUR sea surface temperature, about two days behind.</p>
-      <p>The "sound" button plays a recording of waves by Luftrum
-      (<a href="https://freesound.org/s/48412/">freesound</a>,
-      <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>), looped by Porrumentzio for
-      <a href="https://github.com/rafaelmardojai/blanket">Blanket</a>.</p>
-      <p>The "emergency" button and its list of free numbers come from Carlos Toledo's
-      <a href="https://swell-floripa.vercel.app/">swell-floripa</a>
-      (<a href="https://github.com/carlostoledo1891">@carlostoledo1891</a>).</p>
+      <p>Beaches come from <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, sea and
+      weather from <a href="https://open-meteo.com/">Open-Meteo</a>, and water quality from the official
+      bulletins of IMA/SC, INEA (RJ) and INEMA (BA). They are public, free sources. The base map is
+      <a href="https://www.mapbox.com/about/maps/">Mapbox</a>'s, built on OpenStreetMap. For now only the
+      beaches and water-quality layers are on; wind, waves and NASA's satellite imagery
+      (<a href="https://www.earthdata.nasa.gov/gibs">GIBS</a>) are coming soon.</p>
 
       <h2>Privacy</h2>
       <p>marola sets no cookies and does no tracking of its own. The base map is the exception: to draw
@@ -130,13 +254,21 @@
       and count each map load (that is how Mapbox bills). For that count Mapbox keeps a random
       identifier in your browser, with no name or email attached. When you pick a satellite layer,
       its images come from NASA's servers, which also see your IP address. The "near me" sort uses your
-      location only inside your own browser; it is never sent anywhere. The beach data is computed on
-      a schedule and served as static files.</p>
+      location only inside your own browser; it is never sent anywhere.</p>
 
-      <h2>Who builds this</h2>
-      <p>marola is an open, in-progress project: the code, design proposals and architecture notes
-      are public in <a href="https://github.com/marola-dev/marola">the repository on GitHub</a>. See <a href="https://docs.marola.dev/">the docs</a> for the full picture,
-      including what's running today versus what's still a design sketch.</p>
+      <h2>Thanks</h2>
+      <p>The emergency button idea came from <a href="https://swell-floripa.vercel.app/">swell-floripa</a>,
+      by Carlos Toledo (<a href="https://github.com/carlostoledo1891">@carlostoledo1891</a>).</p>
+      <p>The wave sound is a recording by Luftrum (<a href="https://freesound.org/s/48412/">freesound</a>,
+      <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>), looped by Porrumentzio for
+      <a href="https://github.com/rafaelmardojai/blanket">Blanket</a>.</p>
+
+      <h2>How to help</h2>
+      <p>Use the map and tell us when it is wrong. Tell us what you see in the water, like jellyfish or
+      a missing beach. Open an <a href="https://github.com/marola-dev/marola/issues">issue</a>, in
+      Portuguese or English. The code, the plans and every decision are on
+      <a href="https://github.com/marola-dev/marola">GitHub</a>, and <a href="https://docs.marola.dev/">the
+      docs</a> show what works today and what is still a plan.</p>
     </article>
   </main>
 

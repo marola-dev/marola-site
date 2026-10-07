@@ -36,20 +36,30 @@
   --r-control: 8px;
   --r-panel: 12px;
   --sans: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  /* type scale; each size's tracking follows Inter's dynamic metrics,
+   * -0.0223 + 0.185 * e^(-0.1745 * px) em. letter-spacing inherits as a length, so a rule that sets
+   * a size sets its tracking too. */
+  --fs-11: 11px; --fs-12: 12px; --fs-13: 13px; --fs-14: 14px; --fs-15: 15px; --fs-17: 17px; --fs-18: 18px;
+  --fs-19: 19px; --fs-20: 20px; --fs-21: 21px; --fs-22: 22px; --fs-24: 24px; --fs-28: 28px;
+  --fs-display: clamp(36px, 5vw + 12px, 56px);
+  --tr-11: .005em; --tr-12: 0em; --tr-13: -.003em; --tr-14: -.006em; --tr-15: -.009em; --tr-17: -.013em;
+  --tr-18: -.014em; --tr-19: -.016em; --tr-20: -.017em; --tr-21: -.018em; --tr-22: -.018em; --tr-24: -.02em;
+  --tr-28: -.021em; --tr-display: -.022em;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; }
 body {
-  font: 400 15px/1.5 var(--sans); letter-spacing: -.005em;
+  font: 400 var(--fs-15)/1.5 var(--sans); letter-spacing: var(--tr-15); font-kerning: normal;
   color: var(--ink); background: var(--bg);
   display: flex; flex-direction: column; min-height: 100vh;
-  -webkit-text-size-adjust: 100%; -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
 }
+h1, h2, h3 { text-rendering: optimizeLegibility; text-wrap: balance; }
 a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 3px; }
 a:hover { color: var(--accent-hover); }
 ::selection { background: var(--accent-soft); }
 b, strong { font-weight: 600; }
-small { font-size: 13px; }
+small { font-size: var(--fs-13); letter-spacing: var(--tr-13); }
 [hidden] { display: none !important; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .ic { width: 16px; height: 16px; flex: none; vertical-align: -3px; fill: none; stroke: currentColor;
@@ -60,13 +70,13 @@ small { font-size: 13px; }
 /* utility strip: sections, language, the repo. Plain links, not pills: they are navigation */
 .sitenav { display: flex; flex-wrap: wrap; gap: 4px 20px; align-items: center;
   min-height: 40px; padding: 4px 24px; background: var(--surface); border-bottom: 1px solid var(--line);
-  font-size: 13px; }
+  font-size: var(--fs-13); letter-spacing: var(--tr-13); }
 .sitenav > a { color: var(--ink); text-decoration: none; font-weight: 500; }
 .sitenav > a:hover { color: var(--accent); }
 .sitenav > a[aria-current="page"] { color: var(--accent); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 6px; }
 /* a section with no page yet is muted text, so it does not read as a link */
 .sitenav span, .about-body span[aria-disabled] { color: var(--muted); cursor: default; }
-.sitenav i, .about-body span[aria-disabled] i { font-style: normal; font-size: 12px; color: var(--muted); margin-left: 2px; }
+.sitenav i, .about-body span[aria-disabled] i { font-style: normal; font-size: var(--fs-12); letter-spacing: var(--tr-12); color: var(--muted); margin-left: 2px; }
 .sitenav i::before, .about-body span[aria-disabled] i::before { content: "("; }
 .sitenav i::after, .about-body span[aria-disabled] i::after { content: ")"; }
 /* the repo link, #498: static on purpose, no live star count (that would be a request to api.github.com) */
@@ -91,10 +101,10 @@ small { font-size: 13px; }
 .brand { display: flex; align-items: baseline; gap: 4px 16px; flex-wrap: wrap; min-width: 0; }
 .bar h1 {
   display: flex; align-items: center; gap: 8px; margin: 0;
-  font-size: 22px; font-weight: 650; line-height: 1.2; letter-spacing: -.02em; white-space: nowrap;
+  font-size: var(--fs-22); font-weight: 650; line-height: 1.2; letter-spacing: var(--tr-22); white-space: nowrap;
 }
 .bar h1 svg { width: 22px; height: 22px; color: var(--accent); flex: none; align-self: center; }
-.tagline { margin: 0; font-size: 14px; line-height: 1.4; color: var(--muted); max-width: 60ch; }
+.tagline { margin: 0; font-size: var(--fs-14); letter-spacing: var(--tr-14); line-height: 1.4; color: var(--muted); max-width: 60ch; }
 .controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-left: auto; }
 .controls:empty { display: none; }
 
@@ -102,7 +112,7 @@ small { font-size: 13px; }
  * accent; the one primary action per surface (chat) takes the accent fill. */
 select, button, .pill, .controls > a {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  font: inherit; font-size: 14px; font-weight: 500; line-height: 1.2; min-height: 36px; padding: 0 12px;
+  font: inherit; font-size: var(--fs-14); letter-spacing: var(--tr-14); font-weight: 500; line-height: 1.2; min-height: 36px; padding: 0 12px;
   border: 1px solid var(--line-strong); border-radius: var(--r-control);
   background: var(--bg); color: var(--ink); cursor: pointer; text-decoration: none; white-space: nowrap;
 }
@@ -118,17 +128,17 @@ button[aria-pressed="true"], button[aria-expanded="true"] {
 .lang { min-height: 30px; }
 .segmented button, .lang button { min-height: 30px; padding: 0 10px; border-color: transparent; background: transparent;
   border-radius: 6px; color: var(--muted); }
-.lang button { min-height: 24px; padding: 0 8px; font-size: 12px; }
+.lang button { min-height: 24px; padding: 0 8px; font-size: var(--fs-12); letter-spacing: var(--tr-12); }
 .segmented button:hover, .lang button:hover { background: rgb(255 255 255 / .6); border-color: transparent; color: var(--ink); }
 .segmented button.on, .lang button[aria-pressed="true"] {
   background: var(--bg); border-color: var(--line); color: var(--ink); box-shadow: 0 1px 2px rgb(17 24 32 / .08); }
-.segmented button small { font-size: 12px; color: var(--muted); font-weight: 400; }
+.segmented button small { font-size: var(--fs-12); letter-spacing: var(--tr-12); color: var(--muted); font-weight: 400; }
 
 /* hour slider + legend */
 .hourbar {
   display: flex; align-items: center; gap: 8px 24px; flex-wrap: wrap;
   padding: 8px 24px; background: var(--bg); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
-  font-size: 13px; line-height: 1.4; color: var(--muted);
+  font-size: var(--fs-13); letter-spacing: var(--tr-13); line-height: 1.4; color: var(--muted);
 }
 .hourbar label { min-width: 12rem; font-weight: 500; color: var(--ink); }
 .hourbar input[type=range] { flex: 1 1 12rem; min-width: 8rem; max-width: 28rem; margin: 0; accent-color: var(--accent); }
@@ -152,7 +162,7 @@ button[aria-pressed="true"], button[aria-expanded="true"] {
 /* the layer rail, Windy-style: top right of the map; it scrolls if the map is too short for it.
  * The padding keeps the buttons' shadows inside the scroll box. */
 .flow { position: absolute; z-index: 900; top: 12px; right: 12px; max-height: calc(100% - 24px); overflow-y: auto; scrollbar-width: none; padding: 2px 6px 8px; margin: -2px -6px 0 0; display: flex; flex-direction: column; align-items: flex-end;
-  gap: 8px; font-size: 12px; color: var(--glass-muted); }
+  gap: 8px; font-size: var(--fs-12); letter-spacing: var(--tr-12); color: var(--glass-muted); }
 .flow .layers { display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .flow .layers .sep { width: 20px; height: 1px; margin: 2px 0; background: var(--glass-line); }
 .flow .layers button { display: flex; align-items: center; justify-content: center; width: 36px; min-height: 36px; padding: 0;
@@ -166,7 +176,7 @@ button[aria-pressed="true"], button[aria-expanded="true"] {
 .flow .layers button.soon { opacity: .45; cursor: not-allowed; }
 .flow .layers button.soon:hover { background: var(--glass); color: var(--glass-ink); }
 .flow .layers button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
-.flowkeys { position: absolute; z-index: 900; left: 12px; bottom: 40px; font-size: 12px; color: var(--glass-muted); }
+.flowkeys { position: absolute; z-index: 900; left: 12px; bottom: 40px; font-size: var(--fs-12); letter-spacing: var(--tr-12); color: var(--glass-muted); }
 .flowkey [data-when] { white-space: nowrap; }
 .flowkey { display: grid; gap: 4px; width: 13rem; margin: 0; padding: 8px 10px; line-height: 1.35;
   background: var(--glass); border: 1px solid var(--glass-line); border-radius: var(--r-control);
@@ -182,7 +192,7 @@ button[aria-pressed="true"], button[aria-expanded="true"] {
 .flowkey .dots .wpoint { display: inline-block; width: 12px; height: 12px; background: none; border-radius: 0; margin-right: 5px; vertical-align: -1px; }
 .map-note { position: absolute; z-index: 900; top: 12px; right: 12px; max-width: min(24rem, calc(100% - 24px)); margin: 0;
   padding: 12px 16px; background: var(--bg); border: 1px solid var(--line); border-radius: var(--r-panel);
-  box-shadow: var(--shadow-float); font-size: 14px; }
+  box-shadow: var(--shadow-float); font-size: var(--fs-14); letter-spacing: var(--tr-14); }
 
 /* panels float over the map, so they are the one place with elevation */
 .list, .card {
@@ -193,26 +203,26 @@ button[aria-pressed="true"], button[aria-expanded="true"] {
 .list ol { margin: 0; padding: 0; list-style: none; counter-reset: rank; }
 .list li {
   display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 10px;
-  padding: 10px 16px; border-top: 1px solid var(--line); cursor: pointer; font-size: 14px; font-weight: 500; line-height: 1.4;
+  padding: 10px 16px; border-top: 1px solid var(--line); cursor: pointer; font-size: var(--fs-14); letter-spacing: var(--tr-14); font-weight: 500; line-height: 1.4;
 }
 .list li:first-child { border-top: 0; }
-.list li::before { content: counter(rank); counter-increment: rank; min-width: 1.5em; text-align: right; font-size: 12px; font-weight: 400; color: var(--muted); }
+.list li::before { content: counter(rank); counter-increment: rank; min-width: 1.5em; text-align: right; font-size: var(--fs-12); letter-spacing: var(--tr-12); font-weight: 400; color: var(--muted); }
 .list li:hover { background: var(--surface); }
 .list .score {
   display: inline-block; min-width: 2.4em; padding: 1px 6px; text-align: center;
-  color: #fff; border-radius: 999px; font-size: 12px; line-height: 1.5; font-weight: 600;
+  color: #fff; border-radius: 999px; font-size: var(--fs-12); letter-spacing: var(--tr-12); line-height: 1.5; font-weight: 600;
 }
-.list .dist { margin-left: auto; font-size: 13px; font-weight: 400; color: var(--muted); }
-.list .water { flex-basis: 100%; padding-left: calc(1.5em + 10px); font-size: 12px; font-weight: 400; color: var(--muted); }
+.list .dist { margin-left: auto; font-size: var(--fs-13); letter-spacing: var(--tr-13); font-weight: 400; color: var(--muted); }
+.list .water { flex-basis: 100%; padding-left: calc(1.5em + 10px); font-size: var(--fs-12); letter-spacing: var(--tr-12); font-weight: 400; color: var(--muted); }
 .list .water.unfit { color: var(--c0); font-weight: 600; }
 
 .card { right: 12px; bottom: 12px; width: min(26rem, calc(100vw - 24px)); max-height: calc(100% - 24px); padding: 20px 24px 16px; }
-.card h2 { margin: 0 40px 12px 0; font-size: 20px; font-weight: 650; line-height: 1.25; letter-spacing: -.015em; }
+.card h2 { margin: 0 40px 12px 0; font-size: var(--fs-20); font-weight: 650; line-height: 1.25; letter-spacing: var(--tr-20); }
 .card .close { position: absolute; top: 14px; right: 14px; }
-.card .headline { margin: 16px 0 12px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 15px; }
-.card .headline .score { color: #fff; border-radius: 999px; padding: 2px 8px; margin-right: 4px; font-size: 13px; font-weight: 600; }
-.card dl { margin: 0; display: grid; grid-template-columns: 6.5rem 1fr; gap: 8px 16px; font-size: 14px; }
-.card dt { font-size: 13px; color: var(--muted); }
+.card .headline { margin: 16px 0 12px; padding-top: 16px; border-top: 1px solid var(--line); font-size: var(--fs-15); letter-spacing: var(--tr-15); }
+.card .headline .score { color: #fff; border-radius: 999px; padding: 2px 8px; margin-right: 4px; font-size: var(--fs-13); letter-spacing: var(--tr-13); font-weight: 600; }
+.card dl { margin: 0; display: grid; grid-template-columns: 6.5rem 1fr; gap: 8px 16px; font-size: var(--fs-14); letter-spacing: var(--tr-14); }
+.card dt { font-size: var(--fs-13); letter-spacing: var(--tr-13); color: var(--muted); }
 .card dd { margin: 0; max-width: 65ch; }
 .card dd small { color: var(--muted); }
 .card ul { margin: 0; padding-left: 1rem; }
@@ -222,13 +232,13 @@ button[aria-pressed="true"], button[aria-expanded="true"] {
 .card .proper { color: #137a5c; }
 .card .past { color: var(--muted); }
 
-.footer { padding: 12px 24px 16px; font-size: 13px; line-height: 1.55; color: var(--muted); background: var(--surface); border-top: 1px solid var(--line); }
+.footer { padding: 12px 24px 16px; font-size: var(--fs-13); letter-spacing: var(--tr-13); line-height: 1.55; color: var(--muted); background: var(--surface); border-top: 1px solid var(--line); }
 .footer p { margin: 4px 0; max-width: 75ch; }
-.footer .lore { font-size: 15px; color: var(--ink); }
+.footer .lore { font-size: var(--fs-15); letter-spacing: var(--tr-15); color: var(--ink); }
 /* the lore and the score note fold behind compact controls (#59); open, they take the pressed look */
 .folds { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 /* tight padding, the label never wraps; a phone gets bigger ones further down */
-.footer .fold { min-height: 32px; padding: 0 8px 0 7px; gap: 6px; font-size: 13px; white-space: nowrap; }
+.footer .fold { min-height: 32px; padding: 0 8px 0 7px; gap: 6px; font-size: var(--fs-13); letter-spacing: var(--tr-13); white-space: nowrap; }
 /* not built yet: reads as a control, muted, and does nothing (no pressed look, no press nudge) */
 .footer .fold.soon, .footer .fold.soon:hover { color: var(--muted); background: var(--bg); border-color: var(--line-strong); cursor: default; }
 .footer .fold.soon:active { transform: none; }
@@ -258,14 +268,25 @@ body { text-transform: lowercase; }
 .nojs { padding: 32px; max-width: 65ch; }
 
 /* about / support: a reading column */
-.about { display: block; flex: none; padding: 48px 24px 80px; border-top: 1px solid var(--line); }
-.about-body { max-width: 38rem; margin: 0 auto; font-size: 16px; line-height: 1.65; }
-.about-body h2 { font-size: 20px; font-weight: 650; line-height: 1.3; letter-spacing: -.015em; margin: 48px 0 12px; }
-.about-body h2:first-child { font-size: 34px; line-height: 1.15; letter-spacing: -.025em; margin: 0 0 24px; }
+.about { display: block; flex: none; padding: 64px 24px 96px; border-top: 1px solid var(--line); }
+.about-body { max-width: 40rem; margin: 0 auto; font-size: var(--fs-17); line-height: 1.6; letter-spacing: var(--tr-17); }
+.about-body h2 { margin: 72px 0 16px; font-size: var(--fs-28); font-weight: 650; line-height: 1.15; letter-spacing: var(--tr-28); }
+.about-body h2:first-child { margin: 0 0 20px; font-size: var(--fs-display); font-weight: 700; line-height: 1.05; letter-spacing: var(--tr-display); }
+.about-body .lede { margin: 0 0 40px; font-size: var(--fs-21); font-weight: 400; line-height: 1.45; letter-spacing: var(--tr-21); color: var(--muted); }
+.about-body h3 { margin: 32px 0 8px; font-size: var(--fs-17); font-weight: 600; line-height: 1.4; letter-spacing: var(--tr-17); }
+.about-body p, .about-body li { text-wrap: pretty; }
 .about-body p { margin: 0 0 16px; }
-.about-body ul { padding-left: 1.2rem; }
-.about-body li { margin-bottom: 6px; }
-.about-body code { font-size: 14px; padding: 1px 5px; border-radius: 4px; background: var(--surface); }
+.about-body ol, .about-body ul { margin: 0 0 16px; padding-left: 1.25rem; }
+.about-body li { margin: 0 0 8px; }
+.about-body figure { margin: 40px 0; }
+.about-body figure img { display: block; width: 100%; height: auto; border-radius: var(--r-panel); }
+.about-body figcaption { margin-top: 12px; font-size: var(--fs-13); line-height: 1.5; letter-spacing: var(--tr-13); color: var(--muted); }
+.about-body blockquote { margin: 24px 0; padding-left: 16px; border-left: 2px solid var(--line-strong);
+  font-size: var(--fs-19); line-height: 1.5; letter-spacing: var(--tr-19); color: var(--ink); }
+.about-body blockquote > :last-child { margin-bottom: 0; }
+.about-body blockquote cite, .about-body blockquote footer { font-size: var(--fs-13); font-style: normal; letter-spacing: var(--tr-13); color: var(--muted); }
+.about-body blockquote footer { margin-top: 8px; }
+.about-body code { font-size: var(--fs-15); letter-spacing: var(--tr-15); padding: 1px 5px; border-radius: 4px; background: var(--surface); }
 html:not(:lang(en)) article.about-body:lang(en), html:lang(en) article.about-body:lang(pt) { display: none; }
 /* The empty slot is the width the address will take (0x + 40 hex digits). */
 .addr:empty { display: inline-block; width: 42ch; max-width: 100%; padding: 0 .4rem; vertical-align: middle;
@@ -280,8 +301,8 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
 .mapboxgl-ctrl-group button + button { border-top-color: var(--glass-line) !important; }
 .mapboxgl-ctrl-group button:hover { background: var(--glass-hover) !important; }
 .mapboxgl-ctrl-group button { min-height: 0; border-radius: 0; }
-.mapboxgl-ctrl-attrib { font-size: 11px; }
-.mapboxgl-popup { font-size: 13px; font-variant-numeric: tabular-nums; pointer-events: none; }
+.mapboxgl-ctrl-attrib { font-size: var(--fs-11); letter-spacing: var(--tr-11); }
+.mapboxgl-popup { font-size: var(--fs-13); letter-spacing: var(--tr-13); font-variant-numeric: tabular-nums; pointer-events: none; }
 .mapboxgl-popup-content { padding: 8px 12px; color: var(--glass-ink); background: var(--glass); border: 1px solid var(--glass-line);
   border-radius: var(--r-control); box-shadow: var(--shadow-float); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
 .mapboxgl-popup .unfit, .mapboxgl-popup .improper { color: var(--glass-unfit); }
@@ -321,7 +342,7 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
 .legend .wave-key { color: var(--muted); }
 .legend .wave-key svg { width: 12px; height: 12px; vertical-align: -1px; margin-right: 6px; }
 /* in the card the head repeats the h2, and a 390 px card cannot fit one line per reading */
-.card .aspects { margin: 0; font-size: 13px; }
+.card .aspects { margin: 0; font-size: var(--fs-13); letter-spacing: var(--tr-13); }
 .card .aspects .head { display: none; }
 .card .aspects .grid { gap: 4px 12px; }
 
@@ -338,7 +359,7 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
 /* Emergency numbers (#76): a map control in white glass, top centre, clear of the zoom buttons
  * and the layer rail; only its icon is red, so it never reads as a score. */
 .sos, .sos-panel { position: absolute; z-index: 1001; left: 0; right: 0; margin: 0 auto; }
-.sos { top: 12px; width: fit-content; min-height: 32px; padding: 0 10px; gap: 6px; font-size: 13px;
+.sos { top: 12px; width: fit-content; min-height: 32px; padding: 0 10px; gap: 6px; font-size: var(--fs-13); letter-spacing: var(--tr-13);
   background: var(--glass); border-color: var(--glass-line); color: var(--glass-ink); box-shadow: var(--shadow-float);
   backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
 .sos .ic { width: 14px; height: 14px; color: var(--emergency); }
@@ -348,14 +369,14 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   border-radius: var(--r-panel); box-shadow: var(--shadow-float);
   max-height: calc(100% - 64px); overflow-y: auto; overscroll-behavior: contain; }
 .sos-panel header { display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 0 16px; }
-.sos-panel h2 { margin: 0; font-size: 15px; font-weight: 600; }
-.sos-panel > p { margin: 0 16px 8px; font-size: 13px; color: var(--muted); }
+.sos-panel h2 { margin: 0; font-size: var(--fs-15); letter-spacing: var(--tr-15); font-weight: 600; }
+.sos-panel > p { margin: 0 16px 8px; font-size: var(--fs-13); letter-spacing: var(--tr-13); color: var(--muted); }
 .sos-panel ul { margin: 0; padding: 0; list-style: none; }
 .sos-panel a { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 4px 16px;
-  border-top: 1px solid var(--line); color: var(--ink); text-decoration: none; font-size: 14px; line-height: 1.35; }
+  border-top: 1px solid var(--line); color: var(--ink); text-decoration: none; font-size: var(--fs-14); letter-spacing: var(--tr-14); line-height: 1.35; }
 .sos-panel a:hover { background: var(--surface); color: var(--ink); }
 .sos-panel a b { flex: none; min-width: 2.25em; font-weight: 650; font-variant-numeric: tabular-nums; }
-.sos-panel .sos-note { margin: 0; padding: 8px 16px 12px; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted); }
+.sos-panel .sos-note { margin: 0; padding: 8px 16px 12px; border-top: 1px solid var(--line); font-size: var(--fs-12); letter-spacing: var(--tr-12); color: var(--muted); }
 
 /* Chat widget: MIP-0033 §5.2. */
 .chat-toggle {
@@ -371,19 +392,19 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   background: var(--bg); border: 1px solid var(--line); border-radius: var(--r-panel); box-shadow: var(--shadow-float);
 }
 .chat-panel header { display: flex; align-items: center; justify-content: space-between; padding: 12px 12px 12px 16px; border-bottom: 1px solid var(--line); }
-.chat-panel h2 { margin: 0; font-size: 15px; font-weight: 600; }
+.chat-panel h2 { margin: 0; font-size: var(--fs-15); letter-spacing: var(--tr-15); font-weight: 600; }
 /* the two close buttons are the shared control as a 32 px square */
-.chat-panel header button, .card .close, .sos-panel header button { width: 32px; height: 32px; min-height: 0; padding: 0; font-size: 18px; line-height: 1;
+.chat-panel header button, .card .close, .sos-panel header button { width: 32px; height: 32px; min-height: 0; padding: 0; font-size: var(--fs-18); letter-spacing: var(--tr-18); line-height: 1;
   border-color: transparent; color: var(--muted); }
 .chat-panel header button:hover, .card .close:hover, .sos-panel header button:hover { color: var(--ink); }
-.chat-log { flex: 1; overflow-y: auto; padding: 12px 16px; min-height: 6rem; font-size: 14px; }
+.chat-log { flex: 1; overflow-y: auto; padding: 12px 16px; min-height: 6rem; font-size: var(--fs-14); letter-spacing: var(--tr-14); }
 .chat-msg { margin: 0 0 8px; padding: 8px 12px; border-radius: 10px; max-width: 90%; white-space: pre-wrap; }
 .chat-msg.user { background: var(--accent-soft); margin-left: auto; }
 .chat-msg.assistant { background: var(--surface); }
 .chat-msg.pending { color: var(--muted); }
-.chat-offline { margin: 0 16px 8px; color: var(--c0); font-size: 13px; }
+.chat-offline { margin: 0 16px 8px; color: var(--c0); font-size: var(--fs-13); letter-spacing: var(--tr-13); }
 #chat-form { display: flex; gap: 8px; padding: 12px; border-top: 1px solid var(--line); }
-#chat-input { flex: 1; min-width: 0; min-height: 36px; padding: 0 12px; border: 1px solid var(--line-strong); border-radius: var(--r-control); font: inherit; font-size: 14px; }
+#chat-input { flex: 1; min-width: 0; min-height: 36px; padding: 0 12px; border: 1px solid var(--line-strong); border-radius: var(--r-control); font: inherit; font-size: var(--fs-14); letter-spacing: var(--tr-14); }
 
 @media (max-width: 640px) {
   .sitenav { padding: 4px 16px; gap: 4px 16px; }
@@ -392,8 +413,8 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   .sitenav .gh .gh-name, .sitenav .gh .gh-star { display: none; }
   .lang-icon { display: none; }
   .bar { padding: 12px 16px; gap: 10px; }
-  .bar h1 { font-size: 20px; }
-  .tagline { font-size: 13px; }
+  .bar h1 { font-size: var(--fs-20); letter-spacing: var(--tr-20); }
+  .tagline { font-size: var(--fs-13); letter-spacing: var(--tr-13); }
   /* one row on a phone: the day buttons drop their dates, the three actions keep only their icon
    * (the label stays for screen readers) */
   .controls { margin-left: 0; width: 100%; flex-wrap: nowrap; gap: 6px; }
@@ -413,11 +434,11 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   .flow .layers button { width: 32px; min-height: 32px; }
   .flow .layers button .ic { width: 16px; height: 16px; }
   .flowkeys { left: 8px; bottom: 36px; }
-  .flowkey { width: 7.5rem; padding: 6px 8px; font-size: 11px; }
+  .flowkey { width: 7.5rem; padding: 6px 8px; font-size: var(--fs-11); letter-spacing: var(--tr-11); }
   .flowkey > span:last-child { display: none; } /* the caption; the about page explains the field */
   .list { top: auto; left: 8px; right: 8px; bottom: 8px; width: auto; max-height: 55%; }
   .card { left: 8px; right: 8px; bottom: 8px; width: auto; max-height: 62%; padding: 16px 16px 12px; }
-  .card h2 { font-size: 18px; }
+  .card h2 { font-size: var(--fs-18); letter-spacing: var(--tr-18); }
   .card dl { grid-template-columns: 5.5rem 1fr; }
   .legend .wave-key { display: none; } /* no hover on touch, and it clips at 390 px */
   .chat-panel { right: 8px; left: 8px; width: auto; bottom: 64px; }
@@ -427,16 +448,17 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   .footer { padding: 12px 16px 16px; }
   /* a 10 px plus on a 32 px control went unnoticed on a phone (#68): a 44 px target and a filled badge */
   .folds { gap: 8px; }
-  .footer .fold { min-height: 44px; padding: 0 14px 0 10px; gap: 8px; font-size: 15px; }
+  .footer .fold { min-height: 44px; padding: 0 14px 0 10px; gap: 8px; font-size: var(--fs-15); letter-spacing: var(--tr-15); }
   .fold .pm { width: 20px; height: 20px; border-radius: 50%; background: var(--accent); color: var(--bg); }
   .fold .pm::before, .fold .pm::after { left: 5px; top: 9px; }
   .footer .fold.soon .pm { background: var(--muted); }
-  .about { padding: 32px 16px 64px; }
-  .about-body h2:first-child { font-size: 28px; }
+  .about { padding: 40px 16px 72px; }
+  .about-body h2 { margin-top: 56px; font-size: var(--fs-24); letter-spacing: var(--tr-24); }
+  .about-body .lede { font-size: var(--fs-19); letter-spacing: var(--tr-19); }
 }
 /* the smallest phones: "tomorrow" still has to fit beside "today" */
 @media (max-width: 359px) {
   .controls { gap: 4px; }
   .controls > button { width: 32px; }
-  .controls .segmented button { padding: 0 2px; font-size: 12px; }
+  .controls .segmented button { padding: 0 2px; font-size: var(--fs-12); letter-spacing: var(--tr-12); }
 }
