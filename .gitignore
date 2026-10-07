@@ -10,3 +10,6 @@ __pycache__/
 
 # a pool node's auth key (ops/br-proxy/JOIN.md)
 /ops/br-proxy/.env
+
+# wrangler's local state
+.wrangler/

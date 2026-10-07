@@ -97,8 +97,9 @@ repo boundary is an umbrella MIP.
 
 ## Cost & deployment safety (hard rule)
 
-As in the umbrella. `site.yml` deploys to GitHub Pages (free) on a schedule and on `main`; an agent
-does not trigger a deploy by hand (`just site-deploy` is denied in `.claude/settings.json`).
+As in the umbrella. `site.yml` deploys to GitHub Pages (free) on a schedule and on `main`, and the
+same files to the Cloudflare Worker `marola` (free static assets, MIP-0078); an agent does not
+trigger a deploy by hand (`just site-deploy` is denied in `.claude/settings.json`).
 
 The base map is Mapbox's, billed per map load above its free tier: the account, the token and
 any billing setting are a human's. So are the Tailscale tailnet, its OAuth client and every pool
