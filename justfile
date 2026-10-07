@@ -33,7 +33,7 @@ br-proxy-node action="status":
 site-serve port="8000":
     python3 -m http.server -d site/dist {{ port }}
 
-# Deploy the map (site.yml on GitHub Pages).
+# Deploy the map (site.yml: the Cloudflare Worker behind marola.dev, GitHub Pages as fallback).
 site-deploy:
     gh workflow run site.yml && echo "queued site.yml — watch it: gh run list --workflow site.yml"
 
