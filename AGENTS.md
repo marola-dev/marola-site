@@ -117,6 +117,16 @@ Commits carry `Tested:`, `Cost:` and `Co-Authored-By: Claude <noreply@anthropic.
 `MIP: none — <reason>`; `just prepush` runs `scripts/mip-trailer-check.sh` over the pushed
 commits (`origin/main..HEAD` when the hook does not pass the pushed refs on).
 
+## Screenshots in the PR (hard rule)
+
+A PR that changes anything a visitor sees shows it in its own body, not only in a chat thread:
+before and after, desktop (1280 × 800) and phone (390 × 844), of every page the change touches.
+Push the PNGs to the orphan `pr-screenshots` branch under `<pr-number>/` and embed them by their
+`https://raw.githubusercontent.com/marola-dev/marola-site/pr-screenshots/<pr-number>/<file>.png`
+URL, in a Before | After table. Images never go on `main`. A screenshot taken on a stand-in map
+style (the sandbox can't reach Mapbox) says so under the table. No screenshots in the body, the
+PR is not ready for review.
+
 ## Phase discipline (hard rule)
 
 The phase list is the umbrella's `docs/PHASES.md`. Site work serves the current phase.
