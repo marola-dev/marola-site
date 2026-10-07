@@ -238,6 +238,12 @@ button[aria-pressed="true"], button[aria-expanded="true"] {
 .fold .pm::after { transform: rotate(90deg); }
 .fold[aria-expanded="true"] .pm::after { transform: rotate(180deg); } /* lies on the bar: [+] turns into [−] */
 .footer .fold-panel { margin: 10px 0 2px; }
+/* local artists (#67): one line each, the name first, the links as icons with a 32 px target like the toggles */
+.footer .artists { list-style: none; padding: 0; }
+.footer .artists li { margin: 4px 0; max-width: 75ch; }
+.footer .artist-name { font-weight: 600; color: var(--ink); }
+.footer .artist-link { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; margin: -8px -4px; vertical-align: middle; border-radius: 6px; }
+.footer .artist-link:hover { background: var(--bg); }
 /* 840 px and up: the status at left, the toggles at right on its line; the status wraps before they do.
  * Measured on the longest real status (salvador, pt-BR): from 840 px it keeps >= 400 px and <= 3 lines;
  * narrower, it turns into a sliver, so the toggles drop to their own row under it. */
@@ -247,12 +253,12 @@ button[aria-pressed="true"], button[aria-expanded="true"] {
   .footbar .folds { flex: none; flex-wrap: nowrap; margin-top: 0; }
 }
 /* Lowercase house style, except names marola did not choose: providers, the agency's verbatim
- * PRÓPRIA/IMPRÓPRIA verdict (MIP-0001), beaches, and literal text in <code> (a `Cost:` trailer; an
+ * PRÓPRIA/IMPRÓPRIA verdict (MIP-0001), beaches, artists, and literal text in <code> (a `Cost:` trailer; an
  * EIP-55 address, whose letter case is its checksum). Containers are exempted because app.js emits
  * beach names as bare text nodes. */
 body { text-transform: lowercase; }
 .src, .water, .unfit, .mapboxgl-ctrl-attrib,
-.list li, .card h2, .mapboxgl-popup .head, .about-body code, .dir, .flowkey { text-transform: none; }
+.list li, .card h2, .mapboxgl-popup .head, .about-body code, .dir, .flowkey, .artist-name { text-transform: none; }
 .bar h1 { text-transform: lowercase; }
 
 .nojs { padding: 32px; max-width: 65ch; }
