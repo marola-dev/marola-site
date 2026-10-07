@@ -21,7 +21,7 @@ INMET." The list starts with the alerts Rio de Janeiro got on 2026-09-29 (#10).
 | Q4 | States | RJ first; the store, the ingest and the page are selected and partitioned by state, so another state is one more value, not new code |
 | Q5 | Alert types | Every INMET event |
 | Q6 | Where | A new page, `alerts.html` |
-| Q7 | Storage | The open ocean data store: a table in the DuckLake on Backblaze B2, written by marola-app's `oods` module ([marola-oods spec 001](https://github.com/marola-dev/marola-oods/pull/3)) |
+| Q7 | Storage | The open ocean data store: a table in the DuckLake on Cloudflare R2, written by marola-app's `oods` module ([marola-oods spec 001](https://github.com/marola-dev/marola-oods/pull/3)) |
 | Q8 | History | Kept forever, and backfilled before September 2026. **To confirm**: this spec reads "past alerts (before september 2026)" as "also load the alerts from before September 2026", as far back as INMET serves them (to 2022, [research R1](research.md#r1-inmet-avisos)) |
 | Q9 | Language | The alert's text in Portuguese only, as INMET wrote it; page chrome through `site/i18n/` as every page |
 | Q10 | Design record | This spec, with MIP-0034 amended (§5.2a) and MIP-0044 §11's "drop Alerts" note reversed |
@@ -148,7 +148,7 @@ no code changes.
 - INMET's CAP documents carry IBGE municipality codes as `<geocode>`; if not, the undocumented
   `avisos/ativos` JSON supplies them for live alerts ([research R1](research.md#r1-inmet-avisos)).
   To verify on the first real fetch: this sandbox cannot reach INMET.
-- The site build gets a read-only B2 key for `exports/` (spec 001's phase 6). Creating it is a
+- The site build gets a read-only R2 token (`marola-site-read`) (spec 001's phase 6). Creating it is a
   person's act.
 - The DuckLake, its catalog round trip and the `oods-lake` concurrency group are spec 001's; this
   spec adds tables and a workflow, and changes nothing in that layout.

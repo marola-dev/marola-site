@@ -107,7 +107,7 @@ unchanged. Partitioning by `uf` and year keeps a state's history in its own Parq
 export of RJ reads only RJ.
 
 Sizes: INMET issues on the order of 100 alerts a day nationwide; RJ's share is a few a day, so
-about 1,000–2,000 RJ rows a year, a few MB with polygons. Far inside B2's free 10 GB.
+about 1,000–2,000 RJ rows a year, a few MB with polygons. Far inside R2's free 10 GB-month, and R2 charges no egress for the site build's reads.
 
 ## R7. Other sources (not used, recorded so nobody re-checks them blind)
 

@@ -1,7 +1,7 @@
 # Implementation plan: a list of past INMET alerts, each checked by marola
 
 **Branch**: `claude/10-alerts-speckit` | **Date**: 2026-10-05 | **Spec**: [spec.md](spec.md)
-**MIP**: [MIP-0034 §5.2a](https://github.com/marola-dev/marola/blob/main/docs/MIPs/MIP-0034-rss-feeds-and-content-syndication.md) | **Builds on**: [marola-oods spec 001](https://github.com/marola-dev/marola-oods/pull/3) (the DuckLake on B2)
+**MIP**: [MIP-0034 §5.2a](https://github.com/marola-dev/marola/blob/main/docs/MIPs/MIP-0034-rss-feeds-and-content-syndication.md) | **Builds on**: [marola-oods spec 001](https://github.com/marola-dev/marola-oods/pull/3) (the DuckLake on Cloudflare R2)
 
 ## Summary
 
@@ -31,7 +31,7 @@ and oods parts.
 
 | Gate | Status | What clears it |
 |---|---|---|
-| I.1 Cost | ✓ | INMET and Open-Meteo are free and keyless; B2 refuses usage above its free tier (no card) |
+| I.1 Cost | ✓ | INMET and Open-Meteo are free and keyless; the alerts add a few MB and a few thousand operations a month to R2, far inside its free tier; use above it is billed to the maintainer's account, so spec 001's size checks cover these tables too |
 | I.2 No secrets | ✓ | keys are Actions secrets; the site's key is read-only and never reaches the page |
 | I.3 agent-ready | ✗ | #10 has no `agent-ready`; the maintainer adds it once this spec is accepted |
 | I.5 Phase | ✗ | the store is spec 001's Phase 2 exception (MIP-0075 §11); this spec needs nothing beyond it |
@@ -75,7 +75,7 @@ marola-site/
 ## Phases
 
 0. **Gates (people)**: `agent-ready` on #10; spec 001's store exists (its phases 0–1); a read-only
-   B2 key for marola-site; Q8's reading confirmed.
+   R2 token for marola-site; Q8's reading confirmed.
 1. **Page on a fixture (marola-site)**: `alerts.html` renders `site/fixtures/alerts/rj.json`; nav
    link; i18n; `site_check.js`. Ships alone: with no export the page says alerts are not loaded
    yet. This is the first PR and needs nothing from the other repos.

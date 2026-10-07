@@ -13,7 +13,7 @@ node scripts/site_check.js                     # alerts.html against specs/001-a
 just site-serve                                # http://localhost:8000/alerts.html with site/fixtures/alerts/rj.json
 ```
 
-## B. The first real run (the maintainer's machine or CI; this sandbox cannot reach INMET or B2)
+## B. The first real run (the maintainer's machine or CI; this sandbox cannot reach INMET or R2)
 
 1. `curl -A 'Mozilla/5.0 marola.dev' https://apiprevmet3.inmet.gov.br/avisos/rss | head` answers.
 2. Fetch one CAP by id and check for `<geocode>` with IBGE codes (research R1's "to verify").

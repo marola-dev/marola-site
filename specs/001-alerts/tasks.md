@@ -7,7 +7,7 @@ starts before `agent-ready` on marola-dev/marola-site#10 (phase 0).
 
 - [ ] 001-T001 Confirm Q8's reading (backfill before September 2026)
 - [ ] 001-T002 Add `agent-ready` to #10
-- [ ] 001-T003 Create a read-only B2 key for `exports/`; set `BACKBLAZE_SITE_KEY_ID` (variable) and `BACKBLAZE_SITE_APP_KEY` (secret) in marola-site
+- [ ] 001-T003 Create the read-only R2 token `marola-site-read` (Object Read, this bucket); set `CLOUDFLARE_R2_READ_ACCESS_KEY_ID` and `CLOUDFLARE_R2_READ_SECRET_ACCESS_KEY` (secrets) and `CLOUDFLARE_R2_ACCOUNT_ID` (variable) in marola-site
 - [ ] 001-T004 Spec 001's store exists in the bucket (marola-oods spec 001, phases 0–1)
 
 ## Phase 1 — the page on a fixture (marola-site) 🎯 MVP

@@ -32,19 +32,20 @@ human's `workflow_dispatch`, never scheduled.
 
 ## `site.yml` (marola-site)
 
-One step after "Add the smoke-test, coverage and stats data", with a **read-only** B2 key scoped
-to `exports/` (secret `BACKBLAZE_SITE_APP_KEY`, variable `BACKBLAZE_SITE_KEY_ID`; a person creates
-both):
+One step after "Add the smoke-test, coverage and stats data", with the **read-only** R2 token
+`marola-site-read` (Object Read, this bucket: secrets `CLOUDFLARE_R2_READ_ACCESS_KEY_ID` and
+`CLOUDFLARE_R2_READ_SECRET_ACCESS_KEY`, variable `CLOUDFLARE_R2_ACCOUNT_ID`; a person creates them,
+[MIP-0075 §5.6](https://github.com/marola-dev/marola/blob/main/docs/MIPs/MIP-0075-water-quality-store-r2.md#56-what-a-person-sets-up-in-cloudflare)):
 
 ```yaml
-      - name: Add the alerts export (B2, if reachable)
+      - name: Add the alerts export (R2, if reachable)
         env:
-          AWS_ACCESS_KEY_ID: ${{ vars.BACKBLAZE_SITE_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.BACKBLAZE_SITE_APP_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.CLOUDFLARE_R2_READ_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.CLOUDFLARE_R2_READ_SECRET_ACCESS_KEY }}
         run: |
           mkdir -p site/dist/alerts
           for uf in $(jq -r '.[]' site/alert-states.json); do
-            aws s3 cp --endpoint-url https://s3.us-east-005.backblazeb2.com --region us-east-005 \
+            aws s3 cp --endpoint-url "https://${{ vars.CLOUDFLARE_R2_ACCOUNT_ID }}.r2.cloudflarestorage.com" --region auto \
               "s3://br-open-ocean-data-storage/exports/alerts/${uf,,}.json" site/dist/alerts/ \
               || echo "no alerts export for $uf — the page says so"
           done
