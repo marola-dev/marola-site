@@ -33,6 +33,7 @@ as defaults to avoid.
 | `--accent` | `#1b5fc1` | links, primary action fill, focus ring, slider, the "you" marker |
 | `--accent-hover` | `#164e9e` | hover on accent |
 | `--accent-soft` | `#e9f0fb` | pressed toggles, the visitor's chat messages |
+| `--emergency` | `#c0262d` | the emergency button's phone icon only |
 | `--c70 … --cna` | score colours | data only: dots, chips, legend. A change needs a MIP note |
 | `--flow-wind-0 … 5` | `#5b6db3` → `#a8566a` | the wind field, calm to 40 km/h (`flow.js`, the key's ramp) |
 | `--flow-wave-0 … 5` | `#2f5a9e` → `#c86e6e` | the wave field, flat to 3 m |
@@ -80,6 +81,10 @@ from a CDN. Inter is the deliberate pick for a public-information, accessibility
 - **Area picker**: the control showing a two-letter code (FL, RJ, BA; `AREA_CODES` in `app.js`), the full name in its title and accessible name.
 - **Segmented** (day, language): a `--surface` track; the picked segment is white, raised.
 - **Primary action**: accent fill, white text. One per surface (chat open, chat send).
+- **Emergency button** (`#sos`): a map control in white glass, 32 px, 13 px, Lucide's phone in `--emergency`,
+  top centre of the map (between the zoom buttons and the layer rail), above every panel. Its panel is
+  18 rem under it (a bottom sheet under 640 px): 193, 190, 192, 185 and 199, each a 44 px `tel:` row with the number in 650 weight, and a 12 px note on 112/911.
+  It fades in like a footer panel. From Carlos Toledo's swell-floripa (#76).
 - **Hour bar**: label, slider (accent), legend pushed right.
 - **Panels**: white, 1 px `--line`, 12 px radius, `--shadow-float`; bottom sheets under 640 px.
 - **Close buttons**: the control as a borderless 32 px square in `--muted`.
