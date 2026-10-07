@@ -31,8 +31,7 @@
   --accent: #1b5fc1;      /* the one accent: links, primary fill, focus, the "you" marker (6.1:1) */
   --accent-hover: #164e9e;
   --accent-soft: #e9f0fb; /* selected toggles */
-  --emergency: #c0262d;   /* the emergency button and its numbers, nothing else (5.9:1 on white) */
-  --emergency-hover: #a11f25;
+  --emergency: #c0262d;   /* the emergency button's phone icon, nothing else */
   --shadow-float: 0 1px 2px rgb(17 24 32 / .06), 0 8px 24px -6px rgb(17 24 32 / .16);
   --r-control: 8px;
   --r-panel: 12px;
@@ -332,26 +331,32 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   .fold .pm::after { transition: transform .15s cubic-bezier(.23, 1, .32, 1); }
   .footer .fold-panel { transition: opacity .15s ease-out, transform .15s cubic-bezier(.23, 1, .32, 1); }
   @starting-style { .footer .fold-panel { opacity: 0; transform: translateY(-4px); } }
+  .sos-panel { transition: opacity .15s ease-out, transform .15s cubic-bezier(.23, 1, .32, 1); }
+  @starting-style { .sos-panel { opacity: 0; transform: translateY(-4px); } }
 }
 
-/* Emergency numbers (#76): top centre of the map, clear of the zoom buttons and the layer rail. */
+/* Emergency numbers (#76): a map control in white glass, top centre, clear of the zoom buttons
+ * and the layer rail; only its icon is red, so it never reads as a score. */
 .sos, .sos-panel { position: absolute; z-index: 1001; left: 0; right: 0; margin: 0 auto; }
-.sos { top: 12px; width: fit-content; min-height: 36px; padding: 0 14px 0 12px; border-radius: 999px;
-  background: var(--emergency); border-color: var(--emergency); color: #fff; font-weight: 600; box-shadow: var(--shadow-float); }
-.sos .ic { color: inherit; stroke-width: 2; }
-.sos:hover, .sos[aria-expanded="true"] { background: var(--emergency-hover); border-color: var(--emergency-hover); color: #fff; }
-.sos-panel { top: 56px; width: min(20rem, calc(100% - 24px)); background: var(--bg); border: 1px solid var(--line);
-  border-radius: var(--r-panel); box-shadow: var(--shadow-float); }
-.sos-panel header { display: flex; align-items: center; justify-content: space-between; padding: 10px 8px 0 16px; }
+.sos { top: 12px; width: fit-content; min-height: 32px; padding: 0 10px; gap: 6px; font-size: 13px;
+  background: var(--glass); border-color: var(--glass-line); color: var(--glass-ink); box-shadow: var(--shadow-float);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.sos .ic { width: 14px; height: 14px; color: var(--emergency); }
+.sos:hover { background: var(--bg); border-color: var(--line-strong); }
+.sos[aria-expanded="true"] { background: var(--bg); border-color: var(--line-strong); color: var(--glass-ink); }
+.sos-panel { top: 52px; width: min(18rem, calc(100% - 24px)); background: var(--bg); border: 1px solid var(--line);
+  border-radius: var(--r-panel); box-shadow: var(--shadow-float);
+  max-height: calc(100% - 64px); overflow-y: auto; overscroll-behavior: contain; }
+.sos-panel header { display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 0 16px; }
 .sos-panel h2 { margin: 0; font-size: 15px; font-weight: 600; }
-.sos-panel > p { margin: 2px 16px 8px; font-size: 13px; color: var(--muted); }
+.sos-panel > p { margin: 0 16px 8px; font-size: 13px; color: var(--muted); }
 .sos-panel ul { margin: 0; padding: 0; list-style: none; }
-.sos-panel a { display: flex; align-items: center; gap: 14px; min-height: 48px; padding: 4px 16px;
-  border-top: 1px solid var(--line); color: var(--ink); text-decoration: none; font-size: 14px; }
+.sos-panel a { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 4px 16px;
+  border-top: 1px solid var(--line); color: var(--ink); text-decoration: none; font-size: 14px; line-height: 1.35; }
 .sos-panel a:hover { background: var(--surface); color: var(--ink); }
-.sos-panel .sos-cvv a { border-top: 4px solid var(--surface); }
+.sos-panel a b { flex: none; min-width: 2.25em; font-weight: 650; font-variant-numeric: tabular-nums; }
+.sos-panel .sos-cvv a { border-top-color: var(--line-strong); }
 .sos-panel .sos-note { margin: 0; padding: 8px 16px 12px; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted); }
-.sos-panel a b { min-width: 2.6em; font-size: 20px; font-weight: 650; color: var(--emergency); font-variant-numeric: tabular-nums; }
 
 /* Chat widget: MIP-0033 §5.2. */
 .chat-toggle {
@@ -418,7 +423,8 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   .legend .wave-key { display: none; } /* no hover on touch, and it clips at 390 px */
   .chat-panel { right: 8px; left: 8px; width: auto; bottom: 64px; }
   .sos { top: 8px; }
-  .sos-panel { top: 50px; width: calc(100% - 16px); }
+  /* a bottom sheet, like the card, so the numbers sit under the thumb */
+  .sos-panel { top: auto; bottom: 8px; width: calc(100% - 16px); max-height: calc(100% - 56px); }
   .footer { padding: 12px 16px 16px; }
   /* a 10 px plus on a 32 px control went unnoticed on a phone (#68): a 44 px target and a filled badge */
   .folds { gap: 8px; }
