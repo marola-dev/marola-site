@@ -257,8 +257,8 @@ jobs:
           fi
           echo "publishing:"; find . -type f | sort
 
-      # wrangler.jsonc at the repo root points at site/dist. continue-on-error: `deploy` needs this
-      # job, and GitHub Pages still serves marola.dev (MIP-0078).
+      # wrangler.jsonc at the repo root points at site/dist; this Worker serves marola.dev.
+      # continue-on-error: `deploy` needs this job, and GitHub Pages is the fallback (MIP-0078).
       - name: Deploy to Cloudflare Workers (static assets)
         continue-on-error: true
         uses: cloudflare/wrangler-action@v4

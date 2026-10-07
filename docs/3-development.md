@@ -24,9 +24,10 @@ into `site/dist` → write the Mapbox token and style into `mapbox-config.js` �
 `site-data` branch's panels → a required-files check (a half-built site must never reach Pages) →
 the publish allowlist (only the page, its assets and `data/`, `smoke/`, `coverage/`, `stats/` go
 out) → a `CNAME` file → deploy to GitHub Pages, and the same `site/dist` to the Cloudflare Worker
-`marola` (static assets only, `wrangler.jsonc`), which does not fail the run while GitHub Pages
-still serves marola.dev (MIP-0078). Its secrets are `CLOUDFLARE_API_TOKEN` (Edit Cloudflare
-Workers) and `CLOUDFLARE_ACCOUNT_ID`.
+`marola` (static assets only, `wrangler.jsonc`), which serves marola.dev since 2026-10-07. GitHub
+Pages keeps the same deploy as a fallback, and a Cloudflare failure does not fail the run
+(MIP-0078). Its secrets are `CLOUDFLARE_API_TOKEN` (Edit Cloudflare Workers) and
+`CLOUDFLARE_ACCOUNT_ID`.
 
 ### Beach lists and Overpass
 

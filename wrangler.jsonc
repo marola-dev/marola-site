@@ -1,9 +1,11 @@
-// Cloudflare Workers static assets, no script: site.yml deploys site/dist here beside GitHub
-// Pages, which still serves marola.dev (MIP-0078).
+// Cloudflare Workers static assets, no script: site.yml deploys site/dist here, and this Worker
+// serves marola.dev; GitHub Pages still gets the same deploy as a fallback (MIP-0078).
 {
   "name": "marola",
   "compatibility_date": "2026-10-07",
   "workers_dev": true,
+  // Attached through the API on 2026-10-07; declared so a deploy keeps it, not just the dashboard.
+  "routes": [{ "pattern": "marola.dev", "custom_domain": true }],
   "assets": {
     "directory": "./site/dist",
     // Without it a missing board would not be a 404, and app.js's "run site-build" hint needs one.
