@@ -23,10 +23,10 @@ The map at [marola.dev](https://marola.dev): a static page that shows every area
 boards (MIP-0005), with no server and no LLM, over a Mapbox base map (free up to Mapbox's monthly
 map-load tier, billed above it).
 
-- `site/static/`: the page (`index.html`, `about.html`, `support.html` behind Donate, `app.js`,
-  `ui.js`, `style.css`, `flow.js` (the WebGL wind and wave layer), `mapbox-config.js`, the chat
-  widget, vendored Mapbox GL JS (its CSP build), Inter and the wave loop under `vendor/`, the
-  about page's repo diagram under `img/`) and `404.html`, which forwards the old
+- `site/static/`: the page (`index.html`, `about.html`, `support.html` behind Donate, `news.html`,
+  `app.js`, `ui.js`, `style.css`, `flow.js` (the WebGL wind and wave layer), `mapbox-config.js`,
+  the chat widget, vendored Mapbox GL JS (its CSP build), Inter and the wave loop under `vendor/`,
+  the about page's repo diagram under `img/`) and `404.html`, which forwards the old
   `marola.dev/docs/*` links to `docs.marola.dev`.
 - `site/i18n/`: the pt-BR and English catalogs (MIP-0054). `scripts/i18n_bundle.py` checks them
   and writes `site/static/i18n.js`; edit the catalogs, never `i18n.js`.
