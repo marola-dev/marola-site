@@ -53,7 +53,9 @@ map-load tier, billed above it).
   the page; `frontend-design/`, `webapp-testing/` (anthropics/skills), `design-taste-frontend/`
   (Leonxlnx/taste-skill), `emil-design-eng/`, `review-animations/` and `break-ui/`
   (emilkowalski/skill), `karpathy-guidelines/` (forrestchang/andrej-karpathy-skills) and the eight
-  `mapbox-*/` skills (mapbox/mapbox-agent-skills) are vendored unchanged with their licences.
+  `mapbox-*/` skills (mapbox/mapbox-agent-skills) are vendored unchanged with their licences,
+  pinned in `.claude/skills/skills.lock` (MIP-0080): `skills-vendor check` verifies the copies,
+  and `.github/workflows/skills.yml` opens a weekly update PR for a person to read.
 - `.mcp.json`: the Playwright and Figma MCP servers (no keys; Figma signs in with OAuth).
 
 ## What it consumes and produces

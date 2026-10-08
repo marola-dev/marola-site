@@ -1,0 +1,280 @@
+{
+  "version": 1,
+  "skills": {
+    "break-ui": {
+      "upstream": "emilkowalski/skill",
+      "path": "skills/break-ui",
+      "commit": "e8a175de22ae1e49370fc144c1f3bb9aeedf988d",
+      "files": {
+        "CATALOG.md": "46962bb89445b8526ea94994a79b49508573b5fd",
+        "LICENSE": "57b46f1fd11dc62351ea548104a88aa3f659c11b",
+        "SKILL.md": "091a28d488662d2451131f1aaa60a6dcd2391932"
+      },
+      "license": "MIT",
+      "local_edits": null,
+      "hold": null,
+      "paths": {
+        "LICENSE": "LICENSE"
+      }
+    },
+    "design-taste-frontend": {
+      "upstream": "Leonxlnx/taste-skill",
+      "path": "skills/taste-skill",
+      "commit": "3c7017d636c3a4aad378433ea6d0cfa6c921da4a",
+      "files": {
+        "LICENSE": "48a2f6640b81ff8eca9ce7f6a96337692713ef5b",
+        "SKILL.md": "b72132fcd466da605623ffe96e370b3991fc5285"
+      },
+      "license": "MIT",
+      "local_edits": null,
+      "hold": null,
+      "paths": {
+        "LICENSE": "LICENSE"
+      }
+    },
+    "emil-design-eng": {
+      "upstream": "emilkowalski/skill",
+      "path": "skills/emil-design-eng",
+      "commit": "85e8e2363b713506e1d5b6e07a0eb2da66be1bc3",
+      "files": {
+        "LICENSE": "57b46f1fd11dc62351ea548104a88aa3f659c11b",
+        "SKILL.md": "62ce902af8dd32c590ea7203e9ab2edb1d6ef81a"
+      },
+      "license": "MIT",
+      "local_edits": null,
+      "hold": null,
+      "paths": {
+        "LICENSE": "LICENSE"
+      }
+    },
+    "frontend-design": {
+      "upstream": "anthropics/skills",
+      "path": "skills/frontend-design",
+      "commit": "41bbe19d1a1a7eaab5e7bb9050a417e5c6cffc8f",
+      "files": {
+        "LICENSE.txt": "f433b1a53f5b830a205fd2df78e2b34974656c7b",
+        "SKILL.md": "a5333457c414d20d625f307df945842c0952ecc3"
+      },
+      "license": "Apache-2.0",
+      "local_edits": null,
+      "hold": null
+    },
+    "karpathy-guidelines": {
+      "upstream": "forrestchang/andrej-karpathy-skills",
+      "path": "skills/karpathy-guidelines",
+      "commit": "64723a49ea6117894304eb491f0d32a60570bf45",
+      "files": {
+        "SKILL.md": "6a62d0441753157ca6ca50479e490c2948033adb"
+      },
+      "license": "MIT",
+      "local_edits": null,
+      "hold": null
+    },
+    "mapbox-cartography": {
+      "upstream": "mapbox/mapbox-agent-skills",
+      "path": "skills/mapbox-cartography",
+      "commit": "7cac917a481f2a6c5aeeff238ecd692eaf8b8366",
+      "files": {
+        "AGENTS.md": "66b5e764fa7cba44c61d98fa19efcc68a8f1a1d1",
+        "LICENSE.md": "37aa7b74801fc5aca37fe84ce5064fbe7777f57f",
+        "SKILL.md": "dca56d13d50fdaf6d3614728985c7797c5f99849",
+        "evals/evals.json": "0c146577dd4eb8f5f16e941c0c96c33fc39bc523",
+        "references/performance-testing.md": "aabe0373e9f479abf38970ac9a0a17f601e323f8",
+        "references/scenarios.md": "58b549545c1337d5075d2da03116bdf6004b4837"
+      },
+      "license": "MIT",
+      "local_edits": null,
+      "hold": null,
+      "paths": {
+        "LICENSE.md": "LICENSE.md"
+      }
+    },
+    "mapbox-data-visualization-patterns": {
+      "upstream": "mapbox/mapbox-agent-skills",
+      "path": "skills/mapbox-data-visualization-patterns",
+      "commit": "9077a826f22b8c0565ad4df9d843bcecde61fa31",
+      "files": {
+        "AGENTS.md": "7bd28a83a66ca733c5a2f43101ae82cff428d913",
+        "LICENSE.md": "37aa7b74801fc5aca37fe84ce5064fbe7777f57f",
+        "SKILL.md": "3b525fa0a2ffee061e353e828118dfaaba52885b",
+        "evals/evals.json": "597a9fbf6775fdcc0aaede1c868ebac1e15607a9",
+        "references/3d-extrusions.md": "30648809c27cb37d933975ee9cd50b17f82c5a2f",
+        "references/animation.md": "7c4558426d57c18b6230cc74de81a26326065fca",
+        "references/circles-lines.md": "d351bd900be3c9d7f5b65766476914edcf23996d",
+        "references/clustering.md": "f15ce1904bc64fbe666779d4cb38f3dfd16a19a2",
+        "references/legends-use-cases.md": "9df1dc5cee022a6f7c49c5832c310f109dc5ca67",
+        "references/performance.md": "b0208a304fdd253f0acbc3c2af01e940fa40e35b"
+      },
+      "license": "MIT",
+      "local_edits": null,
+      "hold": null,
+      "paths": {
+        "LICENSE.md": "LICENSE.md"
+      }
+    },
+    "mapbox-maplibre-migration": {
+      "upstream": "mapbox/mapbox-agent-skills",
+      "path": "skills/mapbox-maplibre-migration",
+      "commit": "9077a826f22b8c0565ad4df9d843bcecde61fa31",
+      "files": {
+        "AGENTS.md": "65cfd35a646aa83c3a52907a68b49637a3207f81",
+        "LICENSE.md": "37aa7b74801fc5aca37fe84ce5064fbe7777f57f",
+        "SKILL.md": "f2861f7d2960ee1220e9559129084a06ab6e24ae",
+        "evals/evals.json": "208d528b3cb1cf2089851e3b7e97ee9ef1ba4380",
+        "references/api-compatibility.md": "fd6db550bb80b6d91e41fe5a80b4c4b5eac47d8a",
+        "references/exclusive-features.md": "e752c0f33951752ea7779fe91f00b4eb0d7c05d1",
+        "references/why-mapbox.md": "5b697a3c77807b8bfe04be5b9319a4162c5e7809"
+      },
+      "license": "MIT",
+      "local_edits": null,
+      "hold": null,
+      "paths": {
+        "LICENSE.md": "LICENSE.md"
+      }
+    },
+    "mapbox-style-patterns": {
+      "upstream": "mapbox/mapbox-agent-skills",
+      "path": "skills/mapbox-style-patterns",
+      "commit": "9077a826f22b8c0565ad4df9d843bcecde61fa31",
+      "files": {
+        "AGENTS.md": "eedc78f9c9aa4c8f05b689ab6c41aac59349ffef",
+        "LICENSE.md": "37aa7b74801fc5aca37fe84ce5064fbe7777f57f",
+        "SKILL.md": "0ec785aeda741c1f2515a925bebd762152fd9b6d",
+        "evals/evals.json": "d77453f2f90ad9ed5f2a80ec9e230cc5737b195b",
+        "references/common-modifications.md": "96fa1ecf13620791ae8510f79d5541fc8b6fef73",
+        "references/dark-mode.md": "466e49fd25d6d31dca4bbaa7ec58f4b2554ba807",
+        "references/data-viz-base.md": "5bbd53a8799ae3b1ed48b9d3fb7921015ccaeaba",
+        "references/delivery-logistics.md": "d09d6908209c1dcf87fab766dea7f95ff0e83979",
+        "references/expressions-clustering.md": "ce3401b6fb2f5d133528fd78d4aba6ba13ee86e1",
+        "references/interactions.md": "f214da7c04960536e208ccad8e476bb170293195",
+        "references/navigation.md": "a5f1fc783ddf099a2d33b96798325b269c87bea3",
+        "references/real-estate.md": "0aa14b60b67397dd20d49009bbe968fbd17331c6"
+      },
+      "license": "MIT",
+      "local_edits": null,
+      "hold": null,
+      "paths": {
+        "LICENSE.md": "LICENSE.md"
+      }
+    },
+    "mapbox-style-quality": {
+      "upstream": "mapbox/mapbox-agent-skills",
+      "path": "skills/mapbox-style-quality",
+      "commit": "65bab68c18c2249c5496d7ee83c9f23812e678d1",
+      "files": {
+        "AGENTS.md": "ced9c02b07e393c096057bfa681ab511afca56da",
+        "LICENSE.md": "37aa7b74801fc5aca37fe84ce5064fbe7777f57f",
+        "SKILL.md": "24120d4354e72a47c1ff0016f91d8610a95f807c",
+        "evals/evals.json": "e23b4f55b71cfa089eea10dc5e3663f5266529e2",
+        "references/ci-integration.md": "3d3e46e09110b680ef04fdea6c49830d499404ab",
+        "references/comparison.md": "2d44dc325015f030c413f742d97377591fa3e277",
+        "references/optimization.md": "1745b6c326af58405d109efce6743b36919b5d2d"
+      },
+      "license": "MIT",
+      "local_edits": null,
+      "hold": null,
+      "paths": {
+        "LICENSE.md": "LICENSE.md"
+      }
+    },
+    "mapbox-token-security": {
+      "upstream": "mapbox/mapbox-agent-skills",
+      "path": "skills/mapbox-token-security",
+      "commit": "f5ae7dee38bafad844d8e15a867273ef75918652",
+      "files": {
+        "AGENTS.md": "56a254ceb33109151d21448a4868a77fbe59d47e",
+        "LICENSE.md": "37aa7b74801fc5aca37fe84ce5064fbe7777f57f",
+        "SKILL.md": "3484582b06ad96378991c38474a90b7ba74df6fd",
+        "evals/evals.json": "9a6839132d05f0b5d3bcb9644603c5b45fc821b0",
+        "references/incident-response.md": "4240d8b21fc486164cb9a5f4ec4c47ac3f1a3d9f",
+        "references/rotation-monitoring.md": "aa2b309305689809d77344c6e2cfc885d24ec0a2",
+        "references/token-management.md": "a452d4f71791769040e555d4d91ce214c0fd7c9c"
+      },
+      "license": "MIT",
+      "local_edits": null,
+      "hold": null,
+      "paths": {
+        "LICENSE.md": "LICENSE.md"
+      }
+    },
+    "mapbox-web-integration-patterns": {
+      "upstream": "mapbox/mapbox-agent-skills",
+      "path": "skills/mapbox-web-integration-patterns",
+      "commit": "f5ae7dee38bafad844d8e15a867273ef75918652",
+      "files": {
+        "AGENTS.md": "820c89f09f3ff4064169f0120d73e0499409e5ea",
+        "LICENSE.md": "37aa7b74801fc5aca37fe84ce5064fbe7777f57f",
+        "SKILL.md": "ea10c41dcf1c49d491e40624bf26163d1d71a21b",
+        "evals/evals.json": "0469e6cef685539e53482755ba278fc66ded7df3",
+        "references/angular.md": "6589dc1c34297ac572004334df0a19502db21b0d",
+        "references/common-mistakes.md": "d590aa3658a84ca20f0e7bd7087772d4d6f5cd10",
+        "references/nextjs.md": "7675bf68fb849449a6babfde8348907359776194",
+        "references/svelte.md": "8eaf21cc33fb6c299bc7eba201d9d4cb8d66508e",
+        "references/token-management.md": "de5da09598ae40f1a5330ed8dc14b55d3d0c0adf",
+        "references/vanilla.md": "0289c557578bf439e6c40afe2d868222f5b7ec44",
+        "references/vue.md": "8e77971c831fb568a202c0185e5d127d9ce72c93",
+        "references/web-components.md": "c2534f905870c922e323712de5cf3eafeacbdf52"
+      },
+      "license": "MIT",
+      "local_edits": null,
+      "hold": null,
+      "paths": {
+        "LICENSE.md": "LICENSE.md"
+      }
+    },
+    "mapbox-web-performance-patterns": {
+      "upstream": "mapbox/mapbox-agent-skills",
+      "path": "skills/mapbox-web-performance-patterns",
+      "commit": "f5ae7dee38bafad844d8e15a867273ef75918652",
+      "files": {
+        "AGENTS.md": "62cfe963a56c406c7dfcc0fd75d04d941031665c",
+        "LICENSE.md": "37aa7b74801fc5aca37fe84ce5064fbe7777f57f",
+        "SKILL.md": "374a7d0caa92f26c6141ed9478d8d5814fd949ce",
+        "evals/evals.json": "f2783d9766313d07008b94a30cabb7ccae229da9",
+        "references/data-loading.md": "3201f9139b42fb71149512820243831c7d3ac8e6",
+        "references/interactions.md": "3d852e97b9a0c647d6887c89db68ca1d8e5d89f1",
+        "references/layers-styles.md": "dc888dc60baad6c7d634740cc99f1172b7788c4b",
+        "references/memory.md": "dc2531b79fe26a7da638ee44df0694bcb6bf2ae1",
+        "references/mobile.md": "deee12fb69192b942a2c7f9194264dece792e6fd"
+      },
+      "license": "MIT",
+      "local_edits": null,
+      "hold": null,
+      "paths": {
+        "LICENSE.md": "LICENSE.md"
+      }
+    },
+    "review-animations": {
+      "upstream": "emilkowalski/skill",
+      "path": "skills/review-animations",
+      "commit": "85e8e2363b713506e1d5b6e07a0eb2da66be1bc3",
+      "files": {
+        "LICENSE": "57b46f1fd11dc62351ea548104a88aa3f659c11b",
+        "SKILL.md": "577a64397267ce20960de2202950594d5bd6f9b6",
+        "STANDARDS.md": "863ea12ea94c1f7a47b5f7e1019e976aa82bd4cd"
+      },
+      "license": "MIT",
+      "local_edits": null,
+      "hold": null,
+      "paths": {
+        "LICENSE": "LICENSE"
+      }
+    },
+    "webapp-testing": {
+      "upstream": "anthropics/skills",
+      "path": "skills/webapp-testing",
+      "commit": "b9e19e6f44773509fbdd7001d77ff41a49a486c1",
+      "files": {
+        "LICENSE.txt": "4f881c52d1f72f4cfb720e339e2d35c3058d01a9",
+        "SKILL.md": "4726215301db64a0cc4d41fc3219c61f37a30f4a",
+        "examples/console_logging.py": "9329b5e232ed53d944bfe95e750070117d31b9ab",
+        "examples/element_discovery.py": "917ba72f52421a1b324f93ae8e38af72010a87b9",
+        "examples/static_html_automation.py": "90bbedcc08cdb345c74fb938ebad02c0baf56603",
+        "scripts/with_server.py": "431f2eba16b268b7f3e2ae4daae9db41c0289b6d"
+      },
+      "license": "Apache-2.0",
+      "local_edits": null,
+      "hold": null
+    }
+  }
+}
