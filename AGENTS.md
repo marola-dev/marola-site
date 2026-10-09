@@ -23,13 +23,16 @@ The map at [marola.dev](https://marola.dev): a static page that shows every area
 boards (MIP-0005), with no server and no LLM, over a Mapbox base map (free up to Mapbox's monthly
 map-load tier, billed above it).
 
-- `site/static/`: the page (`index.html`, `about.html`, `support.html` behind Donate, `app.js`,
-  `ui.js`, `style.css`, `flow.js` (the WebGL wind and wave layer), `mapbox-config.js`, the chat
-  widget, vendored Mapbox GL JS (its CSP build), Inter and the wave loop under `vendor/`, the
-  about page's repo diagram under `img/`) and `404.html`, which forwards the old
+- `site/static/`: the page (`index.html`, `about.html`, `support.html` behind Donate, `news.html`,
+  `app.js`, `ui.js`, `style.css`, `flow.js` (the WebGL wind and wave layer), `mapbox-config.js`,
+  the chat widget, vendored Mapbox GL JS (its CSP build), Inter and the wave loop under `vendor/`,
+  the about page's repo diagram under `img/`) and `404.html`, which forwards the old
   `marola.dev/docs/*` links to `docs.marola.dev`.
 - `site/i18n/`: the pt-BR and English catalogs (MIP-0054). `scripts/i18n_bundle.py` checks them
   and writes `site/static/i18n.js`; edit the catalogs, never `i18n.js`.
+- `site/content/news/`: the news posts, one Markdown file per post and language.
+  `scripts/news_build.py` checks them and writes them into `news.html`; edit the posts, never
+  that block.
 - `site/areas.json`: the areas the boards are built for. `site/fixtures/board.json`: the board the
   harness renders. `site/board.schema.json`: the board contract, vendored from the pinned image.
 - `scripts/`: `site_check.js` (app.js and flow.js in a stub DOM and Mapbox GL), `mapbox_config.sh`
@@ -47,15 +50,19 @@ map-load tier, billed above it).
   agent never sets it.
 - `DESIGN.md`: the visual system (tokens, type, components); Inter is self-hosted in
   `site/static/vendor/fonts/`.
-- `.claude/skills/site-frontend/`: the entry point for anything a visitor sees; it orders the
-  other frontend skills and settles their conflicts. `ptbr-humanizer/` keeps the Portuguese
-  natural, `citizen-science-site/` keeps sources, freshness, limits and the way to contribute on
-  the page; `frontend-design/`, `webapp-testing/` (anthropics/skills), `design-taste-frontend/`
-  (Leonxlnx/taste-skill), `emil-design-eng/`, `review-animations/` and `break-ui/`
-  (emilkowalski/skill), `karpathy-guidelines/` (forrestchang/andrej-karpathy-skills) and the eight
-  `mapbox-*/` skills (mapbox/mapbox-agent-skills) are vendored unchanged with their licences,
-  pinned in `.claude/skills/skills.lock` (MIP-0080): `skills-vendor check` verifies the copies,
-  and `.github/workflows/skills.yml` opens a weekly update PR for a person to read.
+- `.claude/skills/site-frontend/`: the entry point for anything a visitor sees; it orders the other
+  frontend skills and settles their conflicts. `ptbr-humanizer/` keeps the Portuguese natural,
+  `citizen-science-site/` keeps sources, freshness, limits and the way to contribute on the page,
+  `news-post/` writes a news post and keeps its reading time computed; `frontend-design/`,
+  `webapp-testing/` (anthropics/skills), `design-taste-frontend/` (Leonxlnx/taste-skill),
+  `emil-design-eng/`, `review-animations/` and `break-ui/` (emilkowalski/skill),
+  `karpathy-guidelines/` (forrestchang/andrej-karpathy-skills) and the eight `mapbox-*/` skills
+  (mapbox/mapbox-agent-skills) are vendored unchanged with their licences, pinned in
+  `.claude/skills/skills.lock` (MIP-0080): `skills-vendor check` verifies the copies, and
+  `.github/workflows/skills.yml` opens a weekly update PR for a person to read.
+- `.claude/agents/`: a news post's two reviews, `news-fact-check` (claims against their links,
+  pt-BR/en parity) then `news-copy-review` (language and voice), both read-only, run before a
+  person signs off (the `news-post` skill).
 - `.mcp.json`: the Playwright and Figma MCP servers (no keys; Figma signs in with OAuth).
 
 ## What it consumes and produces

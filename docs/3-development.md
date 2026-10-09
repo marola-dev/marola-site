@@ -82,6 +82,15 @@ in the ICU subset `ui.js` implements and names the same arguments as `pt-BR`'s, 
 note in `context.json`. Edit the catalogs, never `i18n.js`; `--check` fails a stale committed
 bundle.
 
+## News posts
+
+A post is `site/content/news/YYYY-MM-DD-<slug>.pt-BR.md` plus its `.en.md`, in the format
+[`site/content/news/README.md`](../site/content/news/README.md) gives, listed in that file's index.
+`python3 scripts/news_build.py` writes every post into the marked block of
+`site/static/news.html`, newest first; `--check` fails a stale page, a post missing a language and
+any Markdown outside the format. Edit the posts, never the block. Each post shows its reading time,
+its words over 200 a minute, rounded up; the `news-post` skill has the rule.
+
 ## The `MIP:` trailer
 
 A commit touching `site/static/**` carries `MIP: MIP-NNNN` or `MIP: none — <reason>`.
