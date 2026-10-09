@@ -25,7 +25,7 @@ A release gets a card:
 ```markdown
 ::: release v0.2.1 2026-10-08
 - <a highlight, with its PR link>
-[release notes](<url>) · [DOI …](<url>)
+[release notes](<url>) · [changes since …](<url>)
 ```
 
 The header names the umbrella's tag and its date; then `- ` highlights and one line of links.

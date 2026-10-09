@@ -2,15 +2,13 @@
 
 2026-10-09
 
-marola is live, open-source and non-profit. It is a map of the beaches of Florianópolis, Rio de Janeiro and Salvador, with a score for today and tomorrow built from public data only. The latest version, 0.2.1, came out on October 8, and it has a DOI, a permanent identifier for citing it in research.
+marola is live, open-source and non-profit. It is a map of the beaches of Florianópolis, Rio de Janeiro and Salvador, with a score for today and tomorrow built from public data only. The latest version, 0.2.1, came out on October 8.
 
 ::: release v0.2.1 2026-10-08
-- a single DOI for marola on Zenodo, which always resolves to the latest version ([#699](https://github.com/marola-dev/marola/pull/699))
-- three new authors on the Zenodo record: Elisa Oliveira, Leonardo Santos Almeida and Pablo Ribeiro ([#712](https://github.com/marola-dev/marola/pull/712), [#714](https://github.com/marola-dev/marola/pull/714))
-- the Zenodo record now links to marola.dev ([#708](https://github.com/marola-dev/marola/pull/708))
+- three new authors in marola's citation: Elisa Oliveira, Leonardo Santos Almeida and Pablo Ribeiro ([#712](https://github.com/marola-dev/marola/pull/712), [#714](https://github.com/marola-dev/marola/pull/714))
 - AI agent skills now have fixed versions, updated every week ([MIP-0080](https://github.com/marola-dev/marola/pull/701))
 - a proposal to evaluate external language models without tying marola to one vendor ([MIP-0081](https://github.com/marola-dev/marola/pull/704))
-[release notes](https://github.com/marola-dev/marola/releases/tag/v0.2.1) · [DOI 10.5281/zenodo.23224155](https://doi.org/10.5281/zenodo.23224155) · [changes since 0.2.0](https://github.com/marola-dev/marola/compare/v0.2.0...v0.2.1)
+[release notes](https://github.com/marola-dev/marola/releases/tag/v0.2.1) · [changes since 0.2.0](https://github.com/marola-dev/marola/compare/v0.2.0...v0.2.1)
 
 ## Official links
 
@@ -39,7 +37,7 @@ Each part of marola is its own repository in the [marola-dev](https://github.com
 
 ### [marola](https://github.com/marola-dev/marola)
 
-The main repository, which ties the others together. It holds the plan for each change (the MIPs, marola's change proposals), the phase list, the ways of working and the documentation site. The citable Zenodo release comes from here.
+The main repository, which ties the others together. It holds the plan for each change (the MIPs, marola's change proposals), the phase list, the ways of working and the documentation site. The citable release comes from here.
 
 ### [marola-app](https://github.com/marola-dev/marola-app)
 
