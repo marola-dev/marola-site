@@ -73,7 +73,7 @@ a organização também mantém a [awesome-ocean-science](https://github.com/mar
 
 ## no que estamos trabalhando agora: o lago de dados
 
-hoje, cada atualização do mapa busca as praias e a balneabilidade do zero, e o histórico se perde. o [MIP-0075](https://github.com/marola-dev/marola/blob/main/docs/MIPs/MIP-0075-water-quality-store-r2.md) propõe guardar tudo num lago de dados aberto: um [DuckLake](https://ducklake.select/), com arquivos Parquet e um catálogo DuckDB. o MIP foi escrito para o Backblaze B2, e a [marola#692](https://github.com/marola-dev/marola/pull/692) propõe trocar pelo Cloudflare R2. rotinas semanais do marola-app vão escrever nele, e o marola-oods define a estrutura. primeiro virão as praias, depois a balneabilidade de Santa Catarina, depois a do Rio e a da Bahia.
+hoje, cada atualização do mapa busca as praias e a balneabilidade do zero, e o histórico se perde. o [MIP-0075](https://github.com/marola-dev/marola/blob/main/docs/MIPs/MIP-0075-water-quality-store-r2.md) propõe guardar tudo num lago de dados aberto: um [DuckLake](https://ducklake.select/), com arquivos Parquet e um catálogo DuckDB. o MIP foi escrito para o Backblaze B2, e a [marola#692](https://github.com/marola-dev/marola/pull/692) propõe trocar pelo Cloudflare R2. rotinas semanais do marola-app vão escrever no lago, e o marola-oods define a estrutura. primeiro virão as praias, depois a balneabilidade de Santa Catarina, depois a do Rio e a da Bahia.
 
 a estrutura ([marola-oods#22](https://github.com/marola-dev/marola-oods/pull/22)) e a troca para o R2 estão em revisão. o lago ainda não recebeu nenhum dado.
 

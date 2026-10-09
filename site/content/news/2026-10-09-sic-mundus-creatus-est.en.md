@@ -73,7 +73,7 @@ The organization also keeps [awesome-ocean-science](https://github.com/marola-de
 
 ## What we're building now: the data lake
 
-Today every map update fetches beaches and water quality from scratch, and the history is lost. [MIP-0075](https://github.com/marola-dev/marola/blob/main/docs/MIPs/MIP-0075-water-quality-store-r2.md) proposes keeping it all in an open data lake: a [DuckLake](https://ducklake.select/), Parquet files plus a DuckDB catalog. The MIP was written for Backblaze B2, and [marola#692](https://github.com/marola-dev/marola/pull/692) proposes moving it to Cloudflare R2. Weekly jobs in marola-app will write to it, and marola-oods defines its structure. Beaches will come first, then Santa Catarina's water quality, then Rio's and Bahia's.
+Today every map update fetches beaches and water quality from scratch, and the history is lost. [MIP-0075](https://github.com/marola-dev/marola/blob/main/docs/MIPs/MIP-0075-water-quality-store-r2.md) proposes keeping it all in an open data lake: a [DuckLake](https://ducklake.select/), Parquet files plus a DuckDB catalog. The MIP was written for Backblaze B2, and [marola#692](https://github.com/marola-dev/marola/pull/692) proposes moving it to Cloudflare R2. Weekly jobs in marola-app will write to the lake, and marola-oods defines its structure. Beaches will come first, then Santa Catarina's water quality, then Rio's and Bahia's.
 
 The structure ([marola-oods#22](https://github.com/marola-dev/marola-oods/pull/22)) and the move to R2 are in review. The lake has not received any data yet.
 
