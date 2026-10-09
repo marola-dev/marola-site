@@ -20,6 +20,7 @@ const BOARD_V1 = JSON.parse(fs.readFileSync(path.join(ROOT, 'site/fixtures/board
 const INDEX = fs.readFileSync(path.join(ROOT, 'site/static/index.html'), 'utf8');
 const ABOUT = fs.readFileSync(path.join(ROOT, 'site/static/about.html'), 'utf8');
 const NEWS = fs.readFileSync(path.join(ROOT, 'site/static/news.html'), 'utf8');
+const BLOG = fs.readFileSync(path.join(ROOT, 'site/static/blog.html'), 'utf8');
 const SUPPORT = fs.readFileSync(path.join(ROOT, 'site/static/support.html'), 'utf8');
 const I18N_JS = fs.readFileSync(path.join(ROOT, 'site/static/i18n.js'), 'utf8');
 const UI = fs.readFileSync(path.join(ROOT, 'site/static/ui.js'), 'utf8');
@@ -692,6 +693,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(/<a href="https:\/\/docs\.marola\.dev\/" data-i18n="nav\.docs">docs<\/a>/.test(nav), 'Docs is a real link to the published docs');
   ok(/<a href="about\.html" data-i18n="nav\.about">sobre<\/a>/.test(nav), 'About is a real link to the about page');
   ok(/<a href="news\.html" data-i18n="nav\.news">notícias<\/a>/.test(nav), 'News is a real link to the news page');
+  ok(/<a href="blog\.html" data-i18n="nav\.blog">blog<\/a>/.test(nav), 'Blog is a real link to the blog page');
   ok((nav.match(/<span aria-disabled="true">/g) || []).length === 2,
     'the two sections with no page yet are spans, not links');
   ok(!/<a[^>]+href="#"/.test(nav), 'no href="#" — a link that goes nowhere is worse than "soon"');
@@ -704,17 +706,25 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
 
   // --- donations page and FUNDING.yml (marola-dev/marola#531, ported from marola-dev/marola#588) -
   ok(fs.existsSync(path.join(ROOT, '.github/FUNDING.yml')), '.github/FUNDING.yml exists for the Sponsor button');
-  for (const page of ['index.html', 'about.html', 'support.html', 'news.html']) {
+  for (const page of ['index.html', 'about.html', 'support.html', 'news.html', 'blog.html']) {
     const html = fs.readFileSync(path.join(ROOT, 'site/static', page), 'utf8');
     const pageNav = (/<nav class="sitenav"[\s\S]*?<\/nav>/.exec(html) || [''])[0];
     ok(/<a href="support\.html" data-i18n="nav\.donate"[^>]*>apoie<\/a>/.test(pageNav), page + ': Donate is a real link');
     ok(/<a href="news\.html" data-i18n="nav\.news"[^>]*>notícias<\/a>/.test(pageNav), page + ': News is a real link');
+    ok(/<a href="blog\.html" data-i18n="nav\.blog"[^>]*>blog<\/a>/.test(pageNav), page + ': Blog is a real link');
   }
-  ok((NEWS.match(/<script\b[^>]*>/gi) || []).every(t => /^<script src="(i18n|ui)\.js">$/.test(t)),
-    'the news page loads no script but the language chrome (i18n.js, ui.js)');
-  const newsPt = (NEWS.match(/<article class="about-body" lang="pt-BR">/g) || []).length;
-  ok(newsPt >= 1 && newsPt === (NEWS.match(/<article class="about-body" lang="en">/g) || []).length,
-    'the news page has one article per language per post');
+  for (const [name, html] of [['news', NEWS], ['blog', BLOG]]) {
+    ok((html.match(/<script\b[^>]*>/gi) || []).every(t => /^<script src="(i18n|ui)\.js">$/.test(t)),
+      'the ' + name + ' page loads no script but the language chrome (i18n.js, ui.js)');
+    const pt = (html.match(/<article class="about-body" lang="pt-BR" id="[^"]+-pt-br"/g) || []).length;
+    ok(pt >= 1 && pt === (html.match(/<article class="about-body" lang="en" id="[^"]+-en"/g) || []).length,
+      'the ' + name + ' page has one anchored article per language per post');
+  }
+  const blogLinks = [...BLOG.matchAll(/href="#([^"]+)"/g)].map(m => m[1]);
+  ok(blogLinks.length > 0 && blogLinks.every(id => BLOG.includes('id="' + id + '"')),
+    "every link in the blog's index and tags lands on an anchor on the page", blogLinks.filter(id => !BLOG.includes('id="' + id + '"')).join(' '));
+  ok((BLOG.match(/<section class="about-body post-index" lang="(pt-BR|en)">/g) || []).length === 2,
+    'the blog page has its index of posts in each language');
   const SUPPORT = fs.readFileSync(path.join(ROOT, 'site/static/support.html'), 'utf8');
   ok((SUPPORT.match(/<script\b[^>]*>/gi) || []).every(t => /^<script src="(i18n|ui)\.js">$/.test(t)),
     'the support page loads no script but the language chrome (i18n.js, ui.js)');
@@ -741,7 +751,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   // --- the favicon: the docs site's own (marola-dev/marola docs/assets/favicon.svg), copied (#25) ----
   const FAVICON = path.join(ROOT, 'site/static/favicon.svg');
   ok(fs.existsSync(FAVICON) && /^<svg[\s>]/.test(fs.readFileSync(FAVICON, 'utf8')), 'site/static/favicon.svg exists and is an SVG');
-  for (const page of ['index.html', 'about.html', 'support.html', 'news.html', '404.html']) {
+  for (const page of ['index.html', 'about.html', 'support.html', 'news.html', 'blog.html', '404.html']) {
     const head = (/<head>[\s\S]*?<\/head>/.exec(fs.readFileSync(path.join(ROOT, 'site/static', page), 'utf8')) || [''])[0];
     // 404.html is served at whatever path was missing, so only a root-absolute href finds the icon there.
     const href = page === '404.html' ? '/favicon.svg' : 'favicon.svg';
@@ -749,12 +759,14 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   }
   ok(/! -name favicon\.svg\b/.test(fs.readFileSync(path.join(ROOT, '.github/workflows/site.yml'), 'utf8')),
     "site.yml's publish allowlist keeps favicon.svg");
-  ok(/! -name news\.html\b/.test(fs.readFileSync(path.join(ROOT, '.github/workflows/site.yml'), 'utf8')),
-    "site.yml's publish allowlist keeps news.html");
+  for (const page of ['news.html', 'blog.html']) {
+    ok(new RegExp('! -name ' + page.replace('.', '\\.') + '\\b').test(fs.readFileSync(path.join(ROOT, '.github/workflows/site.yml'), 'utf8')),
+      "site.yml's publish allowlist keeps " + page);
+  }
 
   // --- the repo link on every page (#498) ------------------------------------------------------
   const REPO_URL = 'https://github.com/marola-dev/marola';
-  for (const page of ['index.html', 'about.html', 'support.html', 'news.html']) {
+  for (const page of ['index.html', 'about.html', 'support.html', 'news.html', 'blog.html']) {
     const html = fs.readFileSync(path.join(ROOT, 'site/static', page), 'utf8');
     const pageNav = (/<nav class="sitenav"[\s\S]*?<\/nav>/.exec(html) || [''])[0];
     ok(pageNav.includes('<a class="gh" href="' + REPO_URL + '"'), page + ': the section nav links the GitHub repo');
@@ -775,7 +787,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(/class="src"/.test(APP), 'app.js tags provider names so Open-Meteo and IMA/SC survive the style');
 
   // --- MIP-0054 task 1: the language toggle, resolveLang, t() and the catalogs -------------------
-  const PAGES = { 'index.html': INDEX, 'about.html': ABOUT, 'support.html': SUPPORT, 'news.html': NEWS };
+  const PAGES = { 'index.html': INDEX, 'about.html': ABOUT, 'support.html': SUPPORT, 'news.html': NEWS, 'blog.html': BLOG };
   for (const [page, html] of Object.entries(PAGES)) {
     ok(/<html lang="pt-BR">/.test(html), page + ': <html lang="pt-BR"> in the source, so the first paint is Portuguese');
     const pageNav = (/<nav class="sitenav"[\s\S]*?<\/nav>/.exec(html) || [''])[0];
@@ -1113,7 +1125,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
     const body = html.replace(/(<([a-z][a-z0-9]*)\b[^>]*\sdata-i18n="[^"]*"[^>]*>)([^<]*)(<\/\2>)/g, (_, open, _t, _i, close) => open + i18nNodes[k++].textContent + close);
     ok(k === i18nNodes.length, page + ': every data-i18n element is a leaf, so applyLang replaces all of its text');
     const text = body.replace(/<!--[\s\S]*?-->|<script[\s\S]*?<\/script>|<noscript>[\s\S]*?<\/noscript>|<svg[\s\S]*?<\/svg>/g, ' ')
-      .replace(/<article class="about-body" lang="[^"]*">[\s\S]*?<\/article>/g, ' ') // hand-translated per language (task 1)
+      .replace(/<(article|section) class="about-body[^"]*" lang="[^"]*"[^>]*>[\s\S]*?<\/\1>/g, ' ') // hand-translated per language (task 1)
       .replace(/<[^>]*>/g, ' ');
     const attrs = run.document.nodes.flatMap(n => ['title', 'aria-label', 'placeholder'].filter(a => a in n.attrs).map(a => n.attrs[a]));
     const found = leaks(text + ' ' + attrs.join(' '), ['marola-dev/', 'marola', 'português (Brasil)', 'English', 'PT-BR'], ['EN']);

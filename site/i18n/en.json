@@ -1,5 +1,7 @@
 {
   "about.back": "back to the map",
+  "blog.heading": "blog",
+  "blog.lede": "why marola is built the way it is: the decisions, the context of each one and what they cost.",
   "card.air": "air",
   "card.at": "(at {h})",
   "card.at_best": "at {h} (best {best}, {score})",
@@ -118,6 +120,7 @@
   "map.no_token": "the base map did not load: this copy of the site has no Mapbox key. the beach list still works.",
   "nav.about": "about",
   "nav.alerts": "alerts",
+  "nav.blog": "blog",
   "nav.contact": "contact",
   "nav.docs": "docs",
   "nav.donate": "donate",
@@ -164,6 +167,7 @@
   "tip.at": "{score}/100 at {h}",
   "tip.dark": "dark at this hour",
   "title.about": "about marola",
+  "title.blog": "marola blog",
   "title.map": "marola: sea conditions at every beach",
   "title.news": "marola news",
   "title.support": "support marola",

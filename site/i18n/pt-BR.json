@@ -1,5 +1,7 @@
 {
   "about.back": "voltar ao mapa",
+  "blog.heading": "blog",
+  "blog.lede": "por que o marola é montado do jeito que é: as decisões, o contexto de cada uma e o que elas custam.",
   "card.air": "ar",
   "card.at": "(às {h})",
   "card.at_best": "às {h} (melhor às {best}, {score})",
@@ -118,6 +120,7 @@
   "map.no_token": "o mapa de fundo não carregou porque falta a chave do Mapbox nesta cópia do site. a lista de praias continua funcionando.",
   "nav.about": "sobre",
   "nav.alerts": "alertas",
+  "nav.blog": "blog",
   "nav.contact": "contato",
   "nav.docs": "docs",
   "nav.donate": "apoie",
@@ -164,6 +167,7 @@
   "tip.at": "{score}/100 às {h}",
   "tip.dark": "já está escuro nesse horário",
   "title.about": "sobre o marola",
+  "title.blog": "blog do marola",
   "title.map": "marola: condições do mar em cada praia",
   "title.news": "notícias do marola",
   "title.support": "apoie o marola",

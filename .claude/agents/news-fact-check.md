@@ -23,7 +23,7 @@ Read both files of the post (`YYYY-MM-DD-<slug>.pt-BR.md` and `.en.md`) and
    difference.
 5. **The release card**, if any: the tag exists, its date matches the release in Brazil time
    (UTC−3), every highlight's link lands on the change it names.
-6. `python3 scripts/news_build.py --check` passes.
+6. `python3 scripts/posts_build.py --check` passes.
 
 ## What you return
 
