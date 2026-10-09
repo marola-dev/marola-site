@@ -26,7 +26,7 @@ a post look shorter: cut the post instead.
 
 ## Writing or changing a post
 
-1. Write the pt-BR file first (site lowercase house style, `ptbr-humanizer`), then the en file
+1. Write the pt-BR file first (site lowercase house style, `ptbr-humanizer`), then the en file in the same lowercase style
    (`humanizer`). Same sections, same facts, same links in both.
 2. Every claim links to what backs it: a repo file, a PR, an issue, a DOI (`citizen-science-site`).
    State work in progress as in progress; never present a plan as done.

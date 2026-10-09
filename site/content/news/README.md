@@ -32,7 +32,7 @@ The header names the umbrella's tag and its date; then `- ` highlights and one l
 
 The reading time next to the date is computed by the build (the `news-post` skill has the rule); never write it.
 Every acronym is spelled out at its first use, in each language: a post is public.
-Portuguese follows the site's lowercase house style and the `ptbr-humanizer` skill; every claim
+Both languages follow the site's lowercase house style (sentences and headings start lowercase; names and acronyms keep their capitals); Portuguese also follows the `ptbr-humanizer` skill; every claim
 links to what backs it (`citizen-science-site`).
 
 ## Index
