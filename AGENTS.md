@@ -30,6 +30,9 @@ map-load tier, billed above it).
   `marola.dev/docs/*` links to `docs.marola.dev`.
 - `site/i18n/`: the pt-BR and English catalogs (MIP-0054). `scripts/i18n_bundle.py` checks them
   and writes `site/static/i18n.js`; edit the catalogs, never `i18n.js`.
+- `site/content/news/`: the news posts, one Markdown file per post and language.
+  `scripts/news_build.py` checks them and writes them into `news.html`; edit the posts, never
+  that block.
 - `site/areas.json`: the areas the boards are built for. `site/fixtures/board.json`: the board the
   harness renders. `site/board.schema.json`: the board contract, vendored from the pinned image.
 - `scripts/`: `site_check.js` (app.js and flow.js in a stub DOM and Mapbox GL), `mapbox_config.sh`

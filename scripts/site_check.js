@@ -712,8 +712,8 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   }
   ok((NEWS.match(/<script\b[^>]*>/gi) || []).every(t => /^<script src="(i18n|ui)\.js">$/.test(t)),
     'the news page loads no script but the language chrome (i18n.js, ui.js)');
-  ok((NEWS.match(/<article class="about-body" lang="pt-BR">/g) || []).length === 1 &&
-     (NEWS.match(/<article class="about-body" lang="en">/g) || []).length === 1,
+  const newsPt = (NEWS.match(/<article class="about-body" lang="pt-BR">/g) || []).length;
+  ok(newsPt >= 1 && newsPt === (NEWS.match(/<article class="about-body" lang="en">/g) || []).length,
     'the news page has one article per language per post');
   const SUPPORT = fs.readFileSync(path.join(ROOT, 'site/static/support.html'), 'utf8');
   ok((SUPPORT.match(/<script\b[^>]*>/gi) || []).every(t => /^<script src="(i18n|ui)\.js">$/.test(t)),

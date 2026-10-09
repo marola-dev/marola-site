@@ -3,7 +3,8 @@
 ## Files
 
 - `site/static/`: `index.html` (the map), `about.html`, `support.html` (behind "apoie"/Donate),
-  `news.html` (the posts, newest first, one `article[lang]` per language each),
+  `news.html` (the posts, newest first, one `article[lang]` per language each, generated from
+  `site/content/news/`),
   `404.html` (forwards old `marola.dev/docs/*` links to `docs.marola.dev`), `favicon.svg`, and
   `img/umbrella{,.pt-BR}.svg`, the umbrella README's repo diagram that `about.html` shows (copied
   from marola-dev/marola `docs/img/`; recopy it when that one changes).
@@ -24,6 +25,8 @@
   ([reference](4-reference.md)).
 - `site/i18n/`: `pt-BR.json` (source locale), `en.json` (translated), `context.json` (a note per
   key); `scripts/i18n_bundle.py` checks and bundles them ([development](3-development.md)).
+- `site/content/news/`: the news posts, one Markdown file per post and language
+  ([format](../site/content/news/README.md)); `scripts/news_build.py` writes them into `news.html`.
 
 ## The board, beach by beach, and markers
 

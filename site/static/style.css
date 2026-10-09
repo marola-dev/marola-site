@@ -288,6 +288,8 @@ body { text-transform: lowercase; }
 .about-body blockquote footer { margin-top: 8px; }
 .about-body code { font-size: var(--fs-15); letter-spacing: var(--tr-15); padding: 1px 5px; border-radius: 4px; background: var(--surface); }
 html:not(:lang(en)) article.about-body:lang(en), html:lang(en) article.about-body:lang(pt) { display: none; }
+/* news.html: the next post of the same language, below the previous one */
+article.about-body:lang(pt) + article.about-body:lang(pt), article.about-body:lang(en) + article.about-body:lang(en) { margin-top: 120px; }
 /* The empty slot is the width the address will take (0x + 40 hex digits). */
 .addr:empty { display: inline-block; width: 42ch; max-width: 100%; padding: 0 .4rem; vertical-align: middle;
   border: 1px dashed var(--line-strong); border-radius: 6px; }
