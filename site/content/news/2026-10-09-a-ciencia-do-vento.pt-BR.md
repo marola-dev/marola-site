@@ -2,7 +2,7 @@
 
 2026-10-09
 
-qual previsão de vento acerta mais no litoral brasileiro: o MONAN, modelo nacional do INPE, ou o WeatherNext, que o Google faz com aprendizado de máquina e que [qualquer pessoa pode consultar](https://open-meteo.com/en/docs/google-weathernext-api)? ninguém mediu isso nas praias do marola ainda. o [MIP-0083](https://github.com/marola-dev/marola/blob/main/docs/MIPs/MIP-0083-forecast-benchmark-job.md), proposta de mudança aprovada em 9 de outubro, descreve uma rotina que vai comparar as previsões com o vento registrado pelos anemômetros, a cada 4 horas. ela começa pelo WeatherNext e pelo IFS, o modelo europeu. o MONAN entra quando der para acessar os dados dele. por enquanto não há nenhum resultado: o trabalho está começando.
+qual previsão de vento acerta mais no litoral brasileiro: o MONAN (Modelo para Previsões de Oceano, Terra e Atmosfera), modelo nacional do INPE (Instituto Nacional de Pesquisas Espaciais), ou o WeatherNext, que o Google faz com aprendizado de máquina e que [qualquer pessoa pode consultar](https://open-meteo.com/en/docs/google-weathernext-api)? ninguém mediu isso nas praias do marola ainda. o [MIP-0083](https://github.com/marola-dev/marola/blob/main/docs/MIPs/MIP-0083-forecast-benchmark-job.md), uma proposta de mudança do marola (MIP, Marola Improvement Proposal) aprovada em 9 de outubro, descreve uma rotina que vai comparar as previsões com o vento registrado pelos anemômetros, a cada 4 horas. ela começa pelo WeatherNext e pelo IFS (Integrated Forecasting System), o modelo do centro europeu de previsão do tempo. o MONAN entra quando der para acessar os dados dele. por enquanto não há nenhum resultado: o trabalho está começando.
 
 ## por que o vento
 
@@ -10,12 +10,12 @@ qual previsão de vento acerta mais no litoral brasileiro: o MONAN, modelo nacio
 
 ## por que agora
 
-- um El Niño forte está em curso. no aviso de 8 de outubro de 2026, a NOAA diz que o mar no Pacífico equatorial (a região Niño-3.4) está 2,1 °C acima do normal e dá mais de 83 % de chance de um El Niño de forte a muito forte durar até o trimestre de janeiro a março de 2027 ([CPC](https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc.shtml)). é quando a comparação tem mais a mostrar, e isso é agora.
+- um El Niño forte está em curso. no aviso de 8 de outubro de 2026, a NOAA (National Oceanic and Atmospheric Administration), a agência dos Estados Unidos para oceanos e atmosfera, diz que o mar no Pacífico equatorial (a região Niño-3.4) está 2,1 °C acima do normal e dá mais de 83 % de chance de um El Niño de forte a muito forte durar até o trimestre de janeiro a março de 2027 ([aviso do CPC, o centro de previsão climática da NOAA](https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc.shtml)). é quando a comparação tem mais a mostrar, e isso é agora.
 - a previsão do Google não fica guardada. o WeatherNext 2 roda 64 versões da mesma previsão (os membros do conjunto), e o Open-Meteo, que distribui o modelo, só mantém a rodada mais recente. o que ninguém salvou se perde ([MIP-0083, §2](https://github.com/marola-dev/marola/blob/main/docs/MIPs/MIP-0083-forecast-benchmark-job.md#2-motivation)).
 
 ## o que vai ser comparado
 
-- o ECMWF IFS HRES, modelo do centro europeu de previsão, com grade de 9 km, como referência;
+- o ECMWF IFS HRES, como referência: o IFS é o modelo do ECMWF, o Centro Europeu de Previsões Meteorológicas de Médio Prazo, e o HRES é a versão de alta resolução, com grade de 9 km;
 - o Google WeatherNext 2, com seus 64 membros, numa grade de 0,25°;
 - o MONAN, do INPE, assim que se descobrir como baixar os dados dele. isso ainda está em aberto ([marola#723](https://github.com/marola-dev/marola/issues/723), passo 1).
 
@@ -23,10 +23,10 @@ qual previsão de vento acerta mais no litoral brasileiro: o MONAN, modelo nacio
 
 a referência é sempre o que um instrumento mediu, nunca outro modelo. uma previsão para quinta ao meio-dia, salva na segunda, é comparada na quinta com o anemômetro daquela hora.
 
-- são seis pontos, dois por estado (SC, RJ e BA). em cada estado, um aeroporto com boletim METAR (o boletim meteorológico de aeroporto) e uma estação automática do INMET.
+- são seis pontos, dois por estado (Santa Catarina, Rio de Janeiro e Bahia). em cada estado, um aeroporto com boletim METAR (sigla em inglês para boletim meteorológico de aeroporto) e uma estação automática do INMET (Instituto Nacional de Meteorologia).
 - só entra ponto onde venta forte de verdade. a regra ([marola#723](https://github.com/marola-dev/marola/issues/723)) olha os 5 anos anteriores e pede pelo menos 200 horas por ano com vento médio de 10,8 m/s ou mais (vento forte). pede também pelo menos 5 dias por ano com vento ou rajadas de 17,2 m/s ou mais (ventania). esses números ainda são provisórios. os pontos saem só do histórico, antes de qualquer previsão ser avaliada, para ninguém dizer que foram escolhidos a dedo.
 - todos os modelos seguem a mesma regra: vale a célula da grade mais próxima, sem estimar valores entre os pontos da grade, e a distância até a estação aparece ao lado de cada nota.
-- as notas são três. o viés diz se o modelo erra mais para cima ou para baixo. o erro quadrático médio (RMSE) dá o tamanho típico do erro. o CRPS avalia as 64 versões do WeatherNext juntas. tudo sai separado por modelo, ponto, antecedência (24, 72, 120 e 240 horas) e vento observado: calmo, moderado ou forte.
+- as notas são três. o viés diz se o modelo erra mais para cima ou para baixo. a raiz do erro quadrático médio (RMSE, na sigla em inglês) dá o tamanho típico do erro. o CRPS (sigla em inglês para pontuação de probabilidade ranqueada contínua) avalia as 64 versões do WeatherNext juntas. tudo sai separado por modelo, ponto, antecedência (24, 72, 120 e 240 horas) e vento observado: calmo, moderado ou forte.
 - rodada perdida fica registrada como perdida. ninguém preenche o buraco com a rodada vizinha.
 
 nenhum modelo de linguagem entra no cálculo, que é determinístico ([MIP-0083, §5.10](https://github.com/marola-dev/marola/blob/main/docs/MIPs/MIP-0083-forecast-benchmark-job.md#510-what-is-deterministic)), e a nota das praias no mapa não usa nada disso ([§6](https://github.com/marola-dev/marola/blob/main/docs/MIPs/MIP-0083-forecast-benchmark-job.md#6-scoring--safety-impact)).
@@ -41,7 +41,7 @@ nenhum modelo de linguagem entra no cálculo, que é determinístico ([MIP-0083,
 
 - numa página do vento no marola.dev ([#99](https://github.com/marola-dev/marola-site/issues/99)), com as previsões lado a lado e as notas dos últimos 7, 30 e 90 dias, sempre com o tamanho da amostra;
 - num capítulo proposto para o livro sobre o WAVEWATCH III, um modelo de previsão de ondas ([ww3-gpu#92](https://github.com/h0ffmann/ww3-gpu/issues/92)), sobre qual vento escolher para alimentar um modelo de ondas;
-- num conjunto de dados aberto, com DOI no Zenodo, e num preprint no arXiv ([marola#723](https://github.com/marola-dev/marola/issues/723)). o DOI é um endereço permanente para citar os dados; o preprint é o artigo antes da revisão por pares.
+- num conjunto de dados aberto, com DOI (identificador de objeto digital) no Zenodo, e num preprint no arXiv ([marola#723](https://github.com/marola-dev/marola/issues/723)). o DOI é um endereço permanente para citar os dados; o preprint é o artigo antes da revisão por pares.
 
 a página mostra as notas desde o começo e avisa quando a amostra é pequena. só que nenhuma conclusão sai antes de 90 dias de dados, e uma primeira resposta à pergunta só vem depois de 12 meses e de pelo menos 30 dias de vento forte por estado. a ideia é seguir por 24 meses, para não tirar conclusão geral de um único ano de El Niño.
 
@@ -49,4 +49,4 @@ e acertar a previsão é só parte da história. um teste de acerto não diz se 
 
 ## como acompanhar ou ajudar
 
-a conversa sobre o estudo está em [marola#723](https://github.com/marola-dev/marola/issues/723). se você conhece uma estação com vento forte no litoral de SC, do RJ ou da BA, ou sabe como o INPE publica os dados do MONAN, conte lá, em português ou em inglês.
+a conversa sobre o estudo está em [marola#723](https://github.com/marola-dev/marola/issues/723). se você conhece uma estação com vento forte no litoral de Santa Catarina, do Rio de Janeiro ou da Bahia, ou sabe como o INPE publica os dados do MONAN, conte lá, em português ou em inglês.

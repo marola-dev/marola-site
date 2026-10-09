@@ -21,9 +21,12 @@ Read both files of the post (`YYYY-MM-DD-<slug>.pt-BR.md` and `.en.md`) and
 3. **Not oversold.** A plan, a proposal or an open PR is never written as done.
 4. **Parity.** pt-BR and en carry the same facts, numbers, dates and link targets. List every
    difference.
-5. **The release card**, if any: the tag exists, its date matches the release in Brazil time
+5. **Acronyms.** Every acronym is spelled out at its first use in each language
+   (`news-post` skill, step 3), and the expansion is right: check it against the body's own
+   source or the organisation's page. A missing or wrong expansion is a finding.
+6. **The release card**, if any: the tag exists, its date matches the release in Brazil time
    (UTC−3), every highlight's link lands on the change it names.
-6. `python3 scripts/news_build.py --check` passes.
+7. `python3 scripts/news_build.py --check` passes.
 
 ## What you return
 

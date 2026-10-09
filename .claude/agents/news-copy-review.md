@@ -21,6 +21,9 @@ and `.claude/skills/news-post/SKILL.md`.
 - **The lede** says what happened and why it matters in one paragraph.
 - **Clarity**: jargon (DuckLake, R2, DOI, Worker) gets a short gloss at first use or a link; a
   sentence that teaches nothing is cut; no em dash.
+- **Acronyms**: every acronym is spelled out at its first use in each language, with what it is
+  when the name alone does not say (`news-post` skill, step 3). An unexplained acronym is a
+  blocking finding.
 - **Shape**: the two versions have the same sections in the same order.
 
 ## What you return

@@ -31,6 +31,7 @@ A release gets a card:
 The header names the umbrella's tag and its date; then `- ` highlights and one line of links.
 
 The reading time next to the date is computed by the build (the `news-post` skill has the rule); never write it.
+Every acronym is spelled out at its first use, in each language: a post is public.
 Portuguese follows the site's lowercase house style and the `ptbr-humanizer` skill; every claim
 links to what backs it (`citizen-science-site`).
 

@@ -30,15 +30,21 @@ a post look shorter: cut the post instead.
    (`humanizer`). Same sections, same facts, same links in both.
 2. Every claim links to what backs it: a repo file, a PR, an issue, a DOI (`citizen-science-site`).
    State work in progress as in progress; never present a plan as done.
-3. Add the post's row to the index in `site/content/news/README.md`.
-4. `python3 scripts/news_build.py`, then `python3 scripts/news_build.py --check` and
+3. **Every acronym is spelled out at its first use, in each language** (Hoffmann, 2026-10-09: a
+   post is public). Give the full name, and say what it is when the name alone does not tell a
+   visitor ("o INMET (Instituto Nacional de Meteorologia)", "RMSE, na sigla em inglês, a raiz do
+   erro quadrático médio"). This covers agencies, models, metrics, file formats, state codes and
+   marola's own (MIP). Units (km, m/s, °C) and product names (GitHub, Zenodo, arXiv) are not
+   acronyms. Both reviews check it.
+4. Add the post's row to the index in `site/content/news/README.md`.
+5. `python3 scripts/news_build.py`, then `python3 scripts/news_build.py --check` and
    `node scripts/site_check.js`.
-5. **Two reviews, in order, both before the PR:** the `news-fact-check` agent (every claim against
+6. **Two reviews, in order, both before the PR:** the `news-fact-check` agent (every claim against
    its link, pt-BR/en parity), then `news-copy-review` (language and voice). Fix what each reports,
    re-run the build, and paste both plain texts in the PR body for a person, who signs off last.
-6. Screenshots of `news.html` at 1280 × 800 and 390 × 844, both languages, in the PR body
+7. Screenshots of `news.html` at 1280 × 800 and 390 × 844, both languages, in the PR body
    (AGENTS.md, "Screenshots in the PR").
-7. The commit touches `site/static/news.html`, so it carries a `MIP:` trailer (MIP-0044 for posts).
+8. The commit touches `site/static/news.html`, so it carries a `MIP:` trailer (MIP-0044 for posts).
 
 ## Checking an existing post
 
