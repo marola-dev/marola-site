@@ -5,7 +5,7 @@
 o marola está no ar: tem código aberto e não tem fins lucrativos. é um mapa das praias de Florianópolis, do Rio de Janeiro e de Salvador, com uma nota para hoje e amanhã feita só com dados públicos. a versão mais recente, a 0.2.1, saiu em 8 de outubro.
 
 ::: release v0.2.1 2026-10-08
-- três novos autores na referência para citar o marola: Elisa Oliveira, Leonardo Santos Almeida e Pablo Ribeiro ([#712](https://github.com/marola-dev/marola/pull/712), [#714](https://github.com/marola-dev/marola/pull/714))
+- três novos autores na referência para citar o marola: Elisa Oliveira, Leonardo Ramos Almeida e Pablo Ribeiro ([#712](https://github.com/marola-dev/marola/pull/712), [#714](https://github.com/marola-dev/marola/pull/714))
 - as skills dos agentes de IA agora têm versão fixa e são atualizadas toda semana ([MIP-0080](https://github.com/marola-dev/marola/pull/701))
 - uma proposta para avaliar modelos de linguagem externos sem depender de um fornecedor ([MIP-0081](https://github.com/marola-dev/marola/pull/704))
 [notas da versão](https://github.com/marola-dev/marola/releases/tag/v0.2.1) · [mudanças desde a 0.2.0](https://github.com/marola-dev/marola/compare/v0.2.0...v0.2.1)

@@ -5,7 +5,7 @@
 marola is live, open-source and non-profit. It is a map of the beaches of Florianópolis, Rio de Janeiro and Salvador, with a score for today and tomorrow built from public data only. The latest version, 0.2.1, came out on October 8.
 
 ::: release v0.2.1 2026-10-08
-- three new authors in marola's citation: Elisa Oliveira, Leonardo Santos Almeida and Pablo Ribeiro ([#712](https://github.com/marola-dev/marola/pull/712), [#714](https://github.com/marola-dev/marola/pull/714))
+- three new authors in marola's citation: Elisa Oliveira, Leonardo Ramos Almeida and Pablo Ribeiro ([#712](https://github.com/marola-dev/marola/pull/712), [#714](https://github.com/marola-dev/marola/pull/714))
 - AI agent skills now have fixed versions, updated every week ([MIP-0080](https://github.com/marola-dev/marola/pull/701))
 - a proposal to evaluate external language models without tying marola to one vendor ([MIP-0081](https://github.com/marola-dev/marola/pull/704))
 [release notes](https://github.com/marola-dev/marola/releases/tag/v0.2.1) · [changes since 0.2.0](https://github.com/marola-dev/marola/compare/v0.2.0...v0.2.1)
