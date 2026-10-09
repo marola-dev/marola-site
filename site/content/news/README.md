@@ -31,11 +31,13 @@ A release gets a card:
 The header names the umbrella's tag and its date; then `- ` highlights and one line of links.
 
 The reading time next to the date is computed by the build (the `news-post` skill has the rule); never write it.
-Portuguese follows the site's lowercase house style and the `ptbr-humanizer` skill; every claim
+Every acronym is spelled out at its first use, in each language: a post is public.
+Both languages follow the site's lowercase house style (sentences and headings start lowercase; names and acronyms keep their capitals); Portuguese also follows the `ptbr-humanizer` skill; every claim
 links to what backs it (`citizen-science-site`).
 
 ## Index
 
 | Date | Post | For |
 |---|---|---|
+| 2026-10-09 | [The Science of Wind](2026-10-09-a-ciencia-do-vento.en.md) ([pt-BR](2026-10-09-a-ciencia-do-vento.pt-BR.md)) | #100 |
 | 2026-10-09 | [Sic Mundus Creatus Est](2026-10-09-sic-mundus-creatus-est.en.md) ([pt-BR](2026-10-09-sic-mundus-creatus-est.pt-BR.md)) | #7, #96 |
