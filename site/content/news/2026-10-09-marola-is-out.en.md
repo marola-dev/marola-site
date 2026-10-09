@@ -1,8 +1,8 @@
 # marola is out
 
-2026-10-07
+2026-10-09
 
-marola is live, open and non-profit. It is a map of the beaches of Florianópolis, Rio de Janeiro and Salvador, with a score for today and tomorrow built from public data only. Version 0.2.0 came out today, and it has a DOI.
+marola is live, open and non-profit. It is a map of the beaches of Florianópolis, Rio de Janeiro and Salvador, with a score for today and tomorrow built from public data only. Version 0.2.0 came out on October 7, and it has a DOI.
 
 ## Official links
 

@@ -1,8 +1,8 @@
 # o marola saiu
 
-2026-10-07
+2026-10-09
 
-o marola está no ar, aberto e sem fins lucrativos. é um mapa das praias de Florianópolis, do Rio de Janeiro e de Salvador, com uma nota para hoje e amanhã feita só com dados públicos. a versão 0.2.0 saiu hoje e já tem DOI.
+o marola está no ar, aberto e sem fins lucrativos. é um mapa das praias de Florianópolis, do Rio de Janeiro e de Salvador, com uma nota para hoje e amanhã feita só com dados públicos. a versão 0.2.0 saiu em 7 de outubro e já tem DOI.
 
 ## links oficiais
 

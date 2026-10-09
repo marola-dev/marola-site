@@ -28,4 +28,4 @@ links to what backs it (`citizen-science-site`).
 
 | Date | Post | For |
 |---|---|---|
-| 2026-10-07 | [marola is out](2026-10-07-marola-is-out.en.md) ([pt-BR](2026-10-07-marola-is-out.pt-BR.md)) | #7, #96 |
+| 2026-10-09 | [marola is out](2026-10-09-marola-is-out.en.md) ([pt-BR](2026-10-09-marola-is-out.pt-BR.md)) | #7, #96 |
