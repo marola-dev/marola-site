@@ -50,15 +50,16 @@ map-load tier, billed above it).
   agent never sets it.
 - `DESIGN.md`: the visual system (tokens, type, components); Inter is self-hosted in
   `site/static/vendor/fonts/`.
-- `.claude/skills/site-frontend/`: the entry point for anything a visitor sees; it orders the
-  other frontend skills and settles their conflicts. `ptbr-humanizer/` keeps the Portuguese
-  natural, `citizen-science-site/` keeps sources, freshness, limits and the way to contribute on
-  the page; `frontend-design/`, `webapp-testing/` (anthropics/skills), `design-taste-frontend/`
-  (Leonxlnx/taste-skill), `emil-design-eng/`, `review-animations/` and `break-ui/`
-  (emilkowalski/skill), `karpathy-guidelines/` (forrestchang/andrej-karpathy-skills) and the eight
-  `mapbox-*/` skills (mapbox/mapbox-agent-skills) are vendored unchanged with their licences,
-  pinned in `.claude/skills/skills.lock` (MIP-0080): `skills-vendor check` verifies the copies,
-  and `.github/workflows/skills.yml` opens a weekly update PR for a person to read.
+- `.claude/skills/site-frontend/`: the entry point for anything a visitor sees; it orders the other
+  frontend skills and settles their conflicts. `ptbr-humanizer/` keeps the Portuguese natural,
+  `citizen-science-site/` keeps sources, freshness, limits and the way to contribute on the page,
+  `news-post/` writes a news post and keeps its reading time computed; `frontend-design/`,
+  `webapp-testing/` (anthropics/skills), `design-taste-frontend/` (Leonxlnx/taste-skill),
+  `emil-design-eng/`, `review-animations/` and `break-ui/` (emilkowalski/skill),
+  `karpathy-guidelines/` (forrestchang/andrej-karpathy-skills) and the eight `mapbox-*/` skills
+  (mapbox/mapbox-agent-skills) are vendored unchanged with their licences, pinned in
+  `.claude/skills/skills.lock` (MIP-0080): `skills-vendor check` verifies the copies, and
+  `.github/workflows/skills.yml` opens a weekly update PR for a person to read.
 - `.mcp.json`: the Playwright and Figma MCP servers (no keys; Figma signs in with OAuth).
 
 ## What it consumes and produces

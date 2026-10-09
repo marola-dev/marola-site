@@ -28,6 +28,9 @@ BEGIN = (
 )
 END = "<!-- news:end -->"
 NAME = re.compile(r"^(\d{4})-(\d{2})-(\d{2})-([a-z0-9-]+)\.(pt-BR|en)\.md$")
+# A common silent-reading rate for non-fiction; the minutes are rounded up so a short post says 1.
+WORDS_PER_MINUTE = 200
+READ = {"pt-BR": "{} min de leitura", "en": "{} min read"}
 MONTHS = {
     "pt-BR": "janeiro fevereiro março abril maio junho julho agosto setembro outubro novembro dezembro",
     "en": "January February March April May June July August September October November December",
@@ -52,6 +55,16 @@ def inline(text):
     return out
 
 
+def words(blocks):
+    """The words a reader reads: no link targets, no Markdown markup."""
+    text = re.sub(r"\]\([^)]*\)", " ", " ".join(blocks))
+    return [w for w in re.sub(r"[#*`\[\]]|^- ", " ", text).split() if re.search(r"\w", w)]
+
+
+def reading_minutes(blocks):
+    return max(1, -(-len(words(blocks)) // WORDS_PER_MINUTE))
+
+
 def render(path):
     """One post file as (date, slug, lang, <article> HTML); PostError if it breaks the format."""
     m = NAME.match(path.name)
@@ -68,7 +81,8 @@ def render(path):
     out = [
         f'    <article class="about-body" lang="{lang}">',
         f"      <h2>{inline(blocks[0][2:])}</h2>",
-        f'      <p class="post-date"><time datetime="{y}-{mo}-{d}">{shown}</time></p>',
+        f'      <p class="post-date"><time datetime="{y}-{mo}-{d}">{shown}</time>'
+        f" · {READ[lang].format(reading_minutes([blocks[0], *blocks[2:]]))}</p>",
     ]
     if blocks[2].startswith(("#", "- ")):
         raise PostError(f"{path.name}: the paragraph after the date is the lede")
@@ -169,10 +183,15 @@ def self_test():
     good = {"2026-10-07-a.pt-BR.md": pt, "2026-10-07-a.en.md": en}
     got = scenario("a post in both languages passes --check after a write", good, True)
     ok(
-        '<p class="post-date"><time datetime="2026-10-07">7 de outubro de 2026</time></p>' in got,
+        '<time datetime="2026-10-07">7 de outubro de 2026</time> · 1 min de leitura</p>' in got,
         "pt-BR date",
     )
-    ok("October 7, 2026" in got, "en date")
+    ok("October 7, 2026</time> · 1 min read</p>" in got, "en date and reading time")
+    ok(reading_minutes(["# t", "word " * 200]) == 2, "201 words round up to 2 minutes")
+    ok(
+        len(words(["[two words](https://a.org/x/y/z)", "- **one** ·"])) == 3,
+        "link targets and markup are not counted",
+    )
     ok('<p class="lede">um lede.</p>' in got, "the paragraph after the date is the lede")
     ok('<a href="https://x.org/?a=1&amp;b=2">link</a>' in got, "a link's & is escaped once")
     ok("<li><b>dois</b></li>" in got and "<code>code</code>" in got, "bold and code render")

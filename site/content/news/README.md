@@ -19,9 +19,10 @@ YYYY-MM-DD
 ```
 
 The date line repeats the file's date. Inside a post: `##` and `###` headings, paragraphs, `- `
-lists, `[text](url)`, `**bold**` and `` `code` ``; anything else fails the build. Portuguese
-follows the site's lowercase house style and the `ptbr-humanizer` skill; every claim links to what
-backs it (`citizen-science-site`).
+lists, `[text](url)`, `**bold**` and `` `code` ``; anything else fails the build. The reading time
+next to the date is computed by the build (the `news-post` skill has the rule); never write it.
+Portuguese follows the site's lowercase house style and the `ptbr-humanizer` skill; every claim
+links to what backs it (`citizen-science-site`).
 
 ## Index
 

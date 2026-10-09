@@ -26,6 +26,7 @@ frontend skills vendored next to it, which were written for landing pages and Re
 | `karpathy-guidelines` | how to change the code: surgical diffs, no speculative abstractions, a check per step | forrestchang/andrej-karpathy-skills, MIT (from Andrej Karpathy's notes on LLM coding) |
 | `ptbr-humanizer` | every Portuguese string | here |
 | `citizen-science-site` | sources, freshness, limits, privacy, contributing on the page | here |
+| `news-post` | a news post: its files, format, reading time and build | here |
 | `mapbox-web-integration-patterns` | Mapbox GL JS setup, lifecycle, token handling, common pitfalls (read its vanilla-JS parts) | mapbox/mapbox-agent-skills, MIT |
 | `mapbox-web-performance-patterns` | load waterfall, markers vs layers, render cost, memory; check `flow.js` against it | mapbox/mapbox-agent-skills, MIT |
 | `mapbox-data-visualization-patterns` | data-driven layers, heat and flow fields, animated data (the wind and wave layers) | mapbox/mapbox-agent-skills, MIT |
