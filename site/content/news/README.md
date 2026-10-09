@@ -38,4 +38,5 @@ links to what backs it (`citizen-science-site`).
 
 | Date | Post | For |
 |---|---|---|
+| 2026-10-09 | [The Science of Wind](2026-10-09-a-ciencia-do-vento.en.md) ([pt-BR](2026-10-09-a-ciencia-do-vento.pt-BR.md)) | #100 |
 | 2026-10-09 | [Sic Mundus Creatus Est](2026-10-09-sic-mundus-creatus-est.en.md) ([pt-BR](2026-10-09-sic-mundus-creatus-est.pt-BR.md)) | #7, #96 |
