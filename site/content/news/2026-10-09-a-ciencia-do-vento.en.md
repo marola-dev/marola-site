@@ -10,24 +10,24 @@ Wind drives the waves, and strong wind is where safety at sea is decided. When t
 
 ## Why now
 
-- **A strong El Niño is under way.** NOAA's advisory of October 8, 2026, says the equatorial Pacific (the Niño-3.4 region) is 2.1 °C warmer than normal and gives a more than 83% chance that a strong or very strong El Niño lasts through January to March 2027 ([CPC](https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc.shtml)). It is when the comparison has the most to show, and it is happening now.
-- **Google's forecast is not kept.** WeatherNext 2 runs 64 versions of each forecast (its ensemble members), and Open-Meteo, which distributes it, keeps only the latest run. A version nobody saved is gone ([MIP-0083, §2](https://github.com/marola-dev/marola/blob/main/docs/MIPs/MIP-0083-forecast-benchmark-job.md#2-motivation)).
+- A strong El Niño is under way. NOAA's advisory of October 8, 2026, says the equatorial Pacific (the Niño-3.4 region) is 2.1 °C warmer than normal and gives a more than 83% chance that a strong or very strong El Niño lasts through January to March 2027 ([CPC](https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc.shtml)). It is when the comparison has the most to show, and it is happening now.
+- Google's forecast is not kept. WeatherNext 2 runs 64 versions of each forecast (its ensemble members), and Open-Meteo, which distributes it, keeps only the latest run. A version nobody saved is gone ([MIP-0083, §2](https://github.com/marola-dev/marola/blob/main/docs/MIPs/MIP-0083-forecast-benchmark-job.md#2-motivation)).
 
 ## What will be compared
 
-- **ECMWF IFS HRES**, the European forecast centre's model, on a 9 km grid, as the reference;
-- **Google WeatherNext 2**, with its 64 members, on a 0.25° grid;
-- **MONAN**, from INPE, once it is clear how to download its data. Today that is an open question ([marola#723](https://github.com/marola-dev/marola/issues/723), step 1).
+- ECMWF IFS HRES, the European forecast centre's model, on a 9 km grid, as the reference;
+- Google WeatherNext 2, with its 64 members, on a 0.25° grid;
+- MONAN, from INPE, once it is clear how to download its data. That is still open ([marola#723](https://github.com/marola-dev/marola/issues/723), step 1).
 
 ## How a forecast gets a score
 
 The reference is always what an instrument measured, never another model. A forecast for Thursday at noon, saved on Monday, is compared on Thursday with the anemometer reading for that hour.
 
-- **Six points, two per state** (SC, RJ and BA): in each state, an airport with a METAR report (the airport weather report) and an automatic station of INMET, Brazil's national weather service.
-- **Only points that really get strong wind.** The rule ([marola#723](https://github.com/marola-dev/marola/issues/723)) looks at the previous 5 years and asks for at least 200 hours a year of mean wind at 10.8 m/s or more (a strong breeze). It also asks for at least 5 days a year with wind or gusts at 17.2 m/s or more (a gale). Both numbers are still provisional. Points are chosen from their history only, before any forecast is scored, so nobody can say they were cherry-picked.
-- **One rule for every model:** the nearest grid cell, with no estimating between grid points, and the distance to the station is shown next to every score.
-- **The scores:** bias (whether a model runs high or low), root-mean-square error (RMSE, the typical size of the error) and CRPS, a score for all 64 WeatherNext versions together. All of it per model, point, lead time (24, 72, 120 and 240 hours) and the wind actually observed: calm, moderate and strong.
-- **A missed run is recorded as missed,** never filled from the one next to it.
+- There are six points, two per state (SC, RJ and BA). In each state, an airport with a METAR report (the airport weather report) and an automatic station of INMET, Brazil's national weather service.
+- Only points where the wind really blows hard count. The rule ([marola#723](https://github.com/marola-dev/marola/issues/723)) looks at the previous 5 years and asks for at least 200 hours a year of mean wind at 10.8 m/s or more (a strong breeze). It also asks for at least 5 days a year with wind or gusts at 17.2 m/s or more (a gale). Both numbers are still provisional. Points are chosen from their history only, before any forecast is scored, so nobody can say they were cherry-picked.
+- Every model follows the same rule: the nearest grid cell, with no estimating between grid points, and the distance to the station is shown next to every score.
+- There are three scores. Bias says whether a model runs high or low. Root-mean-square error (RMSE) gives the typical size of the error. CRPS scores all 64 WeatherNext versions together. All of it comes out per model, point, lead time (24, 72, 120 and 240 hours) and the wind actually observed: calm, moderate and strong.
+- A missed run is recorded as missed. Nobody fills the gap with the run next to it.
 
 No language model takes part in the computation, which is deterministic ([MIP-0083, §5.10](https://github.com/marola-dev/marola/blob/main/docs/MIPs/MIP-0083-forecast-benchmark-job.md#510-what-is-deterministic)), and the beach scores on the map use none of it ([§6](https://github.com/marola-dev/marola/blob/main/docs/MIPs/MIP-0083-forecast-benchmark-job.md#6-scoring--safety-impact)).
 
@@ -39,13 +39,13 @@ No language model takes part in the computation, which is deterministic ([MIP-00
 
 ## Where the results will show up
 
-- **A wind page on marola.dev** ([#99](https://github.com/marola-dev/marola-site/issues/99)), with the forecasts side by side and the scores for the last 7, 30 and 90 days, always with the sample size.
-- **A proposed chapter in the book on WAVEWATCH III**, a wave forecasting model ([ww3-gpu#92](https://github.com/h0ffmann/ww3-gpu/issues/92)): which wind to trust as a wave model's input.
-- **An open dataset with a Zenodo DOI (a permanent link for citing it), and an arXiv preprint (the paper before peer review)** ([marola#723](https://github.com/marola-dev/marola/issues/723)).
+- a wind page on marola.dev ([#99](https://github.com/marola-dev/marola-site/issues/99)), with the forecasts side by side and the scores for the last 7, 30 and 90 days, always with the sample size;
+- a proposed chapter in the book on WAVEWATCH III, a wave forecasting model ([ww3-gpu#92](https://github.com/h0ffmann/ww3-gpu/issues/92)), on which wind to trust as a wave model's input;
+- an open dataset with a Zenodo DOI, and an arXiv preprint ([marola#723](https://github.com/marola-dev/marola/issues/723)). The DOI is a permanent link for citing the data; the preprint is the paper before peer review.
 
-The page shows scores from the start and flags a small sample. No conclusion is drawn before 90 days of data. A first answer to the question comes only after 12 months and at least 30 strong-wind days per state. The study aims to run for 24 months, so that no general conclusion rests on a single El Niño year.
+The page shows scores from the start and flags a small sample. But no conclusion is drawn before 90 days of data, and a first answer to the question comes only after 12 months and at least 30 strong-wind days per state. The study aims to run for 24 months, so that no general conclusion rests on a single El Niño year.
 
-And accuracy is only part of the question. An accuracy test does not measure whether Brazil depends on a foreign model (sovereignty), whether a model takes in Brazilian measurements (assimilation) or whether it is guaranteed to run every day, and the result will say so.
+And getting the forecast right is only part of the story. An accuracy test does not measure whether Brazil depends on a foreign model (sovereignty), whether a model takes in Brazilian measurements (assimilation) or whether it is guaranteed to run every day. The result will say so.
 
 ## How to follow or help
 
