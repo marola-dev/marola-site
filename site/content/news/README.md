@@ -19,8 +19,18 @@ YYYY-MM-DD
 ```
 
 The date line repeats the file's date. Inside a post: `##` and `###` headings, paragraphs, `- `
-lists, `[text](url)`, `**bold**` and `` `code` ``; anything else fails the build. The reading time
-next to the date is computed by the build (the `news-post` skill has the rule); never write it.
+lists, `[text](url)`, `**bold**` and `` `code` ``; anything else fails the build.
+A release gets a card:
+
+```markdown
+::: release v0.2.1 2026-10-08
+- <a highlight, with its PR link>
+[release notes](<url>) · [DOI …](<url>)
+```
+
+The header names the umbrella's tag and its date; then `- ` highlights and one line of links.
+
+The reading time next to the date is computed by the build (the `news-post` skill has the rule); never write it.
 Portuguese follows the site's lowercase house style and the `ptbr-humanizer` skill; every claim
 links to what backs it (`citizen-science-site`).
 

@@ -31,6 +31,8 @@ NAME = re.compile(r"^(\d{4})-(\d{2})-(\d{2})-([a-z0-9-]+)\.(pt-BR|en)\.md$")
 # A common silent-reading rate for non-fiction; the minutes are rounded up so a short post says 1.
 WORDS_PER_MINUTE = 200
 READ = {"pt-BR": "{} min de leitura", "en": "{} min read"}
+RELEASE = re.compile(r"^::: release (v\d+\.\d+\.\d+) (\d{4})-(\d{2})-(\d{2})$")
+RELEASES = "https://github.com/marola-dev/marola/releases/tag/"
 MONTHS = {
     "pt-BR": "janeiro fevereiro março abril maio junho julho agosto setembro outubro novembro dezembro",
     "en": "January February March April May June July August September October November December",
@@ -55,9 +57,40 @@ def inline(text):
     return out
 
 
+def long_date(lang, y, mo, d):
+    month = MONTHS[lang].split()[int(mo) - 1]
+    return f"{int(d)} de {month} de {y}" if lang == "pt-BR" else f"{month} {int(d)}, {y}"
+
+
+def release_card(lang, block, name):
+    """`::: release vX.Y.Z YYYY-MM-DD`, then `- ` highlights, then one line of links."""
+    head, *lines = block.split("\n")
+    m = RELEASE.match(head)
+    if not m or not lines:
+        raise PostError(f"{name}: '::: release vX.Y.Z YYYY-MM-DD' then its lines: {head}")
+    tag, y, mo, d = m.groups()
+    items, links = [], []
+    for line in lines:
+        (items if line.startswith("- ") else links).append(line.removeprefix("- "))
+    if not items or len(links) != 1:
+        raise PostError(f"{name}: a release card needs '- ' highlights and one line of links")
+    out = [
+        '      <aside class="release">',
+        '        <p class="release-head">'
+        f'<a class="release-tag" href="{RELEASES}{tag}">marola {tag}</a>'
+        f' <time datetime="{y}-{mo}-{d}">{long_date(lang, y, mo, d)}</time></p>',
+        "        <ul>",
+        *[f"          <li>{inline(i)}</li>" for i in items],
+        "        </ul>",
+        f'        <p class="release-links">{inline(links[0])}</p>',
+        "      </aside>",
+    ]
+    return out
+
+
 def words(blocks):
     """The words a reader reads: no link targets, no Markdown markup."""
-    text = re.sub(r"\]\([^)]*\)", " ", " ".join(blocks))
+    text = re.sub(r"\]\([^)]*\)|^::: .*$", " ", " ".join(blocks), flags=re.M)
     return [w for w in re.sub(r"[#*`\[\]]|^- ", " ", text).split() if re.search(r"\w", w)]
 
 
@@ -76,8 +109,7 @@ def render(path):
         raise PostError(f"{path.name}: needs a '# title', a date line and a lede")
     if blocks[1] != f"{y}-{mo}-{d}":
         raise PostError(f"{path.name}: the date line must be {y}-{mo}-{d}, the file's date")
-    month = MONTHS[lang].split()[int(mo) - 1]
-    shown = f"{int(d)} de {month} de {y}" if lang == "pt-BR" else f"{month} {int(d)}, {y}"
+    shown = long_date(lang, y, mo, d)
     out = [
         f'    <article class="about-body" lang="{lang}">',
         f"      <h2>{inline(blocks[0][2:])}</h2>",
@@ -92,6 +124,8 @@ def render(path):
             out.append(f"      <h2>{inline(b[3:])}</h2>")
         elif b.startswith("### ") and "\n" not in b:
             out.append(f"      <h3>{inline(b[4:])}</h3>")
+        elif b.startswith("::: "):
+            out += release_card(lang, b, path.name)
         elif b.startswith("#"):
             raise PostError(f"{path.name}: only ## and ### headings inside a post: {b[:40]}")
         elif b.startswith("- "):
@@ -196,6 +230,21 @@ def self_test():
     ok('<a href="https://x.org/?a=1&amp;b=2">link</a>' in got, "a link's & is escaped once")
     ok("<li><b>dois</b></li>" in got and "<code>code</code>" in got, "bold and code render")
     ok(got.index('lang="pt-BR"') < got.index('lang="en"'), "pt-BR articles come before en")
+    card = "::: release v0.2.1 2026-10-08\n- a [change](https://x.org/1)\n[notes](https://x.org/n) · DOI"
+    got = scenario(
+        "a release card renders", {**good, "2026-10-07-a.en.md": en + "\n" + card + "\n"}, True
+    )
+    ok(
+        'href="https://github.com/marola-dev/marola/releases/tag/v0.2.1">marola v0.2.1</a>' in got
+        and "October 8, 2026" in got
+        and '<p class="release-links"><a href="https://x.org/n">notes</a> · DOI</p>' in got,
+        "the card has the tag, its date, highlights and links",
+    )
+    scenario(
+        "a release card with no links line fails",
+        {**good, "2026-10-07-a.en.md": en + "\n::: release v0.2.1 2026-10-08\n- one\n"},
+        False,
+    )
     scenario("a post with no en file fails", {"2026-10-07-a.pt-BR.md": pt}, False)
     scenario(
         "a date line that is not the file's date fails",

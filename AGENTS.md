@@ -60,6 +60,9 @@ map-load tier, billed above it).
   (mapbox/mapbox-agent-skills) are vendored unchanged with their licences, pinned in
   `.claude/skills/skills.lock` (MIP-0080): `skills-vendor check` verifies the copies, and
   `.github/workflows/skills.yml` opens a weekly update PR for a person to read.
+- `.claude/agents/`: a news post's two reviews, `news-fact-check` (claims against their links,
+  pt-BR/en parity) then `news-copy-review` (language and voice), both read-only, run before a
+  person signs off (the `news-post` skill).
 - `.mcp.json`: the Playwright and Figma MCP servers (no keys; Figma signs in with OAuth).
 
 ## What it consumes and produces

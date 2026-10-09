@@ -288,6 +288,14 @@ body { text-transform: lowercase; }
 .about-body blockquote footer { margin-top: 8px; }
 .about-body code { font-size: var(--fs-15); letter-spacing: var(--tr-15); padding: 1px 5px; border-radius: 4px; background: var(--surface); }
 html:not(:lang(en)) article.about-body:lang(en), html:lang(en) article.about-body:lang(pt) { display: none; }
+/* news.html: a release card (`::: release` in a post) */
+.about-body .release { margin: 32px 0 40px; padding: 20px 24px; border: 1px solid var(--line); border-radius: var(--r-panel); background: var(--surface); }
+.about-body .release-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin: 0 0 12px; }
+.about-body .release-tag { padding: 2px 10px; border-radius: 999px; background: var(--accent); color: #fff; font-size: var(--fs-15); font-weight: 600; letter-spacing: var(--tr-15); text-decoration: none; text-transform: none; font-variant-numeric: tabular-nums; }
+.about-body .release-tag:hover { color: #fff; background: var(--accent-hover); }
+.about-body .release-head time { font-size: var(--fs-14); color: var(--muted); }
+.about-body .release ul { margin-bottom: 12px; font-size: var(--fs-15); }
+.about-body .release-links { margin: 0; font-size: var(--fs-14); color: var(--muted); }
 /* news.html: the next post of the same language, below the previous one */
 article.about-body:lang(pt) + article.about-body:lang(pt), article.about-body:lang(en) + article.about-body:lang(en) { margin-top: 120px; }
 /* The empty slot is the width the address will take (0x + 40 hex digits). */
