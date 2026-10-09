@@ -302,7 +302,7 @@ article.about-body:lang(pt) + article.about-body:lang(pt), article.about-body:la
 .post-intro .lede { margin-bottom: 32px; }
 article.about-body[id], .tag-list dt { scroll-margin-top: 32px; }
 .post-index { margin-bottom: 120px; }
-.post-index h3 { margin: 40px 0 8px; font-size: var(--fs-13); font-weight: 600; letter-spacing: var(--tr-13); color: var(--muted); text-transform: uppercase; }
+.post-index h3 { margin: 40px 0 8px; font-size: var(--fs-13); font-weight: 600; letter-spacing: var(--tr-13); color: var(--muted); }
 .post-index h3:first-child { margin-top: 0; }
 .post-list { list-style: none; padding: 0 !important; }
 .post-list li { margin: 0; padding: 16px 0; border-top: 1px solid var(--line); }
@@ -313,9 +313,9 @@ article.about-body[id], .tag-list dt { scroll-margin-top: 32px; }
 .about-body .post-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 0; }
 article.about-body .post-tags { margin: -8px 0 24px; }
 .about-body .tag { padding: 1px 10px; border: 1px solid var(--line-strong); border-radius: 999px; font-size: var(--fs-13); font-weight: 600;
-  letter-spacing: var(--tr-13); color: var(--accent); text-decoration: none; text-transform: none; }
+  letter-spacing: var(--tr-13); color: var(--accent); text-decoration: none; }
 .about-body .tag:hover { border-color: var(--accent); }
-.tag-list dt { font-weight: 600; text-transform: none; }
+.tag-list dt { font-weight: 600; }
 .tag-list dd { margin: 2px 0 16px; color: var(--muted); }
 /* The empty slot is the width the address will take (0x + 40 hex digits). */
 .addr:empty { display: inline-block; width: 42ch; max-width: 100%; padding: 0 .4rem; vertical-align: middle;
