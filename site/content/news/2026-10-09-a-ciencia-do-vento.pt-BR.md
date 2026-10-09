@@ -17,7 +17,7 @@ qual previsão de vento acerta mais no litoral brasileiro: o MONAN (Modelo para 
 ## o que vai ser comparado
 
 - o ECMWF IFS HRES, como referência: o IFS é o modelo do ECMWF, o Centro Europeu de Previsões Meteorológicas de Médio Prazo, e o HRES é a versão de alta resolução, com grade de 9 km;
-- o Google WeatherNext 2, com seus 64 membros, numa grade de 0,25°;
+- o Google WeatherNext 2, com seus 64 membros, numa grade de 0,25°. o Google já anunciou o [WeatherNext 3](https://developers.google.com/weathernext/guides/models), com passo de 1 hora, mas o acesso a ele depende de liberação do Google; a versão aberta no Open-Meteo, a que vai ser comparada, ainda é a 2;
 - o MONAN, do INPE, assim que se descobrir como baixar os dados dele. isso ainda está em aberto ([marola#723](https://github.com/marola-dev/marola/issues/723), passo 1).
 
 ## como uma previsão vira nota

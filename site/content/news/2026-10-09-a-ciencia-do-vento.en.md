@@ -17,7 +17,7 @@ wind drives the waves, and strong wind is where safety at sea is decided. when t
 ## what will be compared
 
 - ECMWF IFS HRES, as the reference: IFS is the model of ECMWF, the European Centre for Medium-Range Weather Forecasts, and HRES is its high-resolution version, on a 9 km grid;
-- Google WeatherNext 2, with its 64 members, on a 0.25° grid;
+- Google WeatherNext 2, with its 64 members, on a 0.25° grid. Google has already announced [WeatherNext 3](https://developers.google.com/weathernext/guides/models), with hourly steps, but access to it needs Google's approval; the open version on Open-Meteo, the one that will be compared, is still 2;
 - MONAN, from INPE, once it is clear how to download its data. that is still open ([marola#723](https://github.com/marola-dev/marola/issues/723), step 1).
 
 ## how a forecast gets a score
