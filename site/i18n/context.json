@@ -1,5 +1,7 @@
 {
   "about.back": "about and support pages: the header link back to the map page",
+  "blog.heading": "blog page: the page heading, above the list of posts",
+  "blog.lede": "blog page: one sentence under the heading saying what the blog is for",
   "card.air": "card row label: air temperature, wind, uv index, chance of rain",
   "card.at": "after the card's sea row: the hour those numbers are for; h = HH:00",
   "card.at_best": "card headline after the score for a picked hour; best = the beach's best hour, score = the score there",
@@ -118,6 +120,7 @@
   "map.no_token": "shown over the map area when the deployed copy has no Mapbox access token, so no base map can load",
   "nav.about": "section nav: link to the about page",
   "nav.alerts": "section nav: alerts section, not built yet",
+  "nav.blog": "section nav: link to the blog page",
   "nav.contact": "section nav: contact section, not built yet",
   "nav.docs": "section nav: link to the published documentation",
   "nav.donate": "section nav: link to the support (donations) page",
@@ -164,6 +167,7 @@
   "tip.at": "wave tooltip heading after the beach name: the swimming score out of 100 and the hour it is for (HH:00)",
   "tip.dark": "tooltip heading and card headline when the beach has no daylight at the picked hour, so no score",
   "title.about": "browser tab title of the about page",
+  "title.blog": "browser tab title of the blog page",
   "title.map": "browser tab title of the map page",
   "title.news": "browser tab title of the news page",
   "title.support": "browser tab title of the support (donations) page",

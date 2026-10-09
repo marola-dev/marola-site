@@ -82,13 +82,16 @@ in the ICU subset `ui.js` implements and names the same arguments as `pt-BR`'s, 
 note in `context.json`. Edit the catalogs, never `i18n.js`; `--check` fails a stale committed
 bundle.
 
-## News posts
+## News and blog posts
 
-A post is `site/content/news/YYYY-MM-DD-<slug>.pt-BR.md` plus its `.en.md`, in the format
-[`site/content/news/README.md`](../site/content/news/README.md) gives, listed in that file's index.
-`python3 scripts/news_build.py` writes every post into the marked block of
-`site/static/news.html`, newest first; `--check` fails a stale page, a post missing a language and
-any Markdown outside the format. Edit the posts, never the block. Each post shows its reading time,
+A post is `site/content/<section>/YYYY-MM-DD-<slug>.pt-BR.md` plus its `.en.md`, `<section>` being
+`news` or `blog`, in the format [`site/content/news/README.md`](../site/content/news/README.md)
+gives, listed in its section's README index. A blog post also carries a `tags:` line, each tag
+declared in [`site/content/blog/tags.json`](../site/content/blog/tags.json).
+`python3 scripts/posts_build.py` writes every post into the marked block of its section's page
+(`site/static/news.html`, `site/static/blog.html`), newest first, and the blog's index of posts
+and tags into its own block; `--check` fails a stale page, a post missing a language, an
+undeclared tag and any Markdown outside the format. Edit the posts, never the block. Each post shows its reading time,
 its words over 200 a minute, rounded up; the `news-post` skill has the rule.
 
 ## The `MIP:` trailer

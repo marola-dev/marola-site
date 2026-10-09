@@ -1,0 +1,12 @@
+{
+  "adr": {
+    "pt-BR": {
+      "name": "ADR",
+      "about": "registro de decisão de arquitetura (architecture decision record): uma decisão sobre como o marola é montado, com o contexto em que foi tomada, o que custa e o que muda"
+    },
+    "en": {
+      "name": "ADR",
+      "about": "architecture decision record: a choice about how marola is built, the context it was made in, what it costs and what it changes"
+    }
+  }
+}

@@ -24,15 +24,16 @@ boards (MIP-0005), with no server and no LLM, over a Mapbox base map (free up to
 map-load tier, billed above it).
 
 - `site/static/`: the page (`index.html`, `about.html`, `support.html` behind Donate, `news.html`,
-  `app.js`, `ui.js`, `style.css`, `flow.js` (the WebGL wind and wave layer), `mapbox-config.js`,
+  `blog.html`, `app.js`, `ui.js`, `style.css`, `flow.js` (the WebGL wind and wave layer), `mapbox-config.js`,
   the chat widget, vendored Mapbox GL JS (its CSP build), Inter and the wave loop under `vendor/`,
   the about page's repo diagram under `img/`) and `404.html`, which forwards the old
   `marola.dev/docs/*` links to `docs.marola.dev`.
 - `site/i18n/`: the pt-BR and English catalogs (MIP-0054). `scripts/i18n_bundle.py` checks them
   and writes `site/static/i18n.js`; edit the catalogs, never `i18n.js`.
-- `site/content/news/`: the news posts, one Markdown file per post and language.
-  `scripts/news_build.py` checks them and writes them into `news.html`; edit the posts, never
-  that block.
+- `site/content/news/` and `site/content/blog/`: the news and blog posts, one Markdown file per
+  post and language; the blog's tags are declared in its `tags.json`. `scripts/posts_build.py`
+  checks them and writes them into `news.html` and `blog.html` (the blog's index too); edit the
+  posts, never those blocks.
 - `site/areas.json`: the areas the boards are built for. `site/fixtures/board.json`: the board the
   harness renders. `site/board.schema.json`: the board contract, vendored from the pinned image.
 - `scripts/`: `site_check.js` (app.js and flow.js in a stub DOM and Mapbox GL), `mapbox_config.sh`

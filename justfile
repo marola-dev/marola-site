@@ -59,12 +59,12 @@ quality:
     node --check site/static/ui.js
     node --check site/static/i18n.js
     python3 scripts/i18n_bundle.py --check
-    python3 scripts/news_build.py --check
+    python3 scripts/posts_build.py --check
     node scripts/site_check.js
     node scripts/redirect_check.js
     python3 scripts/site_live_check.py --self-test
     python3 scripts/i18n_bundle.py --self-test
-    python3 scripts/news_build.py --self-test
+    python3 scripts/posts_build.py --self-test
     scripts/site-data-push.sh --self-test
     scripts/board-schema.sh --self-test
     scripts/mapbox_config.sh --self-test

@@ -2,9 +2,10 @@
 
 The posts on [marola.dev/news.html](https://marola.dev/news.html), one Markdown file per post and
 language: `YYYY-MM-DD-<slug>.pt-BR.md` and `YYYY-MM-DD-<slug>.en.md`, both required.
-`scripts/news_build.py` writes them into `site/static/news.html`, newest first; edit the posts here,
-never the generated block in `news.html`. `just quality` and CI run `news_build.py --check`, which
-fails on a stale page or a post that breaks the format below.
+`scripts/posts_build.py` writes them into `site/static/news.html`, newest first; edit the posts here,
+never the generated block in `news.html`. `just quality` and CI run `posts_build.py --check`, which
+fails on a stale page or a post that breaks the format below. The [blog](../blog/README.md) uses the
+same format, plus tags.
 
 ```markdown
 # <title>
