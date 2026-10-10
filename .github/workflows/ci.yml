@@ -41,6 +41,7 @@ jobs:
         scripts/site-data-push.sh --self-test
         scripts/board-schema.sh --self-test
         scripts/mapbox_config.sh --self-test
+        scripts/contact_config.sh --self-test
         scripts/mip-trailer-check.sh --self-test
         scripts/br-proxy.sh --self-test
         scripts/br-proxy-preflight.sh --self-test

@@ -47,8 +47,9 @@ overrides live here, not in their files.
    JS is vendored (its CSP build, `vendor/mapbox-gl-csp*.js`), so scripts and the worker stay
    `'self'`; only the base map's style, tiles, fonts and the map-load count go to Mapbox's servers.
    The satellite layers (satélite, temperatura do mar, anomalias, El Niño) load NASA GIBS's
-   public, keyless tiles, and only once a visitor picks one. Nothing else is fetched from another
-   origin: no CDN, no other map or font provider.
+   public, keyless tiles, and only once a visitor picks one. `contact.html` alone posts its form to
+   Web3Forms, only when a visitor sends it. Nothing else is fetched from another origin: no CDN,
+   no other map or font provider.
 2. **Inter is the font.** Taste discourages it by default but allows it for public-information,
    accessibility-first sites, which marola is. No serif.
 3. **Lucide is the icon set**, chosen on purpose (the maintainer asked for an established set).

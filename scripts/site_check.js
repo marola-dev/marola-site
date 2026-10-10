@@ -21,6 +21,8 @@ const INDEX = fs.readFileSync(path.join(ROOT, 'site/static/index.html'), 'utf8')
 const ABOUT = fs.readFileSync(path.join(ROOT, 'site/static/about.html'), 'utf8');
 const NEWS = fs.readFileSync(path.join(ROOT, 'site/static/news.html'), 'utf8');
 const SUPPORT = fs.readFileSync(path.join(ROOT, 'site/static/support.html'), 'utf8');
+const CONTACT = fs.readFileSync(path.join(ROOT, 'site/static/contact.html'), 'utf8');
+const CONTACT_JS = fs.readFileSync(path.join(ROOT, 'site/static/contact.js'), 'utf8');
 const I18N_JS = fs.readFileSync(path.join(ROOT, 'site/static/i18n.js'), 'utf8');
 const UI = fs.readFileSync(path.join(ROOT, 'site/static/ui.js'), 'utf8');
 const CATALOGS = Object.fromEntries(['pt-BR', 'en'].map(l => [l, JSON.parse(fs.readFileSync(path.join(ROOT, 'site/i18n', l + '.json'), 'utf8'))]));
@@ -692,8 +694,8 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(/<a href="https:\/\/docs\.marola\.dev\/" data-i18n="nav\.docs">docs<\/a>/.test(nav), 'Docs is a real link to the published docs');
   ok(/<a href="about\.html" data-i18n="nav\.about">sobre<\/a>/.test(nav), 'About is a real link to the about page');
   ok(/<a href="news\.html" data-i18n="nav\.news">notícias<\/a>/.test(nav), 'News is a real link to the news page');
-  ok((nav.match(/<span aria-disabled="true">/g) || []).length === 2,
-    'the two sections with no page yet are spans, not links');
+  ok((nav.match(/<span aria-disabled="true">/g) || []).length === 1,
+    'the one section with no page yet (alertas) is a span, not a link');
   ok(!/<a[^>]+href="#"/.test(nav), 'no href="#" — a link that goes nowhere is worse than "soon"');
   ok(INDEX.indexOf('<nav class="sitenav"') < INDEX.indexOf('<header class="bar"'),
     'the nav is the first thing on the page, above the header');
@@ -704,10 +706,11 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
 
   // --- donations page and FUNDING.yml (marola-dev/marola#531, ported from marola-dev/marola#588) -
   ok(fs.existsSync(path.join(ROOT, '.github/FUNDING.yml')), '.github/FUNDING.yml exists for the Sponsor button');
-  for (const page of ['index.html', 'about.html', 'support.html', 'news.html']) {
+  for (const page of ['index.html', 'about.html', 'support.html', 'news.html', 'contact.html']) {
     const html = fs.readFileSync(path.join(ROOT, 'site/static', page), 'utf8');
     const pageNav = (/<nav class="sitenav"[\s\S]*?<\/nav>/.exec(html) || [''])[0];
     ok(/<a href="support\.html" data-i18n="nav\.donate"[^>]*>apoie<\/a>/.test(pageNav), page + ': Donate is a real link');
+    ok(/<a href="contact\.html" data-i18n="nav\.contact"[^>]*>contato<\/a>/.test(pageNav), page + ': Contact is a real link (#119)');
     ok(/<a href="news\.html" data-i18n="nav\.news"[^>]*>notícias<\/a>/.test(pageNav), page + ': News is a real link');
   }
   ok((NEWS.match(/<script\b[^>]*>/gi) || []).every(t => /^<script src="(i18n|ui)\.js">$/.test(t)),
@@ -738,10 +741,74 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
     ok(/<code class="addr"><\/code>/.test(SUPPORT), 'no address published yet: its field is on the page, empty (#2)');
   }
 
+  // --- the contact page (#119) -----------------------------------------------------------------
+  ok((CONTACT.match(/<script\b[^>]*>/gi) || []).map(t => (/src="([^"]+)"/.exec(t) || [])[1]).join(' ') === 'i18n.js ui.js contact-config.js contact.js',
+    'the contact page loads the language chrome, then contact-config.js and contact.js, and nothing else');
+  const contactCsp = (/http-equiv="Content-Security-Policy" content="([^"]+)"/.exec(CONTACT) || [])[1] || '';
+  ok(/connect-src https:\/\/api\.web3forms\.com;/.test(contactCsp) && /form-action 'none'/.test(contactCsp) && !/script-src/.test(contactCsp),
+    "contact.html's CSP lets it reach Web3Forms and nothing else, and no form posts by navigation", contactCsp);
+  ok(/window\.MAROLA_CONTACT = \{ accessKey: "" \};/.test(fs.readFileSync(path.join(ROOT, 'site/static/contact-config.js'), 'utf8')),
+    'contact-config.js is committed with an empty key; site.yml fills it at deploy');
+  ok(/WEB3FORMS_ACCESS_KEY: \$\{\{ vars\.WEB3FORMS_ACCESS_KEY \}\}/.test(SITE_YML) && /run: scripts\/contact_config\.sh site\/dist/.test(SITE_YML) &&
+    ['contact\\.html', 'contact\\.js', 'contact-config\\.js'].every(f => new RegExp('! -name ' + f + '\\b').test(SITE_YML)),
+    'site.yml writes contact-config.js from WEB3FORMS_ACCESS_KEY and publishes the contact page');
+  ok((ABOUT.match(/<a class="cta" href="contact\.html">/g) || []).length === 2, "about.html's how-to-help ends on a button to the contact page, in both languages");
+  for (const id of ['name', 'email', 'topic', 'message']) {
+    ok(CONTACT.includes('<label for="contact-' + id + '"') && CONTACT.includes('id="contact-' + id + '"'), 'contact.html: the ' + id + ' field has its label');
+  }
+  ok(/id="contact-status"[^>]*aria-live="polite"/.test(CONTACT), 'contact.html: the send status is announced');
+  function runContact(key, reply) {
+    const els = {}, sent = [];
+    const el = id => els[id] || (els[id] = { id, value: '', hidden: id === 'contact-off', textContent: '', listeners: {},
+      classList: { on: false, toggle(_c, v) { this.on = v; } }, addEventListener(t, fn) { this.listeners[t] = fn; } });
+    const form = el('contact-form'), send = { disabled: false }, bot = { checked: false };
+    form.querySelector = () => send;
+    form.elements = { namedItem: n => n === 'botcheck' ? bot : null };
+    form.reset = () => { ['name', 'email', 'message'].forEach(f => { el('contact-' + f).value = ''; }); };
+    Object.assign(el('contact-topic'), { value: 'data', selectedIndex: 0, options: [{ text: 'dado errado ou praia faltando' }] });
+    const sandbox = {
+      document: { getElementById: el },
+      MAROLA_CONTACT: { accessKey: key },
+      marolaI18n: { t: k => '[' + k + ']', lang: () => 'pt-BR', onLang() {} },
+      fetch: (url, init) => { sent.push({ url, body: JSON.parse(init.body) }); return Promise.resolve(reply); }
+    };
+    sandbox.window = sandbox;
+    vm.createContext(sandbox);
+    vm.runInContext(CONTACT_JS, sandbox, { filename: 'site/static/contact.js' });
+    const submit = () => { let stopped = false; form.listeners.submit({ preventDefault() { stopped = true; } }); return stopped; };
+    return { el, send, bot, sent, submit };
+  }
+  const tick = () => new Promise(r => setTimeout(r, 0));
+  const KEY = '0f1e2d3c-4b5a-6978-8a9b-acbdcedf0123';
+  const off = runContact('');
+  ok(off.send.disabled && off.el('contact-off').hidden === false && off.submit() && off.sent.length === 0,
+    'contact.js with no key: the button is disabled, the page says so, and nothing is sent');
+  const accepted = { ok: true, status: 200, json: () => Promise.resolve({ success: true }) };
+  const on = runContact(KEY, accepted);
+  on.el('contact-email').value = ' ana@example.org '; on.el('contact-message').value = 'oi';
+  ok(on.submit() && on.sent.length === 1 && on.send.disabled && on.el('contact-status').textContent === '[contact.sending]',
+    'contact.js sends once, disables the button and says it is sending');
+  const body = (on.sent[0] || {}).body || {};
+  ok((on.sent[0] || {}).url === 'https://api.web3forms.com/submit' && body.access_key === KEY && body.email === 'ana@example.org' &&
+    body.message === 'oi' && body.topic === 'data' && body.subject === 'marola.dev: dado errado ou praia faltando',
+    'contact.js posts the key, the trimmed email, the message and a subject naming the topic to Web3Forms', JSON.stringify(body));
+  await tick();
+  ok(on.el('contact-status').textContent === '[contact.sent]' && !on.send.disabled && on.el('contact-message').value === '',
+    'contact.js: an accepted message clears the form and says it was sent');
+  const refusedMsg = runContact(KEY, { ok: false, status: 400, json: () => Promise.resolve({ success: false }) });
+  refusedMsg.el('contact-message').value = 'kept'; refusedMsg.submit();
+  await tick();
+  ok(refusedMsg.el('contact-status').textContent === '[contact.error]' && refusedMsg.el('contact-status').classList.on &&
+    refusedMsg.el('contact-message').value === 'kept' && !refusedMsg.send.disabled,
+    'contact.js: a refused message keeps what the visitor wrote and says it failed');
+  const botRun = runContact(KEY, accepted);
+  botRun.bot.checked = true; botRun.submit();
+  ok(botRun.sent.length === 0 && botRun.el('contact-status').textContent === '[contact.sent]', 'contact.js: a filled honeypot sends nothing');
+
   // --- the favicon: the docs site's own (marola-dev/marola docs/assets/favicon.svg), copied (#25) ----
   const FAVICON = path.join(ROOT, 'site/static/favicon.svg');
   ok(fs.existsSync(FAVICON) && /^<svg[\s>]/.test(fs.readFileSync(FAVICON, 'utf8')), 'site/static/favicon.svg exists and is an SVG');
-  for (const page of ['index.html', 'about.html', 'support.html', 'news.html', '404.html']) {
+  for (const page of ['index.html', 'about.html', 'support.html', 'news.html', 'contact.html', '404.html']) {
     const head = (/<head>[\s\S]*?<\/head>/.exec(fs.readFileSync(path.join(ROOT, 'site/static', page), 'utf8')) || [''])[0];
     // 404.html is served at whatever path was missing, so only a root-absolute href finds the icon there.
     const href = page === '404.html' ? '/favicon.svg' : 'favicon.svg';
@@ -754,7 +821,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
 
   // --- the repo link on every page (#498) ------------------------------------------------------
   const REPO_URL = 'https://github.com/marola-dev/marola';
-  for (const page of ['index.html', 'about.html', 'support.html', 'news.html']) {
+  for (const page of ['index.html', 'about.html', 'support.html', 'news.html', 'contact.html']) {
     const html = fs.readFileSync(path.join(ROOT, 'site/static', page), 'utf8');
     const pageNav = (/<nav class="sitenav"[\s\S]*?<\/nav>/.exec(html) || [''])[0];
     ok(pageNav.includes('<a class="gh" href="' + REPO_URL + '"'), page + ': the section nav links the GitHub repo');
@@ -775,7 +842,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(/class="src"/.test(APP), 'app.js tags provider names so Open-Meteo and IMA/SC survive the style');
 
   // --- MIP-0054 task 1: the language toggle, resolveLang, t() and the catalogs -------------------
-  const PAGES = { 'index.html': INDEX, 'about.html': ABOUT, 'support.html': SUPPORT, 'news.html': NEWS };
+  const PAGES = { 'index.html': INDEX, 'about.html': ABOUT, 'support.html': SUPPORT, 'news.html': NEWS, 'contact.html': CONTACT };
   for (const [page, html] of Object.entries(PAGES)) {
     ok(/<html lang="pt-BR">/.test(html), page + ': <html lang="pt-BR"> in the source, so the first paint is Portuguese');
     const pageNav = (/<nav class="sitenav"[\s\S]*?<\/nav>/.exec(html) || [''])[0];
@@ -864,7 +931,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(probe.t('footer.generated', { when: 'w', area: 'a', day: 'd', n: 2, sources: 's' }).includes('· 2 praias ·'),
     'the real catalog pluralises footer.generated');
   // Lowercase house style in the catalogs; these are names marola did not choose.
-  const CASE_OK = ['°C', 'UV', 'km/h', 'mL', 'PRÓPRIA', 'IMPRÓPRIA', 'GitHub', 'Open-Meteo', 'IMA/SC', 'OpenStreetMap', 'Mapbox', 'NASA', 'VIIRS', 'MUR', 'El Niño', 'La Niña', 'Niño'];
+  const CASE_OK = ['°C', 'UV', 'km/h', 'mL', 'PRÓPRIA', 'IMPRÓPRIA', 'GitHub', 'Open-Meteo', 'IMA/SC', 'OpenStreetMap', 'Mapbox', 'NASA', 'VIIRS', 'MUR', 'El Niño', 'La Niña', 'Niño', 'JavaScript', 'Web3Forms'];
   for (const [lang, cat] of Object.entries(CATALOGS)) {
     const shouty = Object.entries(cat).filter(([k, v]) => {
       if (/^dir\./.test(k)) return !/^[A-Z]{1,2}$/.test(v); // compass abbreviations, shown uppercase

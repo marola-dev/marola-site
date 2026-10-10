@@ -22,6 +22,7 @@ site-build area="":
       "${args[@]}" --areas site/areas.json --site-out site/dist
     cp -r site/static/. site/dist/
     scripts/mapbox_config.sh site/dist  # MAPBOX_PUBLIC_TOKEN=pk.… from your shell, or no base map
+    scripts/contact_config.sh site/dist  # WEB3FORMS_ACCESS_KEY from your shell, or the form says it is off
     scripts/stamp_site_version.sh site/dist
 
 # Run this machine as a Brazilian proxy pool node, in containers: up | down | status | check
@@ -57,6 +58,7 @@ quality:
     node --check site/static/app.js
     node --check site/static/flow.js
     node --check site/static/ui.js
+    node --check site/static/contact.js
     node --check site/static/i18n.js
     python3 scripts/i18n_bundle.py --check
     python3 scripts/news_build.py --check
@@ -68,6 +70,7 @@ quality:
     scripts/site-data-push.sh --self-test
     scripts/board-schema.sh --self-test
     scripts/mapbox_config.sh --self-test
+    scripts/contact_config.sh --self-test
     scripts/mip-trailer-check.sh --self-test
     scripts/br-proxy.sh --self-test
     scripts/br-proxy-preflight.sh --self-test

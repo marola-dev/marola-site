@@ -95,7 +95,11 @@ column.
   `:active` nudges 1 px down.
 - **Area picker**: the control showing a two-letter code (FL, RJ, BA; `AREA_CODES` in `app.js`), the full name in its title and accessible name.
 - **Segmented** (day, language): a `--surface` track; the picked segment is white, raised.
-- **Primary action**: accent fill, white text. One per surface (chat open, chat send).
+- **Primary action**: accent fill, white text. One per surface (chat open, chat send, the contact
+  form's send and the "fale com a gente" button that ends about.html), 40 px on a reading page.
+- **Form field** (`contact.html`): a label in 14/600 over a 40 px white field, 8 px radius, 1 px
+  `--line-strong`, keeping the visitor's own case; the send status sits beside the button in
+  `--muted` (an error in `--ink`, never a score colour).
 - **Emergency button** (`#sos`): a map control in white glass, 32 px, 13 px, Lucide's phone in `--emergency`,
   top centre of the map (between the zoom buttons and the layer rail), above every panel. Its panel is
   18 rem under it (a bottom sheet under 640 px): 193, 190, 192, 185 and 199, each a 44 px `tel:` row with the number in 650 weight, and a 12 px note on 112/911.

@@ -15,6 +15,7 @@ on:
       - "scripts/board-schema.sh"
       - "scripts/stamp_site_version.sh"
       - "scripts/mapbox_config.sh"
+      - "scripts/contact_config.sh"
       - "scripts/br-proxy.sh"
       - "scripts/br-proxy-preflight.sh"
       - "ops/br-proxy/hosts"
@@ -198,6 +199,13 @@ jobs:
           MAPBOX_REQUIRE_TOKEN: "1"
         run: scripts/mapbox_config.sh site/dist
 
+      # contact.html's form posts to Web3Forms with this key (#119). The key is public by design;
+      # without it the page says the form is not connected, and the deploy goes on.
+      - name: Web3Forms key into contact-config.js
+        env:
+          WEB3FORMS_ACCESS_KEY: ${{ vars.WEB3FORMS_ACCESS_KEY }}
+        run: scripts/contact_config.sh site/dist
+
       # fix/site-smoke-panel-null: stamp index.html's app.js/style.css tags with `?v=<sha>` so
       # Pages' CDN (each file cached independently, `cache-control: max-age=600` per file) can never
       # serve a fresh index.html next to a stale-cached app.js or the reverse.
@@ -247,11 +255,11 @@ jobs:
         run: echo "marola.dev" > site/dist/CNAME
 
       # Only the map is public.
-      - name: Publish allowlist — index.html, 404.html, about.html, support.html, news.html, favicon.svg, app.js, ui.js, i18n.js, style.css, flow.js, mapbox-config.js, chat.js, chatbot-config.js, CNAME, vendor/, img/, data/, smoke/, coverage/, stats/ and nothing else
+      - name: Publish allowlist — index.html, 404.html, about.html, support.html, news.html, contact.html, favicon.svg, app.js, ui.js, i18n.js, style.css, flow.js, mapbox-config.js, chat.js, chatbot-config.js, contact.js, contact-config.js, CNAME, vendor/, img/, data/, smoke/, coverage/, stats/ and nothing else
         run: |
           cd site/dist
           rm -f .gitkeep
-          unexpected="$(find . -mindepth 1 \( -path ./data -o -path ./smoke -o -path ./coverage -o -path ./stats -o -path ./vendor -o -path ./img \) -prune -o -type f ! -name index.html ! -name 404.html ! -name about.html ! -name support.html ! -name news.html ! -name favicon.svg ! -name app.js ! -name ui.js ! -name i18n.js ! -name style.css ! -name flow.js ! -name mapbox-config.js ! -name chat.js ! -name chatbot-config.js ! -name CNAME -print)"
+          unexpected="$(find . -mindepth 1 \( -path ./data -o -path ./smoke -o -path ./coverage -o -path ./stats -o -path ./vendor -o -path ./img \) -prune -o -type f ! -name index.html ! -name 404.html ! -name about.html ! -name support.html ! -name news.html ! -name contact.html ! -name favicon.svg ! -name app.js ! -name ui.js ! -name i18n.js ! -name style.css ! -name flow.js ! -name mapbox-config.js ! -name chat.js ! -name chatbot-config.js ! -name contact.js ! -name contact-config.js ! -name CNAME -print)"
           if [ -n "$unexpected" ]; then
             echo "files in site/dist that are not on the publish allowlist:"; echo "$unexpected"; exit 1
           fi

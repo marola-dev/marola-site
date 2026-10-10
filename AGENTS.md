@@ -24,6 +24,7 @@ boards (MIP-0005), with no server and no LLM, over a Mapbox base map (free up to
 map-load tier, billed above it).
 
 - `site/static/`: the page (`index.html`, `about.html`, `support.html` behind Donate, `news.html`,
+  `contact.html` and `contact.js` (the contact form, posted to Web3Forms with `contact-config.js`'s key),
   `app.js`, `ui.js`, `style.css`, `flow.js` (the WebGL wind and wave layer), `mapbox-config.js`,
   the chat widget, vendored Mapbox GL JS (its CSP build), Inter and the wave loop under `vendor/`,
   the about page's repo diagram under `img/`) and `404.html`, which forwards the old
@@ -36,8 +37,8 @@ map-load tier, billed above it).
 - `site/areas.json`: the areas the boards are built for. `site/fixtures/board.json`: the board the
   harness renders. `site/board.schema.json`: the board contract, vendored from the pinned image.
 - `scripts/`: `site_check.js` (app.js and flow.js in a stub DOM and Mapbox GL), `mapbox_config.sh`
-  (the public Mapbox token into `mapbox-config.js` at deploy), `redirect_check.js` (the 404
-  forwarder), `board-schema.sh` (the image pin and its schema), `stamp_site_version.sh`,
+  (the public Mapbox token into `mapbox-config.js` at deploy), `contact_config.sh` (the Web3Forms
+  key into `contact-config.js`), `redirect_check.js` (the 404 forwarder), `board-schema.sh` (the image pin and its schema), `stamp_site_version.sh`,
   `site_live_check.py` (what marola.dev actually serves), `site-data-push.sh` (the retrying push
   every `site-data` writer uses), `mip-trailer-check.sh`, and the Brazilian proxy's
   `br-proxy.sh` (the runner's router), `br-proxy-preflight.sh` (the flight check) and
@@ -146,7 +147,8 @@ The phase list is the umbrella's `docs/PHASES.md`. Site work serves the current 
 
 Plain JavaScript, no framework and no build step; the page keeps `script-src 'self'`, and its one
 third-party origins are Mapbox for the base map (style, tiles, fonts, the map-load count) and NASA
-GIBS for the satellite layers (public, keyless tiles, fetched only when a visitor picks one). A visible
+GIBS for the satellite layers (public, keyless tiles, fetched only when a visitor picks one), plus
+Web3Forms on `contact.html` alone, when a visitor sends the form. A visible
 change goes through the `site-frontend` skill (which names the others), `node scripts/site_check.js`
 and before/after screenshots. Shell: `set -euo pipefail`, shellcheck-clean. Python: ruff. Comments
 only for why, a trap, or a pointer, as the umbrella's AGENTS.md spells out.
