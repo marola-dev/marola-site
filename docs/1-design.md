@@ -4,7 +4,7 @@
 
 - `site/static/`: `index.html` (the map), `about.html`, `support.html` (behind "apoie"/Donate),
   `news.html` (the posts, newest first, one `article[lang]` per language each, generated from
-  `site/content/news/`),
+  `site/content/news/`), `contact.html` (behind "contato"/Contact: the form, #119),
   `404.html` (forwards old `marola.dev/docs/*` links to `docs.marola.dev`), `favicon.svg`, and
   `img/umbrella{,.pt-BR}.svg`, the umbrella README's repo diagram that `about.html` shows (copied
   from marola-dev/marola `docs/img/`; recopy it when that one changes).
@@ -17,7 +17,10 @@
 - `site/static/mapbox-config.js`: empty in the repo (`window.MAROLA_MAPBOX = { token: "", style: ""
   }`); `site.yml` rewrites it at deploy from `MAPBOX_PUBLIC_TOKEN`/`MAPBOX_STYLE`
   (`scripts/mapbox_config.sh`). `site/static/chatbot-config.js` and `chat.js`: the chat widget
-  ([the chat widget](1-design_chat-widget.md)).
+  ([the chat widget](1-design_chat-widget.md)). `site/static/contact.js` posts `contact.html`'s
+  form to Web3Forms with the key in `contact-config.js`, empty in the repo and written at deploy from
+  the repo variable `WEB3FORMS_ACCESS_KEY` (`scripts/contact_config.sh`); with no key the form says
+  it is not connected and points to a GitHub issue.
 - `site/static/vendor/`: vendored third-party assets, no build step ([libraries](2-libraries.md)).
 - `site/areas.json`: the areas the boards are built for ([reference](4-reference.md)).
   `site/fixtures/`: the board the test harness (`scripts/site_check.js`) renders, plus a schema
@@ -47,7 +50,8 @@ the area, in the same three bands (proper, improper, unclassified).
 `index.html`'s page keeps `default-src 'self'; img-src 'self' data: blob: https:; connect-src
 'self' https:; worker-src 'self'; object-src 'none'` (`about.html`/`support.html`/`news.html`, which carry no
 map, drop `connect-src`/`worker-src`: `default-src 'self'; img-src 'self' https:; object-src
-'none'`). `script-src` has no override, so it inherits `default-src 'self'`: every script is
+'none'`). `contact.html` adds `connect-src https://api.web3forms.com` for its form's `fetch` and
+`form-action 'none'`, so the form can only leave through `contact.js`. `script-src` has no override, so it inherits `default-src 'self'`: every script is
 same-origin, including Mapbox GL JS's own worker (`vendor/mapbox-gl-csp.js` is the CSP build,
 `vendor/mapbox-gl-csp-worker.js` loads from `vendor/`, not a `blob:`, which the non-CSP build
 needs).
@@ -59,6 +63,10 @@ The page's only two third-party origins ([`AGENTS.md`](../AGENTS.md)'s Code styl
 - **NASA GIBS**: the four satellite raster layers (clouds, sea-surface temperature, anomaly,
   El Niño), free and keyless, fetched only once a visitor picks one of those layers
   (`app.js`'s `renderRaster`).
+
+`contact.html` alone also talks to **Web3Forms** (`api.web3forms.com`), and only when a visitor
+sends the form: it emails the message on and keeps no copy (its FAQ). The key is public by design;
+it only lets someone send mail to marola's inbox.
 
 `img-src … https:` and `blob:` are how Mapbox GL decodes map imagery; `connect-src … https:` lets
 the page reach Mapbox's tile/style/event endpoints and, when set, the chat widget's own endpoint

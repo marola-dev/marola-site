@@ -297,6 +297,26 @@ html:not(:lang(en)) article.about-body:lang(en), html:lang(en) article.about-bod
 .about-body .release ul { margin-bottom: 12px; font-size: var(--fs-15); }
 .about-body .release-links { margin: 0; font-size: var(--fs-14); color: var(--muted); }
 /* news.html: the next post of the same language, below the previous one */
+/* the contact page (#119) and its way in from about.html: the page's one primary action */
+.about-body .cta-row { margin-top: 24px; }
+.about-body .cta, .contact button[type="submit"] { display: inline-flex; align-items: center; min-height: 40px; padding: 0 18px;
+  border: 1px solid var(--accent); border-radius: var(--r-control); background: var(--accent); color: #fff;
+  font-size: var(--fs-15); letter-spacing: var(--tr-15); font-weight: 600; text-decoration: none; }
+.about-body .cta:hover, .contact button[type="submit"]:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: #fff; }
+.contact button[type="submit"]:disabled { opacity: .45; cursor: default; transform: none; }
+.contact { display: flex; flex-direction: column; margin-top: 40px; }
+.contact label { margin: 20px 0 6px; font-size: var(--fs-14); letter-spacing: var(--tr-14); font-weight: 600; }
+.contact label:first-child { margin-top: 0; }
+.contact input, .contact textarea, .contact select { width: 100%; min-height: 40px; padding: 8px 12px; font: inherit;
+  font-size: var(--fs-15); letter-spacing: var(--tr-15); color: var(--ink); background: var(--bg);
+  border: 1px solid var(--line-strong); border-radius: var(--r-control); text-transform: none; }
+.contact textarea { resize: vertical; min-height: 9rem; line-height: 1.5; }
+.contact input:hover, .contact textarea:hover { border-color: #b4bec9; }
+.contact .hp { position: absolute; left: -9999px; width: 1px; height: 1px; }
+.contact-send { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-top: 24px; }
+.about-body .contact-status { margin: 0; font-size: var(--fs-14); letter-spacing: var(--tr-14); color: var(--muted); }
+.about-body .contact-status.err { color: var(--ink); font-weight: 500; }
+.about-body .contact-note { margin: 16px 0 0; font-size: var(--fs-13); letter-spacing: var(--tr-13); color: var(--muted); }
 article.about-body:lang(pt) + article.about-body:lang(pt), article.about-body:lang(en) + article.about-body:lang(en) { margin-top: 120px; }
 /* The empty slot is the width the address will take (0x + 40 hex digits). */
 .addr:empty { display: inline-block; width: 42ch; max-width: 100%; padding: 0 .4rem; vertical-align: middle;
@@ -417,7 +437,10 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
 #chat-input { flex: 1; min-width: 0; min-height: 36px; padding: 0 12px; border: 1px solid var(--line-strong); border-radius: var(--r-control); font: inherit; font-size: var(--fs-14); letter-spacing: var(--tr-14); }
 
 @media (max-width: 640px) {
-  .sitenav { padding: 4px 16px; gap: 4px 16px; }
+  /* five sections, the language and the repo still fit one row at 390 px; narrower, the nav takes a
+   * second row instead of clipping it (#114 redesigns it for more sections) */
+  .sitenav { flex: none; padding: 4px 16px; gap: 4px 10px; }
+  .sitenav .lang button { padding: 0 6px; }
   /* sections with no page yet would take a second row on a phone for nothing to tap */
   .sitenav > span { display: none; }
   .sitenav .gh .gh-name, .sitenav .gh .gh-star { display: none; }

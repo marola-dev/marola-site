@@ -19,7 +19,9 @@ than cancelling one that is already building.
 
 The job: pull the pinned image (two tries) → check the harness and the page against the image's
 own board schema → restore the beach lists → build every area's boards (or one, with an area input) → copy the static page
-into `site/dist` → write the Mapbox token and style into `mapbox-config.js` → cache-bust
+into `site/dist` → write the Mapbox token and style into `mapbox-config.js` → write the Web3Forms key
+(`vars.WEB3FORMS_ACCESS_KEY`, optional: the contact form says it is off without it) into
+`contact-config.js` → cache-bust
 `index.html`'s script/style tags with `?v=<sha>` (Pages caches each file independently) → add the
 `site-data` branch's panels → a required-files check (a half-built site must never reach Pages) →
 the publish allowlist (only the page, its assets and `data/`, `smoke/`, `coverage/`, `stats/` go
