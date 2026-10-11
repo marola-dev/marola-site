@@ -240,6 +240,8 @@ button[aria-pressed="true"], button[aria-expanded="true"] {
 /* tight padding, the label never wraps; a phone gets bigger ones further down */
 .footer .fold { min-height: 32px; padding: 0 8px 0 7px; gap: 6px; font-size: var(--fs-13); letter-spacing: var(--tr-13); white-space: nowrap; }
 /* not built yet: reads as a control, muted, and does nothing (no pressed look, no press nudge) */
+.controls > a.soon, .controls > a.soon:hover { color: var(--muted); background: var(--bg); border-color: var(--line-strong); cursor: default; }
+.controls > a.soon .ic { color: var(--muted); }
 .footer .fold.soon, .footer .fold.soon:hover { color: var(--muted); background: var(--bg); border-color: var(--line-strong); cursor: default; }
 .footer .fold.soon:active { transform: none; }
 .footer .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }

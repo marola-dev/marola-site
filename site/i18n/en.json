@@ -98,6 +98,7 @@
   "gh.star": "star",
   "gh.title": "marola on GitHub: star it if it helps you",
   "insta.label": "{handle} on Instagram",
+  "insta.soon": "{city} Instagram: soon",
   "insta.title": "marola's {city} account on Instagram",
   "header.tagline": "the ocean near you: conditions, water quality, sea life, tides, hazards.",
   "hour.at": "at {h}{past, select, yes { (already past)} other {}}",

@@ -129,16 +129,24 @@
     return AREA_CODES[a.id] || String(a.name).normalize('NFD').replace(/[^A-Za-z]/g, '').slice(0, 2).toUpperCase();
   }
 
-  // Each city's own account (#123); an area without one shows no pill.
-  var INSTAGRAM = { floripa: 'fl.marola', rio: 'rj.marola' };
+  // Each city's own account (#123); '' is a city whose account is still coming, an area not listed shows no pill.
+  var INSTAGRAM = { floripa: 'fl.marola', rio: 'rj.marola', salvador: '' };
   function renderInsta() {
-    var handle = state.area && INSTAGRAM[state.area.id];
-    el.insta.hidden = !handle;
-    if (!handle) return;
-    el.insta.href = 'https://www.instagram.com/' + handle + '/';
-    el.insta.querySelector('span').textContent = '@' + handle;
-    el.insta.setAttribute('aria-label', t('insta.label', { handle: '@' + handle }));
-    el.insta.title = t('insta.title', { city: state.area.name });
+    var handle = state.area ? INSTAGRAM[state.area.id] : undefined;
+    el.insta.hidden = handle === undefined;
+    if (handle === undefined) return;
+    var city = { city: state.area.name };
+    el.insta.classList.toggle('soon', !handle);
+    if (handle) {
+      el.insta.href = 'https://www.instagram.com/' + handle + '/';
+      el.insta.removeAttribute('aria-disabled');
+    } else {
+      el.insta.removeAttribute('href');
+      el.insta.setAttribute('aria-disabled', 'true');
+    }
+    el.insta.querySelector('span').textContent = handle ? '@' + handle : t('nav.soon');
+    el.insta.setAttribute('aria-label', handle ? t('insta.label', { handle: '@' + handle }) : t('insta.soon', city));
+    el.insta.title = handle ? t('insta.title', city) : t('insta.soon', city);
   }
 
   function selectArea(area) {

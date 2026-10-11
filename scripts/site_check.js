@@ -110,6 +110,7 @@ class El {
   fire(type, ev) { (this.listeners[type] || []).forEach(fn => fn(Object.assign({ stopPropagation() {}, preventDefault() {} }, ev))); }
   setAttribute(k, v) { this.attrs[k] = String(v); }
   getAttribute(k) { return this.attrs[k]; }
+  removeAttribute(k) { delete this.attrs[k]; if (k === 'href') delete this.href; }
   querySelector() { return new El('anon'); }
   querySelectorAll(sel) { return this.found[sel] || []; }
   closest() { return this; }
@@ -638,6 +639,9 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
     ok(!pill.hidden && pill.href === 'https://www.instagram.com/' + handle + '/' && pill.querySelector().textContent === '@' + handle &&
       pill.attrs['aria-label'] === '@' + handle + ' no Instagram', id + "'s pill links @" + handle, JSON.stringify([pill.hidden, pill.href, pill.attrs]));
   }
+  const ba = (await runPage(BOARD, { area: 'salvador' })).els.insta;
+  ok(!ba.hidden && ba.href === undefined && ba.attrs['aria-disabled'] === 'true' && ba.classList.contains('soon') && ba.querySelector().textContent === 'em breve',
+    "salvador's pill says em breve and links nowhere", JSON.stringify([ba.hidden, ba.href, ba.attrs]));
   const layered = await runPage(BOARD, { search: '?layer=waves' });
   ok(layered.map.layers.find(l => l.layer.id === 'marola-flow').layer.kind() === 'waves', '?layer=waves opens on the waves layer');
   const watered = await runPage(BOARD, { search: '?layer=water' });
