@@ -100,6 +100,8 @@
   "insta.label": "accessible name of the header pill linking to the city's Instagram account; {handle} is \"@fl.marola\"",
   "insta.soon": "accessible name and tooltip of the pill for a city whose Instagram account is still coming; {city} is the area name",
   "insta.title": "hover tooltip of that pill; {city} is the area name, e.g. \"Florianópolis\"",
+  "li.label": "accessible name and tooltip of the LinkedIn link in the nav (its text is hidden on phones)",
+  "li.name": "the brand name, kept as \"LinkedIn\" in every language",
   "header.tagline": "one-line description under the marola wordmark; concrete nouns, no adjectives about the product",
   "hour.at": "hour slider label when a specific hour is picked; h = HH:00, past = yes when that hour has passed today",
   "hour.best": "hour slider label when each beach shows its own best hour (the default)",

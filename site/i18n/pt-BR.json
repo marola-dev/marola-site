@@ -100,6 +100,8 @@
   "insta.label": "{handle} no Instagram",
   "insta.soon": "Instagram de {city}: em breve",
   "insta.title": "a conta do marola em {city} no Instagram",
+  "li.label": "marola no LinkedIn",
+  "li.name": "LinkedIn",
   "header.tagline": "mar, vento, maré e qualidade da água em cada praia, com dados abertos.",
   "hour.at": "às {h}{past, select, yes { (já passou)} other {}}",
   "hour.best": "melhor horário de cada praia",

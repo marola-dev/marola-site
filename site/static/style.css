@@ -88,6 +88,10 @@ small { font-size: var(--fs-13); letter-spacing: var(--tr-13); }
 .gh-star { display: inline-flex; align-items: center; gap: 4px; padding-left: 8px; border-left: 1px solid var(--line-strong); }
 .gh-star svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linejoin: round; }
 .gh:hover .gh-star svg { fill: currentColor; }
+/* marola's LinkedIn, beside the language toggle; Lucide's old brand glyph, drawn like .ic */
+.sitenav .li { display: inline-flex; align-items: center; gap: 6px; color: var(--ink); text-decoration: none; font-weight: 500; text-transform: none; }
+.sitenav .li:hover { color: var(--accent); }
+.li-mark { width: 14px; height: 14px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
 /* the language toggle pairs with the repo link (MIP-0054 §5.8) */
 .sitenav .lang { margin-left: auto; }
 .lang-icon { width: 14px; height: 14px; margin: 0 4px 0 6px; flex: none; fill: none; stroke: var(--muted); stroke-width: 1.2; }
@@ -240,8 +244,8 @@ button[aria-pressed="true"], button[aria-expanded="true"] {
 /* tight padding, the label never wraps; a phone gets bigger ones further down */
 .footer .fold { min-height: 32px; padding: 0 8px 0 7px; gap: 6px; font-size: var(--fs-13); letter-spacing: var(--tr-13); white-space: nowrap; }
 /* not built yet: reads as a control, muted, and does nothing (no pressed look, no press nudge) */
-.controls > a.soon, .controls > a.soon:hover { color: var(--muted); background: var(--bg); border-color: var(--line-strong); cursor: default; }
-.controls > a.soon .ic { color: var(--muted); }
+.insta.soon, .insta.soon:hover { color: var(--muted); background: var(--bg); border-color: var(--line-strong); cursor: default; }
+.insta.soon .ic { color: var(--muted); }
 .footer .fold.soon, .footer .fold.soon:hover { color: var(--muted); background: var(--bg); border-color: var(--line-strong); cursor: default; }
 .footer .fold.soon:active { transform: none; }
 .footer .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
@@ -419,10 +423,10 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
 #chat-input { flex: 1; min-width: 0; min-height: 36px; padding: 0 12px; border: 1px solid var(--line-strong); border-radius: var(--r-control); font: inherit; font-size: var(--fs-14); letter-spacing: var(--tr-14); }
 
 @media (max-width: 640px) {
-  .sitenav { padding: 4px 16px; gap: 4px 16px; }
+  .sitenav { padding: 4px 16px; gap: 4px 12px; }
   /* sections with no page yet would take a second row on a phone for nothing to tap */
   .sitenav > span { display: none; }
-  .sitenav .gh .gh-name, .sitenav .gh .gh-star { display: none; }
+  .sitenav .gh .gh-name, .sitenav .gh .gh-star, .sitenav .li .li-name { display: none; }
   .lang-icon { display: none; }
   .bar { padding: 12px 16px; gap: 10px; }
   .bar h1 { font-size: var(--fs-20); letter-spacing: var(--tr-20); }
@@ -434,9 +438,9 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   .controls .segmented { flex: 1 1 auto; min-width: 0; }
   .controls .segmented button { flex: 1; min-width: 0; padding: 0 6px; overflow: hidden; }
   .controls .segmented button small { display: none; }
-  .controls > button, .controls > a { flex: none; width: 36px; padding: 0; }
-  .controls > button .ic, .controls > a .ic { width: 18px; height: 18px; }
-  .controls > button > span, .controls > a > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .controls > button, .controls > .insta { flex: none; width: 36px; padding: 0; }
+  .controls > button .ic, .controls > .insta .ic { width: 18px; height: 18px; }
+  .controls > button > span, .controls > .insta > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .hourbar { padding: 8px 16px; gap: 6px 12px; }
   .hourbar label { min-width: 0; flex: none; }
   .hourbar input[type=range] { flex: 1 1 0; min-width: 6rem; max-width: none; }

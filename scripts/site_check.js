@@ -772,6 +772,8 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
     const pageNav = (/<nav class="sitenav"[\s\S]*?<\/nav>/.exec(html) || [''])[0];
     ok(pageNav.includes('<a class="gh" href="' + REPO_URL + '"'), page + ': the section nav links the GitHub repo');
     ok(/<a class="gh"[^>]*aria-label="[^"]+"/.test(pageNav), page + ': the repo link keeps a name when the phone layout hides its text');
+    ok(pageNav.includes('<a class="li" href="https://www.linkedin.com/company/marola-dev/" target="_blank" rel="noopener" aria-label="'),
+      page + ': the section nav links marola on LinkedIn, with a name for the phone layout');
     ok(!html.includes('h0ffmann/marola'), page + ': no pre-rename repo URL');
   }
   ok(APP.includes("var REPO = '" + REPO_URL + "'"), "app.js's footer link names the current repo");
@@ -798,7 +800,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
       page + ': #lang is two <button type="button">s with aria-pressed', toggle);
     ok(/lang="pt-BR" aria-label="português \(Brasil\)"/.test(buttons[0] || '') && /lang="en" aria-label="English"/.test(buttons[1] || ''),
       page + ': each button carries its own lang and an endonym aria-label', buttons.join(' '));
-    ok(/<div id="lang"[\s\S]*?<\/div>\s*<a class="gh"/.test(pageNav), page + ': #lang sits inside .sitenav, immediately before a.gh');
+    ok(/<div id="lang"[\s\S]*?<\/div>\s*<a class="li"[\s\S]*?<\/a>\s*<a class="gh"/.test(pageNav), page + ': #lang sits inside .sitenav, then the LinkedIn link, then a.gh');
     const order = ['i18n.js', 'ui.js'].map(f => html.indexOf('<script src="' + f + '"'));
     const others = (html.match(/<script src="([^"]+)"/g) || []).filter(t => !/"(i18n|ui)\.js"/.test(t)).map(t => html.indexOf(t));
     ok(order[0] > 0 && order[0] < order[1] && others.every(i => i > order[1]),
@@ -877,7 +879,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(probe.t('footer.generated', { when: 'w', area: 'a', day: 'd', n: 2, sources: 's' }).includes('· 2 praias ·'),
     'the real catalog pluralises footer.generated');
   // Lowercase house style in the catalogs; these are names marola did not choose.
-  const CASE_OK = ['°C', 'UV', 'km/h', 'mL', 'PRÓPRIA', 'IMPRÓPRIA', 'GitHub', 'Instagram', 'Open-Meteo', 'IMA/SC', 'OpenStreetMap', 'Mapbox', 'NASA', 'VIIRS', 'MUR', 'El Niño', 'La Niña', 'Niño'];
+  const CASE_OK = ['°C', 'UV', 'km/h', 'mL', 'PRÓPRIA', 'IMPRÓPRIA', 'GitHub', 'Instagram', 'LinkedIn', 'Open-Meteo', 'IMA/SC', 'OpenStreetMap', 'Mapbox', 'NASA', 'VIIRS', 'MUR', 'El Niño', 'La Niña', 'Niño'];
   for (const [lang, cat] of Object.entries(CATALOGS)) {
     const shouty = Object.entries(cat).filter(([k, v]) => {
       if (/^dir\./.test(k)) return !/^[A-Z]{1,2}$/.test(v); // compass abbreviations, shown uppercase
