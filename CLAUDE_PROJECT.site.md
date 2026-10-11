@@ -1,149 +1,151 @@
-# Configuração do Claude Project: site marola.dev
+# Claude project configuration: marola.dev site
 
-> **Para quem é este arquivo.** Para uma pessoa, ou para o coordenador de um Claude Project, que
-> vai montar um Claude Project no claude.ai para trabalhar no marola.dev. **Um agente que trabalha
-> neste repositório pela CLI do Claude Code não deve ler este arquivo, seguir nem agir com base
-> nele.** Nada aqui é regra para mudar o repositório: essas regras estão no `AGENTS.md`, e o Claude
-> Code nunca carrega este arquivo como configuração.
+> **Who this file is for.** A person, or a Claude Project's coordinator, who is setting up a
+> Claude Project on claude.ai for work on marola.dev. **An agent working in this repository with
+> the Claude Code CLI must not read it, follow it or act on it.** Nothing here is a rule for
+> changing the repo; `AGENTS.md` holds those, and Claude Code never loads this file as
+> configuration.
 
-Esta é uma proposta de Claude Project que trabalha só no site. Ela parte das configurações do
-projeto "Marola Agent", que estão no
-[`CLAUDE_PROJECT.config.md`](https://github.com/marola-dev/marola/blob/main/CLAUDE_PROJECT.config.md)
-do repositório guarda-chuva. Nenhum projeto com estas configurações existe ainda, então nada aqui
-foi conferido no serviço. Cada bloco de código é para ser copiado inteiro no campo citado logo
-acima dele. Escrito em **2026-10-11**.
+This is a proposal for a Claude Project that works only on the site, built from the "Marola
+Agent" project's settings in the umbrella's
+[`CLAUDE_PROJECT.config.md`](https://github.com/marola-dev/marola/blob/main/CLAUDE_PROJECT.config.md).
+No project with these settings exists yet, so nothing here has been read back from the service.
+Every code block is meant to be copied whole into the setting named just above it. Written on
+**2026-10-11**.
 
-## 1. Projeto
+## 1. Project
 
-| Configuração | Valor |
+| Setting | Value |
 |---|---|
-| **Nome** | site marola.dev |
-| **Tema** | Projetar, construir e manter o marola.dev: o mapa, as páginas e as notícias |
-| **Visibilidade** | Privado, como o Marola Agent. |
-| **Modelo padrão** | Escolhido no serviço. Um id de modelo nunca entra num arquivo enviado a um repositório. |
-| **Modo de permissão dos threads** | `auto` |
-| **Ambiente padrão** | O que a §2 descreve. |
+| **Name** | marola.dev site |
+| **Topic** | Design, build and maintain marola.dev: the map, its pages and the news |
+| **Visibility** | Private, like Marola Agent. |
+| **Default model** | Chosen on the service. A model id never goes into a file pushed to a repository. |
+| **Thread permission mode** | `auto` |
+| **Default environment** | The one §2 describes. |
 
-### Repositórios
+### Repositories
 
-O projeto precisa de três repositórios:
+The project needs three repositories:
 
-- https://github.com/marola-dev/marola-site, onde o trabalho acontece.
-- https://github.com/marola-dev/marola, para os MIPs, o `docs/PHASES.md` e as regras da
-  organização no `AGENTS.md`.
-- https://github.com/marola-dev/marola-devkit, para o `docs_lint.py`, o `agents-check.sh` e o
-  `graph.sh`, que o `just quality` e a instrução da §2 usam.
+- https://github.com/marola-dev/marola-site, where the work happens.
+- https://github.com/marola-dev/marola, for the MIPs, `docs/PHASES.md` and the org rules in
+  `AGENTS.md`.
+- https://github.com/marola-dev/marola-devkit, for `docs_lint.py`, `agents-check.sh` and
+  `graph.sh`, which `just quality` and §2's instruction call.
 
-### Instruções do projeto
+### Project instructions
 
-Cole este bloco, sem mudar nada, nas instruções do projeto:
+Paste this block, unchanged, into the project instructions:
 
 ```text
-Nome de branch (Hoffmann, 2026-10-05): nunca faça push para uma branch com sufixo aleatório ou de sessão. Antes do primeiro push, dê à branch o nome `claude/<numero-da-issue>-<slug-curto-em-kebab>`, a partir da issue do GitHub que ela implementa (por exemplo `claude/657-remove-magic-nix-cache`), e faça o push com `git push -u origin HEAD:claude/<numero-da-issue>-<slug>`. Abra o PR a partir dessa branch. Se o push para esse nome for recusado, diga isso no thread em vez de voltar em silêncio para a branch com sufixo.
+Branch naming (Hoffmann, 2026-10-05): never push to a branch with a random or session suffix. Before the first push, name the branch `claude/<issue-number>-<short-kebab-slug>` after the GitHub issue it implements (for example `claude/657-remove-magic-nix-cache`), and push with `git push -u origin HEAD:claude/<issue-number>-<slug>`. Open the PR from that branch. If the push to that name is refused, say so in the thread rather than falling back silently to the suffixed branch.
 
-Trabalho de MIP (Hoffmann, 2026-10-08): quando a mudança escreve ou implementa um MIP, a branch leva o nome do MIP em vez do da issue, na convenção do repositório guarda-chuva `docs/mip-NNNN-<slug-curto-em-kebab>` (por exemplo `docs/mip-0081-external-llm-evaluation`), com o mesmo nome de branch em todo repositório que o MIP toca. A verificação de branch dos PRs do devkit rejeita branches com nome `claude/project-thread-*`.
+MIP work (Hoffmann, 2026-10-08): when the change writes or implements a MIP, name the branch after the MIP instead of the issue, following the umbrella's convention `docs/mip-NNNN-<short-kebab-slug>` (for example `docs/mip-0081-external-llm-evaluation`), using the same branch name in every repo the MIP touches. Branches named `claude/project-thread-*` are rejected by the devkit's PR branch check.
 
-Trabalho no site: leia primeiro o AGENTS.md do marola-site e siga o que ele diz. Tudo o que um visitante vê começa pela skill site-frontend, que indica as outras skills. Um commit que mexe em site/static/ leva o trailer `MIP: MIP-NNNN` ou `MIP: none — <motivo>`. Um PR que muda o que o visitante vê mostra capturas de tela de antes e depois, no desktop (1280 × 800) e no celular (390 × 844), enviadas para a branch órfã pr-screenshots; quando o thread não alcança o Mapbox, diga embaixo da tabela que o mapa é um substituto. Nunca faça deploy: nada de `just site-deploy`, nada de disparar o site.yml, e nunca defina BR_PROXY_REQUIRED.
+Site work: read marola-site's AGENTS.md first and follow it. Start anything a visitor sees with the site-frontend skill, which names the other skills. A commit that touches site/static/ carries a `MIP: MIP-NNNN` or `MIP: none — <reason>` trailer. A PR that changes what a visitor sees shows before and after screenshots, desktop 1280 × 800 and phone 390 × 844, pushed to the orphan pr-screenshots branch; when the thread cannot reach Mapbox, say under the table that the map is a stand-in. Never deploy: no `just site-deploy`, no dispatch of site.yml, and never set BR_PROXY_REQUIRED.
+
+Language: reply in the language Hoffmann writes in (usually Portuguese). Write code, comments, commits, PR titles and bodies, and docs in English, as the repositories are. The site's visitor copy is pt-BR and English in site/i18n/, and the Portuguese goes through the ptbr-humanizer skill.
 ```
 
-## 2. Ambiente na nuvem
+## 2. Cloud environment
 
-Crie um ambiente na nuvem para este projeto ou use o "Marola cloud" do Marola Agent. Os threads
-do Marola Agent já encontraram instalados Node 22, Python 3.13, ruff, uv, gh e o Chromium do
-Playwright em /opt/pw-browsers (2026-10-11).
+Create a cloud environment for this project, or reuse Marola Agent's "Marola cloud". Marola
+Agent's threads found Node 22, Python 3.13, ruff, uv, gh and Playwright's Chromium in
+/opt/pw-browsers already installed (2026-10-11).
 
-### Setup script (proposto)
+### Setup script (proposed)
 
-Cole isto em Project settings > Cloud environment > Setup script. Ele instala as ferramentas que
-o `just quality` do site procura e que faltam num thread. O `nix develop` não consegue instalá-las,
-porque o GitHub responde 403 para flake inputs fora dos repositórios do projeto.
+Paste this into Project settings > Cloud environment > Setup script. It installs the tools that
+the site's `just quality` checks for and that a thread is missing. `nix develop` cannot install
+them, because GitHub answers 403 for flake inputs outside the project's repositories.
 
 ```bash
 #!/usr/bin/env bash
-# Setup script do ambiente na nuvem do projeto do site marola.dev. O `nix develop` não substitui
-# este script: o escopo do GitHub da sessão recusa flake inputs fora dos repositórios do projeto.
+# Setup script for the marola.dev site project's cloud environment. `nix develop` cannot replace it:
+# the session's GitHub scope refuses flake inputs outside the project's repositories.
 set -euo pipefail
 
-# O Nix já vem na imagem. O nixpkgs dele é o do registry, não o do flake.lock do repositório,
-# então uma ferramenta pode estar uma versão à frente da do CI.
+# Nix comes with the image. Its nixpkgs is the registry's, not the repo's flake.lock, so a tool can
+# be a release ahead of CI's.
 nix profile install nixpkgs#just nixpkgs#shellcheck nixpkgs#actionlint >&2
 
-# graphify para o `graph query` (MIP-0076), fixado na versão do nixpkgs.
+# graphify for `graph query` (MIP-0076), pinned to nixpkgs' version.
 uv tool install 'graphifyy==0.9.66' >&2
 ```
 
-A linha do `nix profile` instalou essas ferramentas num thread do Marola Agent em 2026-10-11. A
-linha do `uv tool install` ainda não rodou. O `agents-check` e o `docs-lint` vêm do devkit, então
-num thread eles rodam a partir do checkout do marola-site como
-`bash ../marola-devkit/scripts/agents-check.sh --block ../marola-devkit/agents/invariants.md` e
-`python3 ../marola-devkit/scripts/docs_lint.py .`.
+The `nix profile` line installed these tools in a Marola Agent thread on 2026-10-11. The
+`uv tool install` line has not run yet. `agents-check` and `docs-lint` come from the devkit, so
+in a thread they run as `bash ../marola-devkit/scripts/agents-check.sh --block ../marola-devkit/agents/invariants.md` and
+`python3 ../marola-devkit/scripts/docs_lint.py .` from the marola-site checkout.
 
-### Acréscimo proposto às instruções do projeto
+### Proposed addition to the project instructions
 
-Depois que o setup script instalar o graphify, cole este bloco depois das instruções da §1:
+Once the setup script installs graphify, paste this block after §1's instructions:
 
 ```text
-Encontrar código (Hoffmann, 2026-10-11): para uma palavra-chave conhecida, use `git grep`. Para "onde fica X" num repositório que você ainda não leu, rode no diretório desse repositório `bash ../marola-devkit/scripts/graph.sh build` uma vez por thread e depois `bash ../marola-devkit/scripts/graph.sh query "<pergunta>"`; `path <a> <b>` e `explain <nome>` também funcionam. No marola-site, pergunte pelos nomes de arquivos e funções do próprio site, porque o Mapbox GL JS vendorizado ocupa a maior parte do grafo. Use a resposta como ponto de partida da leitura e depois leia os arquivos. Nunca use a saída do graphify numa verificação nem num commit. Se o `graphify` não estiver no PATH, diga isso e use git grep.
+Finding code (Hoffmann, 2026-10-11): for a known keyword, use `git grep`. For "where is X" in a repo you have not read, run from that repo's directory `bash ../marola-devkit/scripts/graph.sh build` once per thread, then `bash ../marola-devkit/scripts/graph.sh query "<question>"`; `path <a> <b>` and `explain <name>` work too. In marola-site, ask by the site's own file or function names, because vendored Mapbox GL JS fills most of the graph. Treat the answer as where to start reading, then read the files. Never use graphify's output in a gate or a commit. If `graphify` is not on PATH, say so and fall back to git grep.
 ```
 
-### O que um thread não consegue fazer
+### What a thread cannot do
 
-- Carregar o mapa base: o sandbox não alcança o Mapbox, então as capturas de tela usam um estilo
-  substituto (`AGENTS.md`, "Screenshots in the PR").
-- Rodar o `just site-build`, que precisa de Docker e da imagem fixada do app no ghcr.io. Os
-  threads do Marola Agent receberam "unauthorized" ao baixar essa imagem.
-- Fazer deploy. O `site.yml` faz o deploy a partir da `main` e num agendamento, e o
-  `.claude/settings.json` bloqueia o `just site-deploy`.
+- Load the base map: the sandbox cannot reach Mapbox, so screenshots use a stand-in style
+  (`AGENTS.md`, "Screenshots in the PR").
+- Run `just site-build`, which needs Docker and the pinned app image from ghcr.io. Marola Agent's
+  threads got "unauthorized" pulling that image.
+- Deploy. `site.yml` deploys from `main` and on a schedule, and `.claude/settings.json` denies
+  `just site-deploy`.
 
-## 3. Plugins, skills e conectores
+## 3. Plugins, skills and connectors
 
-- **Skills.** As skills em `.claude/skills/` do marola-site carregam num thread. A
-  `site-frontend` é a porta de entrada e põe as outras em ordem: `ptbr-humanizer`,
-  `citizen-science-site`, `news-post` e as skills vendorizadas de design, de testes e `mapbox-*`.
-- **Subagentes.** O `news-fact-check` e depois o `news-copy-review` revisam cada notícia antes
-  que uma pessoa aprove.
-- **Plugins da conta.** Ative o Writing Skills na conta do claude.ai, como o `AGENTS.md` do
-  repositório guarda-chuva ("Reading and writing") pede a todo projeto. O plugin marola-devkit,
-  declarado no `.claude/settings.json` do repositório, não carrega num thread de Project.
-- **Servidores MCP.** O `.mcp.json` declara o Playwright e o Figma. Ninguém conferiu ainda se um
-  thread de Project inicia esses servidores; a skill `webapp-testing` e o Chromium em
-  /opt/pw-browsers tiram capturas de tela sem eles.
-- **Conectores.** Nenhum é necessário.
+- **Skills.** marola-site's `.claude/skills/` load in a thread. `site-frontend` is the entry
+  point and orders the rest: `ptbr-humanizer`, `citizen-science-site`, `news-post`, the vendored
+  design, testing and `mapbox-*` skills.
+- **Subagents.** `news-fact-check`, then `news-copy-review`, review every news post before a
+  person signs off.
+- **Account plugins.** Enable Writing Skills on the claude.ai account, as the umbrella's
+  `AGENTS.md` ("Reading and writing") asks of every project. The marola-devkit plugin, which the
+  repo's `.claude/settings.json` declares, does not load in a Project thread.
+- **MCP servers.** `.mcp.json` declares Playwright and Figma. Whether a Project thread starts them
+  has not been checked; the `webapp-testing` skill and Chromium in /opt/pw-browsers take
+  screenshots without them.
+- **Connectors.** None are needed.
 
-## 4. Rotinas
+## 4. Routines
 
-Nenhuma por enquanto. A caixa de entrada A2A e os lembretes do LinkedIn do Marola Agent continuam
-naquele projeto, porque a caixa A2A pertence a um projeto de cada vez.
+None yet. Marola Agent's A2A inbox and LinkedIn reminders stay in that project, since the A2A
+inbox belongs to one project at a time.
 
-## 5. Entrada de um novo membro
+## 5. Joining as a new member
 
-O projeto é privado, então ninguém mais pode entrar nele. Um novo membro trabalha no marola-site
-pela CLI do Claude Code, seguindo o `AGENTS.md` do repositório, ou monta o próprio projeto a partir
-deste arquivo:
+The project is private, so no one else can join it. A new member works in marola-site with the
+Claude Code CLI under its `AGENTS.md`, or builds a project of their own from this file:
 
-1. Conecte o GitHub ao claude.ai e instale o Claude GitHub App no marola-site. Um thread só
-   alcança os repositórios que o projeto dele lista.
-2. Crie o ambiente na nuvem com o setup script da §2.
-3. Para trabalhar pela CLI, rode `nix develop` no marola-site e aceite o plugin que o
-   `.claude/settings.json` dele declara.
+1. Connect GitHub to claude.ai and install the Claude GitHub App on marola-site. A thread reaches
+   only the repositories its project lists.
+2. Create the cloud environment with §2's setup script.
+3. For CLI work, run `nix develop` in marola-site and accept the plugin its
+   `.claude/settings.json` declares.
 
-## 6. Criação do projeto
+## 6. Creating the project
 
-1. Crie um projeto privado com o nome e o tema da §1 e anexe os três repositórios da §1.
-2. Escolha o modelo padrão e cole as instruções da §1.
-3. Crie o ambiente com o setup script da §2.
-4. Ative o plugin da conta indicado na §3.
+1. Create a private project with §1's name and topic, and attach §1's three repositories.
+2. Pick the default model, and paste §1's instructions.
+3. Create the environment with §2's setup script.
+4. Enable the account plugin from §3.
 
-## 7. O que fica fora deste arquivo
+## 7. Not in this file
 
-- o token e a conta do Mapbox, a tailnet do Tailscale e todo segredo, que são de uma pessoa
+These stay out of this file:
+
+- the Mapbox token and account, the Tailscale tailnet and every secret, which are a person's
   (`AGENTS.md`, "Cost & deployment safety")
-- a memória do projeto, o histórico de conversas e os arquivos do projeto
-- ids de modelo, endereços de e-mail, ids de conta e ids de sessão
+- project memory, chat history and project files
+- model ids, e-mail addresses, account ids and session ids
 
-## 8. Como manter atualizado
+## 8. Keeping it current
 
-Quando o projeto existir, leia as configurações dele no serviço e troque esta proposta pelo que
-ele tem de fato, com a data do topo atualizada. Mude este arquivo no mesmo PR de qualquer coisa
-que dependa dele, e mantenha-o em sintonia com o `CLAUDE_PROJECT.config.md` do repositório
-guarda-chuva quando uma configuração em comum (as regras de branch, o setup script) mudar lá.
+Once the project exists, read its settings back from the service and replace this proposal with
+what it actually has, with the date at the top updated. Change this file in the same PR as
+anything that depends on it, and keep it in step with the umbrella's `CLAUDE_PROJECT.config.md`
+when a shared setting (the branch rules, the setup script) changes there.
