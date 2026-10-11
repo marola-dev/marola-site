@@ -40,9 +40,12 @@ map-load tier, billed above it).
   forwarder), `board-schema.sh` (the image pin and its schema), `stamp_site_version.sh`,
   `site_live_check.py` (what marola.dev actually serves), `site-data-push.sh` (the retrying push
   every `site-data` writer uses), `secrets-sync.sh` (`just secrets-sync`: 1Password into the
-  repo's secrets), `mip-trailer-check.sh`, and the Brazilian proxy's `br-proxy.sh` (the runner's
+  repo's secrets), `setup-ubuntu.sh` (`just setup-ubuntu`: Nix and 1Password on a new machine), `mip-trailer-check.sh`, and the Brazilian proxy's `br-proxy.sh` (the runner's
   router), `br-proxy-preflight.sh` (the flight check) and
   `br-proxy-node.sh` (`just br-proxy-node`).
+- `nix-config/`: [h0ffmann/nix-config](https://github.com/h0ffmann/nix-config) as a shallow
+  submodule (the maintainer's Nix labs; `labs/agentic` runs Claude Code in ai-jail). Read it, never
+  change it from here; no workflow checks it out.
 - `ops/br-proxy/`: the Brazilian proxy pool that INEA and INEMA, which answer only Brazilian
   addresses, are reached through (#4): a volunteer node's compose file and allowlist, and
   [`JOIN.md`](ops/br-proxy/JOIN.md). `site.yml`'s flight check fails closed without a healthy

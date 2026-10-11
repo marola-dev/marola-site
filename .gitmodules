@@ -1,0 +1,5 @@
+[submodule "nix-config"]
+	path = nix-config
+	url = https://github.com/h0ffmann/nix-config
+	branch = main
+	shallow = true

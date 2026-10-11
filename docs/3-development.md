@@ -69,39 +69,46 @@ per secret, titled with the secret's name and holding the value in its `credenti
 removing one is `gh secret delete <NAME> --repo marola-dev/marola-site` and the name out of the
 list. The 1Password account, its vaults and the values are a human's.
 
-On Ubuntu, Nix gives `just` and `gh`; the 1Password CLI comes from 1Password's apt
-repository instead. The desktop app hands the CLI a session only when the `op` binary belongs to
-the `onepassword-cli` group with setgid, which a binary in the Nix store cannot be
-([1Password CLI, get started](https://www.1password.dev/cli/get-started)).
-
-```bash
-# Determinate Nix, as on the maintainer's Ubuntu workstation (h0ffmann/nix-config); flakes are on
-curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh
-
-# 1Password app and CLI, from 1Password's apt repository (the commands its get-started page gives)
-curl -sS https://downloads.1password.com/linux/keys/1password.asc | \
-  sudo gpg --dearmor --output /usr/share/keyrings/1password-archive-keyring.gpg && \
-  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/1password-archive-keyring.gpg] https://downloads.1password.com/linux/debian/$(dpkg --print-architecture) stable main" | \
-  sudo tee /etc/apt/sources.list.d/1password.list && \
-  sudo mkdir -p /etc/debsig/policies/AC2D62742012EA22/ && \
-  curl -sS https://downloads.1password.com/linux/debian/debsig/1password.pol | \
-  sudo tee /etc/debsig/policies/AC2D62742012EA22/1password.pol && \
-  sudo mkdir -p /usr/share/debsig/keyrings/AC2D62742012EA22 && \
-  curl -sS https://downloads.1password.com/linux/keys/1password.asc | \
-  sudo gpg --dearmor --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg && \
-  sudo apt update && sudo apt install 1password 1password-cli
-op --version   # 2.x
-```
-
-In the app: Settings → Security → "Unlock using system authentication", then Settings → Developer
-→ "Integrate with 1Password CLI" (it needs PolKit and a running PolKit agent, which Ubuntu's
-desktop has). Then, from this checkout:
+On Ubuntu the setup is one command, below. Then, from this checkout:
 
 ```bash
 nix develop
-gh auth login             # once, with admin on marola-dev/marola-site
+gh auth login                 # once, with admin on marola-dev/marola-site
 just secrets-sync --dry-run   # reads every item, writes nothing
 just secrets-sync
+```
+
+## For Ubuntu users
+
+```bash
+just setup-ubuntu              # or scripts/setup-ubuntu.sh before just is installed
+just setup-ubuntu --dry-run    # print what it would run
+```
+
+[`scripts/setup-ubuntu.sh`](../scripts/setup-ubuntu.sh) installs
+[Determinate Nix](https://determinate.systems/nix/) (flakes on by default), the Nix the
+maintainer's own Ubuntu runs ([h0ffmann/nix-config](https://github.com/h0ffmann/nix-config)), then
+the 1Password app and CLI from 1Password's apt repository, with the commands from its
+[get-started page](https://www.1password.dev/cli/get-started). Last it checks out the `nix-config`
+submodule. It asks for `sudo` and skips what is already installed, so running it again is
+harmless. Nix then gives `just`, `gh`, node and the lint
+tools through `nix develop`; only 1Password stays outside Nix, because the desktop app hands the CLI
+a session only when `op` belongs to the `onepassword-cli` group with setgid, which a binary in the
+Nix store cannot be.
+
+What no script can do is in the 1Password app, once: sign in, turn on Settings → Security →
+"Unlock using system authentication" and Settings → Developer → "Integrate with 1Password CLI"
+(it needs PolKit and a running agent, which Ubuntu's desktop has), then check `op vault list` from
+a new terminal. `op` talks to the app over a desktop socket, so it does not work inside an agent
+sandbox such as ai-jail: run `just secrets-sync` from a plain terminal.
+
+`nix-config/` is [h0ffmann/nix-config](https://github.com/h0ffmann/nix-config) as a shallow
+submodule, at the commit this repo pins: the maintainer's Nix labs, read here and changed there. No
+workflow checks it out and nothing in the build reads it. Its `labs/agentic` runs Claude Code inside
+[ai-jail](https://github.com/akitaonrails/ai-jail) on this checkout:
+
+```bash
+just -f nix-config/labs/agentic/justfile jco
 ```
 
 ## The `site-data` branch layout

@@ -37,6 +37,10 @@ site-serve port="8000":
 site-deploy:
     gh workflow run site.yml && echo "queued site.yml — watch it: gh run list --workflow site.yml"
 
+# One-time setup of an Ubuntu machine: Determinate Nix and the 1Password app and CLI (sudo).
+setup-ubuntu *args:
+    scripts/setup-ubuntu.sh {{ args }}
+
 # Copy the GitHub Actions secrets from 1Password to this repo (--dry-run only reads them).
 # Needs the 1Password CLI outside nix (docs/3-development.md#secrets-and-1password).
 secrets-sync *args:
