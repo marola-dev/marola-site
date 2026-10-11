@@ -127,6 +127,18 @@ Claude Code CLI under its `AGENTS.md`, or builds a project of their own from thi
    forks marola-site, attaches the fork to the project, installs the Claude GitHub App on it, and
    opens the PRs from the fork. A fork PR's Actions wait for a maintainer's approval, and Gemini
    reviews a fork PR without pushing fixes to it.
+
+   Working from a fork, add it to §1's repositories, with `<your-user>` replaced by your GitHub
+   user. §1's marola-dev repositories stay in the list, because a thread's GitHub scope refuses a
+   repository its project does not list:
+
+   ```text
+   https://github.com/<your-user>/marola-site
+   ```
+
+   Before each task, sync the fork with marola-dev, with GitHub's "Sync fork" button or
+   `git pull https://github.com/marola-dev/marola-site main`. A thread opening a PR from a fork to
+   marola-dev has not been tried yet.
 2. Create the cloud environment with §2's setup script.
 3. For CLI work, run `nix develop` in marola-site and accept the plugin its
    `.claude/settings.json` declares.
