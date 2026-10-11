@@ -69,15 +69,14 @@ per secret, titled with the secret's name and holding the value in its `credenti
 removing one is `gh secret delete <NAME> --repo marola-dev/marola-site` and the name out of the
 list. The 1Password account, its vaults and the values are a human's.
 
-On Ubuntu, Nix (with flakes) gives `just` and `gh`; the 1Password CLI comes from 1Password's apt
+On Ubuntu, Nix gives `just` and `gh`; the 1Password CLI comes from 1Password's apt
 repository instead. The desktop app hands the CLI a session only when the `op` binary belongs to
 the `onepassword-cli` group with setgid, which a binary in the Nix store cannot be
 ([1Password CLI, get started](https://www.1password.dev/cli/get-started)).
 
 ```bash
-# Nix, multi-user, with flakes
-sh <(curl -L https://nixos.org/nix/install) --daemon
-mkdir -p ~/.config/nix && echo 'experimental-features = nix-command flakes' >> ~/.config/nix/nix.conf
+# Determinate Nix, as on the maintainer's Ubuntu workstation (h0ffmann/nix-config); flakes are on
+curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh
 
 # 1Password app and CLI, from 1Password's apt repository (the commands its get-started page gives)
 curl -sS https://downloads.1password.com/linux/keys/1password.asc | \
