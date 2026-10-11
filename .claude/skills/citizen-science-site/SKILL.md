@@ -22,7 +22,7 @@ reads); this skill is about what must be on the page.
 | Limits | legend "sem dados", note codes, about | Say what is missing or estimated; never fill a gap silently |
 | Privacy | footer, about "privacidade" | "sem cookies e sem rastreamento próprio" stays visible, and about names what Mapbox, the base map, receives; location never leaves the browser |
 | Open code and docs | nav "docs", GitHub pill, footer link | Repo and docs reachable from every page |
-| Money | support page, `Cost:` trailers | Costs and donations are public and checkable |
+| Money | support page | Costs and donations are public and checkable |
 | Contribute | docs, GitHub | A visitor can find the issue tracker and the docs from the page they are on |
 
 ## Rules
