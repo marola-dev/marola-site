@@ -130,8 +130,13 @@ O projeto é privado, então ninguém mais pode entrar nele. Um novo membro trab
 pela CLI do Claude Code, seguindo o `AGENTS.md` do repositório, ou monta o próprio projeto a partir
 deste arquivo:
 
-1. Conecte o GitHub ao claude.ai e instale o Claude GitHub App no marola-site. Um thread só
-   alcança os repositórios que o projeto dele lista.
+1. Conecte o GitHub ao claude.ai. Um thread só alcança os repositórios que o projeto dele lista,
+   e só consegue fazer push onde a conta do GitHub do dono consegue. Só os colaboradores que as
+   configurações do marola-site listam com write, maintain ou admin podem fazer push nele (três
+   em 2026-10-11). Qualquer outra pessoa faz um fork do marola-site, anexa o fork ao projeto,
+   instala o Claude GitHub App nele e abre os PRs a partir do fork. As Actions de um PR de fork
+   esperam a aprovação de um mantenedor, e o Gemini revisa um PR de fork sem enviar correções
+   para ele.
 2. Crie o ambiente na nuvem com o setup script da §2.
 3. Para trabalhar pela CLI, rode `nix develop` no marola-site e aceite o plugin que o
    `.claude/settings.json` dele declara.

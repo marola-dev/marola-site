@@ -121,8 +121,12 @@ inbox belongs to one project at a time.
 The project is private, so no one else can join it. A new member works in marola-site with the
 Claude Code CLI under its `AGENTS.md`, or builds a project of their own from this file:
 
-1. Connect GitHub to claude.ai and install the Claude GitHub App on marola-site. A thread reaches
-   only the repositories its project lists.
+1. Connect GitHub to claude.ai. A thread reaches only the repositories its project lists, and it
+   can push only where its owner's GitHub account can. Only the collaborators marola-site's
+   settings list with write, maintain or admin can push to it (three on 2026-10-11). Anyone else
+   forks marola-site, attaches the fork to the project, installs the Claude GitHub App on it, and
+   opens the PRs from the fork. A fork PR's Actions wait for a maintainer's approval, and Gemini
+   reviews a fork PR without pushing fixes to it.
 2. Create the cloud environment with §2's setup script.
 3. For CLI work, run `nix develop` in marola-site and accept the plugin its
    `.claude/settings.json` declares.
