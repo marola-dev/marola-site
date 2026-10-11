@@ -145,6 +145,9 @@ These stay out of this file:
 
 ## 8. Keeping it current
 
+[`CLAUDE_PROJECT.pt-BR.site.md`](CLAUDE_PROJECT.pt-BR.site.md) is this file in Portuguese; a
+change to one is made in the other in the same PR.
+
 Once the project exists, read its settings back from the service and replace this proposal with
 what it actually has, with the date at the top updated. Change this file in the same PR as
 anything that depends on it, and keep it in step with the umbrella's `CLAUDE_PROJECT.config.md`

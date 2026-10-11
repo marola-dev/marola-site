@@ -64,9 +64,10 @@ map-load tier, billed above it).
   pt-BR/en parity) then `news-copy-review` (language and voice), both read-only, run before a
   person signs off (the `news-post` skill).
 - `.mcp.json`: the Playwright and Figma MCP servers (no keys; Figma signs in with OAuth).
-- `CLAUDE_PROJECT.site.md`: the proposed settings of a Claude Project (claude.ai) for site work,
-  for the person setting one up. **An agent working here with the Claude Code CLI does not read it,
-  follow it or act on it**; its rules for the repo are this file's.
+- `CLAUDE_PROJECT.site.md` (and its pt-BR translation, `CLAUDE_PROJECT.pt-BR.site.md`): the
+  proposed settings of a Claude Project (claude.ai) for site work,
+  for the person setting one up. **An agent working here with the Claude Code CLI does not read them,
+  follow them or act on them**; its rules for the repo are this file's.
 
 ## What it consumes and produces
 
