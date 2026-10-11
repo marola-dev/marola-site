@@ -97,6 +97,8 @@
   "gh.label": "marola-dev/marola no GitHub, dê uma estrela ao repositório",
   "gh.star": "star",
   "gh.title": "marola no GitHub: deixe uma estrela se o projeto for útil para você",
+  "insta.label": "{handle} no Instagram",
+  "insta.title": "a conta do marola em {city} no Instagram",
   "header.tagline": "mar, vento, maré e qualidade da água em cada praia, com dados abertos.",
   "hour.at": "às {h}{past, select, yes { (já passou)} other {}}",
   "hour.best": "melhor horário de cada praia",

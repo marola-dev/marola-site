@@ -12,7 +12,7 @@
 
   var $ = function (id) { return document.getElementById(id); };
   var el = {
-    area: $('area'), days: $('days'), near: $('near'), sound: $('sound'), toggleList: $('toggle-list'),
+    area: $('area'), insta: $('insta'), days: $('days'), near: $('near'), sound: $('sound'), toggleList: $('toggle-list'),
     hourbar: $('hourbar'), hour: $('hour'), hourLabel: $('hour-label'),
     list: $('list'), card: $('card'), footer: $('footer'), status: $('status'),
     flow: $('flow'), keys: $('flowkeys'), mapNote: $('map-note'), map: $('map')
@@ -129,8 +129,21 @@
     return AREA_CODES[a.id] || String(a.name).normalize('NFD').replace(/[^A-Za-z]/g, '').slice(0, 2).toUpperCase();
   }
 
+  // Each city's own account (#123); an area without one shows no pill.
+  var INSTAGRAM = { floripa: 'fl.marola', rio: 'rj.marola' };
+  function renderInsta() {
+    var handle = state.area && INSTAGRAM[state.area.id];
+    el.insta.hidden = !handle;
+    if (!handle) return;
+    el.insta.href = 'https://www.instagram.com/' + handle + '/';
+    el.insta.querySelector('span').textContent = '@' + handle;
+    el.insta.setAttribute('aria-label', t('insta.label', { handle: '@' + handle }));
+    el.insta.title = t('insta.title', { city: state.area.name });
+  }
+
   function selectArea(area) {
     state.area = area; setParam('area', area.id); el.area.title = area.name;
+    renderInsta();
     ensureMap(area);
     status(t('status.loading_named', { name: area.name }));
     return fetchJson('data/' + area.id + '/latest.json').then(function (latest) {
@@ -795,6 +808,7 @@
 
   // ui.js has already rewritten the static text; this redraws what app.js built, from state, no fetch.
   I.onLang(function () {
+    renderInsta();
     if (state.latest) renderDays();
     if (!state.board) return;
     render();
