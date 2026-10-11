@@ -25,6 +25,16 @@ just site-serve           # http://localhost:8000
 Without docker, `node scripts/site_check.js` renders `site/static/app.js` against
 `site/fixtures/board.json` in a stub DOM.
 
+On a new Ubuntu machine, `just setup-ubuntu` installs Nix and 1Password and checks out
+`nix-config/` ([For Ubuntu users](docs/3-development.md#for-ubuntu-users)).
+
+**The `nix-config` submodule.** `nix-config/` is the maintainer's own Nix setup,
+[h0ffmann/nix-config](https://github.com/h0ffmann/nix-config). It is here so that working on this
+repo uses the same tools the maintainer uses every day, starting with Claude Code inside ai-jail
+(`labs/agentic`), without copying them into this repo. The site's build never reads it and no
+workflow checks it out. Questions about it go to Hoffmann ([@h0ffmann](https://github.com/h0ffmann))
+directly.
+
 ## How it is published
 
 `site.yml` runs every three hours, on a push to `main` that touches the page or the pin, and when
@@ -43,6 +53,7 @@ GitHub Pages as a fallback. `404.html` forwards `marola.dev/docs/*` to [docs.mar
 | The areas | [`site/areas.json`](https://github.com/marola-dev/marola-site/blob/main/site/areas.json) |
 | The board contract | the image's `board.schema.json`, vendored as [`site/board.schema.json`](https://github.com/marola-dev/marola-site/blob/main/site/board.schema.json) |
 | The deploy workflow | [`site.yml`](https://github.com/marola-dev/marola-site/blob/main/.github/workflows/site.yml) |
+| The maintainer's Nix setup (a submodule) | [`nix-config/`](https://github.com/h0ffmann/nix-config) |
 | The Brazilian proxy pool (INEA and INEMA; the build's flight check needs it) | [`ops/br-proxy/`](https://github.com/marola-dev/marola-site/tree/main/ops/br-proxy); join it: [`JOIN.md`](https://github.com/marola-dev/marola-site/blob/main/ops/br-proxy/JOIN.md) |
 
 ## Contracts
