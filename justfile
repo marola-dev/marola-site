@@ -37,6 +37,11 @@ site-serve port="8000":
 site-deploy:
     gh workflow run site.yml && echo "queued site.yml — watch it: gh run list --workflow site.yml"
 
+# Copy the GitHub Actions secrets from 1Password to this repo (--dry-run only reads them).
+# Needs the 1Password CLI outside nix (docs/3-development.md#secrets-and-1password).
+secrets-sync *args:
+    scripts/secrets-sync.sh {{ args }}
+
 # Check what marola.dev actually serves (or --base http://localhost:8000).
 site-live-check *args:
     python3 scripts/site_live_check.py {{ args }}

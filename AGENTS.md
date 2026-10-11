@@ -39,8 +39,9 @@ map-load tier, billed above it).
   (the public Mapbox token into `mapbox-config.js` at deploy), `redirect_check.js` (the 404
   forwarder), `board-schema.sh` (the image pin and its schema), `stamp_site_version.sh`,
   `site_live_check.py` (what marola.dev actually serves), `site-data-push.sh` (the retrying push
-  every `site-data` writer uses), `mip-trailer-check.sh`, and the Brazilian proxy's
-  `br-proxy.sh` (the runner's router), `br-proxy-preflight.sh` (the flight check) and
+  every `site-data` writer uses), `secrets-sync.sh` (`just secrets-sync`: 1Password into the
+  repo's secrets), `mip-trailer-check.sh`, and the Brazilian proxy's `br-proxy.sh` (the runner's
+  router), `br-proxy-preflight.sh` (the flight check) and
   `br-proxy-node.sh` (`just br-proxy-node`).
 - `ops/br-proxy/`: the Brazilian proxy pool that INEA and INEMA, which answer only Brazilian
   addresses, are reached through (#4): a volunteer node's compose file and allowlist, and

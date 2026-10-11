@@ -58,6 +58,53 @@ without it builds as before. The pool, its nodes and the whole Tailscale setup:
 [`ops/br-proxy/README.md`](../ops/br-proxy/README.md) and
 [`ops/br-proxy/JOIN.md`](../ops/br-proxy/JOIN.md).
 
+## Secrets and 1Password
+
+The values of `site.yml`'s secrets live in 1Password, vault `marola-ci`, one *API Credential* item
+per secret, titled with the secret's name and holding the value in its `credential` field.
+`just secrets-sync` ([`scripts/secrets-sync.sh`](../scripts/secrets-sync.sh)) reads each one with
+`op read` and writes it with `gh secret set`, through a pipe. GitHub never shows a secret again, so
+1Password is the only copy anyone can read, and every run overwrites GitHub's: change a value in
+1Password, never on GitHub. A new secret is an item in `marola-ci` plus a name in the script's list;
+removing one is `gh secret delete <NAME> --repo marola-dev/marola-site` and the name out of the
+list. The 1Password account, its vaults and the values are a human's.
+
+On Ubuntu, Nix (with flakes) gives `just` and `gh`; the 1Password CLI comes from 1Password's apt
+repository instead. The desktop app hands the CLI a session only when the `op` binary belongs to
+the `onepassword-cli` group with setgid, which a binary in the Nix store cannot be
+([1Password CLI, get started](https://www.1password.dev/cli/get-started)).
+
+```bash
+# Nix, multi-user, with flakes
+sh <(curl -L https://nixos.org/nix/install) --daemon
+mkdir -p ~/.config/nix && echo 'experimental-features = nix-command flakes' >> ~/.config/nix/nix.conf
+
+# 1Password app and CLI, from 1Password's apt repository (the commands its get-started page gives)
+curl -sS https://downloads.1password.com/linux/keys/1password.asc | \
+  sudo gpg --dearmor --output /usr/share/keyrings/1password-archive-keyring.gpg && \
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/1password-archive-keyring.gpg] https://downloads.1password.com/linux/debian/$(dpkg --print-architecture) stable main" | \
+  sudo tee /etc/apt/sources.list.d/1password.list && \
+  sudo mkdir -p /etc/debsig/policies/AC2D62742012EA22/ && \
+  curl -sS https://downloads.1password.com/linux/debian/debsig/1password.pol | \
+  sudo tee /etc/debsig/policies/AC2D62742012EA22/1password.pol && \
+  sudo mkdir -p /usr/share/debsig/keyrings/AC2D62742012EA22 && \
+  curl -sS https://downloads.1password.com/linux/keys/1password.asc | \
+  sudo gpg --dearmor --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg && \
+  sudo apt update && sudo apt install 1password 1password-cli
+op --version   # 2.x
+```
+
+In the app: Settings → Security → "Unlock using system authentication", then Settings → Developer
+→ "Integrate with 1Password CLI" (it needs PolKit and a running PolKit agent, which Ubuntu's
+desktop has). Then, from this checkout:
+
+```bash
+nix develop
+gh auth login             # once, with admin on marola-dev/marola-site
+just secrets-sync --dry-run   # reads every item, writes nothing
+just secrets-sync
+```
+
 ## The `site-data` branch layout
 
 An orphan branch, never deployed by the workflows that write it: `coverage/` and `smoke/` (the
