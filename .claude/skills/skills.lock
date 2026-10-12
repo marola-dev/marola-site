@@ -20,10 +20,10 @@
     "design-taste-frontend": {
       "upstream": "Leonxlnx/taste-skill",
       "path": "skills/taste-skill",
-      "commit": "3c7017d636c3a4aad378433ea6d0cfa6c921da4a",
+      "commit": "85fc47e4a1355fc2e047f8447171389c993855c9",
       "files": {
         "LICENSE": "48a2f6640b81ff8eca9ce7f6a96337692713ef5b",
-        "SKILL.md": "b72132fcd466da605623ffe96e370b3991fc5285"
+        "SKILL.md": "5e1756a649824a3660f85da93b58e64bbdad59e5"
       },
       "license": "MIT",
       "local_edits": null,
