@@ -738,7 +738,11 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
     .match(/<li class="member">/g) || []).length;
   ok(memberRows('pt-BR') > 0 && memberRows('pt-BR') === memberRows('en'),
     'the members page lists the same people in pt-BR and en', memberRows('pt-BR') + ' / ' + memberRows('en'));
-  ok(!/<img\b/.test(MEMBERS), 'the members page has no photos, so it asks no other host for one');
+  const avatars = MEMBERS.match(/<img [^>]*>/g) || [];
+  ok(avatars.length > 0 && avatars.every(t => {
+    const src = (/ src="([^"]+)"/.exec(t) || [])[1] || '';
+    return /^img\/members\/[A-Za-z0-9-]+\.(png|jpg)$/.test(src) && fs.existsSync(path.join(ROOT, 'site/static', src));
+  }), 'every avatar on the members page is a file in img/members/, so the visitor asks GitHub for nothing');
   ok((ABOUT.match(/<a href="members\.html">/g) || []).length === 2,
     'about.html links the members page in both languages, the way in on a phone, where the nav hides it');
   ok(/@media \(max-width: 640px\)[\s\S]*?\.sitenav > a\[href="members\.html"\] \{ display: none; \}/.test(fs.readFileSync(path.join(ROOT, 'site/static/style.css'), 'utf8')),

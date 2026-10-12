@@ -33,8 +33,10 @@ map-load tier, billed above it).
 - `site/content/news/`: the news posts, one Markdown file per post and language.
   `scripts/news_build.py` checks them and writes them into `news.html`; edit the posts, never
   that block.
-- `site/members.version`: the marola-dev/.github commit whose `MEMBERS.md` `scripts/members_build.py`
-  writes into `members.html`; the list lives there, edit it there and bump the pin, never the block.
+- `site/members.version`: the marola-dev/.github commit whose `MEMBERS.md`
+  `scripts/members_build.py` writes into `members.html`, with the avatars in `img/members/`; the
+  list lives there, edit it there; `members.yml` opens the daily PR that moves the pin and rebuilds
+  the page. Never edit the block.
 - `site/areas.json`: the areas the boards are built for. `site/fixtures/board.json`: the board the
   harness renders. `site/board.schema.json`: the board contract, vendored from the pinned image.
 - `scripts/`: `site_check.js` (app.js and flow.js in a stub DOM and Mapbox GL), `mapbox_config.sh`

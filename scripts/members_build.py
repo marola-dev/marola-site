@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 """members_build: write members.html's list from marola-dev/.github's MEMBERS.md (#9).
 
-    scripts/members_build.py                  # fetch MEMBERS.md at site/members.version, (re)write members.html
+    scripts/members_build.py                  # fetch MEMBERS.md at site/members.version, (re)write
+                                              # members.html and refresh img/members/
     scripts/members_build.py --source FILE    # the same from a local MEMBERS.md (a .github checkout)
-    scripts/members_build.py --check          # exit 1 if members.html differs from the pinned MEMBERS.md
+    scripts/members_build.py --check          # exit 1 if members.html or img/members/ differ from it
     scripts/members_build.py --self-test
 
 MEMBERS.md is the org's single list of members (every Zenodo creator, ordered by first commit);
-this repo keeps no copy of it, only the commit it was rendered from.
+this repo keeps no copy of it, only the commit it was rendered from. Avatars are copied into
+img/members/ so a visitor's browser asks GitHub for nothing; --check wants one per GitHub login and
+no stray file, but not today's bytes: a new photo on GitHub shows after the next write.
 """
 
 import argparse
@@ -23,6 +26,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 PIN = ROOT / "site" / "members.version"
 PAGE = ROOT / "site" / "static" / "members.html"
+AVATARS = ROOT / "site" / "static" / "img" / "members"
+AVATAR = "https://avatars.githubusercontent.com/{}?s=96"
 RAW = "https://raw.githubusercontent.com/marola-dev/.github/{}/MEMBERS.md"
 FILE = "https://github.com/marola-dev/.github/blob/main/MEMBERS.md"
 ZENODO = "https://doi.org/10.5281/zenodo.23224155"
@@ -104,7 +109,37 @@ def initials(name):
     return (parts[0][0] + parts[-1][0]).upper()
 
 
-def render(members):
+def sniff(data):
+    if data.startswith(b"\x89PNG\r\n\x1a\n"):
+        return "png"
+    if data.startswith(b"\xff\xd8\xff"):
+        return "jpg"
+    raise MembersError(f"an avatar is neither PNG nor JPEG: {data[:8]!r}")
+
+
+def avatar_files(folder):
+    return {p.stem: p.name for p in folder.glob("*")} if folder.is_dir() else {}
+
+
+def sync_avatars(logins, folder, get):
+    """Download each login's avatar into folder and delete the files of logins no longer listed."""
+    folder.mkdir(parents=True, exist_ok=True)
+    for p in folder.glob("*"):
+        if p.stem not in logins:
+            p.unlink()
+    for login in logins:
+        data = get(login)
+        for p in folder.glob(f"{login}.*"):
+            p.unlink()
+        (folder / f"{login}.{sniff(data)}").write_bytes(data)
+
+
+def get_avatar(login):
+    with urllib.request.urlopen(AVATAR.format(login), timeout=30) as r:
+        return r.read()
+
+
+def render(members, avatars):
     out = []
     for lang, copy in COPY.items():
         out += [
@@ -123,7 +158,9 @@ def render(members):
                 links.append(f'<a href="{first[1]}">{copy["commit"].format(first[0])}</a>')
             out += [
                 '        <li class="member">',
-                f'          <span class="member-mark" aria-hidden="true">{initials(name)}</span>',
+                f'          <img class="member-mark" src="img/members/{avatars[gh]}" width="48" height="48" alt="" loading="lazy">'
+                if gh in avatars
+                else f'          <span class="member-mark" aria-hidden="true">{initials(name)}</span>',
                 f'          <span class="member-name">{html.escape(name)}</span>',
                 *([f'          <span class="member-aff">{html.escape(aff)}</span>'] if aff else []),
                 *(
@@ -143,9 +180,19 @@ def fetch(sha):
         return r.read().decode("utf-8")
 
 
-def run(text, page, check):
+def run(text, page, check, folder=AVATARS, get=get_avatar):
     try:
-        block = render(parse(text))
+        members = parse(text)
+        logins = [m[3] for m in members if m[3]]
+        if not check:
+            sync_avatars(logins, folder, get)
+        have = avatar_files(folder)
+        if set(have) != set(logins):
+            raise MembersError(
+                f"{folder.name}/ has avatars for {sorted(have)}, MEMBERS.md lists {sorted(logins)}:"
+                " run scripts/members_build.py"
+            )
+        block = render(members, have)
     except MembersError as e:
         print(f"members_build: {e}", file=sys.stderr)
         return 1
@@ -189,21 +236,54 @@ def self_test():
         "| Soares da Silva Junior, Rob Kler | | | | |\n"
     )
     page = f"<main>\n    {BEGIN}\n    {END}\n</main>\n"
+    png = b"\x89PNG\r\n\x1a\n" + b"0" * 8
+    quiet = (contextlib.redirect_stdout, contextlib.redirect_stderr)
 
-    def scenario(label, text, expect_ok):
+    def scenario(label, text, expect_ok, between=None):
         with tempfile.TemporaryDirectory() as tmp:
-            out = Path(tmp) / "members.html"
+            out, folder = Path(tmp) / "members.html", Path(tmp) / "members"
             out.write_text(page)
-            with (
-                contextlib.redirect_stdout(io.StringIO()),
-                contextlib.redirect_stderr(io.StringIO()),
-            ):
-                run(text, out, check=False)
-                rc = run(text, out, check=True)
+            with quiet[0](io.StringIO()), quiet[1](io.StringIO()):
+                run(text, out, check=False, folder=folder, get=lambda _: png)
+                if between:
+                    between(folder)
+                rc = run(text, out, check=True, folder=folder)
             ok((rc == 0) == expect_ok, label)
-            return out.read_text()
+            return out.read_text(), sorted(p.name for p in folder.glob("*"))
 
-    got = scenario("a well-formed MEMBERS.md passes --check after a write", good, True)
+    got, files = scenario("a well-formed MEMBERS.md passes --check after a write", good, True)
+    ok(files == ["h0ffmann.png"], "one avatar per GitHub login, typed by its bytes")
+    ok(
+        '<img class="member-mark" src="img/members/h0ffmann.png" width="48" height="48" alt=""'
+        in got,
+        "a member with a GitHub login shows the local avatar",
+    )
+    scenario(
+        "an avatar missing on disk fails --check",
+        good,
+        False,
+        between=lambda f: (f / "h0ffmann.png").unlink(),
+    )
+    scenario(
+        "a stray avatar fails --check",
+        good,
+        False,
+        between=lambda f: (f / "gone.png").write_bytes(png),
+    )
+    with tempfile.TemporaryDirectory() as tmp:
+        folder = Path(tmp)
+        (folder / "gone.jpg").write_bytes(b"x")
+        (folder / "h0ffmann.jpg").write_bytes(b"x")
+        sync_avatars(["h0ffmann"], folder, lambda _: png)
+        ok(
+            sorted(p.name for p in folder.glob("*")) == ["h0ffmann.png"],
+            "a write drops avatars of logins no longer listed and a stale extension",
+        )
+    try:
+        sniff(b"<html>")
+        ok(False, "an HTML error page is not saved as an avatar")
+    except MembersError:
+        ok(True, "an HTML error page is not saved as an avatar")
     ok(
         got.count('<article class="about-body" lang="pt-BR">') == 1
         and got.count('<article class="about-body" lang="en">') == 1,
@@ -218,8 +298,8 @@ def self_test():
         "a compound family name",
     )
     ok(
-        'aria-hidden="true">MH</span>' in got and ">RJ</span>" in got,
-        "initials: first and last word",
+        'aria-hidden="true">RJ</span>' in got and 'aria-hidden="true">MH' not in got,
+        "a member with no GitHub login keeps initials (first and last word)",
     )
     ok(
         '<a href="https://orcid.org/0009-0009-1056-7661">ORCID 0009-0009-1056-7661</a>' in got,

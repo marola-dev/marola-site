@@ -30,8 +30,10 @@
   ([format](../site/content/news/README.md)); `scripts/news_build.py` writes them into `news.html`.
 - `site/members.version`: the marola-dev/.github commit whose `MEMBERS.md`, the org's one list of
   members (the Zenodo record's creators), `scripts/members_build.py` (`just members`) writes into
-  `members.html`. A new member is a row there and a bump of this pin here; CI's `--check` fails
-  when the page and the pinned list differ.
+  `members.html`, copying each member's GitHub avatar into `site/static/img/members/` (the page
+  hotlinks nothing). `members.yml` moves the pin to `.github`'s main and rebuilds both every day,
+  as a PR for a person to merge, so a new member or photo needs no change here by hand. CI's
+  `--check` fails when the page or the avatar files differ from the pinned list.
 
 ## The board, beach by beach, and markers
 

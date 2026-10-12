@@ -304,12 +304,13 @@ html:not(:lang(en)) article.about-body:lang(en), html:lang(en) article.about-bod
 .about-body .release-links { margin: 0; font-size: var(--fs-14); color: var(--muted); }
 /* news.html: the next post of the same language, below the previous one */
 article.about-body:lang(pt) + article.about-body:lang(pt), article.about-body:lang(en) + article.about-body:lang(en) { margin-top: 120px; }
-/* members.html: one row per person, initials in a circle (no photo, so no request to another host) */
+/* members.html: one row per person; the GitHub avatar, copied into img/members/, or initials */
 .about-body .members { list-style: none; margin: 0 0 40px; padding: 0; border-top: 1px solid var(--line); }
 .about-body .member { display: grid; grid-template-columns: 48px 1fr; column-gap: 16px; align-items: center;
   margin: 0; padding: 16px 0; border-bottom: 1px solid var(--line); }
 .member-mark { grid-row: 1 / span 3; width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center;
   background: var(--accent-soft); color: var(--accent); font-size: var(--fs-15); font-weight: 600; letter-spacing: var(--tr-15); }
+img.member-mark { display: block; object-fit: cover; border: 1px solid var(--line); }
 .member-name { font-weight: 600; }
 .member-aff, .member-links { font-size: var(--fs-14); line-height: 1.45; letter-spacing: var(--tr-14); color: var(--muted); }
 .member-links { display: flex; flex-wrap: wrap; gap: 4px 16px; font-variant-numeric: tabular-nums; }
