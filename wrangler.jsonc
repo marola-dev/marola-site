@@ -6,6 +6,8 @@
   "name": "marola",
   "compatibility_date": "2026-10-07",
   "main": "worker/contact.js",
+  // keeps /contact's console.error lines in the dashboard (Workers Logs, inside the free plan)
+  "observability": { "enabled": true },
   "workers_dev": true,
   // Attached through the API on 2026-10-07; declared so a deploy keeps it, not just the dashboard.
   "routes": [{ "pattern": "marola.dev", "custom_domain": true }],

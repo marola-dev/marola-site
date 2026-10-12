@@ -45,8 +45,10 @@ export async function contact(request, env, http) {
       headers: gh(`token ${token}`),
       body: JSON.stringify(issue({ name, email, topic, lang, message }))
     });
-    if (!r.ok) return reply(502, 'github');
-  } catch {
+    if (!r.ok) throw new Error('issue: ' + r.status + ' ' + (await r.text().catch(() => '')).slice(0, 200));
+  } catch (e) {
+    // Only GitHub's status and error text, never the visitor's fields, reach the Worker's logs.
+    console.error('contact:', e.message);
     return reply(502, 'github');
   }
   return reply(201);
