@@ -18,12 +18,16 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 import urllib.error
 import urllib.request
+from pathlib import Path
 
 DEFAULT_BASE = "https://marola.dev"
-SCHEMA = 1
+ROOT = Path(__file__).resolve().parent.parent
+# The board schemas the page reads: app.js's SCHEMAS, which the self-test holds this to.
+SCHEMAS = (1, 2)
 # A beach that must exist and must carry water data, per area with a provider. Named rather than
 # "any beach", so a board that silently shrinks to two beaches still fails.
 CANARIES = {"floripa": "Praia do Campeche"}
@@ -38,8 +42,9 @@ def check_board(area: str, day: str, board: dict) -> list[str]:
     """Every invariant that should hold for one published day, as failure strings."""
     bad = []
     where = f"{area}/{day}"
-    if board.get("schema") != SCHEMA:
-        bad.append(f"{where}: schema {board.get('schema')}, the page understands {SCHEMA}")
+    if board.get("schema") not in SCHEMAS:
+        understood = ", ".join(map(str, SCHEMAS))
+        bad.append(f"{where}: schema {board.get('schema')}, the page understands {understood}")
     beaches = board.get("beaches") or []
     if not beaches:
         bad.append(f"{where}: no beaches")
@@ -152,9 +157,21 @@ def self_test() -> int:
     )
 
     ok(
-        any("schema" in m for m in check_board("floripa", "d", {**good, "schema": 2})),
+        check_board("floripa", "d", {**good, "schema": 2}),
+        [],
+        "a schema-2 board (note_codes) passes",
+    )
+    ok(
+        any("schema" in m for m in check_board("floripa", "d", {**good, "schema": 3})),
         True,
         "a schema the page cannot read fails",
+    )
+    app_js = (ROOT / "site" / "static" / "app.js").read_text()
+    page = re.search(r"var SCHEMAS = \[([^\]]*)\]", app_js)
+    ok(
+        tuple(int(n) for n in page.group(1).split(",")) if page else None,
+        SCHEMAS,
+        "SCHEMAS is exactly the list app.js reads",
     )
     ok(
         any("no beaches" in m for m in check_board("x", "d", {"schema": 1})),
