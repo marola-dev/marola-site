@@ -21,6 +21,7 @@ const INDEX = fs.readFileSync(path.join(ROOT, 'site/static/index.html'), 'utf8')
 const ABOUT = fs.readFileSync(path.join(ROOT, 'site/static/about.html'), 'utf8');
 const NEWS = fs.readFileSync(path.join(ROOT, 'site/static/news.html'), 'utf8');
 const SUPPORT = fs.readFileSync(path.join(ROOT, 'site/static/support.html'), 'utf8');
+const MEMBERS = fs.readFileSync(path.join(ROOT, 'site/static/members.html'), 'utf8');
 const I18N_JS = fs.readFileSync(path.join(ROOT, 'site/static/i18n.js'), 'utf8');
 const UI = fs.readFileSync(path.join(ROOT, 'site/static/ui.js'), 'utf8');
 const CATALOGS = Object.fromEntries(['pt-BR', 'en'].map(l => [l, JSON.parse(fs.readFileSync(path.join(ROOT, 'site/i18n', l + '.json'), 'utf8'))]));
@@ -717,10 +718,12 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
 
   // --- donations page and FUNDING.yml (marola-dev/marola#531, ported from marola-dev/marola#588) -
   ok(fs.existsSync(path.join(ROOT, '.github/FUNDING.yml')), '.github/FUNDING.yml exists for the Sponsor button');
-  for (const page of ['index.html', 'about.html', 'support.html', 'news.html']) {
+  for (const page of ['index.html', 'about.html', 'support.html', 'news.html', 'members.html']) {
     const html = fs.readFileSync(path.join(ROOT, 'site/static', page), 'utf8');
     const pageNav = (/<nav class="sitenav"[\s\S]*?<\/nav>/.exec(html) || [''])[0];
     ok(/<a href="support\.html" data-i18n="nav\.donate"[^>]*>apoie<\/a>/.test(pageNav), page + ': Donate is a real link');
+    ok(/<a href="members\.html" data-i18n="nav\.members"[^>]*>membros<\/a>\s*<a href="support\.html"/.test(pageNav),
+      page + ': Members is a real link, right before Donate (#9)');
     ok(/<a href="news\.html" data-i18n="nav\.news"[^>]*>notícias<\/a>/.test(pageNav), page + ': News is a real link');
   }
   ok((NEWS.match(/<script\b[^>]*>/gi) || []).every(t => /^<script src="(i18n|ui)\.js">$/.test(t)),
@@ -728,6 +731,22 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   const newsPt = (NEWS.match(/<article class="about-body" lang="pt-BR">/g) || []).length;
   ok(newsPt >= 1 && newsPt === (NEWS.match(/<article class="about-body" lang="en">/g) || []).length,
     'the news page has one article per language per post');
+  // --- members page, generated from marola-dev/.github's MEMBERS.md (#9) ---------------------
+  ok((MEMBERS.match(/<script\b[^>]*>/gi) || []).every(t => /^<script src="(i18n|ui)\.js">$/.test(t)),
+    'the members page loads no script but the language chrome (i18n.js, ui.js)');
+  const memberRows = lang => (((new RegExp('<article class="about-body" lang="' + lang + '">[\\s\\S]*?</article>')).exec(MEMBERS) || [''])[0]
+    .match(/<li class="member">/g) || []).length;
+  ok(memberRows('pt-BR') > 0 && memberRows('pt-BR') === memberRows('en'),
+    'the members page lists the same people in pt-BR and en', memberRows('pt-BR') + ' / ' + memberRows('en'));
+  ok(!/<img\b/.test(MEMBERS), 'the members page has no photos, so it asks no other host for one');
+  ok((ABOUT.match(/<a href="members\.html">/g) || []).length === 2,
+    'about.html links the members page in both languages, the way in on a phone, where the nav hides it');
+  ok(/@media \(max-width: 640px\)[\s\S]*?\.sitenav > a\[href="members\.html"\] \{ display: none; \}/.test(fs.readFileSync(path.join(ROOT, 'site/static/style.css'), 'utf8')),
+    'the phone nav hides only the members link, so the strip stays one row');
+  ok((MEMBERS.match(/<a [^>]*>/g) || []).every(a => /^<a (class="(li|gh)" )?href="[^"]+"( [^>]*)?>$/.test(a) && !/\son[a-z]+=/.test(a)),
+    'every link on the members page is a plain anchor');
+  ok(/^[0-9a-f]{40}$/.test(fs.readFileSync(path.join(ROOT, 'site/members.version'), 'utf8').trim()),
+    'site/members.version pins a marola-dev/.github commit by its full SHA');
   const SUPPORT = fs.readFileSync(path.join(ROOT, 'site/static/support.html'), 'utf8');
   ok((SUPPORT.match(/<script\b[^>]*>/gi) || []).every(t => /^<script src="(i18n|ui)\.js">$/.test(t)),
     'the support page loads no script but the language chrome (i18n.js, ui.js)');
@@ -754,7 +773,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   // --- the favicon: the docs site's own (marola-dev/marola docs/assets/favicon.svg), copied (#25) ----
   const FAVICON = path.join(ROOT, 'site/static/favicon.svg');
   ok(fs.existsSync(FAVICON) && /^<svg[\s>]/.test(fs.readFileSync(FAVICON, 'utf8')), 'site/static/favicon.svg exists and is an SVG');
-  for (const page of ['index.html', 'about.html', 'support.html', 'news.html', '404.html']) {
+  for (const page of ['index.html', 'about.html', 'support.html', 'news.html', 'members.html', '404.html']) {
     const head = (/<head>[\s\S]*?<\/head>/.exec(fs.readFileSync(path.join(ROOT, 'site/static', page), 'utf8')) || [''])[0];
     // 404.html is served at whatever path was missing, so only a root-absolute href finds the icon there.
     const href = page === '404.html' ? '/favicon.svg' : 'favicon.svg';
@@ -764,10 +783,12 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
     "site.yml's publish allowlist keeps favicon.svg");
   ok(/! -name news\.html\b/.test(fs.readFileSync(path.join(ROOT, '.github/workflows/site.yml'), 'utf8')),
     "site.yml's publish allowlist keeps news.html");
+  ok(/! -name members\.html\b/.test(fs.readFileSync(path.join(ROOT, '.github/workflows/site.yml'), 'utf8')),
+    "site.yml's publish allowlist keeps members.html");
 
   // --- the repo link on every page (#498) ------------------------------------------------------
   const REPO_URL = 'https://github.com/marola-dev/marola';
-  for (const page of ['index.html', 'about.html', 'support.html', 'news.html']) {
+  for (const page of ['index.html', 'about.html', 'support.html', 'news.html', 'members.html']) {
     const html = fs.readFileSync(path.join(ROOT, 'site/static', page), 'utf8');
     const pageNav = (/<nav class="sitenav"[\s\S]*?<\/nav>/.exec(html) || [''])[0];
     ok(pageNav.includes('<a class="gh" href="' + REPO_URL + '"'), page + ': the section nav links the GitHub repo');
@@ -782,7 +803,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   const CSS = fs.readFileSync(path.join(ROOT, 'site/static/style.css'), 'utf8');
   ok(/body\s*\{\s*text-transform:\s*lowercase/.test(CSS), 'the site is lowercase as a house style');
   const exempt = (/\.src,[\s\S]*?\{\s*text-transform:\s*none;?\s*\}/.exec(CSS) || [''])[0];
-  for (const sel of ['.src', '.water', '.list li', '.card h2', '.mapboxgl-popup .head', '.about-body code']) {
+  for (const sel of ['.src', '.water', '.list li', '.card h2', '.mapboxgl-popup .head', '.about-body code', '.member']) {
     ok(exempt.includes(sel), 'keeps its own case: ' + sel);
   }
   ok(/\.bar h1\s*\{\s*text-transform:\s*lowercase/.test(CSS),
@@ -790,7 +811,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(/class="src"/.test(APP), 'app.js tags provider names so Open-Meteo and IMA/SC survive the style');
 
   // --- MIP-0054 task 1: the language toggle, resolveLang, t() and the catalogs -------------------
-  const PAGES = { 'index.html': INDEX, 'about.html': ABOUT, 'support.html': SUPPORT, 'news.html': NEWS };
+  const PAGES = { 'index.html': INDEX, 'about.html': ABOUT, 'support.html': SUPPORT, 'news.html': NEWS, 'members.html': MEMBERS };
   for (const [page, html] of Object.entries(PAGES)) {
     ok(/<html lang="pt-BR">/.test(html), page + ': <html lang="pt-BR"> in the source, so the first paint is Portuguese');
     const pageNav = (/<nav class="sitenav"[\s\S]*?<\/nav>/.exec(html) || [''])[0];
