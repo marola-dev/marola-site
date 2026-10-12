@@ -137,9 +137,11 @@ The contact form's GitHub App (on marola-dev, Issues read and write, installed o
 
 An agent starts work only on an issue carrying `agent-ready`, in this repo (MIP-0070 §5.7).
 
-## Attribution and cost accounting (hard rule)
+## Attribution (hard rule)
 
-Commits carry `Tested:`, `Cost:` and `Co-Authored-By: Claude <noreply@anthropic.com>`.
+Commits carry `Tested:` and `Co-Authored-By: Claude <noreply@anthropic.com>`.
+The invariants block above still names `Cost:`: it is the pinned devkit's (v0.8.3) and drops it
+with the next devkit pin bump (marola-devkit#103).
 **Stricter here:** a commit touching `site/static/**` also carries `MIP: MIP-NNNN` or
 `MIP: none — <reason>`; `just prepush` runs `scripts/mip-trailer-check.sh` over the pushed
 commits (`origin/main..HEAD` when the hook does not pass the pushed refs on).
