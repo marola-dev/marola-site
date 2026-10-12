@@ -6,8 +6,7 @@
     scripts/members_build.py --check          # exit 1 if members.html differs from the pinned MEMBERS.md
     scripts/members_build.py --self-test
 
-MEMBERS.md is the org's single list of members, the same people as the Zenodo record's creators
-(ordered by first commit);
+MEMBERS.md is the org's single list of members (every Zenodo creator, ordered by first commit);
 this repo keeps no copy of it, only the commit it was rendered from.
 """
 
@@ -38,18 +37,18 @@ COMMIT = re.compile(
 COPY = {
     "pt-BR": {
         "title": "membros",
-        "lede": "as pessoas que fazem o marola, as mesmas do"
-        f' <a href="{ZENODO}">registro do marola no Zenodo</a>, na ordem do primeiro commit'
-        " de cada uma nos repositórios do projeto.",
+        "lede": "as pessoas que fazem o marola, na ordem do primeiro commit de cada uma nos"
+        " repositórios do projeto. quem tem ORCID também é autor do"
+        f' <a href="{ZENODO}">registro do marola no Zenodo</a>.',
         "commit": "primeiro commit em {}",
         "foot": f'a lista vem do arquivo <a href="{FILE}"><code>MEMBERS.md</code></a> da organização no GitHub.'
         " para entrar na lista ou corrigir seus dados, abra um pull request nesse arquivo.",
     },
     "en": {
         "title": "Members",
-        "lede": "The people who build marola, the same as the"
-        f' <a href="{ZENODO}">marola record on Zenodo</a> credits, in the order of their first'
-        " commit to the project's repositories.",
+        "lede": "The people who build marola, in the order of their first commit to the"
+        " project's repositories. Those with an ORCID are also creators of the"
+        f' <a href="{ZENODO}">marola record on Zenodo</a>.',
         "commit": "first commit on {}",
         "foot": f'The list comes from the organization\'s <a href="{FILE}"><code>MEMBERS.md</code></a> on GitHub.'
         " To join it or fix your details, open a pull request on that file.",
