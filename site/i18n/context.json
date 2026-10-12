@@ -144,6 +144,7 @@
   "nav.label": "accessible name of the section nav",
   "nav.members": "section nav: link to the members page (the people who build marola)",
   "nav.news": "section nav: link to the news page",
+  "nav.research": "section nav: external link to the progress page of the wave-forecasting research (h0ffmann/ww3-gpu)",
   "nav.soon": "small badge next to a section that has no page yet; shown uppercase by CSS",
   "near.denied": "alert after 'near me' when the visitor refuses the location prompt",
   "near.unsupported": "alert after 'near me' when the browser has no location api",

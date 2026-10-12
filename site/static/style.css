@@ -459,8 +459,8 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   .sitenav .lang button { padding: 0 5px; }
   /* sections with no page yet would take a second row on a phone for nothing to tap */
   .sitenav > span { display: none; }
-  /* a sixth link wraps the strip onto a second row; on a phone the members page is reached from about.html */
-  .sitenav > a[href="members.html"] { display: none; }
+  /* a sixth link wraps the strip onto a second row; on a phone members and research are reached from about.html */
+  .sitenav > a[href="members.html"], .sitenav > a[data-i18n="nav.research"] { display: none; }
   .sitenav .gh .gh-name, .sitenav .gh .gh-star, .sitenav .li .li-name { display: none; }
   .lang-icon { display: none; }
   .bar { padding: 12px 16px; gap: 10px; }

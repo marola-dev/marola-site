@@ -144,6 +144,7 @@
   "nav.label": "sections",
   "nav.members": "members",
   "nav.news": "news",
+  "nav.research": "research",
   "nav.soon": "soon",
   "near.denied": "location not granted, so the list stays ranked by score.",
   "near.unsupported": "no geolocation in this browser.",
