@@ -455,8 +455,8 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
 @media (max-width: 640px) {
   /* the sections, the language and the icons fit one row at 390 px; narrower, the nav takes a second
    * row instead of clipping it (#114 redesigns it for more sections) */
-  .sitenav { flex: none; padding: 4px 12px; gap: 4px 8px; }
-  .sitenav .lang button { padding: 0 6px; }
+  .sitenav { flex: none; padding: 4px 12px; gap: 4px 7px; }
+  .sitenav .lang button { padding: 0 5px; }
   /* sections with no page yet would take a second row on a phone for nothing to tap */
   .sitenav > span { display: none; }
   /* a sixth link wraps the strip onto a second row; on a phone the members page is reached from about.html */
