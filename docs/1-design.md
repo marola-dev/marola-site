@@ -21,7 +21,8 @@
   ([the chat widget](1-design_chat-widget.md)). `site/static/contact.js` posts `contact.html`'s
   form to Web3Forms with the key in `contact-config.js`, empty in the repo and written at deploy from
   the repo variable `WEB3FORMS_ACCESS_KEY` (`scripts/contact_config.sh`); with no key the form says
-  it is not connected and points to a GitHub issue.
+  it is not connected and points to a GitHub issue. What the form asks and why is
+  [`FORM.md`](../FORM.md).
 - `site/static/vendor/`: vendored third-party assets, no build step ([libraries](2-libraries.md)).
 - `site/areas.json`: the areas the boards are built for ([reference](4-reference.md)).
   `site/fixtures/`: the board the test harness (`scripts/site_check.js`) renders, plus a schema

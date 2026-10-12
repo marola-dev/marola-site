@@ -55,6 +55,8 @@ map-load tier, billed above it).
   agent never sets it.
 - `DESIGN.md`: the visual system (tokens, type, components); Inter is self-hosted in
   `site/static/vendor/fonts/`.
+- `FORM.md`: what the contact form collects, where messages go, the provider and its spam and
+  privacy choices; a maintainer decides there and `contact.html` follows it.
 - `.claude/skills/site-frontend/`: the entry point for anything a visitor sees; it orders the other
   frontend skills and settles their conflicts. `ptbr-humanizer/` keeps the Portuguese natural,
   `citizen-science-site/` keeps sources, freshness, limits and the way to contribute on the page,
