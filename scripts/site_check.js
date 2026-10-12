@@ -728,8 +728,8 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
       page + ': Members is a real link, right before Donate (#9)');
     ok(/<a href="contact\.html" data-i18n="nav\.contact"[^>]*>contato<\/a>/.test(pageNav), page + ': Contact is a real link (#119)');
     ok(/<a href="news\.html" data-i18n="nav\.news"[^>]*>notícias<\/a>/.test(pageNav), page + ': News is a real link');
-    ok(/<a href="news\.html" data-i18n="nav\.news"[^>]*>notícias<\/a>\s*<a href="https:\/\/h0ffmann\.github\.io\/ww3-gpu\/andamento\/" data-i18n="nav\.research">pesquisa<\/a>/.test(pageNav),
-      page + ': Research, right after News, links the ww3-gpu progress page');
+    ok(/<a href="news\.html" data-i18n="nav\.news"[^>]*>notícias<\/a>\s*<a href="https:\/\/h0ffmann\.github\.io\/ww3-gpu\/" data-i18n="nav\.research">pesquisa<\/a>/.test(pageNav),
+      page + ': Research, right after News, links the root of the ww3-gpu site');
   }
   ok((NEWS.match(/<script\b[^>]*>/gi) || []).every(t => /^<script src="(i18n|ui)\.js">$/.test(t)),
     'the news page loads no script but the language chrome (i18n.js, ui.js)');
@@ -752,8 +752,8 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
     'about.html links the members page in both languages, the way in on a phone, where the nav hides it');
   ok(/@media \(max-width: 640px\)[\s\S]*?\.sitenav > a\[href="members\.html"\], \.sitenav > a\[data-i18n="nav\.research"\] \{ display: none; \}/.test(fs.readFileSync(path.join(ROOT, 'site/static/style.css'), 'utf8')),
     'the phone nav hides only the members and research links, so the strip stays one row');
-  ok((ABOUT.match(/<a href="https:\/\/h0ffmann\.github\.io\/ww3-gpu\/andamento\/">/g) || []).length === 2,
-    'about.html links the research progress page in both languages, the way in on a phone');
+  ok((ABOUT.match(/<a href="https:\/\/h0ffmann\.github\.io\/ww3-gpu\/">/g) || []).length === 2,
+    'about.html links the research site in both languages, the way in on a phone');
   ok((MEMBERS.match(/<a [^>]*>/g) || []).every(a => /^<a (class="(li|gh)" )?href="[^"]+"( [^>]*)?>$/.test(a) && !/\son[a-z]+=/.test(a)),
     'every link on the members page is a plain anchor');
   ok(/^[0-9a-f]{40}$/.test(fs.readFileSync(path.join(ROOT, 'site/members.version'), 'utf8').trim()),
