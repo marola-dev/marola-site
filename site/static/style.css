@@ -88,6 +88,10 @@ small { font-size: var(--fs-13); letter-spacing: var(--tr-13); }
 .gh-star { display: inline-flex; align-items: center; gap: 4px; padding-left: 8px; border-left: 1px solid var(--line-strong); }
 .gh-star svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linejoin: round; }
 .gh:hover .gh-star svg { fill: currentColor; }
+/* marola's LinkedIn, beside the language toggle; Lucide's old brand glyph, drawn like .ic */
+.sitenav .li { display: inline-flex; align-items: center; gap: 6px; color: var(--ink); text-decoration: none; font-weight: 500; text-transform: none; }
+.sitenav .li:hover { color: var(--accent); }
+.li-mark { width: 14px; height: 14px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
 /* the language toggle pairs with the repo link (MIP-0054 §5.8) */
 .sitenav .lang { margin-left: auto; }
 .lang-icon { width: 14px; height: 14px; margin: 0 4px 0 6px; flex: none; fill: none; stroke: var(--muted); stroke-width: 1.2; }
@@ -240,6 +244,8 @@ button[aria-pressed="true"], button[aria-expanded="true"] {
 /* tight padding, the label never wraps; a phone gets bigger ones further down */
 .footer .fold { min-height: 32px; padding: 0 8px 0 7px; gap: 6px; font-size: var(--fs-13); letter-spacing: var(--tr-13); white-space: nowrap; }
 /* not built yet: reads as a control, muted, and does nothing (no pressed look, no press nudge) */
+.insta.soon, .insta.soon:hover { color: var(--muted); background: var(--bg); border-color: var(--line-strong); cursor: default; }
+.insta.soon .ic { color: var(--muted); }
 .footer .fold.soon, .footer .fold.soon:hover { color: var(--muted); background: var(--bg); border-color: var(--line-strong); cursor: default; }
 .footer .fold.soon:active { transform: none; }
 .footer .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
@@ -262,7 +268,7 @@ button[aria-pressed="true"], button[aria-expanded="true"] {
  * beach names as bare text nodes. */
 body { text-transform: lowercase; }
 .src, .water, .unfit, .mapboxgl-ctrl-attrib,
-.list li, .card h2, .mapboxgl-popup .head, .about-body code, .dir, .flowkey { text-transform: none; }
+.list li, .card h2, .mapboxgl-popup .head, .about-body code, .dir, .flowkey, .member { text-transform: none; }
 .bar h1 { text-transform: lowercase; }
 
 .nojs { padding: 32px; max-width: 65ch; }
@@ -318,6 +324,16 @@ html:not(:lang(en)) article.about-body:lang(en), html:lang(en) article.about-bod
 .about-body .contact-status.err { color: var(--ink); font-weight: 500; }
 .about-body .contact-note { margin: 16px 0 0; font-size: var(--fs-13); letter-spacing: var(--tr-13); color: var(--muted); }
 article.about-body:lang(pt) + article.about-body:lang(pt), article.about-body:lang(en) + article.about-body:lang(en) { margin-top: 120px; }
+/* members.html: one row per person; the GitHub avatar, copied into img/members/, or initials */
+.about-body .members { list-style: none; margin: 0 0 40px; padding: 0; border-top: 1px solid var(--line); }
+.about-body .member { display: grid; grid-template-columns: 48px 1fr; column-gap: 16px; align-items: center;
+  margin: 0; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.member-mark { grid-row: 1 / span 3; width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--accent-soft); color: var(--accent); font-size: var(--fs-15); font-weight: 600; letter-spacing: var(--tr-15); }
+img.member-mark { display: block; object-fit: cover; border: 1px solid var(--line); }
+.member-name { font-weight: 600; }
+.member-aff, .member-links { font-size: var(--fs-14); line-height: 1.45; letter-spacing: var(--tr-14); color: var(--muted); }
+.member-links { display: flex; flex-wrap: wrap; gap: 4px 16px; font-variant-numeric: tabular-nums; }
 /* The empty slot is the width the address will take (0x + 40 hex digits). */
 .addr:empty { display: inline-block; width: 42ch; max-width: 100%; padding: 0 .4rem; vertical-align: middle;
   border: 1px dashed var(--line-strong); border-radius: 6px; }
@@ -437,27 +453,29 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
 #chat-input { flex: 1; min-width: 0; min-height: 36px; padding: 0 12px; border: 1px solid var(--line-strong); border-radius: var(--r-control); font: inherit; font-size: var(--fs-14); letter-spacing: var(--tr-14); }
 
 @media (max-width: 640px) {
-  /* five sections, the language and the repo still fit one row at 390 px; narrower, the nav takes a
-   * second row instead of clipping it (#114 redesigns it for more sections) */
-  .sitenav { flex: none; padding: 4px 16px; gap: 4px 10px; }
+  /* the sections, the language and the icons fit one row at 390 px; narrower, the nav takes a second
+   * row instead of clipping it (#114 redesigns it for more sections) */
+  .sitenav { flex: none; padding: 4px 12px; gap: 4px 8px; }
   .sitenav .lang button { padding: 0 6px; }
   /* sections with no page yet would take a second row on a phone for nothing to tap */
   .sitenav > span { display: none; }
-  .sitenav .gh .gh-name, .sitenav .gh .gh-star { display: none; }
+  /* a sixth link wraps the strip onto a second row; on a phone the members page is reached from about.html */
+  .sitenav > a[href="members.html"] { display: none; }
+  .sitenav .gh .gh-name, .sitenav .gh .gh-star, .sitenav .li .li-name { display: none; }
   .lang-icon { display: none; }
   .bar { padding: 12px 16px; gap: 10px; }
   .bar h1 { font-size: var(--fs-20); letter-spacing: var(--tr-20); }
   .tagline { font-size: var(--fs-13); letter-spacing: var(--tr-13); }
-  /* one row on a phone: the day buttons drop their dates, the three actions keep only their icon
-   * (the label stays for screen readers) */
+  /* one row on a phone: the day buttons drop their dates, the actions and the Instagram pill keep
+   * only their icon (the label stays for screen readers) */
   .controls { margin-left: 0; width: 100%; flex-wrap: nowrap; gap: 6px; }
   .controls select { flex: none; min-width: 0; padding: 0 2px 0 8px; }
   .controls .segmented { flex: 1 1 auto; min-width: 0; }
   .controls .segmented button { flex: 1; min-width: 0; padding: 0 6px; overflow: hidden; }
   .controls .segmented button small { display: none; }
-  .controls > button { flex: none; width: 36px; padding: 0; }
-  .controls > button .ic { width: 18px; height: 18px; }
-  .controls > button > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .controls > button, .controls > .insta { flex: none; width: 36px; padding: 0; }
+  .controls > button .ic, .controls > .insta .ic { width: 18px; height: 18px; }
+  .controls > button > span, .controls > .insta > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .hourbar { padding: 8px 16px; gap: 6px 12px; }
   .hourbar label { min-width: 0; flex: none; }
   .hourbar input[type=range] { flex: 1 1 0; min-width: 6rem; max-width: none; }

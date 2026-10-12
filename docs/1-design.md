@@ -4,7 +4,8 @@
 
 - `site/static/`: `index.html` (the map), `about.html`, `support.html` (behind "apoie"/Donate),
   `news.html` (the posts, newest first, one `article[lang]` per language each, generated from
-  `site/content/news/`), `contact.html` (behind "contato"/Contact: the form, #119),
+  `site/content/news/`), `members.html` (who builds marola, generated from marola-dev/.github's
+  `MEMBERS.md`), `contact.html` (behind "contato"/Contact: the form, #119),
   `404.html` (forwards old `marola.dev/docs/*` links to `docs.marola.dev`), `favicon.svg`, and
   `img/umbrella{,.pt-BR}.svg`, the umbrella README's repo diagram that `about.html` shows (copied
   from marola-dev/marola `docs/img/`; recopy it when that one changes).
@@ -30,6 +31,12 @@
   key); `scripts/i18n_bundle.py` checks and bundles them ([development](3-development.md)).
 - `site/content/news/`: the news posts, one Markdown file per post and language
   ([format](../site/content/news/README.md)); `scripts/news_build.py` writes them into `news.html`.
+- `site/members.version`: the marola-dev/.github commit whose `MEMBERS.md`, the org's one list of
+  members (the Zenodo record's creators), `scripts/members_build.py` (`just members`) writes into
+  `members.html`, copying each member's GitHub avatar into `site/static/img/members/` (the page
+  hotlinks nothing). `members.yml` moves the pin to `.github`'s main and rebuilds both every day,
+  as a PR for a person to merge, so a new member or photo needs no change here by hand. CI's
+  `--check` fails when the page or the avatar files differ from the pinned list.
 
 ## The board, beach by beach, and markers
 
