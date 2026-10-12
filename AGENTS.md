@@ -24,8 +24,8 @@ boards (MIP-0005), with no server and no LLM, over a Mapbox base map (free up to
 map-load tier, billed above it).
 
 - `site/static/`: the page (`index.html`, `about.html`, `support.html` behind Donate, `news.html`,
-  `members.html`, `contact.html` and `contact.js` (the contact form, posted to Web3Forms with
-  `contact-config.js`'s key), `app.js`, `ui.js`, `style.css`, `flow.js` (the WebGL wind and wave layer),
+  `members.html`, `contact.html` and `contact.js` (the contact form, posted to the Worker's
+  `/contact`), `app.js`, `ui.js`, `style.css`, `flow.js` (the WebGL wind and wave layer),
   `mapbox-config.js`, the chat widget, vendored Mapbox GL JS (its CSP build), Inter and the wave
   loop under `vendor/`, the about page's repo diagram under `img/`) and `404.html`, which forwards
   the old `marola.dev/docs/*` links to `docs.marola.dev`.
@@ -41,12 +41,14 @@ map-load tier, billed above it).
 - `site/areas.json`: the areas the boards are built for. `site/fixtures/board.json`: the board the
   harness renders. `site/board.schema.json`: the board contract, vendored from the pinned image.
 - `scripts/`: `site_check.js` (app.js and flow.js in a stub DOM and Mapbox GL), `mapbox_config.sh`
-  (the public Mapbox token into `mapbox-config.js` at deploy), `contact_config.sh` (the Web3Forms
-  key into `contact-config.js`), `redirect_check.js` (the 404 forwarder), `board-schema.sh` (the image pin and its schema), `stamp_site_version.sh`,
+  (the public Mapbox token into `mapbox-config.js` at deploy), `worker_check.mjs` (the
+  Worker's `/contact` against a stub GitHub), `redirect_check.js` (the 404 forwarder), `board-schema.sh` (the image pin and its schema), `stamp_site_version.sh`,
   `site_live_check.py` (what marola.dev actually serves), `site-data-push.sh` (the retrying push
   every `site-data` writer uses), `mip-trailer-check.sh`, and the Brazilian proxy's
   `br-proxy.sh` (the runner's router), `br-proxy-preflight.sh` (the flight check) and
   `br-proxy-node.sh` (`just br-proxy-node`).
+- `worker/contact.js`: the Worker's one script, `POST /contact` → an issue in `marola-dev/contato`
+  (#119); `wrangler.jsonc` routes only that path to it.
 - `ops/br-proxy/`: the Brazilian proxy pool that INEA and INEMA, which answer only Brazilian
   addresses, are reached through (#4): a volunteer node's compose file and allowlist, and
   [`JOIN.md`](ops/br-proxy/JOIN.md). `site.yml`'s flight check fails closed without a healthy
@@ -114,8 +116,9 @@ repo boundary is an umbrella MIP.
 ## Cost & deployment safety (hard rule)
 
 As in the umbrella. `site.yml` deploys to GitHub Pages (free) on a schedule and on `main`, and the
-same files to the Cloudflare Worker `marola` (free static assets), which serves marola.dev
-(MIP-0078); an agent does not
+same files to the Cloudflare Worker `marola` (free static assets, plus `worker/contact.js` for the
+contact form's `/contact`, inside the Workers free tier), which serves marola.dev (MIP-0078); an
+agent does not
 trigger a deploy by hand (`just site-deploy` is denied in `.claude/settings.json`).
 
 The base map is Mapbox's, billed per map load above its free tier: the account, the token and
@@ -123,6 +126,8 @@ any billing setting are a human's. So are the Tailscale tailnet, its OAuth clien
 node's auth key (`ops/br-proxy/JOIN.md`). The token is a public `pk.` token restricted to marola.dev's
 URLs, kept in the repo variable (or secret) `MAPBOX_PUBLIC_TOKEN` and written into
 `mapbox-config.js` only at deploy; never commit one, and never an `sk.` token anywhere in the page.
+The contact form's GitHub App (on marola-dev, Issues read and write, installed only on the private
+`marola-dev/contato`) and its three secrets on the Worker are a human's too; never commit its key.
 
 ## Issue tracking (hard rule)
 
@@ -153,8 +158,7 @@ The phase list is the umbrella's `docs/PHASES.md`. Site work serves the current 
 
 Plain JavaScript, no framework and no build step; the page keeps `script-src 'self'`, and its one
 third-party origins are Mapbox for the base map (style, tiles, fonts, the map-load count) and NASA
-GIBS for the satellite layers (public, keyless tiles, fetched only when a visitor picks one), plus
-Web3Forms on `contact.html` alone, when a visitor sends the form. A visible
+GIBS for the satellite layers (public, keyless tiles, fetched only when a visitor picks one). A visible
 change goes through the `site-frontend` skill (which names the others), `node scripts/site_check.js`
 and before/after screenshots. Shell: `set -euo pipefail`, shellcheck-clean. Python: ruff. Comments
 only for why, a trap, or a pointer, as the umbrella's AGENTS.md spells out.

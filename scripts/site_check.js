@@ -778,33 +778,32 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   }
 
   // --- the contact page (#119) -----------------------------------------------------------------
-  ok((CONTACT.match(/<script\b[^>]*>/gi) || []).map(t => (/src="([^"]+)"/.exec(t) || [])[1]).join(' ') === 'i18n.js ui.js contact-config.js contact.js',
-    'the contact page loads the language chrome, then contact-config.js and contact.js, and nothing else');
+  ok((CONTACT.match(/<script\b[^>]*>/gi) || []).map(t => (/src="([^"]+)"/.exec(t) || [])[1]).join(' ') === 'i18n.js ui.js contact.js',
+    'the contact page loads the language chrome, then contact.js, and nothing else');
   const contactCsp = (/http-equiv="Content-Security-Policy" content="([^"]+)"/.exec(CONTACT) || [])[1] || '';
-  ok(/connect-src https:\/\/api\.web3forms\.com;/.test(contactCsp) && /form-action 'none'/.test(contactCsp) && !/script-src/.test(contactCsp),
-    "contact.html's CSP lets it reach Web3Forms and nothing else, and no form posts by navigation", contactCsp);
-  ok(/window\.MAROLA_CONTACT = \{ accessKey: "" \};/.test(fs.readFileSync(path.join(ROOT, 'site/static/contact-config.js'), 'utf8')),
-    'contact-config.js is committed with an empty key; site.yml fills it at deploy');
-  ok(/WEB3FORMS_ACCESS_KEY: \$\{\{ vars\.WEB3FORMS_ACCESS_KEY \}\}/.test(SITE_YML) && /run: scripts\/contact_config\.sh site\/dist/.test(SITE_YML) &&
-    ['contact\\.html', 'contact\\.js', 'contact-config\\.js'].every(f => new RegExp('! -name ' + f + '\\b').test(SITE_YML)),
-    'site.yml writes contact-config.js from WEB3FORMS_ACCESS_KEY and publishes the contact page');
+  ok(!/connect-src/.test(contactCsp) && /form-action 'none'/.test(contactCsp) && !/script-src/.test(contactCsp),
+    "contact.html's CSP keeps every request same-origin (the form posts to /contact) and no form posts by navigation", contactCsp);
+  const WRANGLER = fs.readFileSync(path.join(ROOT, 'wrangler.jsonc'), 'utf8');
+  ok(/"main": "worker\/contact\.js"/.test(WRANGLER) && /"run_worker_first": \["\/contact"\]/.test(WRANGLER) && /"not_found_handling": "404-page"/.test(WRANGLER),
+    'wrangler.jsonc runs worker/contact.js for /contact alone; every other path stays an asset or the 404 page');
+  ok(['contact\\.html', 'contact\\.js'].every(f => new RegExp('! -name ' + f + '\\b').test(SITE_YML)) && !/WEB3FORMS|contact-config/.test(SITE_YML),
+    "site.yml publishes the contact page and needs no key for it: the App's secrets live in Cloudflare");
   ok((ABOUT.match(/<a class="cta" href="contact\.html">/g) || []).length === 2, "about.html's how-to-help ends on a button to the contact page, in both languages");
   for (const id of ['name', 'email', 'topic', 'message']) {
     ok(CONTACT.includes('<label for="contact-' + id + '"') && CONTACT.includes('id="contact-' + id + '"'), 'contact.html: the ' + id + ' field has its label');
   }
   ok(/id="contact-status"[^>]*aria-live="polite"/.test(CONTACT), 'contact.html: the send status is announced');
-  function runContact(key, reply) {
+  function runContact(reply) {
     const els = {}, sent = [];
-    const el = id => els[id] || (els[id] = { id, value: '', hidden: id === 'contact-off', textContent: '', listeners: {},
+    const el = id => els[id] || (els[id] = { id, value: '', textContent: '', listeners: {},
       classList: { on: false, toggle(_c, v) { this.on = v; } }, addEventListener(t, fn) { this.listeners[t] = fn; } });
     const form = el('contact-form'), send = { disabled: false }, bot = { checked: false };
     form.querySelector = () => send;
     form.elements = { namedItem: n => n === 'botcheck' ? bot : null };
     form.reset = () => { ['name', 'email', 'message'].forEach(f => { el('contact-' + f).value = ''; }); };
-    Object.assign(el('contact-topic'), { value: 'data', selectedIndex: 0, options: [{ text: 'dado errado ou praia faltando' }] });
+    el('contact-topic').value = 'data';
     const sandbox = {
       document: { getElementById: el },
-      MAROLA_CONTACT: { accessKey: key },
       marolaI18n: { t: k => '[' + k + ']', lang: () => 'pt-BR', onLang() {} },
       fetch: (url, init) => { sent.push({ url, body: JSON.parse(init.body) }); return Promise.resolve(reply); }
     };
@@ -815,29 +814,27 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
     return { el, send, bot, sent, submit };
   }
   const tick = () => new Promise(r => setTimeout(r, 0));
-  const KEY = '0f1e2d3c-4b5a-6978-8a9b-acbdcedf0123';
-  const off = runContact('');
-  ok(off.send.disabled && off.el('contact-off').hidden === false && off.submit() && off.sent.length === 0,
-    'contact.js with no key: the button is disabled, the page says so, and nothing is sent');
-  const accepted = { ok: true, status: 200, json: () => Promise.resolve({ success: true }) };
-  const on = runContact(KEY, accepted);
+  const accepted = { ok: true, status: 201, json: () => Promise.resolve({ success: true }) };
+  const on = runContact(accepted);
   on.el('contact-email').value = ' ana@example.org '; on.el('contact-message').value = 'oi';
   ok(on.submit() && on.sent.length === 1 && on.send.disabled && on.el('contact-status').textContent === '[contact.sending]',
     'contact.js sends once, disables the button and says it is sending');
   const body = (on.sent[0] || {}).body || {};
-  ok((on.sent[0] || {}).url === 'https://api.web3forms.com/submit' && body.access_key === KEY && body.email === 'ana@example.org' &&
-    body.message === 'oi' && body.topic === 'data' && body.subject === 'marola.dev: dado errado ou praia faltando',
-    'contact.js posts the key, the trimmed email, the message and a subject naming the topic to Web3Forms', JSON.stringify(body));
+  ok((on.sent[0] || {}).url === '/contact' && body.email === 'ana@example.org' && body.message === 'oi' && body.topic === 'data' && body.lang === 'pt-BR' && !('access_key' in body),
+    'contact.js posts the trimmed email, the message, the topic and the language to the same-origin /contact', JSON.stringify(body));
   await tick();
   ok(on.el('contact-status').textContent === '[contact.sent]' && !on.send.disabled && on.el('contact-message').value === '',
     'contact.js: an accepted message clears the form and says it was sent');
-  const refusedMsg = runContact(KEY, { ok: false, status: 400, json: () => Promise.resolve({ success: false }) });
-  refusedMsg.el('contact-message').value = 'kept'; refusedMsg.submit();
-  await tick();
-  ok(refusedMsg.el('contact-status').textContent === '[contact.error]' && refusedMsg.el('contact-status').classList.on &&
-    refusedMsg.el('contact-message').value === 'kept' && !refusedMsg.send.disabled,
-    'contact.js: a refused message keeps what the visitor wrote and says it failed');
-  const botRun = runContact(KEY, accepted);
+  for (const [what, reply] of [['a 503 (no App secrets yet)', { ok: false, status: 503, json: () => Promise.resolve({ success: false, error: 'unconfigured' }) }],
+    ['a 404 page (the GitHub Pages fallback has no /contact)', { ok: false, status: 404, json: () => Promise.reject(new SyntaxError('html')) }]]) {
+    const failed = runContact(reply);
+    failed.el('contact-message').value = 'kept'; failed.submit();
+    await tick(); await tick();
+    ok(failed.el('contact-status').textContent === '[contact.error]' && failed.el('contact-status').classList.on &&
+      failed.el('contact-message').value === 'kept' && !failed.send.disabled,
+      'contact.js: ' + what + ' keeps what the visitor wrote and says it failed');
+  }
+  const botRun = runContact(accepted);
   botRun.bot.checked = true; botRun.submit();
   ok(botRun.sent.length === 0 && botRun.el('contact-status').textContent === '[contact.sent]', 'contact.js: a filled honeypot sends nothing');
 
@@ -971,7 +968,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(probe.t('footer.generated', { when: 'w', area: 'a', day: 'd', n: 2, sources: 's' }).includes('· 2 praias ·'),
     'the real catalog pluralises footer.generated');
   // Lowercase house style in the catalogs; these are names marola did not choose.
-  const CASE_OK = ['°C', 'UV', 'km/h', 'mL', 'PRÓPRIA', 'IMPRÓPRIA', 'GitHub', 'Instagram', 'LinkedIn', 'Open-Meteo', 'IMA/SC', 'OpenStreetMap', 'Mapbox', 'NASA', 'VIIRS', 'MUR', 'El Niño', 'La Niña', 'Niño', 'JavaScript', 'Web3Forms'];
+  const CASE_OK = ['°C', 'UV', 'km/h', 'mL', 'PRÓPRIA', 'IMPRÓPRIA', 'GitHub', 'Instagram', 'LinkedIn', 'Open-Meteo', 'IMA/SC', 'OpenStreetMap', 'Mapbox', 'NASA', 'VIIRS', 'MUR', 'El Niño', 'La Niña', 'Niño', 'JavaScript'];
   for (const [lang, cat] of Object.entries(CATALOGS)) {
     const shouty = Object.entries(cat).filter(([k, v]) => {
       if (/^dir\./.test(k)) return !/^[A-Z]{1,2}$/.test(v); // compass abbreviations, shown uppercase

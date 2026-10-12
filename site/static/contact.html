@@ -6,7 +6,7 @@
   <title data-i18n="title.contact">fale com o marola</title>
   <meta name="description" content="Fale com o marola: dúvidas, dados errados, praias que faltam, parcerias e imprensa.">
   <meta name="theme-color" content="#ffffff">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https:; connect-src https://api.web3forms.com; form-action 'none'; object-src 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https:; form-action 'none'; object-src 'none'">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -49,7 +49,7 @@
     <article class="about-body" lang="pt-BR">
       <h2>fale com a gente</h2>
       <p>dúvida, uma praia que falta, uma nota que parece errada, uma parceria ou uma pauta: escreva aqui.
-      a mensagem chega por e-mail a quem cuida do marola, e a resposta vai para o endereço que você deixar.</p>
+      a mensagem chega a quem cuida do marola, e a resposta vai para o e-mail que você deixar.</p>
       <p>prefere conversar em público? abra uma <a href="https://github.com/marola-dev/marola/issues">issue no GitHub</a>,
       em português ou em inglês.</p>
     </article>
@@ -57,13 +57,13 @@
     <article class="about-body" lang="en">
       <h2>Get in touch</h2>
       <p>A question, a missing beach, a score that looks wrong, a partnership or a story: write here.
-      The message reaches the people who run marola by email, and the answer goes to the address you leave.</p>
+      The message reaches the people who run marola, and the answer goes to the email you leave.</p>
       <p>Rather talk in public? Open an <a href="https://github.com/marola-dev/marola/issues">issue on GitHub</a>,
       in Portuguese or English.</p>
     </article>
 
     <div class="about-body">
-      <!-- contact.js posts this to Web3Forms with the key site.yml writes into contact-config.js (#119). -->
+      <!-- contact.js posts this to /contact, the Worker route that opens an issue in marola-dev/contato (#119). -->
       <form id="contact-form" class="contact">
         <label for="contact-name" data-i18n="contact.name">nome (opcional)</label>
         <input id="contact-name" name="name" type="text" autocomplete="name" maxlength="120">
@@ -84,8 +84,7 @@
           <button type="submit" data-i18n="contact.send">enviar</button>
           <p id="contact-status" class="contact-status" role="status" aria-live="polite"></p>
         </div>
-        <p id="contact-off" class="contact-note" hidden><span data-i18n="contact.off">o formulário ainda não está ligado. por enquanto, escreva numa</span> <a href="https://github.com/marola-dev/marola/issues" data-i18n="contact.off_link">issue no GitHub</a></p>
-        <p class="contact-note" data-i18n="contact.privacy">o envio passa pelo Web3Forms, que repassa a mensagem por e-mail e não guarda uma cópia. seu e-mail serve só para a resposta.</p>
+        <p class="contact-note" data-i18n="contact.privacy">a mensagem vira uma issue num repositório privado do marola no GitHub, que só a equipe lê. seu e-mail serve só para a resposta.</p>
       </form>
       <noscript><p class="contact-note" data-i18n="contact.noscript">o formulário precisa de JavaScript. sem ele, escreva numa issue no GitHub.</p></noscript>
     </div>
@@ -96,7 +95,6 @@
   </footer>
   <script src="i18n.js"></script>
   <script src="ui.js"></script>
-  <script src="contact-config.js"></script>
   <script src="contact.js"></script>
 </body>
 </html>

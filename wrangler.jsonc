@@ -1,13 +1,19 @@
-// Cloudflare Workers static assets, no script: site.yml deploys site/dist here, and this Worker
-// serves marola.dev; GitHub Pages still gets the same deploy as a fallback (MIP-0078).
+// Cloudflare Workers static assets: site.yml deploys site/dist here, and this Worker serves
+// marola.dev; GitHub Pages still gets the same deploy as a fallback (MIP-0078). The one script is
+// the contact form's POST /contact (worker/contact.js, #119); its GitHub App secrets live in
+// Cloudflare (GITHUB_APP_ID, GITHUB_APP_INSTALLATION_ID, GITHUB_APP_PRIVATE_KEY), never here.
 {
   "name": "marola",
   "compatibility_date": "2026-10-07",
+  "main": "worker/contact.js",
   "workers_dev": true,
   // Attached through the API on 2026-10-07; declared so a deploy keeps it, not just the dashboard.
   "routes": [{ "pattern": "marola.dev", "custom_domain": true }],
   "assets": {
     "directory": "./site/dist",
+    "binding": "ASSETS",
+    // Only /contact reaches the script; every other path is an asset or the 404 page, as before.
+    "run_worker_first": ["/contact"],
     // Without it a missing board would not be a 404, and app.js's "run site-build" hint needs one.
     "not_found_handling": "404-page"
   }

@@ -16,7 +16,7 @@ for page in "$index" "$dist/about.html" "$dist/support.html" "$dist/news.html" "
     -e "s#(href=\"style\.css)\"#\\1?v=${version}\"#" \
     -e "s#(href=\"vendor/mapbox-gl\.css)\"#\\1?v=${version}\"#" \
     -e "s#(src=\"vendor/mapbox-gl-csp\.js)\"#\\1?v=${version}\"#" \
-    -e "s#(src=\"(app|ui|i18n|flow|mapbox-config|contact|contact-config)\.js)\"#\\1?v=${version}\"#" \
+    -e "s#(src=\"(app|ui|i18n|flow|mapbox-config|contact)\.js)\"#\\1?v=${version}\"#" \
     "$page"
   echo "stamped $page with ?v=$version"
 done

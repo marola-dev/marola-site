@@ -19,9 +19,12 @@
   }`); `site.yml` rewrites it at deploy from `MAPBOX_PUBLIC_TOKEN`/`MAPBOX_STYLE`
   (`scripts/mapbox_config.sh`). `site/static/chatbot-config.js` and `chat.js`: the chat widget
   ([the chat widget](1-design_chat-widget.md)). `site/static/contact.js` posts `contact.html`'s
-  form to Web3Forms with the key in `contact-config.js`, empty in the repo and written at deploy from
-  the repo variable `WEB3FORMS_ACCESS_KEY` (`scripts/contact_config.sh`); with no key the form says
-  it is not connected and points to a GitHub issue. What the form asks and why is
+  form to `/contact` on the same origin, which the Cloudflare Worker sends to `worker/contact.js`
+  (`wrangler.jsonc`'s `run_worker_first`): it opens an issue in the private repo `marola-dev/contato`
+  as the marola-dev GitHub App, whose secrets (`GITHUB_APP_ID`, `GITHUB_APP_INSTALLATION_ID`,
+  `GITHUB_APP_PRIVATE_KEY`) live in Cloudflare. Without them, or on the GitHub Pages fallback, the
+  form says it could not send and points to a GitHub issue. `scripts/worker_check.mjs` tests the
+  route against a stub GitHub. What the form asks and why is
   [`FORM.md`](../FORM.md).
 - `site/static/vendor/`: vendored third-party assets, no build step ([libraries](2-libraries.md)).
 - `site/areas.json`: the areas the boards are built for ([reference](4-reference.md)).
@@ -58,7 +61,7 @@ the area, in the same three bands (proper, improper, unclassified).
 `index.html`'s page keeps `default-src 'self'; img-src 'self' data: blob: https:; connect-src
 'self' https:; worker-src 'self'; object-src 'none'` (`about.html`/`support.html`/`news.html`, which carry no
 map, drop `connect-src`/`worker-src`: `default-src 'self'; img-src 'self' https:; object-src
-'none'`). `contact.html` adds `connect-src https://api.web3forms.com` for its form's `fetch` and
+'none'`). `contact.html` adds
 `form-action 'none'`, so the form can only leave through `contact.js`. `script-src` has no override, so it inherits `default-src 'self'`: every script is
 same-origin, including Mapbox GL JS's own worker (`vendor/mapbox-gl-csp.js` is the CSP build,
 `vendor/mapbox-gl-csp-worker.js` loads from `vendor/`, not a `blob:`, which the non-CSP build
@@ -71,10 +74,6 @@ The page's only two third-party origins ([`AGENTS.md`](../AGENTS.md)'s Code styl
 - **NASA GIBS**: the four satellite raster layers (clouds, sea-surface temperature, anomaly,
   El Niño), free and keyless, fetched only once a visitor picks one of those layers
   (`app.js`'s `renderRaster`).
-
-`contact.html` alone also talks to **Web3Forms** (`api.web3forms.com`), and only when a visitor
-sends the form: it emails the message on and keeps no copy (its FAQ). The key is public by design;
-it only lets someone send mail to marola's inbox.
 
 `img-src … https:` and `blob:` are how Mapbox GL decodes map imagery; `connect-src … https:` lets
 the page reach Mapbox's tile/style/event endpoints and, when set, the chat widget's own endpoint
