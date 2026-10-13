@@ -44,7 +44,6 @@ jobs:
           scripts/members_build.py: the page and the avatars in img/members/ follow MEMBERS.md.
 
           Tested: scripts/members_build.py (members.yml)
-          Cost: n/a (automation)
           MIP: none — a data refresh from MEMBERS.md
           EOF
           git push -f origin "$branch"
