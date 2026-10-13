@@ -26,7 +26,6 @@
       "Bash(uprd:*)",
       "Bash(uprds:*)",
       "Bash(stack:*)",
-      "Bash(cost-split:*)",
       "Bash(node --check site/static/app.js)",
       "Bash(node scripts/site_check.js*)",
       "Bash(node scripts/redirect_check.js)",
