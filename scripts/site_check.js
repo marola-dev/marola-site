@@ -21,6 +21,7 @@ const INDEX = fs.readFileSync(path.join(ROOT, 'site/static/index.html'), 'utf8')
 const ABOUT = fs.readFileSync(path.join(ROOT, 'site/static/about.html'), 'utf8');
 const NEWS = fs.readFileSync(path.join(ROOT, 'site/static/news.html'), 'utf8');
 const SUPPORT = fs.readFileSync(path.join(ROOT, 'site/static/support.html'), 'utf8');
+const MEMBERS = fs.readFileSync(path.join(ROOT, 'site/static/members.html'), 'utf8');
 const I18N_JS = fs.readFileSync(path.join(ROOT, 'site/static/i18n.js'), 'utf8');
 const UI = fs.readFileSync(path.join(ROOT, 'site/static/ui.js'), 'utf8');
 const CATALOGS = Object.fromEntries(['pt-BR', 'en'].map(l => [l, JSON.parse(fs.readFileSync(path.join(ROOT, 'site/i18n', l + '.json'), 'utf8'))]));
@@ -110,11 +111,12 @@ class El {
   fire(type, ev) { (this.listeners[type] || []).forEach(fn => fn(Object.assign({ stopPropagation() {}, preventDefault() {} }, ev))); }
   setAttribute(k, v) { this.attrs[k] = String(v); }
   getAttribute(k) { return this.attrs[k]; }
+  removeAttribute(k) { delete this.attrs[k]; if (k === 'href') delete this.href; }
   querySelector() { return new El('anon'); }
   querySelectorAll(sel) { return this.found[sel] || []; }
   closest() { return this; }
 }
-const IDS = ['area', 'days', 'near', 'sound', 'toggle-list', 'hourbar', 'hour', 'hour-label', 'list', 'card', 'footer', 'status', 'flow', 'flowkeys', 'map-note', 'map'];
+const IDS = ['area', 'insta', 'days', 'near', 'sound', 'toggle-list', 'hourbar', 'hour', 'hour-label', 'list', 'card', 'footer', 'status', 'flow', 'flowkeys', 'map-note', 'map'];
 // #flow's layer buttons, the beaches toggle and their keys, as index.html has them.
 const LAYER_KEYS = ['wind', 'waves', 'water', 'clouds', 'sst', 'anomaly', 'elnino'];
 function flowPanel(flow, keys) {
@@ -229,11 +231,13 @@ function stubStorage(sandbox, store, throws) {
 async function runPage(board, opts) {
   opts = opts || {};
   const els = {}; IDS.forEach(id => { els[id] = new El(id); });
+  const insta = new El('insta-handle'); els.insta.querySelector = () => insta;
+  const area = opts.area || 'fixture';
   const files = {
-    'data/areas.json': { areas: [{ id: 'fixture', name: 'Fixture Bay', lat: -27.6, lon: -48.5, tiles: 'https://tiles.example/{z}/{x}/{y}.png', tiles_attribution: 'test' }] },
-    'data/fixture/latest.json': { days: [{ day: board.day, file: board.day + '.json' }] }
+    'data/areas.json': { areas: [{ id: area, name: 'Fixture Bay', lat: -27.6, lon: -48.5, tiles: 'https://tiles.example/{z}/{x}/{y}.png', tiles_attribution: 'test' }] },
+    ['data/' + area + '/latest.json']: { days: [{ day: board.day, file: board.day + '.json' }] }
   };
-  if (!opts.noBoard) files['data/fixture/' + board.day + '.json'] = board;
+  if (!opts.noBoard) files['data/' + area + '/' + board.day + '.json'] = board;
   const M = makeMapbox();
   if (opts.styleStatus) M.styleStatus = opts.styleStatus;
   flowPanel(els.flow, els.flowkeys);
@@ -629,6 +633,16 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
     'the trails toggle hides the coastal trails layer, leaving the beaches toggle alone');
   first.els.flow.fire('click', { target: Object.assign(trailsBtn, { closest() { return this; } }) });
   ok(fmap.getLayer('trails').layout.visibility === 'visible', 'and shows it again');
+  ok(first.els.insta.hidden === true, 'an area with no Instagram account shows no pill');
+  for (const [id, handle] of [['floripa', 'fl.marola'], ['rio', 'rj.marola']]) {
+    const city = await runPage(BOARD, { area: id });
+    const pill = city.els.insta;
+    ok(!pill.hidden && pill.href === 'https://www.instagram.com/' + handle + '/' && pill.querySelector().textContent === '@' + handle &&
+      pill.attrs['aria-label'] === '@' + handle + ' no Instagram', id + "'s pill links @" + handle, JSON.stringify([pill.hidden, pill.href, pill.attrs]));
+  }
+  const ba = (await runPage(BOARD, { area: 'salvador' })).els.insta;
+  ok(!ba.hidden && ba.href === undefined && ba.attrs['aria-disabled'] === 'true' && ba.classList.contains('soon') && ba.querySelector().textContent === 'em breve',
+    "salvador's pill says em breve and links nowhere", JSON.stringify([ba.hidden, ba.href, ba.attrs]));
   const layered = await runPage(BOARD, { search: '?layer=waves' });
   ok(layered.map.layers.find(l => l.layer.id === 'marola-flow').layer.kind() === 'waves', '?layer=waves opens on the waves layer');
   const watered = await runPage(BOARD, { search: '?layer=water' });
@@ -704,10 +718,12 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
 
   // --- donations page and FUNDING.yml (marola-dev/marola#531, ported from marola-dev/marola#588) -
   ok(fs.existsSync(path.join(ROOT, '.github/FUNDING.yml')), '.github/FUNDING.yml exists for the Sponsor button');
-  for (const page of ['index.html', 'about.html', 'support.html', 'news.html']) {
+  for (const page of ['index.html', 'about.html', 'support.html', 'news.html', 'members.html']) {
     const html = fs.readFileSync(path.join(ROOT, 'site/static', page), 'utf8');
     const pageNav = (/<nav class="sitenav"[\s\S]*?<\/nav>/.exec(html) || [''])[0];
     ok(/<a href="support\.html" data-i18n="nav\.donate"[^>]*>apoie<\/a>/.test(pageNav), page + ': Donate is a real link');
+    ok(/<a href="members\.html" data-i18n="nav\.members"[^>]*>membros<\/a>\s*<a href="support\.html"/.test(pageNav),
+      page + ': Members is a real link, right before Donate (#9)');
     ok(/<a href="news\.html" data-i18n="nav\.news"[^>]*>notícias<\/a>/.test(pageNav), page + ': News is a real link');
   }
   ok((NEWS.match(/<script\b[^>]*>/gi) || []).every(t => /^<script src="(i18n|ui)\.js">$/.test(t)),
@@ -715,6 +731,26 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   const newsPt = (NEWS.match(/<article class="about-body" lang="pt-BR">/g) || []).length;
   ok(newsPt >= 1 && newsPt === (NEWS.match(/<article class="about-body" lang="en">/g) || []).length,
     'the news page has one article per language per post');
+  // --- members page, generated from marola-dev/.github's MEMBERS.md (#9) ---------------------
+  ok((MEMBERS.match(/<script\b[^>]*>/gi) || []).every(t => /^<script src="(i18n|ui)\.js">$/.test(t)),
+    'the members page loads no script but the language chrome (i18n.js, ui.js)');
+  const memberRows = lang => (((new RegExp('<article class="about-body" lang="' + lang + '">[\\s\\S]*?</article>')).exec(MEMBERS) || [''])[0]
+    .match(/<li class="member">/g) || []).length;
+  ok(memberRows('pt-BR') > 0 && memberRows('pt-BR') === memberRows('en'),
+    'the members page lists the same people in pt-BR and en', memberRows('pt-BR') + ' / ' + memberRows('en'));
+  const avatars = MEMBERS.match(/<img [^>]*>/g) || [];
+  ok(avatars.length > 0 && avatars.every(t => {
+    const src = (/ src="([^"]+)"/.exec(t) || [])[1] || '';
+    return /^img\/members\/[A-Za-z0-9-]+\.(png|jpg)$/.test(src) && fs.existsSync(path.join(ROOT, 'site/static', src));
+  }), 'every avatar on the members page is a file in img/members/, so the visitor asks GitHub for nothing');
+  ok((ABOUT.match(/<a href="members\.html">/g) || []).length === 2,
+    'about.html links the members page in both languages, the way in on a phone, where the nav hides it');
+  ok(/@media \(max-width: 640px\)[\s\S]*?\.sitenav > a\[href="members\.html"\] \{ display: none; \}/.test(fs.readFileSync(path.join(ROOT, 'site/static/style.css'), 'utf8')),
+    'the phone nav hides only the members link, so the strip stays one row');
+  ok((MEMBERS.match(/<a [^>]*>/g) || []).every(a => /^<a (class="(li|gh)" )?href="[^"]+"( [^>]*)?>$/.test(a) && !/\son[a-z]+=/.test(a)),
+    'every link on the members page is a plain anchor');
+  ok(/^[0-9a-f]{40}$/.test(fs.readFileSync(path.join(ROOT, 'site/members.version'), 'utf8').trim()),
+    'site/members.version pins a marola-dev/.github commit by its full SHA');
   const SUPPORT = fs.readFileSync(path.join(ROOT, 'site/static/support.html'), 'utf8');
   ok((SUPPORT.match(/<script\b[^>]*>/gi) || []).every(t => /^<script src="(i18n|ui)\.js">$/.test(t)),
     'the support page loads no script but the language chrome (i18n.js, ui.js)');
@@ -741,7 +777,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   // --- the favicon: the docs site's own (marola-dev/marola docs/assets/favicon.svg), copied (#25) ----
   const FAVICON = path.join(ROOT, 'site/static/favicon.svg');
   ok(fs.existsSync(FAVICON) && /^<svg[\s>]/.test(fs.readFileSync(FAVICON, 'utf8')), 'site/static/favicon.svg exists and is an SVG');
-  for (const page of ['index.html', 'about.html', 'support.html', 'news.html', '404.html']) {
+  for (const page of ['index.html', 'about.html', 'support.html', 'news.html', 'members.html', '404.html']) {
     const head = (/<head>[\s\S]*?<\/head>/.exec(fs.readFileSync(path.join(ROOT, 'site/static', page), 'utf8')) || [''])[0];
     // 404.html is served at whatever path was missing, so only a root-absolute href finds the icon there.
     const href = page === '404.html' ? '/favicon.svg' : 'favicon.svg';
@@ -751,14 +787,18 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
     "site.yml's publish allowlist keeps favicon.svg");
   ok(/! -name news\.html\b/.test(fs.readFileSync(path.join(ROOT, '.github/workflows/site.yml'), 'utf8')),
     "site.yml's publish allowlist keeps news.html");
+  ok(/! -name members\.html\b/.test(fs.readFileSync(path.join(ROOT, '.github/workflows/site.yml'), 'utf8')),
+    "site.yml's publish allowlist keeps members.html");
 
   // --- the repo link on every page (#498) ------------------------------------------------------
   const REPO_URL = 'https://github.com/marola-dev/marola';
-  for (const page of ['index.html', 'about.html', 'support.html', 'news.html']) {
+  for (const page of ['index.html', 'about.html', 'support.html', 'news.html', 'members.html']) {
     const html = fs.readFileSync(path.join(ROOT, 'site/static', page), 'utf8');
     const pageNav = (/<nav class="sitenav"[\s\S]*?<\/nav>/.exec(html) || [''])[0];
     ok(pageNav.includes('<a class="gh" href="' + REPO_URL + '"'), page + ': the section nav links the GitHub repo');
     ok(/<a class="gh"[^>]*aria-label="[^"]+"/.test(pageNav), page + ': the repo link keeps a name when the phone layout hides its text');
+    ok(pageNav.includes('<a class="li" href="https://www.linkedin.com/company/marola-dev/" target="_blank" rel="noopener" aria-label="'),
+      page + ': the section nav links marola on LinkedIn, with a name for the phone layout');
     ok(!html.includes('h0ffmann/marola'), page + ': no pre-rename repo URL');
   }
   ok(APP.includes("var REPO = '" + REPO_URL + "'"), "app.js's footer link names the current repo");
@@ -767,7 +807,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   const CSS = fs.readFileSync(path.join(ROOT, 'site/static/style.css'), 'utf8');
   ok(/body\s*\{\s*text-transform:\s*lowercase/.test(CSS), 'the site is lowercase as a house style');
   const exempt = (/\.src,[\s\S]*?\{\s*text-transform:\s*none;?\s*\}/.exec(CSS) || [''])[0];
-  for (const sel of ['.src', '.water', '.list li', '.card h2', '.mapboxgl-popup .head', '.about-body code']) {
+  for (const sel of ['.src', '.water', '.list li', '.card h2', '.mapboxgl-popup .head', '.about-body code', '.member']) {
     ok(exempt.includes(sel), 'keeps its own case: ' + sel);
   }
   ok(/\.bar h1\s*\{\s*text-transform:\s*lowercase/.test(CSS),
@@ -775,7 +815,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(/class="src"/.test(APP), 'app.js tags provider names so Open-Meteo and IMA/SC survive the style');
 
   // --- MIP-0054 task 1: the language toggle, resolveLang, t() and the catalogs -------------------
-  const PAGES = { 'index.html': INDEX, 'about.html': ABOUT, 'support.html': SUPPORT, 'news.html': NEWS };
+  const PAGES = { 'index.html': INDEX, 'about.html': ABOUT, 'support.html': SUPPORT, 'news.html': NEWS, 'members.html': MEMBERS };
   for (const [page, html] of Object.entries(PAGES)) {
     ok(/<html lang="pt-BR">/.test(html), page + ': <html lang="pt-BR"> in the source, so the first paint is Portuguese');
     const pageNav = (/<nav class="sitenav"[\s\S]*?<\/nav>/.exec(html) || [''])[0];
@@ -785,7 +825,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
       page + ': #lang is two <button type="button">s with aria-pressed', toggle);
     ok(/lang="pt-BR" aria-label="português \(Brasil\)"/.test(buttons[0] || '') && /lang="en" aria-label="English"/.test(buttons[1] || ''),
       page + ': each button carries its own lang and an endonym aria-label', buttons.join(' '));
-    ok(/<div id="lang"[\s\S]*?<\/div>\s*<a class="gh"/.test(pageNav), page + ': #lang sits inside .sitenav, immediately before a.gh');
+    ok(/<div id="lang"[\s\S]*?<\/div>\s*<a class="li"[\s\S]*?<\/a>\s*<a class="gh"/.test(pageNav), page + ': #lang sits inside .sitenav, then the LinkedIn link, then a.gh');
     const order = ['i18n.js', 'ui.js'].map(f => html.indexOf('<script src="' + f + '"'));
     const others = (html.match(/<script src="([^"]+)"/g) || []).filter(t => !/"(i18n|ui)\.js"/.test(t)).map(t => html.indexOf(t));
     ok(order[0] > 0 && order[0] < order[1] && others.every(i => i > order[1]),
@@ -864,7 +904,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(probe.t('footer.generated', { when: 'w', area: 'a', day: 'd', n: 2, sources: 's' }).includes('· 2 praias ·'),
     'the real catalog pluralises footer.generated');
   // Lowercase house style in the catalogs; these are names marola did not choose.
-  const CASE_OK = ['°C', 'UV', 'km/h', 'mL', 'PRÓPRIA', 'IMPRÓPRIA', 'GitHub', 'Open-Meteo', 'IMA/SC', 'OpenStreetMap', 'Mapbox', 'NASA', 'VIIRS', 'MUR', 'El Niño', 'La Niña', 'Niño'];
+  const CASE_OK = ['°C', 'UV', 'km/h', 'mL', 'PRÓPRIA', 'IMPRÓPRIA', 'GitHub', 'Instagram', 'LinkedIn', 'Open-Meteo', 'IMA/SC', 'OpenStreetMap', 'Mapbox', 'NASA', 'VIIRS', 'MUR', 'El Niño', 'La Niña', 'Niño'];
   for (const [lang, cat] of Object.entries(CATALOGS)) {
     const shouty = Object.entries(cat).filter(([k, v]) => {
       if (/^dir\./.test(k)) return !/^[A-Z]{1,2}$/.test(v); // compass abbreviations, shown uppercase
