@@ -9,6 +9,28 @@ This is the site's proposal that marola-dev/marola's
 points to, in the same shape. No project has been created from it yet, so nothing here was read
 back from the service. Written on **2026-10-14**.
 
+## 0. Claude Project or Claude Code CLI? (ELI5)
+
+Two ways to work on marola with Claude. Same Claude, two different workshops.
+
+| | **Claude Project** | **Claude Code CLI** |
+|---|---|---|
+| Where it runs | On claude.ai, in a cloud machine Anthropic starts for each thread | On your own computer, in a terminal, inside the repository you cloned |
+| How you start | Open the project on claude.ai and write in a thread | `cd marola-site`, then `claude` |
+| What it can see | Only the repositories attached to the project | The folder you are in, and everything your machine can reach |
+| What loads from the repository | `CLAUDE.md`, `AGENTS.md`, the skills in `.claude/skills/`, the subagents | All of that, and also the **plugins** in `.claude/settings.json` (marola-devkit, Ponytail) and the git hooks |
+| Tools | The cloud machine's: `nix develop` is blocked there, so the setup script installs `just` and the linters | Yours: `nix develop` gives every tool the repository pins |
+| Runs on its own | Yes: routines (reminders, the A2A inbox) fire on a schedule | No: it works while you are there |
+| Good for | Talking, planning, small fixes, answering issues from anywhere | Builds, screenshots, the Ponytail pass, anything that needs a plugin or the full toolchain |
+
+The short version: **a Project is Claude on a website, with a few repositories on a shelf. The CLI
+is Claude sitting at your desk, with your whole toolbox.** A plugin is a tool that only lives on the
+desk, which is why Ponytail works in the CLI and not yet in a Project (§2).
+
+The facts in this table come from marola's current project configuration (§4), read there on
+2026-10-11: §2 for the cloud machine and what is blocked, §3 for plugins and skills, §4 for the
+routines.
+
 ## 1. Project
 
 | Setting | Value |
@@ -58,3 +80,10 @@ in a Project thread.
 
 Project memory, threads, routines, connector sign-ins, model ids, e-mail addresses and account
 ids. marola's `CLAUDE_PROJECT.config.md` §7 lists why.
+
+## 4. Our current Claude Project configuration
+
+The project marola runs today, "Marola Agent", is written down, setting by setting, in marola's
+[`CLAUDE_PROJECT.config.md`](https://github.com/marola-dev/marola/blob/main/CLAUDE_PROJECT.config.md)
+(source: marola-dev/marola, on `main`). That file is the one to read before creating or restoring a
+project.
