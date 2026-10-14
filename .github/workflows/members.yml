@@ -9,8 +9,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 concurrency:
   group: members
@@ -22,19 +21,28 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: marola-pr-bot token
+        id: bot
+        uses: marola-dev/marola-devkit/.github/actions/bot-token@v0.10.0
+        with:
+          app-id: ${{ vars.PR_BOT_APP_ID }}
+          private-key: ${{ secrets.PR_BOT_KEY }}
+          repositories: marola-site
+          permission-contents: write
+          permission-pull-requests: write
       - name: Pin .github's main and rebuild the page
         run: |
           git ls-remote https://github.com/marola-dev/.github refs/heads/main | cut -f1 > site/members.version
           python3 scripts/members_build.py
       - name: Open or update the PR
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ steps.bot.outputs.token }}
         run: |
           if [ -z "$(git status --porcelain)" ]; then echo "members: up to date"; exit 0; fi
           branch=chore/members-sync
           sha="$(cut -c1-7 site/members.version)"
-          git config user.name "github-actions[bot]"
-          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
           git switch -C "$branch"
           git add -A site/members.version site/static/members.html site/static/img/members
           git commit -F - <<EOF
@@ -44,9 +52,9 @@ jobs:
           scripts/members_build.py: the page and the avatars in img/members/ follow MEMBERS.md.
 
           Tested: scripts/members_build.py (members.yml)
-          Cost: n/a (automation)
           MIP: none — a data refresh from MEMBERS.md
           EOF
+          gh auth setup-git
           git push -f origin "$branch"
           if ! gh pr view "$branch" --json state -q .state 2>/dev/null | grep -q OPEN; then
             gh pr create --head "$branch" --title "chore(site): members from marola-dev/.github" \
