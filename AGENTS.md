@@ -13,7 +13,7 @@ Non-negotiable in every marola repo; a repo may make these stricter, never loose
 - **Cost and deployment safety**: never provision or deploy a paid cloud resource without explicit human confirmation first ([AGENTS.md](AGENTS.md#cost--deployment-safety-hard-rule)).
 - **No secrets in code**: never hardcode a key/connection string/secret; `.env.example` holds placeholders only ([AGENTS.md](AGENTS.md#cost--deployment-safety-hard-rule)).
 - **The agent-ready gate**: an agent may only begin implementation on an issue carrying `agent-ready` ([AGENTS.md](AGENTS.md#issue-tracking-hard-rule)).
-- **The three commit trailers**: commits carry three trailers and nothing else — `Tested:`, `Cost:`, and `Co-Authored-By: Claude <noreply@anthropic.com>` ([AGENTS.md](AGENTS.md#attribution-and-cost-accounting-hard-rule)).
+- **The two commit trailers**: commits carry two trailers and nothing else — `Tested:` and `Co-Authored-By: Claude <noreply@anthropic.com>` ([AGENTS.md](AGENTS.md#attribution-hard-rule)).
 - **Phase discipline**: work one phase at a time; never start a later phase before the current one is done ([AGENTS.md](AGENTS.md#phase-discipline-hard-rule)).
 <!-- invariants:end -->
 
@@ -24,15 +24,19 @@ boards (MIP-0005), with no server and no LLM, over a Mapbox base map (free up to
 map-load tier, billed above it).
 
 - `site/static/`: the page (`index.html`, `about.html`, `support.html` behind Donate, `news.html`,
-  `app.js`, `ui.js`, `style.css`, `flow.js` (the WebGL wind and wave layer), `mapbox-config.js`,
-  the chat widget, vendored Mapbox GL JS (its CSP build), Inter and the wave loop under `vendor/`,
-  the about page's repo diagram under `img/`) and `404.html`, which forwards the old
-  `marola.dev/docs/*` links to `docs.marola.dev`.
+  `members.html`, `app.js`, `ui.js`, `style.css`, `flow.js` (the WebGL wind and wave layer),
+  `mapbox-config.js`, the chat widget, vendored Mapbox GL JS (its CSP build), Inter and the wave
+  loop under `vendor/`, the about page's repo diagram under `img/`) and `404.html`, which forwards
+  the old `marola.dev/docs/*` links to `docs.marola.dev`.
 - `site/i18n/`: the pt-BR and English catalogs (MIP-0054). `scripts/i18n_bundle.py` checks them
   and writes `site/static/i18n.js`; edit the catalogs, never `i18n.js`.
 - `site/content/news/`: the news posts, one Markdown file per post and language.
   `scripts/news_build.py` checks them and writes them into `news.html`; edit the posts, never
   that block.
+- `site/members.version`: the marola-dev/.github commit whose `MEMBERS.md`
+  `scripts/members_build.py` writes into `members.html`, with the avatars in `img/members/`; the
+  list lives there, edit it there; `members.yml` opens the daily PR that moves the pin and rebuilds
+  the page. Never edit the block.
 - `site/areas.json`: the areas the boards are built for. `site/fixtures/board.json`: the board the
   harness renders. `site/board.schema.json`: the board contract, vendored from the pinned image.
 - `scripts/`: `site_check.js` (app.js and flow.js in a stub DOM and Mapbox GL), `mapbox_config.sh`
@@ -125,9 +129,9 @@ URLs, kept in the repo variable (or secret) `MAPBOX_PUBLIC_TOKEN` and written in
 
 An agent starts work only on an issue carrying `agent-ready`, in this repo (MIP-0070 §5.7).
 
-## Attribution and cost accounting (hard rule)
+## Attribution (hard rule)
 
-Commits carry `Tested:`, `Cost:` and `Co-Authored-By: Claude <noreply@anthropic.com>`.
+Commits carry `Tested:` and `Co-Authored-By: Claude <noreply@anthropic.com>`.
 **Stricter here:** a commit touching `site/static/**` also carries `MIP: MIP-NNNN` or
 `MIP: none — <reason>`; `just prepush` runs `scripts/mip-trailer-check.sh` over the pushed
 commits (`origin/main..HEAD` when the hook does not pass the pushed refs on).

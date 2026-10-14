@@ -41,6 +41,10 @@ site-deploy:
 site-live-check *args:
     python3 scripts/site_live_check.py {{ args }}
 
+# The members page from marola-dev/.github's MEMBERS.md at site/members.version: --check, --source FILE (network without --source).
+members *args:
+    python3 scripts/members_build.py {{ args }}
+
 # The pinned image's board schema: --check, --update after bumping marola-image, --image.
 board-schema *args:
     scripts/board-schema.sh {{ args }}
@@ -65,6 +69,7 @@ quality:
     python3 scripts/site_live_check.py --self-test
     python3 scripts/i18n_bundle.py --self-test
     python3 scripts/news_build.py --self-test
+    python3 scripts/members_build.py --self-test
     scripts/site-data-push.sh --self-test
     scripts/board-schema.sh --self-test
     scripts/mapbox_config.sh --self-test

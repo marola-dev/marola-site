@@ -14,52 +14,33 @@
   var input = document.getElementById('chat-input');
   if (!toggle || !panel || !form || !input) return;
 
-  var HealthTimeoutMs = 4000;
-  var AskTimeoutMs = 30000;
-
-  // Offline: the toggle stays hidden, no button that only leads to a dead end.
-  function checkHealth() {
-    fetch(endpoint + '/health', { signal: AbortSignal.timeout(HealthTimeoutMs) })
-      .then(function (res) { if (res.ok) toggle.hidden = false; })
-      .catch(function () {});
-  }
-
   function addMessage(role, text) {
     var p = document.createElement('p');
     p.className = 'chat-msg ' + role;
     p.textContent = text;
     log.appendChild(p);
     log.scrollTop = log.scrollHeight;
+    return p;
   }
 
   function ask(question) {
     addMessage('user', question);
     offline.hidden = true;
-    var pending = document.createElement('p');
-    pending.className = 'chat-msg assistant pending';
-    pending.textContent = '…';
-    log.appendChild(pending);
-    log.scrollTop = log.scrollHeight;
-
+    var pending = addMessage('assistant pending', '…');
     fetch(endpoint + '/ask', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ question: question }),
-      signal: AbortSignal.timeout(AskTimeoutMs)
+      signal: AbortSignal.timeout(30000)
     })
-      .then(function (res) { return res.json().then(function (body) { return { ok: res.ok, body: body }; }); })
-      .then(function (r) {
-        pending.remove();
-        if (r.ok && r.body && typeof r.body.answer === 'string') {
-          addMessage('assistant', r.body.answer);
-        } else {
-          offline.hidden = false;
-        }
+      .then(function (res) {
+        return res.json().then(function (body) {
+          if (!res.ok || !body || typeof body.answer !== 'string') throw new Error('no answer');
+          return body.answer;
+        });
       })
-      .catch(function () {
-        pending.remove();
-        offline.hidden = false;
-      });
+      .finally(function () { pending.remove(); })
+      .then(function (answer) { addMessage('assistant', answer); }, function () { offline.hidden = false; });
   }
 
   toggle.addEventListener('click', function () {
@@ -80,5 +61,8 @@
     ask(q);
   });
 
-  checkHealth();
+  // Offline: the toggle stays hidden, no button that only leads to a dead end.
+  fetch(endpoint + '/health', { signal: AbortSignal.timeout(4000) })
+    .then(function (res) { if (res.ok) toggle.hidden = false; })
+    .catch(function () {});
 })();

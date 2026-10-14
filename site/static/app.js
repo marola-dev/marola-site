@@ -12,7 +12,7 @@
 
   var $ = function (id) { return document.getElementById(id); };
   var el = {
-    area: $('area'), days: $('days'), near: $('near'), sound: $('sound'), toggleList: $('toggle-list'),
+    area: $('area'), insta: $('insta'), days: $('days'), near: $('near'), sound: $('sound'), toggleList: $('toggle-list'),
     hourbar: $('hourbar'), hour: $('hour'), hourLabel: $('hour-label'),
     list: $('list'), card: $('card'), footer: $('footer'), status: $('status'),
     flow: $('flow'), keys: $('flowkeys'), mapNote: $('map-note'), map: $('map')
@@ -60,13 +60,7 @@
     var key = prefix + String(v).toLowerCase(), out = t(key);
     return out === key ? String(v) : out;
   }
-  function colour(score, unfit) {
-    if (score === null || score === undefined) return getCss('--cna');
-    if (unfit || score <= 0) return getCss('--c0');
-    if (score >= 70) return getCss('--c70');
-    if (score >= 40) return getCss('--c40');
-    return getCss('--c1');
-  }
+  function colour(score, unfit) { return getCss('--' + band(score, unfit)); }
   function getCss(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
   // The chip is coloured by class, not `style=`: index.html's CSP (default-src 'self', no
   // style-src) blocks every inline style attribute, so a style= chip renders white on white.
@@ -97,8 +91,7 @@
     var b = beach.best;
     if (state.hourIndex < 0) return { h: b.hour, score: b.score, notes: b.notes, note_codes: b.note_codes, best: true };
     var h = state.hours[state.hourIndex];
-    for (var i = 0; i < beach.hours.length; i++) if (beach.hours[i].h === h) return beach.hours[i];
-    return null; // dark at that hour for this beach
+    return beach.hours.find(function (x) { return x.h === h; }) || null; // null: dark at that hour
   }
   function isPast(h) {
     if (!state.board || state.board.day !== state.board.today) return false;
@@ -129,8 +122,29 @@
     return AREA_CODES[a.id] || String(a.name).normalize('NFD').replace(/[^A-Za-z]/g, '').slice(0, 2).toUpperCase();
   }
 
+  // Each city's own account (#123); '' is a city whose account is still coming, an area not listed shows no pill.
+  var INSTAGRAM = { floripa: 'fl.marola', rio: 'rj.marola', salvador: '' };
+  function renderInsta() {
+    var handle = state.area ? INSTAGRAM[state.area.id] : undefined;
+    el.insta.hidden = handle === undefined;
+    if (handle === undefined) return;
+    var city = { city: state.area.name };
+    el.insta.classList.toggle('soon', !handle);
+    if (handle) {
+      el.insta.href = 'https://www.instagram.com/' + handle + '/';
+      el.insta.removeAttribute('aria-disabled');
+    } else {
+      el.insta.removeAttribute('href');
+      el.insta.setAttribute('aria-disabled', 'true');
+    }
+    el.insta.querySelector('span').textContent = handle ? '@' + handle : t('nav.soon');
+    el.insta.setAttribute('aria-label', handle ? t('insta.label', { handle: '@' + handle }) : t('insta.soon', city));
+    el.insta.title = handle ? t('insta.title', city) : t('insta.soon', city);
+  }
+
   function selectArea(area) {
     state.area = area; setParam('area', area.id); el.area.title = area.name;
+    renderInsta();
     ensureMap(area);
     status(t('status.loading_named', { name: area.name }));
     return fetchJson('data/' + area.id + '/latest.json').then(function (latest) {
@@ -244,8 +258,8 @@
   }
   function firstSymbolLayer() {
     var layers = (state.map.getStyle() || {}).layers || [];
-    for (var i = 0; i < layers.length; i++) if (layers[i].type === 'symbol') return layers[i].id;
-    return undefined;
+    var sym = layers.find(function (l) { return l.type === 'symbol'; });
+    return sym && sym.id;
   }
 
   /** A popup that shows while the pointer or keyboard focus is on el, like Leaflet's sticky tooltip did. */
@@ -381,9 +395,7 @@
 
   /** The best-hour shape `shown()` returns carries no numbers; this finds the hours[] entry. */
   function hourEntry(beach, s) {
-    if (!s) return null;
-    for (var i = 0; i < beach.hours.length; i++) if (beach.hours[i].h === s.h) return beach.hours[i];
-    return null;
+    return (s && beach.hours.find(function (x) { return x.h === s.h; })) || null;
   }
 
   // 'no data' is the one summary the board writes in words rather than the agency's verdict.
@@ -426,9 +438,7 @@
 
   // --- trails (MIP-0030) --------------------------------------------------------------------.
   function trailColour(difficulty) {
-    if (difficulty === 'hiking') return getCss('--c70');
-    if (difficulty === 'mountain_hiking') return getCss('--c40');
-    return getCss('--cna');
+    return getCss('--' + ({ hiking: 'c70', mountain_hiking: 'c40' }[difficulty] || 'cna'));
   }
   function trailTooltipHtml(trail) {
     return icon('footprints') + ' ' + esc(trail.name) + ' · ' + fmt(trail.length_km, ' km');
@@ -795,6 +805,7 @@
 
   // ui.js has already rewritten the static text; this redraws what app.js built, from state, no fetch.
   I.onLang(function () {
+    renderInsta();
     if (state.latest) renderDays();
     if (!state.board) return;
     render();
