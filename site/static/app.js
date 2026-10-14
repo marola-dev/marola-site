@@ -60,13 +60,7 @@
     var key = prefix + String(v).toLowerCase(), out = t(key);
     return out === key ? String(v) : out;
   }
-  function colour(score, unfit) {
-    if (score === null || score === undefined) return getCss('--cna');
-    if (unfit || score <= 0) return getCss('--c0');
-    if (score >= 70) return getCss('--c70');
-    if (score >= 40) return getCss('--c40');
-    return getCss('--c1');
-  }
+  function colour(score, unfit) { return getCss('--' + band(score, unfit)); }
   function getCss(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
   // The chip is coloured by class, not `style=`: index.html's CSP (default-src 'self', no
   // style-src) blocks every inline style attribute, so a style= chip renders white on white.
@@ -97,8 +91,7 @@
     var b = beach.best;
     if (state.hourIndex < 0) return { h: b.hour, score: b.score, notes: b.notes, note_codes: b.note_codes, best: true };
     var h = state.hours[state.hourIndex];
-    for (var i = 0; i < beach.hours.length; i++) if (beach.hours[i].h === h) return beach.hours[i];
-    return null; // dark at that hour for this beach
+    return beach.hours.find(function (x) { return x.h === h; }) || null; // null: dark at that hour
   }
   function isPast(h) {
     if (!state.board || state.board.day !== state.board.today) return false;
@@ -265,8 +258,8 @@
   }
   function firstSymbolLayer() {
     var layers = (state.map.getStyle() || {}).layers || [];
-    for (var i = 0; i < layers.length; i++) if (layers[i].type === 'symbol') return layers[i].id;
-    return undefined;
+    var sym = layers.find(function (l) { return l.type === 'symbol'; });
+    return sym && sym.id;
   }
 
   /** A popup that shows while the pointer or keyboard focus is on el, like Leaflet's sticky tooltip did. */
@@ -402,9 +395,7 @@
 
   /** The best-hour shape `shown()` returns carries no numbers; this finds the hours[] entry. */
   function hourEntry(beach, s) {
-    if (!s) return null;
-    for (var i = 0; i < beach.hours.length; i++) if (beach.hours[i].h === s.h) return beach.hours[i];
-    return null;
+    return (s && beach.hours.find(function (x) { return x.h === s.h; })) || null;
   }
 
   // 'no data' is the one summary the board writes in words rather than the agency's verdict.
@@ -447,9 +438,7 @@
 
   // --- trails (MIP-0030) --------------------------------------------------------------------.
   function trailColour(difficulty) {
-    if (difficulty === 'hiking') return getCss('--c70');
-    if (difficulty === 'mountain_hiking') return getCss('--c40');
-    return getCss('--cna');
+    return getCss('--' + ({ hiking: 'c70', mountain_hiking: 'c40' }[difficulty] || 'cna'));
   }
   function trailTooltipHtml(trail) {
     return icon('footprints') + ' ' + esc(trail.name) + ' · ' + fmt(trail.length_km, ' km');

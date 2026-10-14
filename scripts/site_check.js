@@ -22,6 +22,7 @@ const ABOUT = fs.readFileSync(path.join(ROOT, 'site/static/about.html'), 'utf8')
 const NEWS = fs.readFileSync(path.join(ROOT, 'site/static/news.html'), 'utf8');
 const SUPPORT = fs.readFileSync(path.join(ROOT, 'site/static/support.html'), 'utf8');
 const MEMBERS = fs.readFileSync(path.join(ROOT, 'site/static/members.html'), 'utf8');
+const CONTACT = fs.readFileSync(path.join(ROOT, 'site/static/contact.html'), 'utf8');
 const I18N_JS = fs.readFileSync(path.join(ROOT, 'site/static/i18n.js'), 'utf8');
 const UI = fs.readFileSync(path.join(ROOT, 'site/static/ui.js'), 'utf8');
 const CATALOGS = Object.fromEntries(['pt-BR', 'en'].map(l => [l, JSON.parse(fs.readFileSync(path.join(ROOT, 'site/i18n', l + '.json'), 'utf8'))]));
@@ -125,8 +126,6 @@ function flowPanel(flow, keys) {
   keys.found['[data-when]'] = ['clouds', 'sst', 'anomaly'].map(k => Object.assign(new El('when-' + k), { dataset: { when: k } }));
   keys.found['[data-key]'] = LAYER_KEYS.map(k => Object.assign(new El('key-' + k), { dataset: { key: k } }));
 }
-// 'smoke' is deliberately absent: the page must tolerate a build without the panel (app.js
-// header).
 
 // --- a Mapbox GL just big enough for app.js: markers keep their DOM element, a popup records
 // whether it is open, and a custom layer is added but never handed a WebGL context
@@ -182,38 +181,23 @@ function makeMapbox() {
 // ---------------------------------------.
 function makeAudioContext() {
   makeAudioContext.gains = []; makeAudioContext.sources = [];
-  function node(kind) {
+  const node = (kind) => {
     const n = { kind };
-    // Connecting a node to an AudioParam does NOT replace the param's value — the Web Audio spec
-    // ADDS the connected signal to the intrinsic value.
-    n.connect = (target) => {
-      if (target && typeof target.setTargetAtTime === 'function') target.modulators.push(n);
-      n.target = target;
-      return n;
-    };
-    if (kind === 'gain') {
-      n.gain = {
-        value: 0, modulators: [],
-        cancelScheduledValues() {},
-        setTargetAtTime(v) { n.gain.value = v; }
-      };
-    }
-    if (kind === 'bufferSource' || kind === 'oscillator') n.start = () => { n.started = true; };
-    if (kind === 'biquadFilter' || kind === 'oscillator') n.frequency = { value: 0 };
+    n.connect = (target) => { n.target = target; return n; };
     return n;
-  }
-  // Peak amplitude a gain node can actually produce: its own value plus the full depth of every
-  // signal connected to its gain param.
-  node.peak = (g) => g.gain.value + g.gain.modulators.reduce((s, m) => s + Math.abs(m.gain ? m.gain.value : 0), 0);
+  };
   return {
-    state: 'running', currentTime: 0, destination: {}, sampleRate: 44100,
-    createBuffer: (ch, len) => ({ getChannelData: () => new Float32Array(len) }),
-    createBufferSource: () => { const b = node('bufferSource'); makeAudioContext.sources.push(b); return b; },
+    state: 'running', currentTime: 0, destination: {},
+    createBufferSource: () => {
+      const b = Object.assign(node('bufferSource'), { start() { b.started = true; } });
+      makeAudioContext.sources.push(b); return b;
+    },
     decodeAudioData: (bytes, ok) => { ok({ duration: 118, bytes }); },
-    createBiquadFilter: () => node('biquadFilter'),
-    createGain: () => { const g = node('gain'); makeAudioContext.gains.push(g); return g; },
-    createOscillator: () => node('oscillator'),
-    peak: node.peak,
+    createGain: () => {
+      const g = node('gain');
+      g.gain = { value: 0, cancelScheduledValues() {}, setTargetAtTime(v) { g.gain.value = v; } };
+      makeAudioContext.gains.push(g); return g;
+    },
     resume() { this.state = 'running'; }
   };
 }
@@ -254,7 +238,7 @@ async function runPage(board, opts) {
     fetch: p => { fetched.push(p); return Promise.resolve(p === 'vendor/sounds/waves.mp3'
       ? { ok: true, status: 200, arrayBuffer: () => Promise.resolve(new ArrayBuffer(8)) }
       : p in files
-      ? { ok: true, status: 200, json: () => Promise.resolve(JSON.parse(JSON.stringify(files[p]))) }
+      ? { ok: true, status: 200, json: () => Promise.resolve(structuredClone(files[p])) }
       : { ok: false, status: 404, json: () => Promise.reject(new Error('404')) }); },
     location: { href: 'https://example.test/' + search, search },
     history: { replaceState() {} },
@@ -365,9 +349,9 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(errs.length === 0, 'site/fixtures/board.json conforms to ' + path.relative(ROOT, SCHEMA_PATH), errs.slice(0, 3).join('; '));
   const errsV1 = validate(SCHEMA, BOARD_V1);
   ok(BOARD_V1.schema === 1 && errsV1.length === 0, 'site/fixtures/board-schema1.json, a schema-1 board, still conforms', errsV1.slice(0, 3).join('; '));
-  const broken = JSON.parse(JSON.stringify(BOARD)); delete broken.beaches;
+  const broken = structuredClone(BOARD); delete broken.beaches;
   ok(validate(SCHEMA, broken).some(e => e.includes('beaches')), 'the checker reports a missing required field');
-  const badEnum = JSON.parse(JSON.stringify(BOARD)); badEnum.beaches[0].hours[0].wind_level = 'gale';
+  const badEnum = structuredClone(BOARD); badEnum.beaches[0].hours[0].wind_level = 'gale';
   ok(validate(SCHEMA, badEnum).some(e => e.includes('not in enum')), 'the checker rejects an unknown wind_level');
 
   // A marker's tooltip is the popup its element opens on hover; a click is the element's.
@@ -527,7 +511,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   } else ok(false, 'Joaquina\'s wave has a click handler');
 
   // 3. an older board without wind_level (task 1 made it optional) renders: number, no band word.
-  const stripped = JSON.parse(JSON.stringify(BOARD));
+  const stripped = structuredClone(BOARD);
   stripped.beaches.forEach(b => b.hours.forEach(h => { delete h.wind_level; }));
   const r2 = await runPage(stripped, { search: '?lang=en' });
   const markers2 = wavesOf(r2);
@@ -541,7 +525,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(map.layers.some(l => l.layer.id === 'trails' && l.layer.type === 'line' && l.layer.source === 'trails') && trailsOf(first).length === 0,
     'a board with no trails key draws no trail, and (from section 2 above) still renders every beach');
 
-  const trailed = JSON.parse(JSON.stringify(BOARD));
+  const trailed = structuredClone(BOARD);
   trailed.trails = [
     { name: 'Trilha da Lagoinha do Leste', length_km: 2.1, difficulty: null, surface: null,
       geometry: [[-27.79, -48.49], [-27.792, -48.487], [-27.793, -48.485]],
@@ -574,8 +558,9 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(flowLayer && flowLayer.kind() === 'off' && first.els.flow.found['button[data-layer]'].every(b => b.attrs['aria-pressed'] === 'false'),
     'no layer is on by default: the map opens on the beaches alone');
   const btn = k => first.els.flow.found['button[data-layer]'].find(b => b.dataset.layer === k);
+  const press = (page, b) => page.els.flow.fire('click', { target: b });
   // the stub's buttons are all enabled, so the layers still in "em breve" keep their tests for when they ship
-  first.els.flow.fire('click', { target: Object.assign(btn('wind'), { closest() { return this; } }) });
+  press(first, btn('wind'));
   ok(flowLayer.kind() === 'wind' && btn('wind').attrs['aria-pressed'] === 'true', 'an enabled wind button turns the wind field on');
   const F = first.flow;
   const windField = flowLayer && flowLayer.field();
@@ -583,10 +568,10 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(atJoaq && atJoaq[1] > 0 && Math.abs(atJoaq[0]) < atJoaq[1] && atJoaq[3] > 0.9,
     "at Joaquina the wind field blows north (the board says it comes from 180°), near full confidence", JSON.stringify(atJoaq));
   btn('waves').disabled = true;
-  first.els.flow.fire('click', { target: Object.assign(btn('waves'), { closest() { return this; } }) });
+  press(first, btn('waves'));
   ok(flowLayer.kind() === 'wind', 'a disabled ("em breve") layer button does nothing');
   btn('waves').disabled = false;
-  first.els.flow.fire('click', { target: Object.assign(btn('waves'), { closest() { return this; } }) });
+  press(first, btn('waves'));
   ok(flowLayer.kind() === 'waves' && btn('waves').attrs['aria-pressed'] === 'true' && btn('wind').attrs['aria-pressed'] === 'false' &&
     first.els.flowkeys.found['[data-key]'].find(k => k.dataset.key === 'waves').hidden === false, 'the waves button switches the layer, its key and the pressed state');
   const waveField = flowLayer.field();
@@ -595,12 +580,12 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   const drawnPoints = () => first.M.created.filter(isPoint).length;
   const pointsBefore = drawnPoints();
   const allPoints = BOARD.beaches.reduce((n, b) => n + ((b.water && b.water.points) || []).length, 0);
-  first.els.flow.fire('click', { target: Object.assign(btn('water'), { closest() { return this; } }) });
+  press(first, btn('water'));
   ok(flowLayer.kind() === 'off' && flowLayer.field() === null && drawnPoints() === allPoints && allPoints > 1 &&
     first.els.flowkeys.found['[data-key]'].find(k => k.dataset.key === 'water').hidden === false,
     'the water layer stops the particles and draws every beach\'s sampling points, with its key', drawnPoints() + ' of ' + allPoints);
   ok(first.els.map.classList.contains('layer-water'), 'the water layer marks #map, so the beach dots step back');
-  first.els.flow.fire('click', { target: Object.assign(btn('wind'), { closest() { return this; } }) });
+  press(first, btn('wind'));
   ok(drawnPoints() === pointsBefore, 'leaving the water layer takes the other beaches\' points away again', drawnPoints() + ' vs ' + pointsBefore);
   const before = F.sample(flowLayer.field(), F.mercX(-48.4487), F.mercY(-27.6296))[2];
   first.els.hour.value = '0'; first.els.hour.listeners.input[0]();
@@ -609,29 +594,29 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   // the NASA GIBS layers: one raster source at a time, dated from the board's day
   const fmap = first.map;
   const tiles = () => fmap.sources['marola-raster'] && fmap.sources['marola-raster'].src.tiles[0];
-  first.els.flow.fire('click', { target: Object.assign(btn('sst'), { closest() { return this; } }) });
+  press(first, btn('sst'));
   ok(flowLayer.kind() === 'off' && /^https:\/\/gibs\.earthdata\.nasa\.gov\/wmts\/epsg3857\/best\/GHRSST_L4_MUR_Sea_Surface_Temperature\/default\/2026-09-04\/GoogleMapsCompatible_Level7\/\{z\}\/\{y\}\/\{x\}\.png$/.test(tiles()) &&
     fmap.getLayer('marola-raster').type === 'raster' && first.els.flowkeys.found['[data-when]'].find(w => w.dataset.when === 'sst').textContent === '2026-09-04',
     'sea temperature is a GIBS MUR raster two days before the board (2026-09-06), the date in its key, particles off', tiles());
-  first.els.flow.fire('click', { target: Object.assign(btn('clouds'), { closest() { return this; } }) });
+  press(first, btn('clouds'));
   ok(/VIIRS_SNPP_CorrectedReflectance_TrueColor\/default\/2026-09-05\/GoogleMapsCompatible_Level9\/.*\.jpg$/.test(tiles()) &&
     fmap.layers.filter(l => l.layer.id === 'marola-raster').length === 1, 'satellite swaps the raster for the day before\'s VIIRS true colour, one raster at a time', tiles());
-  first.els.flow.fire('click', { target: Object.assign(btn('elnino'), { closest() { return this; } }) });
+  press(first, btn('elnino'));
   ok(/Sea_Surface_Temperature_Anomalies\/default\/2026-09-04\//.test(tiles()) && fmap.getLayer('nino34') && fmap.getLayer('nino34').layout.visibility === 'visible' &&
     fmap.fitted[0][0][0] === -180 && fmap.minZoom === 0, 'El Niño shows the anomaly, the Niño 3.4 box, and zooms out to the Pacific (below the area minZoom)', JSON.stringify(fmap.fitted[0]));
-  first.els.flow.fire('click', { target: Object.assign(btn('wind'), { closest() { return this; } }) });
+  press(first, btn('wind'));
   ok(!fmap.sources['marola-raster'] && !fmap.getLayer('marola-raster') && fmap.getLayer('nino34').layout.visibility === 'none' &&
     fmap.fitted[0][0][0] > -49 && fmap.minZoom === 3 && flowLayer.kind() === 'wind', 'back to wind: the raster and the box go, the map returns to the beaches', JSON.stringify(fmap.fitted[0]));
   const toggle = first.els.flow.found['button[data-toggle]'][0];
-  first.els.flow.fire('click', { target: Object.assign(toggle, { closest() { return this; } }) });
+  press(first, toggle);
   ok(first.els.map.classList.contains('no-beaches') && toggle.attrs['aria-pressed'] === 'false', 'the beaches toggle hides the beach dots');
-  first.els.flow.fire('click', { target: Object.assign(toggle, { closest() { return this; } }) });
+  press(first, toggle);
   ok(!first.els.map.classList.contains('no-beaches') && toggle.attrs['aria-pressed'] === 'true', 'and shows them again');
   const trailsBtn = first.els.flow.found['button[data-toggle]'][1];
-  first.els.flow.fire('click', { target: Object.assign(trailsBtn, { closest() { return this; } }) });
+  press(first, trailsBtn);
   ok(fmap.getLayer('trails').layout.visibility === 'none' && trailsBtn.attrs['aria-pressed'] === 'false' && toggle.attrs['aria-pressed'] === 'true',
     'the trails toggle hides the coastal trails layer, leaving the beaches toggle alone');
-  first.els.flow.fire('click', { target: Object.assign(trailsBtn, { closest() { return this; } }) });
+  press(first, trailsBtn);
   ok(fmap.getLayer('trails').layout.visibility === 'visible', 'and shows it again');
   ok(first.els.insta.hidden === true, 'an area with no Instagram account shows no pill');
   for (const [id, handle] of [['floripa', 'fl.marola'], ['rio', 'rj.marola']]) {
@@ -648,7 +633,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   const watered = await runPage(BOARD, { search: '?layer=water' });
   ok(watered.M.created.filter(isPoint).length > 1, '?layer=water opens on the water layer, its points drawn');
   const wbtn = watered.els.flow.found['button[data-layer]'].find(b => b.dataset.layer === 'water');
-  watered.els.flow.fire('click', { target: Object.assign(wbtn, { closest() { return this; } }) });
+  press(watered, wbtn);
   ok(wbtn.attrs['aria-pressed'] === 'false' && !watered.els.map.classList.contains('layer-water'), 'pressing balneabilidade again turns it off');
   const soon = await runPage(BOARD, { search: '?layer=wind', disabled: ['wind', 'trails'] });
   ok(soon.map.layers.find(l => l.layer.id === 'marola-flow').layer.kind() === 'off' && soon.map.getLayer('trails').layout.visibility === 'none',
@@ -719,22 +704,40 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
 
   // --- donations page and FUNDING.yml (marola-dev/marola#531, ported from marola-dev/marola#588) -
   ok(fs.existsSync(path.join(ROOT, '.github/FUNDING.yml')), '.github/FUNDING.yml exists for the Sponsor button');
-  for (const page of ['index.html', 'about.html', 'support.html', 'news.html', 'members.html']) {
-    const html = fs.readFileSync(path.join(ROOT, 'site/static', page), 'utf8');
+  const RESEARCH = 'https://github.com/marola-dev/marola-research/blob/main/README.md';
+  const CHAMADA = 'https://github.com/marola-dev/marola-research/blob/main/chamada/chamada.pdf';
+  const REPO_URL = 'https://github.com/marola-dev/marola';
+  const NAV_PAGES = { 'index.html': INDEX, 'about.html': ABOUT, 'support.html': SUPPORT, 'news.html': NEWS, 'members.html': MEMBERS, 'contact.html': CONTACT };
+  for (const [page, html] of Object.entries(NAV_PAGES)) {
     const pageNav = (/<nav class="sitenav"[\s\S]*?<\/nav>/.exec(html) || [''])[0];
     ok(/<a href="support\.html" data-i18n="nav\.donate"[^>]*>apoie<\/a>/.test(pageNav), page + ': Donate is a real link');
     ok(/<a href="members\.html" data-i18n="nav\.members"[^>]*>membros<\/a>\s*<a href="support\.html"/.test(pageNav),
       page + ': Members is a real link, right before Donate (#9)');
     ok(/<a href="news\.html" data-i18n="nav\.news"[^>]*>notícias<\/a>/.test(pageNav), page + ': News is a real link');
+    ok(pageNav.includes('<a href="' + RESEARCH + '" data-i18n="nav.research">pesquise</a>')
+      && pageNav.includes('<a href="' + CHAMADA + '" data-i18n="nav.contribute">contribua</a>'),
+      page + ': the nav links research (marola-research) and contribute (the chamada)');
+    ok(/<a href="contact\.html" data-i18n="nav\.contact"[^>]*>contato<\/a>/.test(pageNav), page + ': Contact is a real link');
+    // the repo link on every page (#498)
+    ok(pageNav.includes('<a class="gh" href="' + REPO_URL + '"'), page + ': the section nav links the GitHub repo');
+    ok(/<a class="gh"[^>]*aria-label="[^"]+"/.test(pageNav), page + ': the repo link keeps a name when the phone layout hides its text');
+    ok(pageNav.includes('<a class="li" href="https://www.linkedin.com/company/marola-dev/" target="_blank" rel="noopener" aria-label="'),
+      page + ': the section nav links marola on LinkedIn, with a name for the phone layout');
+    ok(!html.includes('h0ffmann/marola'), page + ': no pre-rename repo URL');
   }
-  ok((NEWS.match(/<script\b[^>]*>/gi) || []).every(t => /^<script src="(i18n|ui)\.js">$/.test(t)),
-    'the news page loads no script but the language chrome (i18n.js, ui.js)');
+  ok(APP.includes("var REPO = '" + REPO_URL + "'"), "app.js's footer link names the current repo");
+  for (const [page, html] of Object.entries({ news: NEWS, members: MEMBERS, contact: CONTACT, support: SUPPORT })) {
+    ok((html.match(/<script\b[^>]*>/gi) || []).every(t => /^<script src="(i18n|ui)\.js">$/.test(t)),
+      'the ' + page + ' page loads no script but the language chrome (i18n.js, ui.js)');
+  }
+  for (const f of ['favicon.svg', 'news.html', 'members.html', 'contact.html']) {
+    ok(new RegExp('! -name ' + f.replace('.', '\\.') + '\\b').test(SITE_YML), "site.yml's publish allowlist keeps " + f);
+  }
+  const CSS = fs.readFileSync(path.join(ROOT, 'site/static/style.css'), 'utf8');
   const newsPt = (NEWS.match(/<article class="about-body" lang="pt-BR">/g) || []).length;
   ok(newsPt >= 1 && newsPt === (NEWS.match(/<article class="about-body" lang="en">/g) || []).length,
     'the news page has one article per language per post');
   // --- members page, generated from marola-dev/.github's MEMBERS.md (#9) ---------------------
-  ok((MEMBERS.match(/<script\b[^>]*>/gi) || []).every(t => /^<script src="(i18n|ui)\.js">$/.test(t)),
-    'the members page loads no script but the language chrome (i18n.js, ui.js)');
   const memberRows = lang => (((new RegExp('<article class="about-body" lang="' + lang + '">[\\s\\S]*?</article>')).exec(MEMBERS) || [''])[0]
     .match(/<li class="member">/g) || []).length;
   ok(memberRows('pt-BR') > 0 && memberRows('pt-BR') === memberRows('en'),
@@ -746,40 +749,23 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   }), 'every avatar on the members page is a file in img/members/, so the visitor asks GitHub for nothing');
   ok((ABOUT.match(/<a href="members\.html">/g) || []).length === 2,
     'about.html links the members page in both languages, the way in on a phone, where the nav hides it');
-  ok(/@media \(max-width: 640px\)[\s\S]*?\.sitenav > a\[href="members\.html"\] \{ display: none; \}/.test(fs.readFileSync(path.join(ROOT, 'site/static/style.css'), 'utf8')),
+  ok(/@media \(max-width: 640px\)[\s\S]*?\.sitenav > a\[href="members\.html"\] \{ display: none; \}/.test(CSS),
     'the phone nav hides the members link, so the strip stays one row');
-  ok(/@media \(max-width: 640px\)[\s\S]*?\.sitenav > a\[data-i18n="nav\.research"\], \.sitenav > a\[data-i18n="nav\.contribute"\] \{ display: none; \}/.test(fs.readFileSync(path.join(ROOT, 'site/static/style.css'), 'utf8')),
+  ok(/@media \(max-width: 640px\)[\s\S]*?\.sitenav > a\[data-i18n="nav\.research"\], \.sitenav > a\[data-i18n="nav\.contribute"\] \{ display: none; \}/.test(CSS),
     'the phone nav also hides research and contribute, which about.html links instead');
-  const RESEARCH = 'https://github.com/marola-dev/marola-research/blob/main/README.md';
-  const CHAMADA = 'https://github.com/marola-dev/marola-research/blob/main/chamada/chamada.pdf';
   const aboutMain = (/<main[\s\S]*?<\/main>/.exec(ABOUT) || [''])[0];
   ok(aboutMain.split('href="' + RESEARCH + '"').length === 3 && aboutMain.split('href="' + CHAMADA + '"').length === 3,
     'about.html links marola-research and the chamada in both languages, the way in on a phone');
-  const CONTACT = fs.readFileSync(path.join(ROOT, 'site/static/contact.html'), 'utf8');
-  for (const page of ['index.html', 'about.html', 'support.html', 'news.html', 'members.html', 'contact.html']) {
-    const pageNav = (/<nav class="sitenav"[\s\S]*?<\/nav>/.exec(fs.readFileSync(path.join(ROOT, 'site/static', page), 'utf8')) || [''])[0];
-    ok(pageNav.includes('<a href="' + RESEARCH + '" data-i18n="nav.research">pesquise</a>')
-      && pageNav.includes('<a href="' + CHAMADA + '" data-i18n="nav.contribute">contribua</a>'),
-      page + ': the nav links research (marola-research) and contribute (the chamada)');
-    ok(/<a href="contact\.html" data-i18n="nav\.contact"[^>]*>contato<\/a>/.test(pageNav), page + ': Contact is a real link');
-  }
   // --- contact page: a static form that FormSubmit forwards to admin@marola.dev ----------------
   ok((CONTACT.match(/<form\b[^>]*>/g) || []).join('') === '<form class="contact" action="https://formsubmit.co/admin@marola.dev" method="POST">',
     'contact.html has one form, posted to FormSubmit for admin@marola.dev');
   ok(/form-action https:\/\/formsubmit\.co"/.test(CONTACT), "contact.html's CSP lets the form post only to FormSubmit");
-  ok((CONTACT.match(/<script\b[^>]*>/gi) || []).every(t => /^<script src="(i18n|ui)\.js">$/.test(t)),
-    'the contact page loads no script but the language chrome (i18n.js, ui.js)');
   ok(/name="_honey" hidden/.test(CONTACT) && /<input type="email" name="email" required/.test(CONTACT),
     'the form has a honeypot and a required email for the reply');
-  ok(/! -name contact\.html\b/.test(fs.readFileSync(path.join(ROOT, '.github/workflows/site.yml'), 'utf8')),
-    "site.yml's publish allowlist keeps contact.html");
   ok((MEMBERS.match(/<a [^>]*>/g) || []).every(a => /^<a (class="(li|gh)" )?href="[^"]+"( [^>]*)?>$/.test(a) && !/\son[a-z]+=/.test(a)),
     'every link on the members page is a plain anchor');
   ok(/^[0-9a-f]{40}$/.test(fs.readFileSync(path.join(ROOT, 'site/members.version'), 'utf8').trim()),
     'site/members.version pins a marola-dev/.github commit by its full SHA');
-  const SUPPORT = fs.readFileSync(path.join(ROOT, 'site/static/support.html'), 'utf8');
-  ok((SUPPORT.match(/<script\b[^>]*>/gi) || []).every(t => /^<script src="(i18n|ui)\.js">$/.test(t)),
-    'the support page loads no script but the language chrome (i18n.js, ui.js)');
   const FUNDING = fs.readFileSync(path.join(ROOT, '.github/FUNDING.yml'), 'utf8');
   const patreon = (/^patreon:\s*(\S+)/m.exec(FUNDING) || [])[1];
   const patreonLinks = SUPPORT.match(/href="https:\/\/www\.patreon\.com\/[^"]*"/g) || [];
@@ -809,28 +795,8 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
     const href = page === '404.html' ? '/favicon.svg' : 'favicon.svg';
     ok(head.includes('<link rel="icon" href="' + href + '" type="image/svg+xml">'), page + ': links the favicon as ' + href);
   }
-  ok(/! -name favicon\.svg\b/.test(fs.readFileSync(path.join(ROOT, '.github/workflows/site.yml'), 'utf8')),
-    "site.yml's publish allowlist keeps favicon.svg");
-  ok(/! -name news\.html\b/.test(fs.readFileSync(path.join(ROOT, '.github/workflows/site.yml'), 'utf8')),
-    "site.yml's publish allowlist keeps news.html");
-  ok(/! -name members\.html\b/.test(fs.readFileSync(path.join(ROOT, '.github/workflows/site.yml'), 'utf8')),
-    "site.yml's publish allowlist keeps members.html");
-
-  // --- the repo link on every page (#498) ------------------------------------------------------
-  const REPO_URL = 'https://github.com/marola-dev/marola';
-  for (const page of ['index.html', 'about.html', 'support.html', 'news.html', 'members.html']) {
-    const html = fs.readFileSync(path.join(ROOT, 'site/static', page), 'utf8');
-    const pageNav = (/<nav class="sitenav"[\s\S]*?<\/nav>/.exec(html) || [''])[0];
-    ok(pageNav.includes('<a class="gh" href="' + REPO_URL + '"'), page + ': the section nav links the GitHub repo');
-    ok(/<a class="gh"[^>]*aria-label="[^"]+"/.test(pageNav), page + ': the repo link keeps a name when the phone layout hides its text');
-    ok(pageNav.includes('<a class="li" href="https://www.linkedin.com/company/marola-dev/" target="_blank" rel="noopener" aria-label="'),
-      page + ': the section nav links marola on LinkedIn, with a name for the phone layout');
-    ok(!html.includes('h0ffmann/marola'), page + ': no pre-rename repo URL');
-  }
-  ok(APP.includes("var REPO = '" + REPO_URL + "'"), "app.js's footer link names the current repo");
 
   // --- lowercase house style, and what it must not touch ---------------------------------------
-  const CSS = fs.readFileSync(path.join(ROOT, 'site/static/style.css'), 'utf8');
   ok(/body\s*\{\s*text-transform:\s*lowercase/.test(CSS), 'the site is lowercase as a house style');
   const exempt = (/\.src,[\s\S]*?\{\s*text-transform:\s*none;?\s*\}/.exec(CSS) || [''])[0];
   for (const sel of ['.src', '.water', '.list li', '.card h2', '.mapboxgl-popup .head', '.about-body code', '.member']) {
@@ -915,7 +881,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(['umbrella.pt-BR.svg', 'umbrella.svg'].every(f => fs.existsSync(path.join(ROOT, 'site/static/img', f))) &&
     /<article class="about-body" lang="pt-BR">[\s\S]*?<img src="img\/umbrella\.pt-BR\.svg"[^>]* alt="[^"]+"/.test(ABOUT) &&
     /<article class="about-body" lang="en">[\s\S]*?<img src="img\/umbrella\.svg"[^>]* alt="[^"]+"/.test(ABOUT) &&
-    /-path \.\/img \\\)/.test(fs.readFileSync(path.join(ROOT, '.github/workflows/site.yml'), 'utf8')),
+    /-path \.\/img \\\)/.test(SITE_YML),
     "about.html shows the repo diagram in each article's language, and site.yml's publish allowlist keeps img/");
   const syn = runUi(ABOUT, { catalog: {
     'pt-BR': { n: '{n, plural, one {# praia} other {# praias}}', x: 'ondas {x} m', only: 'só pt', s: '{w, select, yes {sim} other {não}}' },
