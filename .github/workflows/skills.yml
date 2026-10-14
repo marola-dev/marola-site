@@ -16,3 +16,5 @@ jobs:
     uses: marola-dev/marola-devkit/.github/workflows/skills-update.yml@v0.10.1
     with:
       devkit-ref: v0.10.1
+    secrets:
+      pr_bot_key: ${{ secrets.PR_BOT_KEY }}
