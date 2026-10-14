@@ -23,6 +23,25 @@ são as instruções dele, palavra por palavra, e os parágrafos sobre o site e 
 acréscimos desta proposta. Cada bloco de código é para ser copiado inteiro no campo citado logo
 acima dele. Escrito em 2026-10-11, atualizado em **2026-10-14**.
 
+## 0. Claude Project ou CLI do Claude Code? (explicado de forma simples)
+
+Dois jeitos de trabalhar no marola com o Claude. O mesmo Claude, em duas oficinas diferentes.
+
+| | **Claude Project** | **CLI do Claude Code** |
+|---|---|---|
+| Onde roda | No claude.ai, numa máquina na nuvem que liga para cada thread | No seu computador, num terminal, dentro do repositório que você clonou |
+| Como começar | Abra o projeto no claude.ai e escreva num thread | `cd marola-site` e depois `claude` |
+| O que enxerga | Só os repositórios que o projeto lista | A pasta em que você está, e tudo o que a sua máquina alcança |
+| O que carrega do repositório | `CLAUDE.md`, `AGENTS.md`, as skills de `.claude/skills/`, os subagentes | Tudo isso, e também os **plugins** do `.claude/settings.json` (marola-devkit, Ponytail) e os git hooks |
+| Ferramentas | As da máquina na nuvem (§2): lá o `nix develop` é bloqueado, então um setup script instala o `just` e os linters | As suas: o `nix develop` traz cada ferramenta que o repositório fixa |
+| Roda sozinho | Sim: as rotinas disparam num horário | Não: trabalha enquanto você está ali |
+| Bom para | Conversar, planejar, correções pequenas, responder issues de qualquer lugar | Builds, capturas de tela, a passada do Ponytail, tudo o que precisa de plugin ou do toolchain completo |
+
+Em resumo: **um Project é o Claude num site, com alguns repositórios numa prateleira. A CLI é o
+Claude sentado na sua mesa, com a sua caixa de ferramentas inteira.** Um plugin é uma ferramenta
+que só existe na mesa, por isso o Ponytail funciona na CLI e ainda não num Project (§3). Os fatos
+vêm da configuração atual do repositório guarda-chuva (§9), nas seções 2 a 4 dele.
+
 ## 1. Projeto
 
 | Configuração | Valor |
@@ -53,7 +72,7 @@ Nome de branch (Hoffmann, 2026-10-05): nunca faça push para uma branch com sufi
 
 Trabalho de MIP (Hoffmann, 2026-10-08): quando a mudança escreve ou implementa um MIP, a branch leva o nome do MIP em vez do da issue, na convenção do repositório guarda-chuva `docs/mip-NNNN-<slug-curto-em-kebab>` (por exemplo `docs/mip-0081-external-llm-evaluation`), com o mesmo nome de branch em todo repositório que o MIP toca. A verificação de branch dos PRs do devkit rejeita branches com nome `claude/project-thread-*`.
 
-Trabalho no site: leia primeiro o AGENTS.md do marola-site e siga o que ele diz. Tudo o que um visitante vê começa pela skill site-frontend, que indica as outras skills. Um commit que mexe em site/static/ leva o trailer `MIP: MIP-NNNN` ou `MIP: none — <motivo>`. Um PR que muda o que o visitante vê mostra capturas de tela de antes e depois, no desktop (1280 × 800) e no celular (390 × 844), enviadas para a branch órfã pr-screenshots; quando o thread não alcança o Mapbox, diga embaixo da tabela que o mapa é um substituto. Nunca faça deploy: nada de `just site-deploy`, nada de disparar o site.yml, e nunca defina BR_PROXY_REQUIRED.
+Trabalho no site: leia primeiro o AGENTS.md do marola-site e siga o que ele diz. Tudo o que um visitante vê começa pela skill site-frontend, que indica as outras skills. Um commit que mexe em site/static/ leva o trailer `MIP: MIP-NNNN` ou `MIP: none — <motivo>`. Um PR que muda o que o visitante vê mostra capturas de tela de antes e depois, no desktop (1280 × 800) e no celular (390 × 844), enviadas para a branch órfã pr-screenshots; quando o thread não alcança o Mapbox, diga embaixo da tabela que o mapa é um substituto. Um PR que muda mais de 500 linhas de JavaScript mostra várias seções (pelo menos o mapa com a lista ou o cartão, e cada página que ele toca), nas duas línguas (pt-BR e inglês), no desktop e no celular. O JavaScript é escrito do jeito Ponytail, o código mais preguiçoso que funciona (Ponytail, Dietrich Gebert, MIT: https://github.com/DietrichGebert/ponytail, v5.2.0: https://github.com/DietrichGebert/ponytail/releases/tag/v5.2.0). O plugin dele não carrega num thread de Project, então leia https://github.com/DietrichGebert/ponytail/blob/v5.2.0/skills/ponytail/SKILL.md e aplique à mão; a passada completa do Ponytail roda na CLI do Claude Code. Nunca faça deploy: nada de `just site-deploy`, nada de disparar o site.yml, e nunca defina BR_PROXY_REQUIRED.
 
 Idioma: responda na língua em que o Hoffmann escreve (normalmente português). Escreva código, comentários, commits, títulos e descrições de PR e docs em inglês, como os repositórios. O texto que o visitante lê está em pt-BR e inglês em site/i18n/, e o português passa pela skill ptbr-humanizer.
 ```
@@ -120,6 +139,15 @@ Encontrar código (Hoffmann, 2026-10-11): para uma palavra-chave conhecida, use 
 - **Plugins da conta.** Ative o Writing Skills na conta do claude.ai, como o `AGENTS.md` do
   repositório guarda-chuva ("Reading and writing") pede a todo projeto. O plugin marola-devkit,
   declarado no `.claude/settings.json` do repositório, não carrega num thread de Project.
+- **O caso do Ponytail.** O marola importou o Ponytail ([DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail),
+  MIT) como skills, `ponytail`, `ponytail-review` e `ponytail-audit`, vendorizadas dentro do
+  plugin marola-devkit (MIP-0080 §2, no repositório guarda-chuva). O marola-site nunca teve uma
+  cópia no próprio `.claude/skills/`: aqui o Ponytail chega só por plugins, o marola-devkit e,
+  desde o #139, o próprio `ponytail@ponytail` na `v5.2.0`. Por isso um thread de Project não
+  consegue rodar `/ponytail`; ele segue as regras lendo o
+  [`skills/ponytail/SKILL.md`](https://github.com/DietrichGebert/ponytail/blob/v5.2.0/skills/ponytail/SKILL.md),
+  e a passada do Ponytail roda na CLI. Vendorizar a skill em `.claude/skills/`, com uma entrada no
+  lock, como faz o h0ffmann/ww3-gpu, faria ela carregar num thread; essa escolha é do dono.
 - **Servidores MCP.** O `.mcp.json` declara o Playwright e o Figma, e nenhum dos dois aparece nas
   ferramentas de um thread de Project (2026-10-14), porque nenhum repositório é o diretório de
   trabalho do thread. A skill `webapp-testing` e o Chromium em /opt/pw-browsers tiram capturas de
@@ -183,3 +211,10 @@ Quando o projeto existir, leia as configurações dele no serviço e troque esta
 ele tem de fato, com a data do topo atualizada. Mude este arquivo no mesmo PR de qualquer coisa
 que dependa dele, e mantenha-o em sintonia com o `CLAUDE_PROJECT.config.md` do repositório
 guarda-chuva quando uma configuração em comum (as regras de branch, o setup script) mudar lá.
+
+## 9. Nossa configuração atual de Claude Project
+
+O projeto que o marola usa hoje, o "Marola Agent", está registrado configuração por configuração
+no [`CLAUDE_PROJECT.config.md`](https://github.com/marola-dev/marola/blob/main/CLAUDE_PROJECT.config.md)
+do repositório guarda-chuva (fonte: marola-dev/marola, `main`). Leia esse arquivo antes de criar ou
+restaurar um projeto.
