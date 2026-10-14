@@ -16,9 +16,12 @@
 Esta é uma proposta de Claude Project que trabalha só no site. Ela parte das configurações do
 projeto "Marola Agent", que estão no
 [`CLAUDE_PROJECT.config.md`](https://github.com/marola-dev/marola/blob/main/CLAUDE_PROJECT.config.md)
-do repositório guarda-chuva. Nenhum projeto com estas configurações existe ainda, então nada aqui
-foi conferido no serviço. Cada bloco de código é para ser copiado inteiro no campo citado logo
-acima dele. Escrito em **2026-10-11**.
+do repositório guarda-chuva. Nenhum projeto com estas configurações existe ainda. Hoje o trabalho
+no site acontece no projeto Marola Agent, e este arquivo foi conferido com as configurações dele a
+partir de um dos seus threads em **2026-10-14**: os dois primeiros parágrafos das instruções da §1
+são as instruções dele, palavra por palavra, e os parágrafos sobre o site e o idioma são os
+acréscimos desta proposta. Cada bloco de código é para ser copiado inteiro no campo citado logo
+acima dele. Escrito em 2026-10-11, atualizado em **2026-10-14**.
 
 ## 1. Projeto
 
@@ -57,9 +60,10 @@ Idioma: responda na língua em que o Hoffmann escreve (normalmente português). 
 
 ## 2. Ambiente na nuvem
 
-Crie um ambiente na nuvem para este projeto ou use o "Marola cloud" do Marola Agent. Os threads
-do Marola Agent já encontraram instalados Node 22, Python 3.13, ruff, uv, gh e o Chromium do
-Playwright em /opt/pw-browsers (2026-10-11).
+Crie um ambiente na nuvem para este projeto ou use o "Marola cloud" do Marola Agent. Um thread do
+Marola Agent encontra instalados Node 22, Python 3.13, ruff, uv, gh, Nix, Docker e o Chromium do
+Playwright em /opt/pw-browsers, e ainda não encontra `just`, `shellcheck`, `actionlint` e
+`graphify`, porque o "Marola cloud" ainda não tem setup script (2026-10-14).
 
 ### Setup script (proposto)
 
@@ -106,17 +110,20 @@ Encontrar código (Hoffmann, 2026-10-11): para uma palavra-chave conhecida, use 
 
 ## 3. Plugins, skills e conectores
 
-- **Skills.** As skills em `.claude/skills/` do marola-site carregam num thread. A
-  `site-frontend` é a porta de entrada e põe as outras em ordem: `ptbr-humanizer`,
+- **Skills.** As skills em `.claude/skills/` do marola-site carregam num thread: 18 das 19
+  estavam na lista de skills de um thread do Marola Agent em 2026-10-14, e a `review-animations`
+  só roda quando alguém a chama (`disable-model-invocation`). A `site-frontend` é a porta de
+  entrada e põe as outras em ordem: `ptbr-humanizer`,
   `citizen-science-site`, `news-post` e as skills vendorizadas de design, de testes e `mapbox-*`.
 - **Subagentes.** O `news-fact-check` e depois o `news-copy-review` revisam cada notícia antes
   que uma pessoa aprove.
 - **Plugins da conta.** Ative o Writing Skills na conta do claude.ai, como o `AGENTS.md` do
   repositório guarda-chuva ("Reading and writing") pede a todo projeto. O plugin marola-devkit,
   declarado no `.claude/settings.json` do repositório, não carrega num thread de Project.
-- **Servidores MCP.** O `.mcp.json` declara o Playwright e o Figma. Ninguém conferiu ainda se um
-  thread de Project inicia esses servidores; a skill `webapp-testing` e o Chromium em
-  /opt/pw-browsers tiram capturas de tela sem eles.
+- **Servidores MCP.** O `.mcp.json` declara o Playwright e o Figma, e nenhum dos dois aparece nas
+  ferramentas de um thread de Project (2026-10-14), porque nenhum repositório é o diretório de
+  trabalho do thread. A skill `webapp-testing` e o Chromium em /opt/pw-browsers tiram capturas de
+  tela sem eles.
 - **Conectores.** Nenhum é necessário.
 
 ## 4. Rotinas

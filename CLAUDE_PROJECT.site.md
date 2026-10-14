@@ -9,9 +9,11 @@
 This is a proposal for a Claude Project that works only on the site, built from the "Marola
 Agent" project's settings in the umbrella's
 [`CLAUDE_PROJECT.config.md`](https://github.com/marola-dev/marola/blob/main/CLAUDE_PROJECT.config.md).
-No project with these settings exists yet, so nothing here has been read back from the service.
-Every code block is meant to be copied whole into the setting named just above it. Written on
-**2026-10-11**.
+No project with these settings exists yet. Site work runs today in the Marola Agent project, and
+this file was checked against that project's settings from one of its threads on **2026-10-14**:
+the first two paragraphs of §1's instructions are its instructions word for word, and the site and
+language paragraphs are this proposal's additions. Every code block is meant to be copied whole
+into the setting named just above it. Written on 2026-10-11, refreshed on **2026-10-14**.
 
 ## 1. Project
 
@@ -50,9 +52,10 @@ Language: reply in the language Hoffmann writes in (usually Portuguese). Write c
 
 ## 2. Cloud environment
 
-Create a cloud environment for this project, or reuse Marola Agent's "Marola cloud". Marola
-Agent's threads found Node 22, Python 3.13, ruff, uv, gh and Playwright's Chromium in
-/opt/pw-browsers already installed (2026-10-11).
+Create a cloud environment for this project, or reuse Marola Agent's "Marola cloud". A Marola
+Agent thread finds Node 22, Python 3.13, ruff, uv, gh, Nix, Docker and Playwright's Chromium in
+/opt/pw-browsers already installed, and `just`, `shellcheck`, `actionlint` and `graphify` still
+missing, because "Marola cloud" has no setup script yet (2026-10-14).
 
 ### Setup script (proposed)
 
@@ -98,17 +101,19 @@ Finding code (Hoffmann, 2026-10-11): for a known keyword, use `git grep`. For "w
 
 ## 3. Plugins, skills and connectors
 
-- **Skills.** marola-site's `.claude/skills/` load in a thread. `site-frontend` is the entry
-  point and orders the rest: `ptbr-humanizer`, `citizen-science-site`, `news-post`, the vendored
-  design, testing and `mapbox-*` skills.
+- **Skills.** marola-site's `.claude/skills/` load in a thread: 18 of the 19 were in a Marola
+  Agent thread's skill list on 2026-10-14, and `review-animations` is user-invoked only
+  (`disable-model-invocation`). `site-frontend` is the entry point and orders the rest:
+  `ptbr-humanizer`, `citizen-science-site`, `news-post`, the vendored design, testing and
+  `mapbox-*` skills.
 - **Subagents.** `news-fact-check`, then `news-copy-review`, review every news post before a
   person signs off.
 - **Account plugins.** Enable Writing Skills on the claude.ai account, as the umbrella's
   `AGENTS.md` ("Reading and writing") asks of every project. The marola-devkit plugin, which the
   repo's `.claude/settings.json` declares, does not load in a Project thread.
-- **MCP servers.** `.mcp.json` declares Playwright and Figma. Whether a Project thread starts them
-  has not been checked; the `webapp-testing` skill and Chromium in /opt/pw-browsers take
-  screenshots without them.
+- **MCP servers.** `.mcp.json` declares Playwright and Figma, and neither is in a Project
+  thread's tool list (2026-10-14), because no repository is the thread's working directory. The
+  `webapp-testing` skill and Chromium in /opt/pw-browsers take screenshots without them.
 - **Connectors.** None are needed.
 
 ## 4. Routines
