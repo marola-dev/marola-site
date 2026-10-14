@@ -5,9 +5,10 @@
     "sessionUrl": false
   },
   "extraKnownMarketplaces": {
-    "marola-devkit": { "source": { "source": "github", "repo": "marola-dev/marola-devkit", "ref": "v0.10.1" } }
+    "marola-devkit": { "source": { "source": "github", "repo": "marola-dev/marola-devkit", "ref": "v0.10.1" } },
+    "ponytail": { "source": { "source": "github", "repo": "DietrichGebert/ponytail", "ref": "v5.2.0" } }
   },
-  "enabledPlugins": { "marola-devkit@marola-devkit": true },
+  "enabledPlugins": { "marola-devkit@marola-devkit": true, "ponytail@ponytail": true },
   "enabledMcpjsonServers": ["playwright", "figma"],
   "permissions": {
     "allow": [

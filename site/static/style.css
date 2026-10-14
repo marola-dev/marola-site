@@ -269,6 +269,14 @@ button[aria-pressed="true"], button[aria-expanded="true"] {
 body { text-transform: lowercase; }
 .src, .water, .unfit, .mapboxgl-ctrl-attrib,
 .list li, .card h2, .mapboxgl-popup .head, .about-body code, .dir, .flowkey, .member { text-transform: none; }
+
+/* The contact form (contact.html): a static form that FormSubmit forwards by email; plain controls. */
+.contact { display: grid; gap: 12px; max-width: 520px; }
+.contact label { display: grid; gap: 4px; }
+.contact input, .contact textarea { font: inherit; text-transform: none; padding: 8px 10px; color: var(--ink); background: var(--bg); border: 1px solid var(--line-strong); border-radius: var(--r-control); }
+.contact textarea { resize: vertical; }
+.contact input:focus-visible, .contact textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.contact button { justify-self: start; }
 .bar h1 { text-transform: lowercase; }
 
 .nojs { padding: 32px; max-width: 65ch; }
@@ -308,11 +316,12 @@ article.about-body:lang(pt) + article.about-body:lang(pt), article.about-body:la
 .about-body .members { list-style: none; margin: 0 0 40px; padding: 0; border-top: 1px solid var(--line); }
 .about-body .member { display: grid; grid-template-columns: 48px 1fr; column-gap: 16px; align-items: center;
   margin: 0; padding: 16px 0; border-bottom: 1px solid var(--line); }
-.member-mark { grid-row: 1 / span 3; width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center;
+.member-mark { grid-row: 1 / span 4; width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center;
   background: var(--accent-soft); color: var(--accent); font-size: var(--fs-15); font-weight: 600; letter-spacing: var(--tr-15); }
 img.member-mark { display: block; object-fit: cover; border: 1px solid var(--line); }
+.about-body .member > :not(.member-mark) { grid-column: 2; }
 .member-name { font-weight: 600; }
-.member-aff, .member-links { font-size: var(--fs-14); line-height: 1.45; letter-spacing: var(--tr-14); color: var(--muted); }
+.member-aff, .member-role, .member-links { font-size: var(--fs-14); line-height: 1.45; letter-spacing: var(--tr-14); color: var(--muted); }
 .member-links { display: flex; flex-wrap: wrap; gap: 4px 16px; font-variant-numeric: tabular-nums; }
 /* The empty slot is the width the address will take (0x + 40 hex digits). */
 .addr:empty { display: inline-block; width: 42ch; max-width: 100%; padding: 0 .4rem; vertical-align: middle;
@@ -438,6 +447,8 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   .sitenav > span { display: none; }
   /* a sixth link wraps the strip onto a second row; on a phone the members page is reached from about.html */
   .sitenav > a[href="members.html"] { display: none; }
+  /* research and contribute too: about.html ("quem faz") links both */
+  .sitenav > a[data-i18n="nav.research"], .sitenav > a[data-i18n="nav.contribute"] { display: none; }
   .sitenav .gh .gh-name, .sitenav .gh .gh-star, .sitenav .li .li-name { display: none; }
   .lang-icon { display: none; }
   .bar { padding: 12px 16px; gap: 10px; }

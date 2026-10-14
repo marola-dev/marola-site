@@ -706,8 +706,9 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(/<a href="https:\/\/docs\.marola\.dev\/" data-i18n="nav\.docs">docs<\/a>/.test(nav), 'Docs is a real link to the published docs');
   ok(/<a href="about\.html" data-i18n="nav\.about">sobre<\/a>/.test(nav), 'About is a real link to the about page');
   ok(/<a href="news\.html" data-i18n="nav\.news">notícias<\/a>/.test(nav), 'News is a real link to the news page');
-  ok((nav.match(/<span aria-disabled="true">/g) || []).length === 2,
-    'the two sections with no page yet are spans, not links');
+  ok((nav.match(/<span aria-disabled="true">/g) || []).length === 1
+    && /<span aria-disabled="true"><span data-i18n="nav\.alerts">/.test(nav),
+    'the one section with no page yet (alerts) is a span, not a link; contact has its page');
   ok(!/<a[^>]+href="#"/.test(nav), 'no href="#" — a link that goes nowhere is worse than "soon"');
   ok(INDEX.indexOf('<nav class="sitenav"') < INDEX.indexOf('<header class="bar"'),
     'the nav is the first thing on the page, above the header');
@@ -746,7 +747,32 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok((ABOUT.match(/<a href="members\.html">/g) || []).length === 2,
     'about.html links the members page in both languages, the way in on a phone, where the nav hides it');
   ok(/@media \(max-width: 640px\)[\s\S]*?\.sitenav > a\[href="members\.html"\] \{ display: none; \}/.test(fs.readFileSync(path.join(ROOT, 'site/static/style.css'), 'utf8')),
-    'the phone nav hides only the members link, so the strip stays one row');
+    'the phone nav hides the members link, so the strip stays one row');
+  ok(/@media \(max-width: 640px\)[\s\S]*?\.sitenav > a\[data-i18n="nav\.research"\], \.sitenav > a\[data-i18n="nav\.contribute"\] \{ display: none; \}/.test(fs.readFileSync(path.join(ROOT, 'site/static/style.css'), 'utf8')),
+    'the phone nav also hides research and contribute, which about.html links instead');
+  const RESEARCH = 'https://github.com/marola-dev/marola-research/blob/main/README.md';
+  const CHAMADA = 'https://github.com/marola-dev/marola-research/blob/main/chamada/chamada.pdf';
+  const aboutMain = (/<main[\s\S]*?<\/main>/.exec(ABOUT) || [''])[0];
+  ok(aboutMain.split('href="' + RESEARCH + '"').length === 3 && aboutMain.split('href="' + CHAMADA + '"').length === 3,
+    'about.html links marola-research and the chamada in both languages, the way in on a phone');
+  const CONTACT = fs.readFileSync(path.join(ROOT, 'site/static/contact.html'), 'utf8');
+  for (const page of ['index.html', 'about.html', 'support.html', 'news.html', 'members.html', 'contact.html']) {
+    const pageNav = (/<nav class="sitenav"[\s\S]*?<\/nav>/.exec(fs.readFileSync(path.join(ROOT, 'site/static', page), 'utf8')) || [''])[0];
+    ok(pageNav.includes('<a href="' + RESEARCH + '" data-i18n="nav.research">pesquise</a>')
+      && pageNav.includes('<a href="' + CHAMADA + '" data-i18n="nav.contribute">contribua</a>'),
+      page + ': the nav links research (marola-research) and contribute (the chamada)');
+    ok(/<a href="contact\.html" data-i18n="nav\.contact"[^>]*>contato<\/a>/.test(pageNav), page + ': Contact is a real link');
+  }
+  // --- contact page: a static form that FormSubmit forwards to admin@marola.dev ----------------
+  ok((CONTACT.match(/<form\b[^>]*>/g) || []).join('') === '<form class="contact" action="https://formsubmit.co/admin@marola.dev" method="POST">',
+    'contact.html has one form, posted to FormSubmit for admin@marola.dev');
+  ok(/form-action https:\/\/formsubmit\.co"/.test(CONTACT), "contact.html's CSP lets the form post only to FormSubmit");
+  ok((CONTACT.match(/<script\b[^>]*>/gi) || []).every(t => /^<script src="(i18n|ui)\.js">$/.test(t)),
+    'the contact page loads no script but the language chrome (i18n.js, ui.js)');
+  ok(/name="_honey" hidden/.test(CONTACT) && /<input type="email" name="email" required/.test(CONTACT),
+    'the form has a honeypot and a required email for the reply');
+  ok(/! -name contact\.html\b/.test(fs.readFileSync(path.join(ROOT, '.github/workflows/site.yml'), 'utf8')),
+    "site.yml's publish allowlist keeps contact.html");
   ok((MEMBERS.match(/<a [^>]*>/g) || []).every(a => /^<a (class="(li|gh)" )?href="[^"]+"( [^>]*)?>$/.test(a) && !/\son[a-z]+=/.test(a)),
     'every link on the members page is a plain anchor');
   ok(/^[0-9a-f]{40}$/.test(fs.readFileSync(path.join(ROOT, 'site/members.version'), 'utf8').trim()),

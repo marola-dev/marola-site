@@ -128,6 +128,8 @@
   "nav.donate": "donate",
   "nav.label": "sections",
   "nav.members": "members",
+  "nav.research": "research",
+  "nav.contribute": "contribute",
   "nav.news": "news",
   "nav.soon": "soon",
   "near.denied": "location not granted, so the list stays ranked by score.",
@@ -174,9 +176,14 @@
   "title.members": "marola members",
   "title.news": "marola news",
   "title.support": "support marola",
+  "title.contact": "contact marola",
   "water.no_data": "no data",
   "water.unclassified": "unclassified",
   "wind.breezy": "breezy",
   "wind.calm": "calm",
-  "wind.strong": "strong"
+  "wind.strong": "strong",
+  "contact.name": "name",
+  "contact.email": "email",
+  "contact.message": "message",
+  "contact.send": "send"
 }

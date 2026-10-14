@@ -48,6 +48,8 @@ COPY = {
         " repositórios do projeto. quem tem ORCID também é autor do"
         f' <a href="{ZENODO}">registro do marola no Zenodo</a>.',
         "commit": "primeiro commit em {}",
+        "role": "no marola: {}",
+        "ghrole": "no GitHub: {}",
         "foot": f'a lista vem do arquivo <a href="{FILE}"><code>MEMBERS.md</code></a> da organização no GitHub.'
         " para entrar na lista ou corrigir seus dados, abra um pull request nesse arquivo.",
     },
@@ -57,6 +59,8 @@ COPY = {
         " project's repositories. Those with an ORCID are also creators of the"
         f' <a href="{ZENODO}">marola record on Zenodo</a>.',
         "commit": "first commit on {}",
+        "role": "marola: {}",
+        "ghrole": "GitHub: {}",
         "foot": f'The list comes from the organization\'s <a href="{FILE}"><code>MEMBERS.md</code></a> on GitHub.'
         " To join it or fix your details, open a pull request on that file.",
     },
@@ -68,9 +72,9 @@ class MembersError(ValueError):
 
 
 def parse(text):
-    """MEMBERS.md's table as [(given family, affiliation, orcid, github, (date, url))]; MembersError if malformed.
-
-    The two role columns are checked (a marola role is never empty) but not shown on the page."""
+    """MEMBERS.md's table as [(given family, affiliation, orcid, github, (date, url), (marola role,
+    GitHub role))]; MembersError if malformed. A marola role is never empty under the role header;
+    the legacy header has no roles, so both are empty and the page shows none."""
     rows = [line.strip() for line in text.splitlines() if line.strip().startswith("|")]
     cells = [[c.strip() for c in r.strip("|").split("|")] for r in rows]
     header = cells[0] if cells else []
@@ -103,8 +107,9 @@ def parse(text):
             raise MembersError(
                 f"{name}: First commit is [YYYY-MM-DD](commit URL) or empty: {first}"
             )
+        roles = (row[5], row[6]) if header == HEADER else ("", "")
         members.append(
-            (f"{given} {family}", aff, o and o.group(1), g and g.group(1), c and c.groups())
+            (f"{given} {family}", aff, o and o.group(1), g and g.group(1), c and c.groups(), roles)
         )
     if not members:
         raise MembersError("MEMBERS.md lists nobody")
@@ -159,7 +164,7 @@ def render(members, avatars):
             f'      <p class="lede">{copy["lede"]}</p>',
             '      <ul class="members">',
         ]
-        for name, aff, orcid, gh, first in members:
+        for name, aff, orcid, gh, first, (marola_role, gh_role) in members:
             links = []
             if orcid:
                 links.append(f'<a href="https://orcid.org/{orcid}">ORCID {orcid}</a>')
@@ -167,6 +172,12 @@ def render(members, avatars):
                 links.append(f'<a href="https://github.com/{gh}">@{gh}</a>')
             if first:
                 links.append(f'<a href="{first[1]}">{copy["commit"].format(first[0])}</a>')
+            # The roles are MEMBERS.md's words, shown as they are written there.
+            roles = [
+                copy[k].format(html.escape(v))
+                for k, v in (("role", marola_role), ("ghrole", gh_role))
+                if v
+            ]
             out += [
                 '        <li class="member">',
                 f'          <img class="member-mark" src="img/members/{avatars[gh]}" width="48" height="48" alt="" loading="lazy">'
@@ -174,6 +185,11 @@ def render(members, avatars):
                 else f'          <span class="member-mark" aria-hidden="true">{initials(name)}</span>',
                 f'          <span class="member-name">{html.escape(name)}</span>',
                 *([f'          <span class="member-aff">{html.escape(aff)}</span>'] if aff else []),
+                *(
+                    [f'          <span class="member-role">{" · ".join(roles)}</span>']
+                    if roles
+                    else []
+                ),
                 *(
                     [f'          <span class="member-links">{" ".join(links)}</span>']
                     if links
@@ -381,7 +397,17 @@ def self_test():
         )
     )
     got_roles, _ = scenario("the header with the two role columns passes", roles, True)
-    ok(got_roles == got, "the role columns do not change the page")
+    ok(
+        '<span class="member-role">marola: contributor · GitHub: owner</span>' in got_roles
+        and '<span class="member-role">no marola: contributor · no GitHub: owner</span>'
+        in got_roles,
+        "the roles show in both languages, as MEMBERS.md writes them",
+    )
+    ok(
+        '<span class="member-role">marola: ui / mkt</span>' in got_roles,
+        "an empty GitHub role shows only the marola role",
+    )
+    ok("member-role" not in got, "the legacy header shows no roles")
     scenario("an empty marola role fails", roles.replace("| ui / mkt |", "| |"), False)
     scenario(
         "a row with five cells under the role header fails",

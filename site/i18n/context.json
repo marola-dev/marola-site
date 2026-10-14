@@ -128,6 +128,8 @@
   "nav.donate": "section nav: link to the support (donations) page",
   "nav.label": "accessible name of the section nav",
   "nav.members": "section nav: link to the members page (the people who build marola)",
+  "nav.research": "section nav: link to marola-research, the research of marola (its README on GitHub)",
+  "nav.contribute": "section nav: link to the call for contribution and publication (the chamada PDF in marola-research); imperative, like \"apoie\"",
   "nav.news": "section nav: link to the news page",
   "nav.soon": "small badge next to a section that has no page yet; shown uppercase by CSS",
   "near.denied": "alert after 'near me' when the visitor refuses the location prompt",
@@ -174,9 +176,14 @@
   "title.members": "browser tab title of the members page",
   "title.news": "browser tab title of the news page",
   "title.support": "browser tab title of the support (donations) page",
+  "title.contact": "browser tab title of the contact page",
   "water.no_data": "the water-quality summary when no agency covers the beach, or none answered",
   "water.unclassified": "a water sampling point the agency has classified neither PRÓPRIA nor IMPRÓPRIA",
   "wind.breezy": "wind band shown before the km/h number: between calm and strong",
   "wind.calm": "wind band shown before the km/h number: the calmest of three",
-  "wind.strong": "wind band shown before the km/h number: the windiest of three"
+  "wind.strong": "wind band shown before the km/h number: the windiest of three",
+  "contact.name": "contact form: label of the name field",
+  "contact.email": "contact form: label of the email field (the reply goes there)",
+  "contact.message": "contact form: label of the message box",
+  "contact.send": "contact form: the submit button"
 }

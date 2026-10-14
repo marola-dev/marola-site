@@ -128,6 +128,8 @@
   "nav.donate": "apoie",
   "nav.label": "seções",
   "nav.members": "membros",
+  "nav.research": "pesquise",
+  "nav.contribute": "contribua",
   "nav.news": "notícias",
   "nav.soon": "em breve",
   "near.denied": "sem acesso à localização. a lista continua ordenada pela pontuação.",
@@ -174,9 +176,14 @@
   "title.members": "membros do marola",
   "title.news": "notícias do marola",
   "title.support": "apoie o marola",
+  "title.contact": "fale com o marola",
   "water.no_data": "sem dados",
   "water.unclassified": "sem classificação",
   "wind.breezy": "brisa",
   "wind.calm": "vento calmo",
-  "wind.strong": "vento forte"
+  "wind.strong": "vento forte",
+  "contact.name": "nome",
+  "contact.email": "e-mail",
+  "contact.message": "mensagem",
+  "contact.send": "enviar"
 }
