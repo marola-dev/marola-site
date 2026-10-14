@@ -34,7 +34,7 @@ municipal beach bulletin written by someone who swims), not like a product page 
 5. **No marketing or AI words**: inteligente, revolucionário, perfeito, solução, jornada,
    potencializar, "com IA", emoji.
 6. **Keep what is data or a name**: PRÓPRIA/IMPRÓPRIA (the agency's verdict, verbatim), provider
-   names (Open-Meteo, OpenStreetMap, IMA/SC), beach names, `Cost:`, units with a no-break space.
+   names (Open-Meteo, OpenStreetMap, IMA/SC), beach names, units with a no-break space.
 7. **House style is lowercase** in the catalog (the CSS lowercases anyway); `site_check.js` fails
    uppercase outside its allowlist.
 8. **ICU placeholders stay intact**: `{n, plural, ...}`, `{x, select, ...}`; read the pt-BR output

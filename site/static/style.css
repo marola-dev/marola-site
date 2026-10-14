@@ -263,7 +263,7 @@ button[aria-pressed="true"], button[aria-expanded="true"] {
   .footbar .folds { flex: none; flex-wrap: nowrap; margin-top: 0; }
 }
 /* Lowercase house style, except names marola did not choose: providers, the agency's verbatim
- * PRÓPRIA/IMPRÓPRIA verdict (MIP-0001), beaches, and literal text in <code> (a `Cost:` trailer; an
+ * PRÓPRIA/IMPRÓPRIA verdict (MIP-0001), beaches, and literal text in <code> (a file name; an
  * EIP-55 address, whose letter case is its checksum). Containers are exempted because app.js emits
  * beach names as bare text nodes. */
 body { text-transform: lowercase; }
