@@ -146,6 +146,11 @@ URL, in a Before | After table. Images never go on `main`. A screenshot taken on
 style (the sandbox can't reach Mapbox) says so under the table. No screenshots in the body, the
 PR is not ready for review.
 
+**Large JavaScript changes** (Hoffmann, 2026-10-14). A PR that changes more than 500 lines of
+JavaScript (`git diff --numstat origin/main...HEAD -- '*.js'`, added plus removed) shows several
+sections, not one: at least the map with its list or a beach card open, and every page the change
+touches, in both languages (pt-BR and en), on desktop and phone.
+
 ## Phase discipline (hard rule)
 
 The phase list is the umbrella's `docs/PHASES.md`. Site work serves the current phase.

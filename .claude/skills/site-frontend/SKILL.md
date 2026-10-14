@@ -83,7 +83,8 @@ overrides live here, not in their files.
 6. **Verify**: `node --check site/static/app.js`, `node scripts/site_check.js`,
    `node scripts/redirect_check.js`, `python3 scripts/i18n_bundle.py --check`, `ruff check .`,
    then before/after screenshots in the PR body, pushed to the `pr-screenshots` branch and embedded
-   by raw URL (AGENTS.md, "Screenshots in the PR"). No screenshot in the PR, not done.
+   by raw URL (AGENTS.md, "Screenshots in the PR"). No screenshot in the PR, not done. Over 500
+   changed lines of JavaScript: several sections, both languages, desktop and phone.
 
 ## The map: Mapbox GL and the flow layer
 
