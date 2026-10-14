@@ -99,29 +99,32 @@
       discreto no site. nada de anúncio, banner ou rastreamento.</p>
 
       <h2>como o marola é montado</h2>
-      <p>pense numa cozinha de restaurante. em vez de um cozinheiro fazer tudo sozinho, cada bancada
-      cuida de uma tarefa. no marola, cada bancada é um repositório de código:</p>
+      <p>o marola é um conjunto de repositórios de código, cada um com uma tarefa:</p>
       <ul>
-        <li><b>marola-app</b> é o fogão: junta a previsão do mar, as praias e a balneabilidade, e calcula a nota.</li>
-        <li><b>marola-site</b> é o salão: o mapa que você está usando.</li>
-        <li><b>marola-corpus</b> é o caderno de receitas: as anotações sobre o mar, cada uma com a sua fonte.</li>
-        <li><b>marola-ml</b> é a cozinha de testes: ali a IA treina e é provada antes de ir para o fogão.</li>
-        <li><b>marola-oods</b> é a despensa: um arquivo aberto com o histórico das praias e da água.</li>
-        <li><b>marola-devkit</b> é a caixa de ferramentas que todas as bancadas usam.</li>
-        <li><b>marola</b>, o repositório guarda-chuva, é o caderno do chef: os planos, as regras e o lugar de cada bancada.</li>
+        <li><b>marola-app</b> junta a previsão do mar, as praias e a balneabilidade, e calcula a nota.</li>
+        <li><b>marola-site</b> é o mapa que você está usando.</li>
+        <li><b>marola-corpus</b> guarda as anotações sobre o mar, cada uma com a sua fonte.</li>
+        <li><b>marola-ml</b> treina e testa a IA antes de ela ir para o marola-app.</li>
+        <li><b>marola-oods</b> é um arquivo aberto com o histórico das praias e da água.</li>
+        <li><b>marola-research</b> guarda a pesquisa do marola.</li>
+        <li><b>marola-skills</b> e <b>marola-agents</b> listam as habilidades e os agentes de IA que trabalham no projeto.</li>
+        <li><b>marola-devkit</b> reúne as ferramentas que todos os repositórios usam.</li>
+        <li><b>marola</b>, o repositório guarda-chuva, tem os planos e as regras, e traz cada um dos outros como submódulo git.</li>
       </ul>
       <figure>
-        <a href="img/umbrella.pt-BR.svg"><img src="img/umbrella.pt-BR.svg" width="1000" height="620" alt="como os repositórios do marola dependem uns dos outros. o marola-corpus entrega anotações sobre o mar ao marola-app e ao marola-ml. a imagem Docker do marola-app monta o mapa do marola-site e roda o teste do marola-ml. o marola-ml devolve prompts compilados, e o marola-app grava no lago de dados do marola-oods. todos usam o marola-devkit."></a>
-        <figcaption>os repositórios do marola e o que cada um entrega aos outros. a mesma figura está no <a href="https://github.com/marola-dev/marola/blob/main/README.pt-BR.md">README do projeto</a>.</figcaption>
+        <a href="img/umbrella.pt-BR.svg"><img src="img/umbrella.pt-BR.svg" width="1000" height="712" alt="como os repositórios do marola se encaixam. o marola, o guarda-chuva, traz todos como submódulo git. o marola-corpus entrega um tarball de release ao marola-app e ao marola-ml. a imagem do marola-app monta o mapa do marola-site e leva imagem e recursos ao marola-ml, que devolve prompts compilados num PR. jobs de ETL gravam no lago de dados do marola-oods. todos fixam o marola-devkit por tag. o marola-skills lê cada SKILL.md, o marola-agents indexa cada agente, e o marola-research guarda a pesquisa."></a>
+        <figcaption>os repositórios do marola e o que cada um entrega aos outros. a figura é a mesma da <a href="https://github.com/marola-dev">página da organização no GitHub</a> (fonte: <a href="https://github.com/marola-dev/.github/blob/main/profile/README.md">marola-dev/.github</a>).</figcaption>
       </figure>
       <p>o nome disso é monólito distribuído. monólito porque funciona como uma peça só: um projeto,
       um plano, um jeito de trabalhar, e as versões das partes andam juntas. distribuído porque cada
       parte fica no seu próprio repositório, com os seus testes, e lança as suas próprias versões.</p>
-      <p>a gente fez assim por dois motivos. o primeiro: a gente escreve boa parte do código com
-      agentes de IA. eles trabalham melhor quando enxergam o projeto inteiro de cima, com um plano e
-      regras por escrito, e mexem numa parte pequena de cada vez. o segundo: cada parte também anda
-      sozinha, até certo ponto. quem só quer os dados de balneabilidade pode usar o marola-oods sem o
-      resto, e um erro numa bancada não derruba as outras. uma parte nunca usa o código da outra
+      <p>a gente fez assim por dois motivos. o primeiro: boa parte do código é escrita e mantida com o
+      Claude, da Anthropic, tanto num Claude Project quanto no Claude Code pelo terminal. o guarda-chuva
+      com submódulos ajuda nisso: o Claude enxerga o projeto inteiro de cima, com os planos e as regras
+      por escrito num lugar só, e mexe num repositório pequeno de cada vez, com os testes daquele
+      repositório. o segundo: cada parte também anda sozinha, até certo ponto. quem só quer os dados
+      de balneabilidade pode usar o marola-oods sem o resto, e um erro num repositório não derruba os
+      outros. uma parte nunca usa o código da outra
       direto: ela pega uma versão publicada e só troca de versão quando decide trocar.</p>
 
       <h2>como funciona a nota</h2>
@@ -220,29 +223,32 @@
       ads, banners or tracking.</p>
 
       <h2>How marola is built</h2>
-      <p>Think of a restaurant kitchen. Instead of one cook doing everything, each station has one job.
-      In marola, each station is a code repository:</p>
+      <p>marola is a set of code repositories, each with one job:</p>
       <ul>
-        <li><b>marola-app</b> is the stove: it brings together the sea forecast, the beaches and the water quality, and works out the score.</li>
-        <li><b>marola-site</b> is the dining room: the map you are using.</li>
-        <li><b>marola-corpus</b> is the recipe book: notes about the sea, each with its source.</li>
-        <li><b>marola-ml</b> is where the AI trains and gets tested before it reaches the stove.</li>
-        <li><b>marola-oods</b> is the pantry: an open archive of the beaches' and the water's history.</li>
-        <li><b>marola-devkit</b> is the toolbox every station uses.</li>
-        <li><b>marola</b>, the umbrella, is the chef's notebook: the plans, the rules and where each station sits.</li>
+        <li><b>marola-app</b> brings together the sea forecast, the beaches and the water quality, and works out the score.</li>
+        <li><b>marola-site</b> is the map you are using.</li>
+        <li><b>marola-corpus</b> keeps notes about the sea, each with its source.</li>
+        <li><b>marola-ml</b> trains and tests the AI before it reaches marola-app.</li>
+        <li><b>marola-oods</b> is an open archive of the beaches' and the water's history.</li>
+        <li><b>marola-research</b> holds marola's research.</li>
+        <li><b>marola-skills</b> and <b>marola-agents</b> list the skills and AI agents that work on the project.</li>
+        <li><b>marola-devkit</b> is the set of tools every repository uses.</li>
+        <li><b>marola</b>, the umbrella, holds the plans and the rules, and brings in every other repository as a git submodule.</li>
       </ul>
       <figure>
-        <a href="img/umbrella.svg"><img src="img/umbrella.svg" width="1000" height="620" alt="How marola's repositories depend on each other: marola-corpus feeds notes to marola-app and marola-ml, marola-app's image builds marola-site's map and runs marola-ml's benchmark, marola-ml returns compiled prompts, marola-app writes marola-oods' data lake; all of them use marola-devkit"></a>
-        <figcaption>marola's repositories and what each hands to the next. The same picture is in the <a href="https://github.com/marola-dev/marola/blob/main/README.md">project's README</a>.</figcaption>
+        <a href="img/umbrella.svg"><img src="img/umbrella.svg" width="1000" height="712" alt="How the marola repos fit together: marola, the umbrella, brings in every repo as a git submodule; marola-corpus hands a release tarball to marola-app and marola-ml; marola-app's image builds marola-site's map and brings image and resources to marola-ml, which returns compiled prompts in a PR; ETL jobs write marola-oods' data lake; every repo pins marola-devkit by tag; marola-skills reads every SKILL.md, marola-agents indexes every agent, and marola-research holds the science"></a>
+        <figcaption>marola's repositories and what each hands to the next. The picture is the one on the <a href="https://github.com/marola-dev">organization's GitHub page</a> (source: <a href="https://github.com/marola-dev/.github/blob/main/profile/README.en.md">marola-dev/.github</a>).</figcaption>
       </figure>
       <p>We call this a distributed monolith. It is one project, with one plan, one way of working and
       versions that move together, as if it were a single system. But each part lives in its own
       repository, with its own tests and releases.</p>
-      <p>We built it this way for two reasons. First, much of the code is written with AI agents, and they
-      work best when they can see the whole project from above, with a plan and written rules, and
-      change one small part at a time. Second, each part keeps some autonomy outside the umbrella.
-      Someone who only wants the water-quality data can use marola-oods without the rest, and a mistake
-      at one station does not take down the others. No part reads another's code: it uses a published
+      <p>We built it this way for two reasons. First, much of the code is written and maintained with
+      Anthropic's Claude, both in a Claude Project and in Claude Code from the terminal. The umbrella
+      with submodules helps with that: Claude sees the whole project from above, with the plans and the
+      rules written in one place, and changes one small repository at a time, with that repository's
+      tests. Second, each part keeps some autonomy outside the umbrella. Someone who only wants the
+      water-quality data can use marola-oods without the rest, and a mistake in one repository does
+      not take down the others. No part reads another's code: it uses a published
       version and moves to a new one only when it decides to.</p>
 
       <h2>How the score works</h2>
