@@ -23,13 +23,17 @@
       "commit": "3c7017d636c3a4aad378433ea6d0cfa6c921da4a",
       "files": {
         "LICENSE": "48a2f6640b81ff8eca9ce7f6a96337692713ef5b",
-        "SKILL.md": "b72132fcd466da605623ffe96e370b3991fc5285"
+        "SKILL.md": "1e79dbc600d3df214ebc14eb1c1390c1768e10bc"
       },
       "license": "MIT",
-      "local_edits": null,
+      "local_edits": "design-taste-frontend.patch",
       "hold": null,
       "paths": {
         "LICENSE": "LICENSE"
+      },
+      "upstream_files": {
+        "LICENSE": "48a2f6640b81ff8eca9ce7f6a96337692713ef5b",
+        "SKILL.md": "b72132fcd466da605623ffe96e370b3991fc5285"
       }
     },
     "emil-design-eng": {
