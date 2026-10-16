@@ -18,7 +18,7 @@ body. A later failure while chatting — a timeout (30 s) or a non-OK response �
 The widget's endpoint is the app's own chat server, exposed through a **named** Cloudflare Tunnel
 (a quick/ephemeral tunnel's URL changes every restart, which would break the committed config).
 The full walkthrough — Ollama setup, the server, the tunnel — is
-[RUN-LOCALLY §5.2](https://docs.marola.dev/1-Using-marola/RUN-LOCALLY/#52-plug-your-local-model-into-the-public-sites-chat-widget-mip-0033),
+[Chat and MCP](https://docs.marola.dev/1-Using-marola/CHAT-AND-MCP/#run-the-chat-server),
 in the umbrella: the commands below are its widget half.
 
 ```bash
@@ -38,4 +38,5 @@ window.MAROLA_CHAT_ENDPOINT = "https://chat.<your-domain>";
 
 `just site-build` copies `site/static/*` (including this file) into `site/dist/` as-is — unlike
 `mapbox-config.js`, there is no deploy-time rewrite. Leaving it empty is the default, committed
-state; RUN-LOCALLY §5.2 above has the trade-off of turning it on.
+state; Chat and MCP's [Turn on the widget](https://docs.marola.dev/1-Using-marola/CHAT-AND-MCP/#turn-on-the-widget) has the trade-off
+of turning it on.
