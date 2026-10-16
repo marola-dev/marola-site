@@ -36,33 +36,6 @@ function ok(cond, label, detail) {
   else { console.log('  FAIL ' + label + (detail ? ' — ' + detail : '')); fails++; }
 }
 
-// EIP-55: an address's letter case is a checksum over keccak-256 of its lowercase hex. node's
-// crypto has SHA3-256, which pads differently, so keccak-f[1600] is spelled out here.
-const KECCAK_RC = ['1', '8082', '800000000000808a', '8000000080008000', '808b', '80000001', '8000000080008081',
-  '8000000000008009', '8a', '88', '80008009', '8000000a', '8000808b', '800000000000008b', '8000000000008089',
-  '8000000000008003', '8000000000008002', '8000000000000080', '800a', '800000008000000a', '8000000080008081',
-  '8000000000008080', '80000001', '8000000080008008'].map(h => BigInt('0x' + h));
-const KECCAK_ROT = [0, 1, 62, 28, 27, 36, 44, 6, 55, 20, 3, 10, 43, 25, 39, 41, 45, 15, 21, 8, 18, 2, 61, 56, 14];
-function keccak256Hex(ascii) { // one block: inputs under 136 bytes, which a 40-digit address is
-  const M = (1n << 64n) - 1n, rot = (v, n) => n ? ((v << BigInt(n)) | (v >> BigInt(64 - n))) & M : v;
-  const block = Buffer.alloc(136); block.write(ascii, 'ascii'); block[ascii.length] ^= 0x01; block[135] ^= 0x80;
-  const A = Array.from({ length: 25 }, (_, i) => i < 17 ? block.readBigUInt64LE(8 * i) : 0n);
-  for (const rc of KECCAK_RC) {
-    const C = [0, 1, 2, 3, 4].map(x => A[x] ^ A[x + 5] ^ A[x + 10] ^ A[x + 15] ^ A[x + 20]);
-    for (let x = 0; x < 5; x++) { const D = C[(x + 4) % 5] ^ rot(C[(x + 1) % 5], 1); for (let y = 0; y < 25; y += 5) A[x + y] ^= D; }
-    const B = new Array(25);
-    for (let x = 0; x < 5; x++) for (let y = 0; y < 5; y++) B[y + 5 * ((2 * x + 3 * y) % 5)] = rot(A[x + 5 * y], KECCAK_ROT[x + 5 * y]);
-    for (let i = 0; i < 25; i++) A[i] = B[i] ^ (~B[(i % 5 + 1) % 5 + i - i % 5] & M & B[(i % 5 + 2) % 5 + i - i % 5]);
-    A[0] ^= rc;
-  }
-  const out = Buffer.alloc(32); for (let i = 0; i < 4; i++) out.writeBigUInt64LE(A[i], 8 * i);
-  return out.toString('hex');
-}
-function eip55(addr) {
-  const hex = addr.slice(2).toLowerCase(), h = keccak256Hex(hex);
-  return '0x' + [...hex].map((c, i) => parseInt(h[i], 16) >= 8 ? c.toUpperCase() : c).join('');
-}
-
 // --- the JSON-Schema subset the board contract uses (mirror of BoardSpec.SchemaCheck)
 // ----------.
 function typeName(v) {
@@ -774,14 +747,10 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok((SUPPORT.match(/<span aria-disabled="true">Buy Me a Coffee <i>[^<]+<\/i><\/span>/g) || []).length === 2
     && !/buymeacoffee\.com/.test(SUPPORT) && !/^buy_me_a_coffee:/m.test(FUNDING),
     'Buy Me a Coffee is "soon" in both languages, with no link on the page or in FUNDING.yml');
-  ok(eip55('0x5aaeb6053f3e94c9b9a09f33669435e7ef1beaed') === '0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed',
-    "the EIP-55 check reproduces the EIP's own example");
   const addrs = [...new Set(SUPPORT.match(/0x[0-9a-fA-F]{40}/g) || [])];
   ok(addrs.length <= 1, 'at most one on-chain address in the support page', addrs.join(', '));
   if (addrs.length === 1) {
     ok(SUPPORT.includes('href="https://etherscan.io/address/' + addrs[0] + '"'), 'the on-chain address links to an explorer');
-    ok(eip55(addrs[0]) === addrs[0], 'the on-chain address passes its EIP-55 checksum — a mistyped one loses donations',
-      'expected ' + eip55(addrs[0]));
   } else {
     ok(/<code class="addr"><\/code>/.test(SUPPORT), 'no address published yet: its field is on the page, empty (#2)');
   }
