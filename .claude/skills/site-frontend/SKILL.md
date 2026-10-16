@@ -34,7 +34,6 @@ frontend skills vendored next to it, which were written for landing pages and Re
 | `mapbox-style-patterns` | layer recipes when a Studio style or a new map layer is designed | mapbox/mapbox-agent-skills, MIT |
 | `mapbox-style-quality` | validating a style before `MAPBOX_STYLE` points at it: contrast, size, expressions | mapbox/mapbox-agent-skills, MIT |
 | `mapbox-token-security` | the public token: scopes, URL restrictions, rotation; never an `sk.` token in the page | mapbox/mapbox-agent-skills, MIT |
-| `mapbox-maplibre-migration` | the way out if Mapbox's price or licence stops fitting (MapLibre GL is BSD and keyless) | mapbox/mapbox-agent-skills, MIT |
 
 The vendored skills stay byte-identical to upstream (their licences sit next to them); marola's
 overrides live here, not in their files.
