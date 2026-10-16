@@ -60,7 +60,7 @@ map-load tier, billed above it).
   `news-post/` writes a news post and keeps its reading time computed; `frontend-design/`,
   `webapp-testing/` (anthropics/skills), `design-taste-frontend/` (Leonxlnx/taste-skill),
   `emil-design-eng/`, `review-animations/` and `break-ui/` (emilkowalski/skill),
-  `karpathy-guidelines/` (forrestchang/andrej-karpathy-skills) and the eight `mapbox-*/` skills
+  `karpathy-guidelines/` (forrestchang/andrej-karpathy-skills) and the seven `mapbox-*/` skills
   (mapbox/mapbox-agent-skills) are vendored unchanged with their licences, pinned in
   `.claude/skills/skills.lock` (MIP-0080): `skills-vendor check` verifies the copies, and
   `.github/workflows/skills.yml` opens a weekly update PR for a person to read.

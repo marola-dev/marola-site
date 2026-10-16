@@ -112,26 +112,6 @@
         "LICENSE.md": "LICENSE.md"
       }
     },
-    "mapbox-maplibre-migration": {
-      "upstream": "mapbox/mapbox-agent-skills",
-      "path": "skills/mapbox-maplibre-migration",
-      "commit": "9077a826f22b8c0565ad4df9d843bcecde61fa31",
-      "files": {
-        "AGENTS.md": "65cfd35a646aa83c3a52907a68b49637a3207f81",
-        "LICENSE.md": "37aa7b74801fc5aca37fe84ce5064fbe7777f57f",
-        "SKILL.md": "f2861f7d2960ee1220e9559129084a06ab6e24ae",
-        "evals/evals.json": "208d528b3cb1cf2089851e3b7e97ee9ef1ba4380",
-        "references/api-compatibility.md": "fd6db550bb80b6d91e41fe5a80b4c4b5eac47d8a",
-        "references/exclusive-features.md": "e752c0f33951752ea7779fe91f00b4eb0d7c05d1",
-        "references/why-mapbox.md": "5b697a3c77807b8bfe04be5b9319a4162c5e7809"
-      },
-      "license": "MIT",
-      "local_edits": null,
-      "hold": null,
-      "paths": {
-        "LICENSE.md": "LICENSE.md"
-      }
-    },
     "mapbox-style-patterns": {
       "upstream": "mapbox/mapbox-agent-skills",
       "path": "skills/mapbox-style-patterns",
