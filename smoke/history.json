@@ -2,6 +2,23 @@
  "schema": 1,
  "runs": [
   {
+   "run_id": "39438844627",
+   "run_url": "https://github.com/marola-dev/marola-app/actions/runs/39438844627",
+   "when": "2026-10-20T14:27:35Z",
+   "lat": -27.6733,
+   "lon": -48.47,
+   "model": "llama3.2:1b",
+   "ok": true,
+   "top_pick": {
+    "name": "Praia da Joaquina",
+    "score": 75
+   },
+   "review": {
+    "score": 80,
+    "verdict": "approve"
+   }
+  },
+  {
    "run_id": "39286354778",
    "run_url": "https://github.com/marola-dev/marola-app/actions/runs/39286354778",
    "when": "2026-10-19T16:39:55Z",
