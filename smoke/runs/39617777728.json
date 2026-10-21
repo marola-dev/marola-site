@@ -1,0 +1,21 @@
+{
+ "schema": 1,
+ "run_id": "39617777728",
+ "run_url": "https://github.com/marola-dev/marola-app/actions/runs/39617777728",
+ "when": "2026-10-21T14:42:38Z",
+ "model": "llama3.2:1b",
+ "image": "ghcr.io/marola-dev/marola-app:jvm",
+ "lat": -27.6733,
+ "lon": -48.47,
+ "radius_km": 15,
+ "origin_source": "--lat/--lon flags",
+ "exit_code": 1,
+ "ok": false,
+ "water": "IMA/SC",
+ "ranked": [],
+ "top_pick": null,
+ "draft": null,
+ "review": null,
+ "errors": [],
+ "stdout": "Picked up JAVA_TOOL_OPTIONS: -XX:+UseSerialGC -XX:MaxRAMPercentage=75 -XX:TieredStopAtLevel=1 --sun-misc-unsafe-memory-access=allow\nmarola :: the ocean intelligence layer (POC) — first case: best hour tomorrow to swim nearby\nconfig -> telegram=unset llm=http://localhost:11434/v1 llama3.2:1b embed=llama3.2 knowledge=./knowledge -> ./data/knowledge-index.json lore=on ask=General>=0.0 origin=auto radius=15km water=Auto facilities=Overpass sightings=./data/sightings.jsonl vision=llava mlflow=unset(experiment=marola) traces=Off\norigin -> lat=-27.6733, lon=-48.4700 (radius 15km, source: --lat/--lon flags)\nwater quality -> IMA/SC\n14:36:29.612 [kyo-scheduler-worker-2] WARN  marola.beaches.BeachFinder -- beaches: https://overpass-api.de/api/interpreter failed (Failure(java.net.http.HttpTimeoutException: request timed out)) — trying https://overpass.private.coffee/api/interpreter\n14:39:32.619 [kyo-scheduler-worker-2] WARN  marola.beaches.BeachFinder -- beaches: https://overpass.private.coffee/api/interpreter failed (Failure(java.net.http.HttpTimeoutException: request timed out)) — trying https://overpass.kumi.systems/api/interpreter\nPanic(java.net.http.HttpTimeoutException: request timed out)\nException in thread \"main\" java.net.http.HttpTimeoutException: request timed out\n\tat kyo.Scope.handle(Unknown Source)\n\tat run @ marola.Main$.?(Main.scala:528)\n\tat kyo.Abort[-scala.Any].handle(Unknown Source)\n\tat run @ marola.Main$.?(Main.scala:528)\n\tat kyo.kernel.Bracket$.Finalize.handle(Unknown Source)\n\tat run @ marola.Main$.?(Main.scala:528)\n\tat kyo.Abort[-scala.Any].handle(Unknown Source)\n\tat run @ marola.Main$.?(Main.scala:528)\n\tat kyo.Abort[-scala.Any].handle(Unknown Source)\n\tat run @ marola.Main$.?(Main.scala:528)\n\tat (kyo.Abort[-scala.Any] & kyo.Async$package$.Async$.Join).handle(Unknown Source)\n\tat java.net.http/jdk.internal.net.http.HttpClientImpl.send(Unknown Source)\n\tat java.net.http/jdk.internal.net.http.HttpClientFacade.send(Unknown Source)\n\tat marola.http.Http$Transport$$anon$1.send(Http.scala:31)\n\tat marola.http.Http$.loop$1(Http.scala:76)\n\tat marola.http.Http$.marola$http$Http$$$sendRetrying(Http.scala:87)\n\tat marola.http.Http$$anon$3.apply(Http.scala:133)\n\tat marola.http.Http$$anon$3.apply(Http.scala:125)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)\n\tat java.base/java.lang.Thread.run(Unknown Source)\n\tSuppressed: kyo.kernel.internal.EffectTrace: effect trace:\nat kyo.Scope.handle(Unknown Source)\nat run @ marola.Main$.?(Main.scala:528)\nat kyo.Abort[-scala.Any].handle(Unknown Source)\nat run @ marola.Main$.?(Main.scala:528)\nat kyo.kernel.Bracket$.Finalize.handle(Unknown Source)\nat run @ marola.Main$.?(Main.scala:528)\nat kyo.Abort[-scala.Any].handle(Unknown Source)\nat run @ marola.Main$.?(Main.scala:528)\nat kyo.Abort[-scala.Any].handle(Unknown Source)\nat run @ marola.Main$.?(Main.scala:528)\nat (kyo.Abort[-scala.Any] & kyo.Async$package$.Async$.Join).handle(Unknown Source)\n"
+}
