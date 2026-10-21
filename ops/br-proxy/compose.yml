@@ -21,13 +21,12 @@ services:
       - state:/var/lib/tailscale
     restart: unless-stopped
 
-  tinyproxy:
+  proxy:
     build: .
     network_mode: service:tailscale
     depends_on: [tailscale]
     volumes:
-      - ./node.conf:/etc/tinyproxy/tinyproxy.conf:ro
-      - ./filter:/etc/tinyproxy/filter:ro
+      - ./hosts:/etc/br-proxy/hosts:ro
     restart: unless-stopped
 
 volumes:

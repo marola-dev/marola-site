@@ -21,7 +21,8 @@
         # Docker is the host's, as in every marola repo: `just site-build` runs the pinned app image.
         devShells.default = pkgs.mkShell {
           name = "marola-site";
-          packages = [ pkgs.nodejs ] ++ devkit.tools;
+          # cargo and friends build ops/br-proxy/proxy (ADR-0002); picasso's labs/rust-agent (h0ffmann/picasso#142) replaces them once merged.
+          packages = [ pkgs.nodejs pkgs.cargo pkgs.rustc pkgs.clippy pkgs.rustfmt ] ++ devkit.tools;
           shellHook = devkit.shellHook + ''
             git config core.hooksPath .devkit/.githooks 2>/dev/null || true
             echo "marola-site dev shell. Run 'just' to see available commands."

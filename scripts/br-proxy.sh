@@ -148,10 +148,6 @@ self_test() {
 
   check "the default hosts are the two Brazil-only agencies" "$(hosts | tr '\n' ' ')" \
     "www.inea.rj.gov.br balneabilidade.inema.ba.gov.br "
-  check "the Brazilian end's filter allows each of them" \
-    "$(hosts | grep -cEf "$root/ops/br-proxy/filter")" 2
-  check "and nothing else" "$(printf 'open-meteo.com\noverpass-api.de\ninea.rj.gov.br.evil.example\n' |
-    grep -cEf "$root/ops/br-proxy/filter" || true)" 0
 
   out="$(config 'u:p@br.example:8888' /tmp/br-proxy.log /tmp/br-proxy.pid www.inea.rj.gov.br balneabilidade.inema.ba.gov.br)"
   check "each host given goes through Brazil" \

@@ -1,4 +1,4 @@
-// The only thing the tailnet allows: a CI runner reaches the proxy nodes' tinyproxy, nothing else.
+// The only thing the tailnet allows: a CI runner reaches the proxy nodes' proxy, nothing else.
 // Both tags are owned by the `marola` user, whose pre-auth keys carry them (scripts/headscale.sh).
 {
   "tagOwners": {

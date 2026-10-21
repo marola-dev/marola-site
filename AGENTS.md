@@ -47,7 +47,7 @@ map-load tier, billed above it).
   `br-proxy.sh` (the runner's router), `br-proxy-preflight.sh` (the flight check) and
   `br-proxy-node.sh` (`just br-proxy-node`).
 - `ops/br-proxy/`: the Brazilian proxy pool that INEA and INEMA, which answer only Brazilian
-  addresses, are reached through (#4): a volunteer node's compose file and allowlist, and
+  addresses, are reached through (#4): a volunteer node's compose file, its allowlist (`hosts`), its Rust proxy (`proxy/`) and
   [`JOIN.md`](ops/br-proxy/JOIN.md). `site.yml`'s flight check fails closed without a healthy
   node (secret `HEADSCALE_AUTHKEY` and variable `HEADSCALE_URL`, or the `MAROLA_BR_PROXY`
   override); the repo variable `BR_PROXY_REQUIRED=false` is a break glass, never a default. An
@@ -166,5 +166,5 @@ Plain JavaScript, no framework and no build step; the page keeps `script-src 'se
 third-party origins are Mapbox for the base map (style, tiles, fonts, the map-load count) and NASA
 GIBS for the satellite layers (public, keyless tiles, fetched only when a visitor picks one). A visible
 change goes through the `site-frontend` skill (which names the others), `node scripts/site_check.js`
-and before/after screenshots. Shell: `set -euo pipefail`, shellcheck-clean. Python: ruff. Comments
+and before/after screenshots. Shell: `set -euo pipefail`, shellcheck-clean. Python: ruff. Rust only under `agents/` (ADR-0001) and `ops/br-proxy/proxy/` ([ADR-0002](docs/adr/0002-rust-br-proxy-node.md)). Comments
 only for why, a trap, or a pointer, as the umbrella's AGENTS.md spells out.

@@ -58,7 +58,7 @@ board-schema *args:
 quality:
     #!/usr/bin/env bash
     set -euo pipefail
-    for tool in node python3 ruff shellcheck actionlint agents-check docs-lint; do command -v "$tool" >/dev/null || { echo "quality: $tool not installed — run inside 'nix develop'" >&2; exit 1; }; done
+    for tool in node python3 cargo ruff shellcheck actionlint agents-check docs-lint; do command -v "$tool" >/dev/null || { echo "quality: $tool not installed — run inside 'nix develop'" >&2; exit 1; }; done
     ruff check .
     ruff format --check .
     shellcheck --severity=error scripts/*.sh
@@ -81,6 +81,7 @@ quality:
     scripts/mip-trailer-check.sh --self-test
     scripts/br-proxy.sh --self-test
     scripts/br-proxy-preflight.sh --self-test
+    (cd ops/br-proxy/proxy && cargo fmt --check && cargo clippy --all-targets --locked -- -D warnings && cargo test --locked)
     agents-check
     docs-lint
 

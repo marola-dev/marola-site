@@ -9,7 +9,7 @@
 #   scripts/br-proxy-node.sh check    the same test CI's flight check makes, plus the refusals
 #
 # BR_PROXY_NODE_EXEC overrides how check runs a command next to the proxy (default: docker compose
-# exec into the tinyproxy service), so the check can be pointed at a bare tinyproxy container.
+# exec into the proxy service), so the check can be pointed at a bare proxy container.
 set -euo pipefail
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -34,7 +34,7 @@ near() {
     # shellcheck disable=SC2086 # a command prefix, split on purpose
     ${BR_PROXY_NODE_EXEC} "$@"
   else
-    compose exec -T tinyproxy "$@"
+    compose exec -T proxy "$@"
   fi
 }
 in_tailscale() { compose exec -T tailscale "$@"; }

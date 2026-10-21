@@ -30,6 +30,7 @@ jobs:
         python3 scripts/members_build.py --check
         node scripts/site_check.js
         node scripts/redirect_check.js
+        (cd ops/br-proxy/proxy && cargo fmt --check && cargo clippy --all-targets --locked -- -D warnings && cargo test --locked)
         git -c advice.detachedHead=false clone -q --depth 1 -b v0.20.4 https://github.com/marola-dev/marola-devkit /tmp/devkit && python3 /tmp/devkit/scripts/docs_lint.py .
 
   python:

@@ -87,7 +87,7 @@ few times a day, a few megabytes at most. The proxy reaches only those two hosts
 HTTPS except INEMA's first request, which is plain HTTP until marola-app is fixed (README.md).
 
 **What runs.** Two containers (`ops/br-proxy/compose.yml`): the official `tailscale/tailscale`
-image (pinned by digest) and a tinyproxy inside its network namespace, listening only on that
+image (pinned by digest) and our own small proxy (`ops/br-proxy/proxy/`, built from source in the image) inside its network namespace, listening only on that
 namespace's loopback. They publish no port on your machine or LAN. The recipe installs nothing on
 the host, and stops if Docker or Compose is missing.
 
@@ -132,8 +132,8 @@ asks the Headscale server: `just br-proxy-node down`, `docker volume rm marola-b
 **Stopping:** `just br-proxy-node down` (it keeps its identity for the next `up`). **Leaving the
 pool:** `down`, ask the admin to remove the node, then `docker volume rm marola-br-proxy_state`.
 
-**Do not:** reuse or share a key; change `filter`, `node.conf` or the compose file (the allowlist
-is what keeps your node from being anyone's open proxy); publish port 8888, or run tinyproxy
+**Do not:** reuse or share a key; change `hosts`, `proxy/` or the compose file (the allowlist
+is what keeps your node from being anyone's open proxy); publish port 8888, or run the proxy
 outside these containers.
 
 ## 3. Client side: CI (nothing to install)

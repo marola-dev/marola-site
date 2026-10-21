@@ -23,16 +23,15 @@ site.yml build job (GitHub runner)
   ├─ scripts/br-proxy.sh start: a tinyproxy on the runner's 127.0.0.1:8899 that sends the hosts in
   │    ./hosts through that node and everything else (Overpass, Open-Meteo) direct
   └─ the app image, with --network host and JDK_JAVA_OPTIONS pointing its JVM at 127.0.0.1:8899
-        └─> pool node in Brazil (./compose.yml: tailscale + tinyproxy, ./node.conf, ./filter)
+        └─> pool node in Brazil (./compose.yml: tailscale + proxy/, ./hosts)
               └─> www.inea.rj.gov.br / balneabilidade.inema.ba.gov.br
 ```
 
 | File | What it is |
 |---|---|
-| `hosts` | The Brazil-only hosts the runner routes through the pool. Keep `filter` in step |
-| `filter` | The node's allowlist: those two agencies' domains, nothing else |
-| `node.conf` | The node's tinyproxy: loopback only, `FilterDefaultDeny`, tunnels to 443 only |
-| `compose.yml`, `Dockerfile` | The node: the official `tailscale/tailscale` image and tinyproxy in its network namespace |
+| `hosts` | The Brazil-only hosts the runner routes through the pool, and the node's allowlist too (exact names, nothing else) |
+| `proxy/` | The node's proxy: our own Rust binary, std only ([ADR-0002](../../docs/adr/0002-rust-br-proxy-node.md)). It listens on loopback only (`127.0.0.1:8888`), tunnels `CONNECT` to port 443 only, forwards plain HTTP to port 80 only, and answers 403 to every other host or port; `cargo test` covers each refusal |
+| `compose.yml`, `Dockerfile` | The node: the official `tailscale/tailscale` image and the proxy in its network namespace; the Dockerfile builds and tests the proxy, pinned by digest |
 | `.env.example` | The node's Headscale URL and one-off auth key placeholders; copy to `.env` (gitignored) |
 | [`JOIN.md`](JOIN.md) | How to add a machine to the pool, safely (the admin's one-time setup and the volunteer's steps) |
 
