@@ -186,7 +186,7 @@ Claude Code CLI under its `AGENTS.md`, or builds a project of their own from thi
 
 These stay out of this file:
 
-- the Mapbox token and account, the Tailscale tailnet and every secret, which are a person's
+- the Mapbox token and account, the Headscale server and every secret, which are a person's
   (`AGENTS.md`, "Cost & deployment safety")
 - project memory, chat history and project files
 - model ids, e-mail addresses, account ids and session ids

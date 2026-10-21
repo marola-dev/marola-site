@@ -51,26 +51,26 @@ jobs:
       contents: read
       packages: read
     env:
-      HAS_TAILSCALE: ${{ secrets.TAILSCALE_OAUTH_CLIENT_ID != '' && secrets.TAILSCALE_OAUTH_SECRET != '' }}
+      HAS_TAILNET: ${{ secrets.HEADSCALE_AUTHKEY != '' && vars.HEADSCALE_URL != '' }}
     steps:
       - uses: actions/checkout@v7
 
       # #4: INEA (Rio) and INEMA (Bahia) answer only Brazilian addresses, so the build reaches them
-      # through a node of the Brazilian proxy pool (ops/br-proxy/JOIN.md), over the org's tailnet.
+      # through a node of the Brazilian proxy pool (ops/br-proxy/JOIN.md), over the org's tailnet
+      # (a self-hosted Headscale; the key carries tag:ci, so there is no tags: input).
       # The flight check fails closed: with no healthy node it stops the job here, before any board
       # is built, so nothing deploys and marola.dev keeps serving the last deployed site. The repo
       # variable BR_PROXY_REQUIRED=false (break glass) lets the build go on without the proxy.
       # The join's own failure is left to the flight check, which names it.
-      - name: Join the tailnet (TAILSCALE_OAUTH_CLIENT_ID/TAILSCALE_OAUTH_SECRET)
+      - name: Join the tailnet (HEADSCALE_AUTHKEY, HEADSCALE_URL)
         id: tailscale
-        if: env.HAS_TAILSCALE == 'true'
+        if: env.HAS_TAILNET == 'true'
         continue-on-error: true
         timeout-minutes: 2
         uses: tailscale/github-action@d1b6cd204f8dceda5b3eaad7f1f767be390056cd # v4.2.0
         with:
-          oauth-client-id: ${{ secrets.TAILSCALE_OAUTH_CLIENT_ID }}
-          oauth-secret: ${{ secrets.TAILSCALE_OAUTH_SECRET }}
-          tags: tag:ci
+          authkey: ${{ secrets.HEADSCALE_AUTHKEY }}
+          args: --login-server=${{ vars.HEADSCALE_URL }}
 
       # The first pool node that really reaches INEA becomes the upstream of a router on the
       # runner that sends only ops/br-proxy/hosts through it. MAROLA_BR_PROXY, if set, overrides

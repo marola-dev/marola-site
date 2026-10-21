@@ -58,7 +58,7 @@ preflight() {
   case "$tailnet" in
     "" | success) ;;
     skipped)
-      fail "TAILSCALE_OAUTH_CLIENT_ID/TAILSCALE_OAUTH_SECRET are not set, so the runner did not join the tailnet"
+      fail "HEADSCALE_AUTHKEY/HEADSCALE_URL are not set, so the runner did not join the tailnet"
       return
       ;;
     *)
@@ -155,7 +155,7 @@ EOF
   printf '#!/usr/bin/env bash\nexit 1\n' >"$t/ts-down" && chmod +x "$t/ts-down"
   check "tailscale not connected: exit 1" "$(tailscale="$t/ts-down" rc preflight 2>/dev/null)" 1
   check "the tailnet step skipped (no secrets): exit 1, naming the secrets" \
-    "$(tailnet=skipped rc preflight 2>"$t/err"; grep -c 'TAILSCALE_OAUTH_CLIENT_ID/TAILSCALE_OAUTH_SECRET are not set' "$t/err")" "1
+    "$(tailnet=skipped rc preflight 2>"$t/err"; grep -c 'HEADSCALE_AUTHKEY/HEADSCALE_URL are not set' "$t/err")" "1
 1"
   check "the tailnet join failed: exit 1, naming the step" \
     "$(tailnet=failure rc preflight 2>"$t/err"; grep -c 'the tailnet join failed (failure)' "$t/err")" "1

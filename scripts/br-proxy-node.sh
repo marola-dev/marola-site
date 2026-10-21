@@ -44,6 +44,7 @@ joined() { compose run --rm --no-deps -T --entrypoint test tailscale -s /var/lib
 up() {
   need_docker
   local key=""
+  [ -n "${HEADSCALE_URL:-}" ] || grep -qs '^HEADSCALE_URL=..*' "$dir/.env" || die "no HEADSCALE_URL in ops/br-proxy/.env (the marola admin's Headscale server, https://…)"
   if ! grep -qs '^TS_AUTHKEY=..*' "$dir/.env" && ! joined; then
     [ -t 0 ] || die "no TS_AUTHKEY in ops/br-proxy/.env and no terminal to ask for it"
     read -rsp "One-off auth key from the marola admin (not shown): " key
@@ -83,7 +84,7 @@ status() {
     say "not running (just br-proxy-node up)"
     return 1
   fi
-  ts_json | near jq -r '"tailnet: \(.CurrentTailnet.Name // "none (not joined)")",
+  ts_json | near jq -r '"tailnet: \(if .CurrentTailnet then "joined" else "none (not joined)" end)",
     "node:    \(.Self.DNSName // "?" | rtrimstr("."))  \(.Self.TailscaleIPs // [] | join(" "))",
     "state:   \(.BackendState)",
     "tags:    \(.Self.Tags // [] | join(", ") | if . == "" then "none (the admin'"'"'s key must carry tag:br-proxy)" else . end)"'
@@ -117,7 +118,7 @@ check() {
   connect="${out#* }"
   if [ "$connect" = 403 ]; then ok "a tunnel to a port other than 443 is refused (CONNECT 403)"; else bad "a tunnel to port 8443 is not refused: [$out]"; fi
 
-  # Where the node egresses, without asking a third-party IP service: Tailscale's own nearest relay.
+  # Where the node egresses, without asking a third-party IP service: Tailscale's public relay map, which Headscale serves too.
   if [ -z "${BR_PROXY_NODE_EXEC:-}" ]; then
     out="$(in_tailscale tailscale netcheck 2>/dev/null | grep -i 'nearest derp' || true)"
     case "$out" in

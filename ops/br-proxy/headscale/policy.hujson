@@ -1,0 +1,11 @@
+// The only thing the tailnet allows: a CI runner reaches the proxy nodes' tinyproxy, nothing else.
+// Both tags are owned by the `marola` user, whose pre-auth keys carry them (scripts/headscale.sh).
+{
+  "tagOwners": {
+    "tag:ci": ["marola@"],
+    "tag:br-proxy": ["marola@"],
+  },
+  "acls": [
+    {"action": "accept", "src": ["tag:ci"], "dst": ["tag:br-proxy:8888"], "proto": "tcp"},
+  ],
+}

@@ -29,6 +29,11 @@ site-build area="":
 br-proxy-node action="status":
     scripts/br-proxy-node.sh {{ action }}
 
+# The tailnet's Headscale server, in a container: up | down | logs | nodes | key-ci | key-node
+# (ops/br-proxy/headscale/; needs docker and compose, installs nothing).
+headscale action:
+    scripts/headscale.sh {{ action }}
+
 # Serve site/dist at http://localhost:8000.
 site-serve port="8000":
     python3 -m http.server -d site/dist {{ port }}

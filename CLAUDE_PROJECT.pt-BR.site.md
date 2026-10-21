@@ -197,7 +197,7 @@ deste arquivo:
 
 ## 7. O que fica fora deste arquivo
 
-- o token e a conta do Mapbox, a tailnet do Tailscale e todo segredo, que são de uma pessoa
+- o token e a conta do Mapbox, o servidor Headscale e todo segredo, que são de uma pessoa
   (`AGENTS.md`, "Cost & deployment safety")
 - a memória do projeto, o histórico de conversas e os arquivos do projeto
 - ids de modelo, endereços de e-mail, ids de conta e ids de sessão

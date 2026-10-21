@@ -15,7 +15,8 @@ services:
       TS_STATE_DIR: /var/lib/tailscale
       TS_USERSPACE: "true"
       TS_HOSTNAME: ${BR_PROXY_NODE_NAME:-br-proxy}
-      TS_EXTRA_ARGS: --advertise-tags=tag:br-proxy
+      # The key carries tag:br-proxy; advertising it too could be refused by the policy.
+      TS_EXTRA_ARGS: --login-server=${HEADSCALE_URL:?set HEADSCALE_URL in ops/br-proxy/.env}
     volumes:
       - state:/var/lib/tailscale
     restart: unless-stopped

@@ -4,79 +4,76 @@ The map's build reaches Rio's (INEA) and Bahia's (INEMA) bathing-water agencies,
 Brazilian addresses, through small proxies on volunteers' machines in Brazil
 ([README.md](README.md) has the design). This page is the whole setup, step by step.
 
-## 0. What Tailscale is here
+## 0. What Headscale is here
 
-Tailscale is a private network (a "tailnet") that lets the CI runner reach one port on a
-volunteer's machine in Brazil, and nothing else. Nobody opens a port on a router, and the
-machines see only what the tailnet's single rule allows.
+The runner and the volunteers' machines form a small private network (it runs on the Tailscale
+client) that lets the CI runner reach one port on a volunteer's machine in Brazil, and nothing
+else. Nobody opens a port on a router, and the machines see only what the network's single rule
+allows. Its coordination server is **Headscale**, open source and self-hosted by the org (it
+replaced Tailscale's, whose trial ended).
 
-- **Admin:** sets up the org's tailnet once, and hands out keys.
+- **Admin:** hosts the Headscale server once, and hands out keys.
 - **Server side, a proxy node:** a volunteer's machine running `just br-proxy-node`, tagged
   `tag:br-proxy`.
 - **Client side, CI:** the GitHub runner of `site.yml`, tagged `tag:ci`, which joins for one run
-  through an OAuth client and is removed afterwards (an ephemeral node).
+  with a pre-auth key and is removed afterwards (an ephemeral node).
 
 **The build depends on it.** `site.yml`'s flight check fails closed: when the runner cannot join
-the tailnet, or no `tag:br-proxy` node passes a real request to INEA, the job stops before any
-board is built. Nothing deploys, and marola.dev keeps serving the last deployed site, for **every**
-area (Florianópolis's forecast too), until a node is healthy again or the break glass below is
-used.
+(the Headscale server being down included), or no `tag:br-proxy` node passes a real request to
+INEA, the job stops before any board is built. Nothing deploys, and marola.dev keeps serving the
+last deployed site, for **every** area (Florianópolis's forecast too), until a node is healthy
+again or the break glass below is used.
 
-Admin console links below go through Tailscale's login, so their paths could not be checked
-without an account; the page names are the ones Tailscale's docs use (checked 2026-10-06).
+## 1. Admin, once: the Headscale server
 
-## 1. Admin, once: the org's tailnet
+1. **Host it.** It needs a machine that is always on and reachable from the internet over HTTPS (a
+   public IPv4/IPv6, or a forwarded port 443; CGNAT, common on Brazilian home connections, breaks
+   this), a DNS A/AAAA record for its name (dynamic DNS if the IP changes), and Docker. It can be
+   the same machine as a pool node. Cost: $0. The server, its domain and the keys are a person's
+   job (AGENTS.md's cost rule).
 
-1. **Sign up with the org's identity**: <https://login.tailscale.com/start> → *Sign up with
-   GitHub* → *Authorize tailscale* → on *Select a tailnet*, pick the **marola-dev organization**,
-   not a personal account. Tailscale supports a GitHub organization as the tailnet's identity, and
-   whoever does this must be an **owner of the GitHub organization**
-   ([GitHub identity](https://tailscale.com/docs/integrations/identity/github)). The tailnet then
-   belongs to marola-dev, not to a person. The plan is the free Personal plan
-   ([pricing](https://tailscale.com/pricing)); whether a nonprofit may use it is unverified
-   (Tailscale gives nonprofit pricing on request). Admin console: <https://login.tailscale.com/admin>.
-2. **Access controls** (<https://login.tailscale.com/admin/acls>, the JSON editor). Replace the
-   whole default policy, its allow-all rule and its `ssh` section included, with:
-
-   ```json
-   {
-     "tagOwners": {
-       "tag:ci": ["autogroup:admin"],
-       "tag:br-proxy": ["autogroup:admin"]
-     },
-     "grants": [
-       {"src": ["tag:ci"], "dst": ["tag:br-proxy"], "ip": ["tcp:8888"]}
-     ]
-   }
+   ```bash
+   cp ops/br-proxy/headscale/.env.example ops/br-proxy/headscale/.env
+   # edit it: HEADSCALE_HOST is the public DNS name that points at this machine
+   just headscale up           # Let's Encrypt is built in; ports 80 and 443 must reach it
    ```
 
-   That is the only grant ([grants](https://tailscale.com/kb/1324/grants),
-   [tags](https://tailscale.com/kb/1068/tags)). CI reaches port 8888 on pool nodes and nothing
-   else; nothing is granted *from* `tag:br-proxy`, so a node reaches neither another node, nor
-   CI, nor any other device. The admin's own devices lose access too, which is intended.
-3. **Device approval on**: the *Device management* page,
-   <https://login.tailscale.com/admin/settings/device-management>
-   ([device approval](https://tailscale.com/kb/1099/device-approval)).
-4. **The CI OAuth client**: the *Trust credentials* page,
-   <https://login.tailscale.com/admin/settings/trust-credentials> → *Credential* → *OAuth*;
-   scope `auth_keys` (write), tag `tag:ci`
-   ([OAuth clients](https://tailscale.com/kb/1215/oauth-clients)). Copy its ID and secret into
-   the secrets **`TAILSCALE_OAUTH_CLIENT_ID`** and **`TAILSCALE_OAUTH_SECRET`**, as org secrets
-   that include marola-site or as marola-site's repo secrets:
-   <https://github.com/marola-dev/marola-site/settings/secrets/actions> (Settings → Secrets and
-   variables → Actions; needs repo admin).
-5. **One auth key per volunteer**: the *Keys* page, <https://login.tailscale.com/admin/settings/keys>
-   → *Generate auth key*: **not reusable** (one-off), **pre-approved**, **tagged** `tag:br-proxy`,
-   **not ephemeral** (the node should survive restarts), short expiry (1 day is plenty: the key
-   matters only for the first join) ([auth keys](https://tailscale.com/kb/1085/auth-keys)). Send
-   it over a private channel (a direct message, not an issue, PR, or group chat).
-6. **Leave `BR_PROXY_REQUIRED` unset.** Unset means true: no healthy node, no deploy. It is a
+   Check `https://<HEADSCALE_HOST>/health` from outside the machine. `just headscale logs` shows
+   why if it does not answer. Back up the sqlite volume; losing it only means re-enrolling the
+   nodes.
+2. **The policy is in the repo** (`ops/br-proxy/headscale/`), nothing to edit in a console (Headscale
+   has none). It is one grant: `tag:ci` to `tag:br-proxy` on `tcp:8888`. CI reaches port 8888 on
+   pool nodes and nothing else; nothing is granted *from* `tag:br-proxy`, so a node reaches neither
+   another node, nor CI, nor any other device.
+3. **The CI key and URL.** `just headscale key-ci` prints a reusable, ephemeral pre-auth key tagged
+   `tag:ci`. Store it, and the server's URL, as marola-site's secrets and variables
+   (<https://github.com/marola-dev/marola-site/settings/secrets/actions>; needs repo admin):
+
+   ```bash
+   just headscale key-ci | gh secret set HEADSCALE_AUTHKEY -R marola-dev/marola-site
+   gh variable set HEADSCALE_URL -R marola-dev/marola-site --body https://<HEADSCALE_HOST>
+   ```
+
+   The key **expires after 90 days**: rotate it by repeating this step (a recurring chore; the
+   flight check reports a missing or refused key). Then delete the old `TAILSCALE_OAUTH_CLIENT_ID`
+   and `TAILSCALE_OAUTH_SECRET` secrets.
+4. **One key per volunteer**: `just headscale key-node` prints a one-off pre-auth key tagged
+   `tag:br-proxy`: **not reusable**, **not ephemeral** (the node should survive restarts), 1 day
+   expiry (it matters only for the first join). There is no device approval step; the tag and the
+   one-off key are the control. Send it over a private channel (a direct message, not an issue, PR,
+   or group chat), together with the server's URL.
+5. **Leave `BR_PROXY_REQUIRED` unset.** Unset means true: no healthy node, no deploy. It is a
    repo *variable* (<https://github.com/marola-dev/marola-site/settings/variables/actions>), the
    break glass: set to `false`, the build goes on without the proxy (Rio and Salvador water
    quality read "no data") so the rest of the map keeps updating. Set it only while the pool is
    down, and delete it as soon as a node is back. Never make it the default.
-7. **Revoking a node**: the *Machines* page, <https://login.tailscale.com/admin/machines> → the
-   node → *Remove*. Its one-off key is already spent.
+6. **Revoking a node**: `just headscale nodes` lists them with their ids, then:
+
+   ```bash
+   docker compose -f ops/br-proxy/headscale/compose.yml exec headscale headscale nodes delete --identifier <id>
+   ```
+
+   Its one-off key is already spent.
 
 ## 2. Server side: a volunteer's proxy node
 
@@ -97,11 +94,11 @@ the host, and stops if Docker or Compose is missing.
 ```bash
 git clone https://github.com/marola-dev/marola-site && cd marola-site
 cp ops/br-proxy/.env.example ops/br-proxy/.env
-# edit ops/br-proxy/.env: paste the key after TS_AUTHKEY=, and name the node (BR_PROXY_NODE_NAME,
-# e.g. br-proxy-yourname). Or leave TS_AUTHKEY empty and `up` asks for it without showing it.
+# edit ops/br-proxy/.env: set HEADSCALE_URL (the admin sends it), paste the key after TS_AUTHKEY=,
+# and name the node (BR_PROXY_NODE_NAME, e.g. br-proxy-yourname). Or leave TS_AUTHKEY empty and `up` asks for it without showing it.
 just br-proxy-node up       # joins the pool; the key is used once
 just br-proxy-node check
-just br-proxy-node status   # tailnet, name, tag, uptime
+just br-proxy-node status   # network, name, tag, uptime
 ```
 
 `check` should print:
@@ -113,7 +110,7 @@ just br-proxy-node status   # tailnet, name, tag, uptime
   ok   https://example.com/ is refused (CONNECT 403)
   ok   a tunnel to a port other than 443 is refused (CONNECT 403)
   ok   egress looks Brazilian (São Paulo)
-  ok   on the tailnet
+  ok   on the network
 br-proxy-node check: ok
 ```
 
@@ -121,15 +118,19 @@ The "egress" line asks Tailscale's own netcheck for the nearest relay (no third-
 service) and warns if it is not São Paulo, since a machine whose traffic leaves Brazil (through a
 VPN, say) is no use to the agencies.
 
-**In the admin console** (Machines), the node shows up under its name with the tag
-`tag:br-proxy` and key expiry disabled (tagged devices do not expire).
+**For the admin**, `just headscale nodes` lists the node under its name with the tag
+`tag:br-proxy`.
 
 **Keeping it running.** Both containers restart unless stopped, so the node comes back after a
 reboot once Docker starts. Its identity lives in the `marola-br-proxy_state` volume; you can
 delete `TS_AUTHKEY` from `.env` after the first `up`, it is spent anyway.
 
+**A node that joined the old Tailscale tailnet** keeps that identity in its state volume and never
+asks the Headscale server: `just br-proxy-node down`, `docker volume rm marola-br-proxy_state`, add
+`HEADSCALE_URL` and a new one-off key to `.env`, then `just br-proxy-node up`.
+
 **Stopping:** `just br-proxy-node down` (it keeps its identity for the next `up`). **Leaving the
-pool:** `down`, ask the admin to remove the device, then `docker volume rm marola-br-proxy_state`.
+pool:** `down`, ask the admin to remove the node, then `docker volume rm marola-br-proxy_state`.
 
 **Do not:** reuse or share a key; change `filter`, `node.conf` or the compose file (the allowlist
 is what keeps your node from being anyone's open proxy); publish port 8888, or run tinyproxy
@@ -139,10 +140,9 @@ outside these containers.
 
 Every `site.yml` run (schedule, push, dispatch, and same-repo PRs):
 
-1. `tailscale/github-action` (pinned by commit SHA) joins as an ephemeral `tag:ci` node with
-   `TAILSCALE_OAUTH_CLIENT_ID` / `TAILSCALE_OAUTH_SECRET`
-   ([GitHub Action](https://tailscale.com/kb/1276/tailscale-github-action),
-   [ephemeral nodes](https://tailscale.com/docs/features/ephemeral-nodes)).
+1. `tailscale/github-action` (pinned by commit SHA) joins as an ephemeral `tag:ci` node, with
+   `HEADSCALE_AUTHKEY` and `--login-server=$HEADSCALE_URL`; the tag comes from the key
+   ([GitHub Action](https://tailscale.com/kb/1276/tailscale-github-action)).
 2. The flight check (`scripts/br-proxy-preflight.sh`) lists the online `tag:br-proxy` peers and
    tries each, ~10 s apiece and 60 s in all, with a real request to `https://www.inea.rj.gov.br/`;
    the first 2xx/3xx is used.
@@ -153,24 +153,23 @@ Every `site.yml` run (schedule, push, dispatch, and same-repo PRs):
 *Run workflow*, which also deploys) and look for
 `br-proxy-preflight: using <node> (<ip>): https://www.inea.rj.gov.br/ answered HTTP 200 in 0.4s`
 in the "Flight check" step, and for "What went through the Brazilian proxy" listing INEA's host.
-On Machines, an ephemeral `tag:ci` node appears during the run and goes away after it.
+In `just headscale nodes`, an ephemeral `tag:ci` node appears during the run and goes away after it.
 
 **Reading a failure.** Every flight-check error starts `::error::br-proxy flight check:` and ends
 with what happens next (no boards, no deploy, the last site stays up, the break glass). The cause:
 
 | The error says | It means | Do |
 |---|---|---|
-| `TAILSCALE_OAUTH_CLIENT_ID/TAILSCALE_OAUTH_SECRET are not set` | the secrets are missing | step 1.4 |
-| `the tailnet join failed (failure)` | the OAuth client was refused, or Tailscale was unreachable | check the "Join the tailnet" step, the client's scope and tag |
-| `no tag:br-proxy node is online in the tailnet` | no volunteer node is up | `just br-proxy-node up` on a node; `status` there |
+| `HEADSCALE_AUTHKEY/HEADSCALE_URL are not set` | the secret or the variable is missing | step 1.3 |
+| `the tailnet join failed (failure)` | the key expired or was refused, or the Headscale server was unreachable | check the join step, `https://<host>/health`, `just headscale logs`; rotate the key (1.3) |
+| `no tag:br-proxy node is online` | no volunteer node is up | `just br-proxy-node up` on a node; `status` there |
 | `tag:br-proxy nodes are online, but none passed the request to …` | a node is up but cannot reach INEA (or the grant is wrong) | `just br-proxy-node check` on the node; the policy in step 1.2 |
 | `the runner's router did not come up through the chosen proxy` | the node passed the check but failed the second probe | re-run; then `check` on the node |
 
 ## 4. Turning the pool on, in order
 
-1. Admin: steps 1.1 to 1.4 (tailnet, policy, device approval, the CI OAuth client and its two
-   repo secrets).
-2. Admin: step 1.5, one key for the first node (the maintainer's own machine is fine).
+1. Admin: steps 1.1 to 1.3 (the Headscale server, its policy, the CI key and URL in the repo).
+2. Admin: step 1.4, one key for the first node (the maintainer's own machine is fine).
 3. Volunteer: section 2 (`up`, then `check` all ok, then `status` shows `tag:br-proxy`).
 4. Wait for the next scheduled `site.yml` run (or start one from Actions → site → *Run workflow*)
    and confirm
@@ -178,9 +177,9 @@ with what happens next (no boards, no deploy, the last site stays up, the break 
 
 ## What each side trusts (threat model)
 
-- **A leaked CI credential** (the OAuth client, or a runner mid-job) can reach only port 8888 on
+- **A leaked CI credential** (the `HEADSCALE_AUTHKEY`, or a runner mid-job) can reach only port 8888 on
   pool nodes, and through them only the two agencies' hosts.
-- **A node** can reach nothing in the tailnet: there is no grant from `tag:br-proxy`. A hostile
+- **A node** can reach nothing on the network: there is no grant from `tag:br-proxy`. A hostile
   node can only answer the build's requests to the two agencies badly, and the flight check skips
   a node that does not answer.
 - **The agencies** see the volunteer's IP address.
