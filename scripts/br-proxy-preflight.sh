@@ -130,7 +130,9 @@ EOF
   check "all dead: exit 1" "$(MAROLA_BR_PROXY="$A $B" rc run "")" 1
   check "the ::error:: names each node by host:port" \
     "$(grep -c '^::error::.*none of the 2.*a\.example:8888 (HTTP 000).*b\.example:9000 (HTTP 000).*no deploy.*BR_PROXY_REQUIRED=false' "$t/err")" 1
-  check "and no password appears anywhere in the output" "$(grep -c 'pwAAAA\|pwBBBB' "$t/err" || true)" 0
+  # The ::add-mask:: lines carry the passwords by design (under Actions, CI's own run included).
+  check "and no password appears in the output outside the masks" \
+    "$(grep -v '^::add-mask::' "$t/err" | grep -c 'pwAAAA\|pwBBBB' || true)" 0
   check "unset: exit 1, saying so" "$(MAROLA_BR_PROXY='' rc run "" ; grep -c 'MAROLA_BR_PROXY is not set' "$t/err")" "1
 1"
   check "blank is unset too" "$(MAROLA_BR_PROXY=$' \n ' rc run "")" 1
