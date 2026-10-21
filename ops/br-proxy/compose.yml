@@ -1,33 +1,20 @@
 # A Brazilian proxy pool node (#4): `just br-proxy-node up|down|status|check`, ops/br-proxy/JOIN.md.
-# Both containers share one network namespace that is not the host's: nothing is published on the
-# machine or its LAN, and the volunteer's own Tailscale, if any, is untouched.
+# The proxy is published on BR_PROXY_PORT for the volunteer to forward on the router; it refuses
+# every request without the password (BR_PROXY_USER:BR_PROXY_PASSWORD from .env) and every host
+# outside ./hosts.
 name: marola-br-proxy
 
 services:
-  tailscale:
-    image: tailscale/tailscale:v1.94.2@sha256:95e528798bebe75f39b10e74e7051cf51188ee615934f232ba7ad06a3390ffa1
-    hostname: ${BR_PROXY_NODE_NAME:-br-proxy}
-    environment:
-      # From .env or the recipe's prompt, never the command line. Used once: the node's identity
-      # then lives in the state volume, so a restart never needs (or reuses) the one-off key.
-      TS_AUTHKEY: ${TS_AUTHKEY:-}
-      TS_AUTH_ONCE: "true"
-      TS_STATE_DIR: /var/lib/tailscale
-      TS_USERSPACE: "true"
-      TS_HOSTNAME: ${BR_PROXY_NODE_NAME:-br-proxy}
-      # The key carries tag:br-proxy; advertising it too could be refused by the policy.
-      TS_EXTRA_ARGS: --login-server=${HEADSCALE_URL:?set HEADSCALE_URL in ops/br-proxy/.env}
-    volumes:
-      - state:/var/lib/tailscale
-    restart: unless-stopped
-
   proxy:
     build: .
-    network_mode: service:tailscale
-    depends_on: [tailscale]
+    ports:
+      - "${BR_PROXY_PORT:-8888}:8888"
+    environment:
+      BR_PROXY_AUTH: ${BR_PROXY_USER:?set BR_PROXY_USER in ops/br-proxy/.env}:${BR_PROXY_PASSWORD:?set BR_PROXY_PASSWORD in ops/br-proxy/.env (just br-proxy-node up generates one)}
+      BR_PROXY_LISTEN: 0.0.0.0:8888
     volumes:
       - ./hosts:/etc/br-proxy/hosts:ro
+    read_only: true
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
     restart: unless-stopped
-
-volumes:
-  state:

@@ -24,15 +24,10 @@ site-build area="":
     scripts/mapbox_config.sh site/dist  # MAPBOX_PUBLIC_TOKEN=pk.… from your shell, or no base map
     scripts/stamp_site_version.sh site/dist
 
-# Run this machine as a Brazilian proxy pool node, in containers: up | down | status | check
+# Run this machine as a Brazilian proxy pool node, in containers: up | down | status | check [--from-outside URL]
 # (ops/br-proxy/JOIN.md; needs docker and compose, installs nothing).
-br-proxy-node action="status":
-    scripts/br-proxy-node.sh {{ action }}
-
-# The tailnet's Headscale server, in a container: up | down | logs | nodes | key-ci | key-node
-# (ops/br-proxy/headscale/; needs docker and compose, installs nothing).
-headscale action:
-    scripts/headscale.sh {{ action }}
+br-proxy-node action="status" *args:
+    scripts/br-proxy-node.sh {{ action }} {{ args }}
 
 # Serve site/dist at http://localhost:8000.
 site-serve port="8000":

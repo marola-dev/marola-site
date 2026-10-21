@@ -43,18 +43,17 @@ delete the `beaches-` entries under Actions → Caches. OSM beaches change over 
 ### The Brazilian proxy and the flight check
 
 INEA (Rio) and INEMA (Bahia) answer only Brazilian addresses, and the runners are not in Brazil.
-Before the image is pulled, `site.yml` joins the org's Headscale network (secret `HEADSCALE_AUTHKEY`, variable
-`HEADSCALE_URL`), runs the flight check (`scripts/br-proxy-preflight.sh`: the first online
-`tag:br-proxy` node through which INEA really answers) and routes those two hosts, and only those,
-through it (`scripts/br-proxy.sh`, with the app's JVM pointed at it). The `MAROLA_BR_PROXY` secret
-overrides the pool with any HTTP proxy in Brazil.
+Before the image is pulled, `site.yml` runs the flight check (`scripts/br-proxy-preflight.sh`: the
+first entry of the secret `MAROLA_BR_PROXY`, one `http://user:pass@host:port` per pool node, through
+which INEA really answers) and routes those two hosts, and only those, through it
+(`scripts/br-proxy.sh`, with the app's JVM pointed at it). CI reaches each node directly.
 
-The flight check **fails closed**, on every trigger: no network join or no healthy node, the Headscale server being down included, stops the job with an `::error::` naming the cause, before any board is
+The flight check **fails closed**, on every trigger: no entry or no healthy node stops the job with an `::error::` naming the nodes by host and port (never a password), before any board is
 built. Nothing deploys, and marola.dev keeps serving the last deployed site, for every area. The
 repo variable `BR_PROXY_REQUIRED=false` is the break glass: the build then goes on without the
 proxy and those two agencies read "no data". Unset means required; set it only while the pool is
-down. `just site-build` routes the same way when `MAROLA_BR_PROXY` is set in your shell, and
-without it builds as before. The pool, its nodes and the whole Headscale setup:
+down. `just site-build` routes the same way when `MAROLA_BR_PROXY` is set in your shell to a single
+entry, and without it builds as before. The pool and its nodes:
 [`ops/br-proxy/README.md`](../ops/br-proxy/README.md) and
 [`ops/br-proxy/JOIN.md`](../ops/br-proxy/JOIN.md).
 

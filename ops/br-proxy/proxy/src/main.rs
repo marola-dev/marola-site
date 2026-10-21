@@ -1,5 +1,6 @@
 //! The pool node's proxy (#171): an allowlist-only HTTP forward proxy, std only.
 //! CONNECT to port 443 and plain HTTP to port 80 for the hosts in the allowlist file; all else is refused.
+//! Off loopback it is internet-facing, so a Basic `user:pass` is mandatory and checked before anything else.
 use std::collections::{HashMap, HashSet};
 use std::io::{self, Read, Write};
 use std::net::{Shutdown, SocketAddr, TcpListener, TcpStream, ToSocketAddrs};
@@ -21,6 +22,8 @@ const DROPPED: [&str; 5] = [
 pub struct Config {
     pub allow: HashSet<String>,
     pub max_clients: usize,
+    /// The expected `Proxy-Authorization` value (`Basic <base64>`); None only on loopback.
+    pub auth: Option<String>,
     pub timeout: Duration,
     /// Tests only: where a host really connects, so they never touch DNS.
     pub connect: HashMap<String, SocketAddr>,
@@ -49,6 +52,65 @@ pub fn parse_hosts(text: &str) -> HashSet<String> {
 
 fn normalize(host: &str) -> String {
     host.strip_suffix('.').unwrap_or(host).to_ascii_lowercase()
+}
+
+const B64: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+/// RFC 4648 base64 with padding.
+fn base64(data: &[u8]) -> String {
+    let mut out = String::new();
+    for c in data.chunks(3) {
+        let n = (c[0] as u32) << 16
+            | (*c.get(1).unwrap_or(&0) as u32) << 8
+            | *c.get(2).unwrap_or(&0) as u32;
+        for i in 0..4 {
+            if i <= c.len() {
+                out.push(B64[(n >> (18 - 6 * i) & 63) as usize] as char);
+            } else {
+                out.push('=');
+            }
+        }
+    }
+    out
+}
+
+pub fn basic_value(userpass: &str) -> String {
+    format!("Basic {}", base64(userpass.as_bytes()))
+}
+
+/// Compares every byte of the longer side, so timing does not reveal where a guess first differs.
+fn ct_eq(a: &[u8], b: &[u8]) -> bool {
+    let mut d = a.len() ^ b.len();
+    for i in 0..a.len().max(b.len()) {
+        d |= (a.get(i).copied().unwrap_or(0) ^ b.get(i).copied().unwrap_or(0)) as usize;
+    }
+    d == 0
+}
+
+fn authorized(head: &str, expected: &str) -> bool {
+    head.split("\r\n").skip(1).any(|h| {
+        h.split_once(':').is_some_and(|(n, v)| {
+            n.trim().eq_ignore_ascii_case("proxy-authorization")
+                && ct_eq(v.trim().as_bytes(), expected.as_bytes())
+        })
+    })
+}
+
+/// The startup rule: off loopback a password of 16+ characters is mandatory, and any password must be 16+.
+pub fn check_start(listen: &str, auth: Option<&str>) -> Result<(), String> {
+    let loopback = listen
+        .parse::<SocketAddr>()
+        .is_ok_and(|a| a.ip().is_loopback());
+    match auth {
+        None if !loopback => Err(format!(
+            "{listen} is not loopback and no auth is set: pass --auth user:pass or BR_PROXY_AUTH"
+        )),
+        Some(a) => match a.split_once(':') {
+            Some((u, p)) if !u.is_empty() && p.chars().count() >= 16 => Ok(()),
+            _ => Err("auth must be user:pass with a password of at least 16 characters".into()),
+        },
+        None => Ok(()),
+    }
 }
 
 /// `host[:port]` -> (normalized host, port); `default` when no port is given.
@@ -159,11 +221,14 @@ fn reply(s: &mut TcpStream, code: u16) {
         200 => "Connection Established",
         400 => "Bad Request",
         403 => "Forbidden",
+        407 => "Proxy Authentication Required",
         502 => "Bad Gateway",
         _ => "Service Unavailable",
     };
     let body = if code == 200 {
         "\r\n"
+    } else if code == 407 {
+        "Proxy-Authenticate: Basic realm=\"marola\"\r\nConnection: close\r\nContent-Length: 0\r\n\r\n"
     } else {
         "Connection: close\r\nContent-Length: 0\r\n\r\n"
     };
@@ -204,6 +269,11 @@ fn handle(mut client: TcpStream, cfg: &Config) {
         Ok(h) => h,
         Err(code) => return refuse("- -", code, &mut client),
     };
+    if let Some(expected) = &cfg.auth {
+        if !authorized(&head, expected) {
+            return refuse("- -", 407, &mut client);
+        }
+    }
     let (label, planned) = plan(&head, &cfg.allow);
     let planned = match planned {
         Ok(p) => p,
@@ -279,6 +349,10 @@ fn main() {
     let hosts = opt(&args, "--hosts", "BR_PROXY_HOSTS", "/etc/br-proxy/hosts");
     let max = opt(&args, "--max-clients", "BR_PROXY_MAX_CLIENTS", "20");
     let secs = opt(&args, "--timeout", "BR_PROXY_TIMEOUT", "60");
+    let auth = Some(opt(&args, "--auth", "BR_PROXY_AUTH", "")).filter(|a| !a.is_empty());
+    if let Err(e) = check_start(&listen, auth.as_deref()) {
+        die(e);
+    }
     let allow = parse_hosts(
         &std::fs::read_to_string(&hosts).unwrap_or_else(|e| die(format!("{hosts}: {e}"))),
     );
@@ -292,6 +366,7 @@ fn main() {
         max_clients: max
             .parse()
             .unwrap_or_else(|_| die(format!("bad --max-clients {max}"))),
+        auth: auth.as_deref().map(basic_value),
         timeout: Duration::from_secs(
             secs.parse()
                 .unwrap_or_else(|_| die(format!("bad --timeout {secs}"))),
@@ -311,7 +386,17 @@ mod tests {
         parse_hosts("# c\n\nAllowed.Test.  # trailing\nother.test\n")
     }
 
+    const PW: &str = "u:0123456789abcdef";
+
     fn start(max_clients: usize, upstream: Option<SocketAddr>) -> SocketAddr {
+        start_auth(max_clients, upstream, None)
+    }
+
+    fn start_auth(
+        max_clients: usize,
+        upstream: Option<SocketAddr>,
+        auth: Option<&str>,
+    ) -> SocketAddr {
         let l = TcpListener::bind("127.0.0.1:0").unwrap();
         let addr = l.local_addr().unwrap();
         let connect = upstream
@@ -321,6 +406,7 @@ mod tests {
         let cfg = Config {
             allow: allow(),
             max_clients,
+            auth: auth.map(basic_value),
             timeout: Duration::from_secs(5),
             connect,
         };
@@ -338,6 +424,74 @@ mod tests {
 
     fn status(resp: &str) -> &str {
         resp.split(' ').nth(1).unwrap_or("")
+    }
+
+    #[test]
+    fn base64_rfc4648_vectors() {
+        for (i, o) in [
+            ("", ""),
+            ("f", "Zg=="),
+            ("fo", "Zm8="),
+            ("foo", "Zm9v"),
+            ("foob", "Zm9vYg=="),
+            ("fooba", "Zm9vYmE="),
+            ("foobar", "Zm9vYmFy"),
+        ] {
+            assert_eq!(base64(i.as_bytes()), o);
+        }
+    }
+
+    #[test]
+    fn startup_rules() {
+        assert!(check_start("127.0.0.1:8888", None).is_ok());
+        assert!(check_start("[::1]:8888", None).is_ok());
+        assert!(check_start("0.0.0.0:8888", None).is_err());
+        assert!(check_start("localhost:8888", None).is_err());
+        assert!(check_start("0.0.0.0:8888", Some(PW)).is_ok());
+        assert!(check_start("0.0.0.0:8888", Some("u:short")).is_err());
+        assert!(check_start("127.0.0.1:8888", Some("u:short")).is_err());
+        assert!(check_start("0.0.0.0:8888", Some("nocolon0123456789abcdef")).is_err());
+        assert!(check_start("0.0.0.0:8888", Some(":0123456789abcdef")).is_err());
+    }
+
+    #[test]
+    fn auth_is_checked_first() {
+        let up = TcpListener::bind("127.0.0.1:0").unwrap();
+        let proxy = start_auth(5, Some(up.local_addr().unwrap()), Some(PW));
+        let good = format!("Proxy-Authorization: {}\r\n", basic_value(PW));
+        let bad = format!(
+            "Proxy-Authorization: {}\r\n",
+            basic_value("u:wrongwrongwrong00")
+        );
+        let no = |r: String| {
+            assert_eq!(status(&r), "407", "{r}");
+            assert!(
+                r.contains("Proxy-Authenticate: Basic realm=\"marola\""),
+                "{r}"
+            );
+        };
+        no(ask(proxy, b"CONNECT allowed.test:443 HTTP/1.1\r\n\r\n"));
+        no(ask(
+            proxy,
+            format!("CONNECT allowed.test:443 HTTP/1.1\r\n{bad}\r\n").as_bytes(),
+        ));
+        // 407 before the allowlist: a forbidden host without credentials learns nothing
+        no(ask(proxy, b"CONNECT example.com:443 HTTP/1.1\r\n\r\n"));
+        let r = ask(
+            proxy,
+            format!("CONNECT example.com:443 HTTP/1.1\r\n{good}\r\n").as_bytes(),
+        );
+        assert_eq!(status(&r), "403");
+        thread::spawn(move || {
+            let (s, _) = up.accept().unwrap();
+            let _ = io::copy(&mut &s, &mut &s);
+        });
+        let mut c = TcpStream::connect(proxy).unwrap();
+        c.write_all(format!("CONNECT allowed.test:443 HTTP/1.1\r\n{good}\r\n").as_bytes())
+            .unwrap();
+        let mut head = [0u8; 39];
+        c.read_exact(&mut head).unwrap();
+        assert_eq!(&head, b"HTTP/1.1 200 Connection Established\r\n\r\n");
     }
 
     #[test]

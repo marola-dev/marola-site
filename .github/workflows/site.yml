@@ -50,43 +50,24 @@ jobs:
     permissions:
       contents: read
       packages: read
-    env:
-      HAS_TAILNET: ${{ secrets.HEADSCALE_AUTHKEY != '' && vars.HEADSCALE_URL != '' }}
     steps:
       - uses: actions/checkout@v7
 
       # #4: INEA (Rio) and INEMA (Bahia) answer only Brazilian addresses, so the build reaches them
-      # through a node of the Brazilian proxy pool (ops/br-proxy/JOIN.md), over the org's tailnet
-      # (a self-hosted Headscale; the key carries tag:ci, so there is no tags: input).
-      # The flight check fails closed: with no healthy node it stops the job here, before any board
-      # is built, so nothing deploys and marola.dev keeps serving the last deployed site. The repo
-      # variable BR_PROXY_REQUIRED=false (break glass) lets the build go on without the proxy.
-      # The join's own failure is left to the flight check, which names it.
-      - name: Join the tailnet (HEADSCALE_AUTHKEY, HEADSCALE_URL)
-        id: tailscale
-        if: env.HAS_TAILNET == 'true'
-        continue-on-error: true
-        timeout-minutes: 2
-        uses: tailscale/github-action@d1b6cd204f8dceda5b3eaad7f1f767be390056cd # v4.2.0
-        with:
-          authkey: ${{ secrets.HEADSCALE_AUTHKEY }}
-          args: --login-server=${{ vars.HEADSCALE_URL }}
-
-      # The first pool node that really reaches INEA becomes the upstream of a router on the
-      # runner that sends only ops/br-proxy/hosts through it. MAROLA_BR_PROXY, if set, overrides
-      # the pool with any HTTP proxy in Brazil.
+      # through a node of the Brazilian proxy pool (ops/br-proxy/JOIN.md): the secret
+      # MAROLA_BR_PROXY holds one http://user:pass@host:port per node, separated by whitespace.
+      # The flight check tries them in order with a real request to INEA; the first healthy one
+      # becomes the upstream of a router on the runner that sends only ops/br-proxy/hosts through it.
+      # It fails closed: with no healthy node it stops the job here, before any board is built, so
+      # nothing deploys and marola.dev keeps serving the last deployed site. The repo variable
+      # BR_PROXY_REQUIRED=false (break glass) lets the build go on without the proxy.
       - name: Flight check, then route the Brazil-only agencies through the pool
         timeout-minutes: 3
         env:
           MAROLA_BR_PROXY: ${{ secrets.MAROLA_BR_PROXY }}
-          BR_TAILNET: ${{ steps.tailscale.outcome }}
           BR_PROXY_REQUIRED: ${{ vars.BR_PROXY_REQUIRED }}
         run: |
-          if [ -n "$MAROLA_BR_PROXY" ]; then
-            upstream="$MAROLA_BR_PROXY"
-          else
-            upstream="$(scripts/br-proxy-preflight.sh)"
-          fi
+          upstream="$(scripts/br-proxy-preflight.sh)"
           [ -n "$upstream" ] || exit 0 # BR_PROXY_REQUIRED=false, already warned
           if ! command -v tinyproxy >/dev/null && ! { sudo apt-get update -qq && sudo apt-get install -y -qq tinyproxy >/dev/null; }; then
             scripts/br-proxy-preflight.sh --fail "could not install tinyproxy on the runner"

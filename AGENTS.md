@@ -49,8 +49,7 @@ map-load tier, billed above it).
 - `ops/br-proxy/`: the Brazilian proxy pool that INEA and INEMA, which answer only Brazilian
   addresses, are reached through (#4): a volunteer node's compose file, its allowlist (`hosts`), its Rust proxy (`proxy/`) and
   [`JOIN.md`](ops/br-proxy/JOIN.md). `site.yml`'s flight check fails closed without a healthy
-  node (secret `HEADSCALE_AUTHKEY` and variable `HEADSCALE_URL`, or the `MAROLA_BR_PROXY`
-  override); the repo variable `BR_PROXY_REQUIRED=false` is a break glass, never a default. An
+  node (the secret `MAROLA_BR_PROXY`, one password-protected entry per node); the repo variable `BR_PROXY_REQUIRED=false` is a break glass, never a default. An
   agent never sets it.
 - `DESIGN.md`: the visual system (tokens, type, components); Inter is self-hosted in
   `site/static/vendor/fonts/`.
@@ -125,8 +124,8 @@ same files to the Cloudflare Worker `marola` (free static assets), which serves 
 trigger a deploy by hand (`just site-deploy` is denied in `.claude/settings.json`).
 
 The base map is Mapbox's, billed per map load above its free tier: the account, the token and
-any billing setting are a human's. So are the Headscale server, its domain, the CI auth key and every pool
-node's auth key (`ops/br-proxy/JOIN.md`). The token is a public `pk.` token restricted to marola.dev's
+any billing setting are a human's. So are the pool's nodes and the `MAROLA_BR_PROXY` secret with their
+addresses and passwords (`ops/br-proxy/JOIN.md`). The token is a public `pk.` token restricted to marola.dev's
 URLs, kept in the repo variable (or secret) `MAPBOX_PUBLIC_TOKEN` and written into
 `mapbox-config.js` only at deploy; never commit one, and never an `sk.` token anywhere in the page.
 

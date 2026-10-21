@@ -8,10 +8,8 @@ __pycache__/
 /site/dist/*
 !/site/dist/.gitkeep
 
-# a pool node's auth key (ops/br-proxy/JOIN.md)
+# a pool node's proxy password (ops/br-proxy/JOIN.md)
 /ops/br-proxy/.env
-# the Headscale server's public host name (ops/br-proxy/headscale/)
-/ops/br-proxy/headscale/.env
 
 # wrangler's local state
 .wrangler/
