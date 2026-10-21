@@ -166,5 +166,7 @@ Plain JavaScript, no framework and no build step; the page keeps `script-src 'se
 third-party origins are Mapbox for the base map (style, tiles, fonts, the map-load count) and NASA
 GIBS for the satellite layers (public, keyless tiles, fetched only when a visitor picks one). A visible
 change goes through the `site-frontend` skill (which names the others), `node scripts/site_check.js`
-and before/after screenshots. Shell: `set -euo pipefail`, shellcheck-clean. Python: ruff. Rust only under `agents/` (ADR-0001) and `ops/br-proxy/proxy/` ([ADR-0002](docs/adr/0002-rust-br-proxy-node.md)). Comments
+and before/after screenshots. Shell: `set -euo pipefail`, shellcheck-clean. Python: ruff. Rust only
+under `agents/` ([ADR-0001](docs/adr/0001-rust-agents-in-marola-site.md)) and `ops/br-proxy/proxy/`
+([ADR-0002](docs/adr/0002-rust-br-proxy-node.md)). Comments
 only for why, a trap, or a pointer, as the umbrella's AGENTS.md spells out.
