@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://marola.dev/alerts/alerts-export.schema.json",
+  "title": "marola alerts export, one state",
+  "type": "object",
+  "required": ["schema_version", "generated_at", "uf", "source", "alerts"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": 1 },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "uf": { "type": "string", "pattern": "^[A-Z]{2}$" },
+    "source": {
+      "type": "object",
+      "required": ["name", "url"],
+      "properties": {
+        "name": { "const": "INMET" },
+        "url": { "const": "https://avisos.inmet.gov.br/" }
+      }
+    },
+    "alerts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "event", "severity_label", "severity", "onset", "expires", "status",
+                     "area_desc", "municipalities", "description", "instruction", "link", "check"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "integer" },
+          "event": { "type": "string" },
+          "severity_label": { "type": "string" },
+          "severity": { "enum": ["moderate", "severe", "extreme", "unknown"] },
+          "color": { "type": ["string", "null"], "pattern": "^#[0-9A-Fa-f]{6}$" },
+          "onset": { "type": "string", "format": "date-time" },
+          "expires": { "type": "string", "format": "date-time" },
+          "status": { "enum": ["active", "updated", "cancelled"] },
+          "replaced_by": { "type": ["integer", "null"] },
+          "area_desc": { "type": "string" },
+          "municipalities": { "type": "array", "items": { "type": "string" } },
+          "description": { "type": "string" },
+          "instruction": { "type": "string" },
+          "link": { "type": "string", "pattern": "^https://" },
+          "check": {
+            "oneOf": [
+              { "type": "null", "description": "pending: still active, inside the lag, or cancelled/updated" },
+              {
+                "type": "object",
+                "required": ["verdict", "rule_version", "checked_at", "forecast", "observed", "points"],
+                "additionalProperties": false,
+                "properties": {
+                  "verdict": { "enum": ["confirmed", "not_confirmed", "not_checkable"] },
+                  "reason": { "type": ["string", "null"] },
+                  "rule_version": { "type": "integer" },
+                  "checked_at": { "type": "string", "format": "date-time" },
+                  "points": { "type": "integer" },
+                  "forecast": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["quantity", "unit"],
+                      "properties": {
+                        "quantity": { "enum": ["rain_hour", "rain_day", "wind_gust", "humidity", "temperature_max", "temperature_min"] },
+                        "low": { "type": ["number", "null"] },
+                        "high": { "type": ["number", "null"] },
+                        "unit": { "enum": ["mm", "km/h", "%", "°C"] }
+                      }
+                    }
+                  },
+                  "observed": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["quantity", "value", "unit", "municipality", "at"],
+                      "properties": {
+                        "quantity": { "type": "string" },
+                        "value": { "type": "number" },
+                        "unit": { "type": "string" },
+                        "municipality": { "type": "string" },
+                        "at": { "type": "string", "format": "date-time" }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}
