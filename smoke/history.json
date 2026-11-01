@@ -2,6 +2,17 @@
  "schema": 1,
  "runs": [
   {
+   "run_id": "41324908560",
+   "run_url": "https://github.com/marola-dev/marola-app/actions/runs/41324908560",
+   "when": "2026-11-01T16:19:42Z",
+   "lat": -27.6733,
+   "lon": -48.47,
+   "model": "llama3.2:1b",
+   "ok": false,
+   "top_pick": null,
+   "review": null
+  },
+  {
    "run_id": "41214710442",
    "run_url": "https://github.com/marola-dev/marola-app/actions/runs/41214710442",
    "when": "2026-10-31T15:27:57Z",
