@@ -2,6 +2,7 @@
   <!-- The test sources both projects compile: Marola.Tests (Expecto on .NET) and Marola.Tests.Fable (Fable.Mocha on Node). Order matters in F#. -->
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Support.fs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ClientSupport.fs" />
     <Compile Include="$(MSBuildThisFileDirectory)TypesTests.fs" />
     <Compile Include="$(MSBuildThisFileDirectory)BoardTests.fs" />
     <Compile Include="$(MSBuildThisFileDirectory)CspTests.fs" />
@@ -11,6 +12,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)ParityBeachTests.fs" />
     <Compile Include="$(MSBuildThisFileDirectory)ParityFlowTests.fs" />
     <Compile Include="$(MSBuildThisFileDirectory)ParityTextTests.fs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VdomTests.fs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ParamsTests.fs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UpdateTests.fs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MapTests.fs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewBarTests.fs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewPageTests.fs" />
     <Compile Include="$(MSBuildThisFileDirectory)All.fs" />
   </ItemGroup>
 </Project>

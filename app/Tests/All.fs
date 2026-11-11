@@ -18,4 +18,10 @@ let all =
           TrailsTests.tests
           ParityBeachTests.tests
           ParityFlowTests.tests
-          ParityTextTests.tests ]
+          ParityTextTests.tests
+          VdomTests.tests
+          ParamsTests.tests
+          UpdateTests.tests
+          MapTests.tests
+          ViewBarTests.tests
+          ViewPageTests.tests ]

@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- The page's pure part: model, messages, update (commands as data), the virtual DOM and the views.
+       It compiles with .NET and with Fable, so the tests run on both: no Fable.Browser, no Import. -->
+  <ItemGroup>
+    <Compile Include="Json.fs" />
+    <Compile Include="Vdom.fs" />
+    <Compile Include="Params.fs" />
+    <Compile Include="Config.fs" />
+    <Compile Include="Model.fs" />
+    <Compile Include="Msg.fs" />
+    <Compile Include="Cmd.fs" />
+    <Compile Include="Icons.fs" />
+    <Compile Include="Words.fs" />
+    <Compile Include="AspectsView.fs" />
+    <Compile Include="TrailGeo.fs" />
+    <Compile Include="Raster.fs" />
+    <Compile Include="FlowData.fs" />
+    <Compile Include="MapView.fs" />
+    <Compile Include="MapJson.fs" />
+    <Compile Include="Update.fs" />
+    <Compile Include="View/NavView.fs" />
+    <Compile Include="View/BarView.fs" />
+    <Compile Include="View/ListView.fs" />
+    <Compile Include="View/SosView.fs" />
+    <Compile Include="View/CardView.fs" />
+    <Compile Include="View/FooterView.fs" />
+    <Compile Include="View/LayersView.fs" />
+    <Compile Include="View/TrailsView.fs" />
+    <Compile Include="View/Page.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../Shared/Marola.Shared.fsproj" />
+  </ItemGroup>
+</Project>

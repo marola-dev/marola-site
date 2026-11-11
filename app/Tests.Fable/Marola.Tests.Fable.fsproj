@@ -6,6 +6,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../Shared/Marola.Shared.fsproj" />
+    <ProjectReference Include="../Client/Core/Marola.Client.Core.fsproj" />
   </ItemGroup>
   <ItemGroup>
     <!-- Fable.Mocha has the Expecto API, so the test sources are the same; Thoth.Json.JavaScript reads JSON on Node. -->
