@@ -13,7 +13,7 @@ module Store =
           Email: string
           Body: string }
 
-    let private connect (mode: SqliteOpenMode) (path: string) : SqliteConnection =
+    let internal connect (mode: SqliteOpenMode) (path: string) : SqliteConnection =
         let builder = SqliteConnectionStringBuilder()
         builder.DataSource <- path
         builder.Mode <- mode
@@ -21,7 +21,7 @@ module Store =
         connection.Open()
         connection
 
-    let private run (connection: SqliteConnection) (sql: string) (parameters: (string * obj) list) =
+    let internal run (connection: SqliteConnection) (sql: string) (parameters: (string * obj) list) =
         let command = connection.CreateCommand()
         command.CommandText <- sql
 

@@ -7,7 +7,7 @@ open Microsoft.AspNetCore.Hosting
 open Microsoft.AspNetCore.Server.Kestrel.Core
 
 let private usage =
-    "usage: marola-server            serve on 127.0.0.1:$MAROLA_PORT\n       marola-server inbox [--delete <id>]"
+    "usage: marola-server            serve on 127.0.0.1:$MAROLA_PORT\n       marola-server inbox [--delete <id>]\n       marola-server dev-account --login <name> --age-days <n>   (MAROLA_DEV=1, tests only)"
 
 [<EntryPoint>]
 let main argv =
@@ -18,6 +18,14 @@ let main argv =
     | Ok config ->
         match List.ofArray argv with
         | "inbox" :: rest -> Inbox.run config rest Console.Out Console.Error
+        | "dev-account" :: rest ->
+            DevAccount.run
+                config
+                DateTimeOffset.UtcNow
+                (Environment.GetEnvironmentVariable "MAROLA_DEV")
+                rest
+                Console.Out
+                Console.Error
         | [] ->
             let builder = App.createBuilder config
 

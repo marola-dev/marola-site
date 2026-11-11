@@ -26,8 +26,10 @@ module Security =
         Func<obj, Task>(fun state ->
             let headers = (state :?> HttpContext).Response.Headers
 
+            // A route may set its own CSP (the PDF route does: it must replace the page's, not add to it).
             for (name, value) in responseHeaders do
-                headers[name] <- value
+                if name <> "Content-Security-Policy" || not (headers.ContainsKey name) then
+                    headers[name] <- value
 
             headers.Remove "Server" |> ignore
             headers.Remove "X-Powered-By" |> ignore

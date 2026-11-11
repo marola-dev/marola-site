@@ -15,7 +15,9 @@ let private config (db: string) =
     { Port = 0
       Static = ""
       Data = ""
-      Db = db }
+      Db = db
+      Studies = ""
+      StudiesQuota = 0L }
 
 let private tempDb () =
     Path.Combine(Path.GetTempPath(), "marola-db-" + Guid.NewGuid().ToString "N", "marola.db")

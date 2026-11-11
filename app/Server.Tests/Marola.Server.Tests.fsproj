@@ -8,6 +8,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Harness.fs" />
+    <Compile Include="StudyStoreTests.fs" />
+    <Compile Include="PdfTests.fs" />
+    <Compile Include="StudyApiTests.fs" />
     <Compile Include="HeaderTests.fs" />
     <Compile Include="FileTests.fs" />
     <Compile Include="LimitTests.fs" />

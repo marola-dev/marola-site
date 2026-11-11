@@ -7,6 +7,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)BoardTests.fs" />
     <Compile Include="$(MSBuildThisFileDirectory)CspTests.fs" />
     <Compile Include="$(MSBuildThisFileDirectory)HtmlTests.fs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StudyTests.fs" />
     <Compile Include="$(MSBuildThisFileDirectory)NotesTests.fs" />
     <Compile Include="$(MSBuildThisFileDirectory)TrailsTests.fs" />
     <Compile Include="$(MSBuildThisFileDirectory)ParityBeachTests.fs" />

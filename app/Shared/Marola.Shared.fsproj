@@ -31,6 +31,7 @@
     <Compile Include="Trails.fs" />
     <Compile Include="Csp.fs" />
     <Compile Include="Html.fs" />
+    <Compile Include="Study.fs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Thoth.Json.Core" Version="0.10.1" />

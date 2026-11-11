@@ -54,13 +54,22 @@ type PeerFilter() =
 
                 next.Invoke app)
 
+/// A clock a test moves: the rate limits of the study API are in minutes and days.
+type ManualClock(start: DateTimeOffset) =
+    inherit TimeProvider()
+    let mutable now = start
+    override _.GetUtcNow() = now
+    member _.Advance(by: TimeSpan) = now <- now + by
+    member _.Now = now
+
 type Site =
     { App: WebApplication
       Server: TestServer
       Client: HttpClient
       Config: Config
       Root: string
-      Capture: Capture }
+      Capture: Capture
+      Clock: ManualClock }
 
     member s.Dispose() =
         s.Client.Dispose()
@@ -109,13 +118,17 @@ let start (customize: WebApplication -> unit) : Site =
         { Port = 0
           Static = static'
           Data = data
-          Db = Path.Combine(root, "db", "marola.db") }
+          Db = Path.Combine(root, "db", "marola.db")
+          Studies = Path.Combine(root, "studies")
+          StudiesQuota = 1_000_000L }
 
     let capture = new Capture()
     let builder = App.createBuilder config
     builder.WebHost.UseTestServer() |> ignore
     builder.Logging.ClearProviders().AddProvider capture |> ignore
     builder.Services.AddSingleton<IStartupFilter, PeerFilter>() |> ignore
+    let clock = ManualClock(DateTimeOffset(2026, 11, 11, 12, 0, 0, TimeSpan.Zero))
+    builder.Services.AddSingleton<TimeProvider>(clock) |> ignore
     let app = App.build builder config
     customize app
     app.StartAsync().Wait()
@@ -125,7 +138,8 @@ let start (customize: WebApplication -> unit) : Site =
       Client = app.GetTestClient()
       Config = config
       Root = root
-      Capture = capture }
+      Capture = capture
+      Clock = clock }
 
 /// Runs `body` on a fresh site and cleans up.
 let withSite (customize: WebApplication -> unit) (body: Site -> Task) : Task =

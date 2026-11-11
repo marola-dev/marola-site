@@ -14,6 +14,7 @@ let all =
           BoardTests.tests
           CspTests.tests
           HtmlTests.tests
+          StudyTests.tests
           NotesTests.tests
           TrailsTests.tests
           ParityBeachTests.tests

@@ -16,7 +16,7 @@ open Microsoft.Extensions.Logging
 
 module App =
 
-    /// Every request body: 1 MB. The study upload of a later run sets its own limit on its own route.
+    /// Every request body: 1 MB, except the study upload, which sets its own limit (`StudyApi.uploadLimit`).
     let bodyLimit = 1_048_576L
 
     /// A page load fetches a few dozen files, so the general limit is wide; it stops a flood, not a visitor.
@@ -63,6 +63,7 @@ module App =
         builder.Logging.AddFilter("Microsoft.AspNetCore", LogLevel.Warning) |> ignore
 
         builder.Services.AddSingleton<Config>(config) |> ignore
+        builder.Services.AddSingleton<TimeProvider>(TimeProvider.System) |> ignore
 
         builder.Services.AddResponseCompression(fun (o: ResponseCompressionOptions) ->
             o.EnableForHttps <- true
@@ -136,11 +137,17 @@ module App =
 
     let private bodyGuard =
         Func<HttpContext, RequestDelegate, Task>(fun ctx next ->
-            if
-                ctx.Request.ContentLength.HasValue
-                && ctx.Request.ContentLength.Value > bodyLimit
-            then
-                plain ctx 413 "payload too large\n"
+            let upload =
+                HttpMethods.IsPost ctx.Request.Method
+                && ctx.Request.Path.Equals(StudyApi.apiPath, StringComparison.Ordinal)
+
+            let limit = if upload then StudyApi.uploadLimit else bodyLimit
+
+            if ctx.Request.ContentLength.HasValue && ctx.Request.ContentLength.Value > limit then
+                if upload then
+                    StudyApi.tooLarge ctx
+                else
+                    plain ctx 413 "payload too large\n"
             else
                 next.Invoke ctx)
 
@@ -148,6 +155,7 @@ module App =
     /// the test host, Program on Kestrel.
     let build (builder: WebApplicationBuilder) (config: Config) : WebApplication =
         Store.init config.Db
+        StudyStore.migrate config.Db
         let app = builder.Build()
         let logs = app.Services.GetRequiredService<ILoggerFactory>()
 
@@ -172,6 +180,8 @@ module App =
                 .MapPost(route, Func<HttpContext, Task<IResult>>(Contact.handle config contactLog))
                 .RequireRateLimiting("strict")
             |> ignore
+
+        StudyApi.map app config logs
 
         app.MapFallback("{**path}", Func<HttpContext, IResult>(Files.handle config))
         |> ignore
