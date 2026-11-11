@@ -1,3 +1,0 @@
-self-hosted-runner:
-  # site.yml's build: the runner in Brazil (docs/3-development.md).
-  labels: [marola-br]
