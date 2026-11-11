@@ -88,6 +88,8 @@ The host runs the published server behind nginx, under systemd. The variables, t
 settings, the GitHub login, the backups and the rollback are in [docs/5-hosting.md](docs/5-hosting.md).
 An agent does not deploy.
 
+What the repository checks about its code, its security and its agent tooling, and what it does not: [docs/7-quality.md](docs/7-quality.md). To report a vulnerability: [SECURITY.md](SECURITY.md).
+
 ## The legacy site
 
 `site/static/` is the page that marola.dev serves today. It does not use `app/`.

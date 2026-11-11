@@ -20,6 +20,7 @@
     <Compile Include="Views.fs" />
     <Compile Include="PdfIntake.fs" />
     <Compile Include="StudyApi.fs" />
+    <Compile Include="OpenApi.fs" />
     <Compile Include="Contact.fs" />
     <Compile Include="Web.fs" />
     <Compile Include="Inbox.fs" />

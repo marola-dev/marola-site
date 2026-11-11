@@ -187,6 +187,7 @@ module App =
             |> ignore
 
         StudyApi.map app config logs
+        OpenApi.map app
         GithubLogin.map app config logs
         Web.map app config logs
 

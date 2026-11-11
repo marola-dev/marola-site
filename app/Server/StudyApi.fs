@@ -33,6 +33,8 @@ module StudyApi =
     let perDay = 10L
     let maxParts = 20
     let maxFieldBytes = 20_000
+    let listDefault = 20
+    let listMax = 50
 
     /// Fixed window per key: 30 real submissions a minute, a dry run counts a third. In memory: a restart resets it.
     type KeyRates() =
@@ -560,13 +562,13 @@ module StudyApi =
 
         let limit =
             match q["limit"].ToString() with
-            | "" -> 20
+            | "" -> listDefault
             | l ->
                 match Int32.TryParse l with
-                | true, n when n >= 1 && n <= 50 -> n
+                | true, n when n >= 1 && n <= listMax -> n
                 | _ ->
-                    bad "limit" "limit must be 1 to 50"
-                    20
+                    bad "limit" ("limit must be 1 to " + string listMax)
+                    listDefault
 
         if errors.Count > 0 then
             writeJson ctx 400 "no-store" (errorsJson (List.ofSeq errors))
@@ -650,7 +652,7 @@ Send it as `Authorization: Bearer $MAROLA_KEY`. Never put a key in a repository 
 ## Endpoint
 
 `POST https://marola.dev/api/v1/studies` with `multipart/form-data`. Add `?dry_run=1` to check everything
-(the file and the limits too) with nothing stored.
+(the file and the limits too) with nothing stored. The same API as an OpenAPI 3.1 document: `https://marola.dev/api/v1/openapi.json`.
 
 | field | rule |
 |---|---|

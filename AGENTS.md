@@ -137,6 +137,8 @@ just app-build --fixtures # Fable compiles the client; the pages and a fixture b
 just server-run           # http://127.0.0.1:8080 over app/dist (state in .tmp/marola.db)
 just server-test          # the server's tests; `just pages-test`, `just app-test`, `just client-check` for the rest
 just design-check         # DESIGN.md against style.css
+just fp-audit             # effectful constructs per F# project against docs/fp-baseline.json (a count that goes up fails)
+just audit                # NuGet vulnerabilities of every project (by hand, needs network; not in `just quality`)
 just nix-build            # nix build .#default: the whole site as one package
 just site-build floripa   # the legacy build: boards from the pinned image into site/dist (docker, network)
 just site-serve           # the legacy build at http://localhost:8000
@@ -159,7 +161,10 @@ changed, then `just quality` once. F# in `app/Shared` or `app/Client/Core`: `jus
 `just app-test`. The server: `just server-test`. The pages: `just pages-test`. The client's build:
 `just app-build --fixtures` then `node scripts/client_check.js`. The server end to end:
 `scripts/server_smoke.sh` (after `app-build --fixtures`). CSS or DESIGN.md: `just design-check`. Run
-`just app-fmt` without `--check` to fix formatting; `just quality` only checks it.
+`just app-fmt` without `--check` to fix formatting; `just quality` only checks it. A new `/api/v1` route needs
+an entry in `app/Server/OpenApi.fs`, or `OpenApiTests` fails. A new `mutable`, `null`, `raise`, `.Result`, `unbox`
+or ref cell raises a count in `just fp-audit`; prefer the pure form, and put an unavoidable effect in `Server` or
+`Client/App`.
 
 **Never edit by hand** (each is generated; the check or the build fails on a stale copy):
 
@@ -174,6 +179,7 @@ changed, then `just quality` once. F# in `app/Shared` or `app/Client/Core`: `jus
 | `site/members/MEMBERS.md` and the blob id in `site/members.version` | copy the file over, then `git hash-object site/members/MEMBERS.md` (docs/3-development.md) |
 | `app/dist/`, `app/Client/out/`, `app/Server/out/` | `just app-build`; they are not in git |
 | the pages' HTML | edit `site/content/pages/*.md`, `site/content/news/`, `site/i18n/`; `just pages-build` renders them |
+| `docs/fp-baseline.json` | `just fp-audit --update`; it only lowers a count. To accept a higher one, edit the JSON by hand and say why in the PR |
 
 **Traps already met.**
 
@@ -198,7 +204,9 @@ links. There is no `docs/index.md`. `docs/` holds numbered pages, not directorie
 `2-libraries` (vendored libraries and the F# client's packages), `3-development` (the build and
 deploy, the F# app, image bumps), `4-reference` (`areas.json`, the board schema pin, trail files),
 `5-hosting` (the .NET server behind nginx: variables, nginx and systemd settings, the Nix build,
-backup, rollback), `6-board` (the runbook of the people who hide studies). The H1 is the nav label.
+backup, rollback), `6-board` (the runbook of the people who hide studies), `7-quality` (the scorecard: what is
+checked, how, and what is not; the owner steps and `docs/owner-steps/`, drafts for `.github/` and the repository
+settings that an agent never applies). The H1 is the nav label.
 The decisions are ADRs at `docs/adr/NNNN-<slug>.md`: 0001 F#, Fable and MapLibre, 0002 the .NET
 server, 0003 the pages in F#, 0004 study submission. `DESIGN.md` at the root is the visual system.
 A decision that starts and ends here is an ADR; anything crossing a repo boundary is an umbrella MIP.

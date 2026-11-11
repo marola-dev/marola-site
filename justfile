@@ -70,6 +70,24 @@ design-check:
     node scripts/design_check.js --self-test
     node scripts/design_check.js
 
+# The effectful constructs of the F# code per project (mutable, null, raise, .Result, ...) against docs/fp-baseline.json: a count above it fails; --update lowers the baseline. Runs its self-test first.
+fp-audit *args:
+    node scripts/fp_audit.js --self-test
+    node scripts/fp_audit.js {{ args }}
+
+# NuGet packages with a known vulnerability, direct and transitive, for every project. By hand, needs network (it asks nuget.org); not in `quality`. It does not restore, so no lock file changes: run `just app-test` and `just server-test` first if a project has no restore yet.
+audit:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    found=0
+    for project in app/*/*.fsproj app/Client/*/*.fsproj; do
+        echo "== $project"
+        out=$(dotnet list "$project" package --vulnerable --include-transitive --no-restore 2>&1) || { echo "$out"; echo "audit: dotnet list failed for $project (no restore yet, or no network)" >&2; exit 2; }
+        echo "$out"
+        if grep -q "has the following vulnerable packages" <<<"$out"; then found=1; fi
+    done
+    [ "$found" = 0 ] || { echo "audit: vulnerable packages found" >&2; exit 1; }
+
 # Every gate CI runs that needs no docker (app-test and server-test download their NuGet packages).
 quality:
     #!/usr/bin/env bash
@@ -89,6 +107,7 @@ quality:
     node scripts/redirect_check.js
     node scripts/golden.js --check
     just design-check
+    just fp-audit
     just app-fmt --check
     just app-test
     just server-test

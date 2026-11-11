@@ -88,6 +88,15 @@ module Meta =
                 + baseUrl
                 + "/board.schema.json): the JSON Schema every board follows"
                 ""
+                "## API"
+                ""
+                "- [openapi.json]("
+                + baseUrl
+                + "/api/v1/openapi.json): OpenAPI 3.1 of the study API (submit, list, read)"
+                "- [skill.md]("
+                + baseUrl
+                + "/api/v1/skill.md): the same API as a guide for agents, with examples"
+                ""
                 "## Docs"
                 ""
                 "- [docs.marola.dev](https://docs.marola.dev/): the project's documentation, every repo"

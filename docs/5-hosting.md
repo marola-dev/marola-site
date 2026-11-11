@@ -276,6 +276,10 @@ delete `MAROLA_STUDIES` on a rollback: the rows name those files. The page (`dis
 
 ## What the server does not cover
 
+The measured state of the server's checks, the owner steps for `.github/` and the repository settings, and the
+vulnerability report of the packages are in [7-quality](7-quality.md). The API is described at
+`/api/v1/openapi.json` (`app/Server/OpenApi.fs`); the reporting policy is [SECURITY.md](../SECURITY.md).
+
 - A response that Kestrel writes before the middleware runs (a malformed request line, a NUL byte in
   the path) has no security headers. HSTS comes from nginx for these.
 - The rate limit is in memory and resets on a restart.

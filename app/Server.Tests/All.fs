@@ -17,4 +17,5 @@ let all =
           PdfTests.tests
           PdfTests.objStmTests
           BoardTests.tests
-          StudyApiTests.tests ]
+          StudyApiTests.tests
+          OpenApiTests.tests ]

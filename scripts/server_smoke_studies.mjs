@@ -88,4 +88,15 @@ check(again.status === 429, "a second submission at once is a 429");
 const skill = await fetch(`${base}/api/v1/skill.md`);
 check(skill.status === 200 && (await skill.text()).includes("dry_run=1"), "skill.md is served");
 
+const openapi = await fetch(`${base}/api/v1/openapi.json`);
+const doc = await openapi.json();
+check(
+  openapi.status === 200 &&
+    openapi.headers.get("content-type") === "application/json; charset=utf-8" &&
+    openapi.headers.get("cache-control") === "public, max-age=300" &&
+    doc.openapi === "3.1.0" &&
+    "post" in doc.paths["/api/v1/studies"],
+  "openapi.json is served as OpenAPI 3.1 with its cache header",
+);
+
 process.exit(failed ? 1 : 0);

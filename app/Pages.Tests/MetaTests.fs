@@ -56,6 +56,11 @@ let tests =
 
               Expect.equal listed published "pages"
           }
+          test "llms.txt links the OpenAPI document and the agent guide, and the sitemap does not list them" {
+              for url in [ base' + "/api/v1/openapi.json"; base' + "/api/v1/skill.md" ] do
+                  Expect.stringContains (Meta.llms areas) url url
+                  Expect.isFalse (Meta.sitemap.Contains url) (url + " is not a page")
+          }
           test "the sitemap parses and has every indexable page in both languages, the map once" {
               let locs = sitemapLocs ()
               let indexable = Site.allSlugs |> List.filter (Site.noIndex >> not)
