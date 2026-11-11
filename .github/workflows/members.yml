@@ -44,7 +44,7 @@ jobs:
           branch=chore/members-sync
           sha="$(cut -c1-7 site/members.version)"
           git switch -C "$branch"
-          git add -A site/members.version site/static/members.html site/static/img/members
+          git add -A site/members.version site/static/members.html site/static/humans.txt site/static/img/members
           git commit -F - <<EOF
           chore(site): members from marola-dev/.github@$sha
 

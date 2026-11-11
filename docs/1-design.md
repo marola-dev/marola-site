@@ -6,7 +6,10 @@
   `news.html` (the posts, newest first, one `article[lang]` per language each, generated from
   `site/content/news/`), `members.html` (who builds marola, generated from marola-dev/.github's
   `MEMBERS.md`),
-  `404.html` (forwards old `marola.dev/docs/*` links to `docs.marola.dev`), `favicon.svg`, and
+  `404.html` (forwards old `marola.dev/docs/*` links to `docs.marola.dev`, `noindex`),
+  `robots.txt`, `humans.txt` (generated from `MEMBERS.md`; `llms.txt`, `sitemap.xml` and
+  `.well-known/security.txt` are written at build time, [development](3-development.md#crawl-files-and-metadata)),
+  `favicon.svg`, and
   `img/umbrella{,.pt-BR}.svg`, the umbrella README's repo diagram that `about.html` shows (copied
   from marola-dev/marola `docs/img/`; recopy it when that one changes).
 - `site/static/app.js`: fetches `data/areas.json` and each area's board, builds the map (Mapbox GL

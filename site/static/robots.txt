@@ -1,0 +1,6 @@
+# marola.dev: every page and every board is public. Cloudflare prepends its managed content
+# signals above this block; what they say is a zone setting (docs/3-development.md).
+User-agent: *
+Allow: /
+
+Sitemap: https://marola.dev/sitemap.xml

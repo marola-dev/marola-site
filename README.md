@@ -60,7 +60,7 @@ GitHub Pages as a fallback. `404.html` forwards `marola.dev/docs/*` to [docs.mar
 - `node scripts/redirect_check.js`: the 404 page sends `/docs/*` to `docs.marola.dev`, path kept,
   and leaves every other missing path on the not-found page.
 - `scripts/board-schema.sh --check`: the vendored schema is the pinned image's.
-- `python3 scripts/site_live_check.py`: what marola.dev serves, every six hours
+- `python3 scripts/site_live_check.py`: what marola.dev serves (the boards and the crawl files), every six hours
   (`site-health.yml`).
 
 More: [docs/1-design.md](docs/1-design.md) (files, the board → markers mapping, CSP), its

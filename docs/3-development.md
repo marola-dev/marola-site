@@ -18,7 +18,7 @@ than cancelling one that is already building.
 
 The job: pull the pinned image (two tries) → check the harness and the page against the image's
 own board schema → restore the beach lists → build every area's boards (or one, with an area input) → copy the static page
-into `site/dist` → write the Mapbox token and style into `mapbox-config.js` → cache-bust
+into `site/dist` → write the [crawl files](#crawl-files-and-metadata) → write the Mapbox token and style into `mapbox-config.js` → cache-bust
 `index.html`'s script/style tags with `?v=<sha>` (Pages caches each file independently) → add the
 `site-data` branch's panels → a required-files check (a half-built site must never reach Pages) →
 the publish allowlist (only the page, its assets and `data/`, `smoke/`, `coverage/`, `stats/` go
@@ -61,6 +61,33 @@ A public repo's self-hosted runner runs whatever a workflow in a pull request as
 Settings → Actions → "Approval for running fork pull request workflows" on *all external
 contributors*. `just site-build` works the same from any machine in Brazil.
 
+### Crawl files and metadata
+
+`site/static/robots.txt` (everyone allowed, names the sitemap) and `humans.txt` (written by
+`scripts/members_build.py` from the same pinned `MEMBERS.md` as `members.html`) are committed.
+`scripts/site_meta.py site/dist` writes the rest at build time: `llms.txt` (the site, every page,
+one data link per area in `site/areas.json`, and the docs' own
+[llms.txt](https://docs.marola.dev/llms.txt)), `sitemap.xml` (the five indexable pages with their
+`hreflang` alternates; `contact.html` carries `noindex`), `.well-known/security.txt` (RFC 9116,
+`Expires` 364 days after the build) and `board.schema.json`. A site not rebuilt for a year serves
+an expired `security.txt`, and the health check says so. Pages' artifact drops dot-directories
+unless `include-hidden-files` is set, which `site.yml` does for `.well-known/`.
+
+### Crawlers, AI and visitor counts (Cloudflare)
+
+Two things about crawlers are zone settings in Cloudflare's dashboard, not files here, and both
+are a person's call:
+
+- **The managed robots.txt.** Cloudflare prepends its content-signals block (`search`,
+  `ai-input`, `ai-train`) to our `robots.txt`. On 2026-11-10 it carried no `Content-Signal` line,
+  so it neither granted nor refused anything. Whatever it is set to has to agree with `llms.txt`,
+  which invites a model to read the site: `search=yes, ai-input=yes` at least.
+- **AI crawler blocking** ("Block AI bots", AI Crawl Control) answers some crawlers with 403
+  before they reach `robots.txt` or `llms.txt`.
+
+Visitor counts come from Cloudflare's zone analytics (#128): requests seen at the edge, no script
+in the page, no cookie. The page adds no analytics of its own (#176 holds that decision).
+
 ## The `site-data` branch layout
 
 An orphan branch, never deployed by the workflows that write it: `coverage/` and `smoke/` (the
@@ -72,7 +99,9 @@ a missing branch means none of the three.
 
 ## Health checks
 
-`site-health.yml` runs `python3 scripts/site_live_check.py` against the live site every six hours,
+`site-health.yml` runs `python3 scripts/site_live_check.py` against the live site every six hours
+(the boards, and the crawl files: `robots.txt` names a sitemap, every sitemap `<loc>` and `llms.txt`
+link answers 200, `security.txt` has not expired),
 separate from `site.yml` on purpose: a red run here means upstream data is missing (a bulletin
 gone stale, a provider down), not that the build is broken, so it must never block a deploy.
 
