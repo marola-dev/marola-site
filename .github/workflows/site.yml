@@ -137,6 +137,10 @@ jobs:
       - name: Copy the static page into dist
         run: cp -r site/static/. site/dist/
 
+      # Generated, not committed: llms.txt follows site/areas.json, security.txt's Expires the date.
+      - name: llms.txt, sitemap.xml, .well-known/security.txt and board.schema.json
+        run: python3 scripts/site_meta.py site/dist
+
       # The base map is Mapbox's. Its token is public by design (it ships to every visitor), so it
       # is a pk. token restricted to marola.dev's URLs in the Mapbox account; the script refuses an
       # sk. one. A repo variable is enough; a secret of the same name wins if both exist.
@@ -185,6 +189,7 @@ jobs:
           cd site/dist
           missing=0
           for f in index.html 404.html app.js ui.js i18n.js style.css flow.js mapbox-config.js \
+                   robots.txt sitemap.xml llms.txt humans.txt .well-known/security.txt \
                    vendor/mapbox-gl-csp.js vendor/mapbox-gl-csp-worker.js vendor/mapbox-gl.css data/areas.json \
                    $(python3 -c 'import json; [print("data/%s/latest.json" % a["id"]) for a in json.load(open("../areas.json"))]'); do
             if [ ! -f "$f" ]; then echo "missing: $f"; missing=1; fi
@@ -197,11 +202,11 @@ jobs:
         run: echo "marola.dev" > site/dist/CNAME
 
       # Only the map is public.
-      - name: Publish allowlist — index.html, 404.html, about.html, support.html, news.html, members.html, contact.html, favicon.svg, app.js, ui.js, i18n.js, style.css, flow.js, mapbox-config.js, chat.js, chatbot-config.js, CNAME, vendor/, img/, data/, smoke/, coverage/, stats/ and nothing else
+      - name: Publish allowlist — index.html, 404.html, about.html, support.html, news.html, members.html, contact.html, favicon.svg, app.js, ui.js, i18n.js, style.css, flow.js, mapbox-config.js, chat.js, chatbot-config.js, robots.txt, sitemap.xml, llms.txt, humans.txt, board.schema.json, .well-known/security.txt, CNAME, vendor/, img/, data/, smoke/, coverage/, stats/ and nothing else
         run: |
           cd site/dist
           rm -f .gitkeep
-          unexpected="$(find . -mindepth 1 \( -path ./data -o -path ./smoke -o -path ./coverage -o -path ./stats -o -path ./vendor -o -path ./img \) -prune -o -type f ! -name index.html ! -name 404.html ! -name about.html ! -name support.html ! -name news.html ! -name members.html ! -name contact.html ! -name favicon.svg ! -name app.js ! -name ui.js ! -name i18n.js ! -name style.css ! -name flow.js ! -name mapbox-config.js ! -name chat.js ! -name chatbot-config.js ! -name CNAME -print)"
+          unexpected="$(find . -mindepth 1 \( -path ./data -o -path ./smoke -o -path ./coverage -o -path ./stats -o -path ./vendor -o -path ./img \) -prune -o -type f ! -name index.html ! -name 404.html ! -name about.html ! -name support.html ! -name news.html ! -name members.html ! -name contact.html ! -name favicon.svg ! -name app.js ! -name ui.js ! -name i18n.js ! -name style.css ! -name flow.js ! -name mapbox-config.js ! -name chat.js ! -name chatbot-config.js ! -name robots.txt ! -name sitemap.xml ! -name llms.txt ! -name humans.txt ! -name board.schema.json ! -path ./.well-known/security.txt ! -name CNAME -print)"
           if [ -n "$unexpected" ]; then
             echo "files in site/dist that are not on the publish allowlist:"; echo "$unexpected"; exit 1
           fi
@@ -217,9 +222,12 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
 
+      # The artifact drops dot-directories by default, and .well-known/ is one; the allowlist above
+      # already refused any other hidden file.
       - uses: actions/upload-pages-artifact@v5
         with:
           path: site/dist
+          include-hidden-files: true
 
   deploy:
     needs: build

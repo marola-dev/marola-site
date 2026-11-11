@@ -703,9 +703,39 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
     ok((html.match(/<script\b[^>]*>/gi) || []).every(t => /^<script src="(i18n|ui)\.js">$/.test(t)),
       'the ' + page + ' page loads no script but the language chrome (i18n.js, ui.js)');
   }
-  for (const f of ['favicon.svg', 'news.html', 'members.html', 'contact.html']) {
+  for (const f of ['favicon.svg', 'news.html', 'members.html', 'contact.html', 'robots.txt', 'sitemap.xml', 'llms.txt', 'humans.txt', 'board.schema.json']) {
     ok(new RegExp('! -name ' + f.replace('.', '\\.') + '\\b').test(SITE_YML), "site.yml's publish allowlist keeps " + f);
   }
+  ok(SITE_YML.includes('! -path ./.well-known/security.txt') && /include-hidden-files: true/.test(SITE_YML),
+    "site.yml publishes .well-known/security.txt, on Pages too (its artifact drops dot-directories by default)");
+  ok(SITE_YML.includes('python3 scripts/site_meta.py site/dist'), 'site.yml writes llms.txt, sitemap.xml and security.txt at build time');
+
+  // --- page heads (#37, #182): one canonical, Open Graph, hreflang; JSON-LD on the map; noindex where no crawler should land
+  const ROBOTS = fs.readFileSync(path.join(ROOT, 'site/static/robots.txt'), 'utf8');
+  ok(/^User-agent: \*$/m.test(ROBOTS) && /^Sitemap: https:\/\/marola\.dev\/sitemap\.xml$/m.test(ROBOTS), 'robots.txt allows everyone and names the sitemap');
+  const HEADS = { 'index.html': [INDEX, ''], 'about.html': [ABOUT, 'about.html'], 'support.html': [SUPPORT, 'support.html'],
+    'news.html': [NEWS, 'news.html'], 'members.html': [MEMBERS, 'members.html'], 'contact.html': [CONTACT, 'contact.html'] };
+  for (const [page, [html, rel]] of Object.entries(HEADS)) {
+    const head = (/<head>[\s\S]*?<\/head>/.exec(html) || [''])[0];
+    const url = 'https://marola.dev/' + rel;
+    const canon = head.match(/<link rel="canonical" href="([^"]*)">/g) || [];
+    ok(canon.length === 1 && canon[0].includes('"' + url + '"') && !/\?/.test(canon[0]), page + ': one absolute canonical, no query string');
+    ok(head.includes('<meta property="og:url" content="' + url + '">'), page + ': og:url is the canonical');
+    const title = (/<title[^>]*>([^<]*)<\/title>/.exec(head) || [])[1];
+    const desc = (/<meta name="description" content="([^"]*)">/.exec(head) || [])[1];
+    ok(title && desc && head.includes('<meta property="og:title" content="' + title + '">') && head.includes('<meta property="og:description" content="' + desc + '">'),
+      page + ': og:title and og:description repeat the title and the description');
+    ok(['pt-BR" href="' + url, 'en" href="' + url + '?lang=en', 'x-default" href="' + url].every(h => head.includes('<link rel="alternate" hreflang="' + h + '">')),
+      page + ': hreflang pt-BR, en and x-default, matching the sitemap');
+    ok(head.includes('<meta name="twitter:card" content="summary">'), page + ': twitter:card');
+    ok(head.includes('<meta name="robots" content="noindex">') === (page === 'contact.html'), page + ': noindex only on the contact form');
+  }
+  const ld = (/<script type="application\/ld\+json">([\s\S]*?)<\/script>/.exec(INDEX) || [])[1];
+  let ldDoc = null; try { ldDoc = JSON.parse(ld); } catch (_) { /* reported below */ }
+  ok(ldDoc && ldDoc['@context'] === 'https://schema.org' && ['WebSite', 'Organization'].every(k => (ldDoc['@graph'] || []).some(n => n['@type'] === k)),
+    'index.html: JSON-LD parses, with a WebSite and an Organization');
+  ok(/<meta name="robots" content="noindex">/.test(fs.readFileSync(path.join(ROOT, 'site/static/404.html'), 'utf8')), '404.html carries noindex');
+
   const CSS = fs.readFileSync(path.join(ROOT, 'site/static/style.css'), 'utf8');
   const newsPt = (NEWS.match(/<article class="about-body" lang="pt-BR">/g) || []).length;
   ok(newsPt >= 1 && newsPt === (NEWS.match(/<article class="about-body" lang="en">/g) || []).length,

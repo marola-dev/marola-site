@@ -62,6 +62,7 @@ quality:
     python3 scripts/i18n_bundle.py --self-test
     python3 scripts/news_build.py --self-test
     python3 scripts/members_build.py --self-test
+    python3 scripts/site_meta.py --self-test
     scripts/site-data-push.sh --self-test
     scripts/board-schema.sh --self-test
     scripts/mapbox_config.sh --self-test
