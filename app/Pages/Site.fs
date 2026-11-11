@@ -25,11 +25,20 @@ type Env =
 module Site =
 
     /// Pages whose body is Markdown, by file name without `.html`.
-    let slugs = [ "about"; "support"; "contact"; "contact-sent"; "404" ]
+    let slugs =
+        [ "about"; "support"; "contact"; "contact-sent"; "privacy"; "takedown"; "404" ]
 
     /// Every page of the site, in the order of the nav.
     let allSlugs =
-        [ "news"; "about"; "contact"; "members"; "support"; "contact-sent"; "404" ]
+        [ "news"
+          "about"
+          "contact"
+          "members"
+          "support"
+          "privacy"
+          "takedown"
+          "contact-sent"
+          "404" ]
 
     /// A page a search engine must not list.
     let noIndex (slug: string) : bool =

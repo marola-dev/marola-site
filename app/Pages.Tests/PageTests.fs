@@ -80,6 +80,30 @@ let tests =
                   let where = slug + " " + Language.tag language
                   Expect.isTrue (List.contains (Layout.dynamicPath language "studies") (hrefs html)) where
                   Expect.isTrue (List.contains (Layout.dynamicPath language "submit") (hrefs html)) where)
+          forEach "the footer links the privacy and takedown pages, in the page's language" (fun slug language html ->
+              let where = slug + " " + Language.tag language
+              Expect.isTrue (List.contains (Layout.path language "privacy") (hrefs html)) (where + ": privacy")
+              Expect.isTrue (List.contains (Layout.path language "takedown") (hrefs html)) (where + ": takedown"))
+          test
+              "the privacy and takedown pages are in the build and the sitemap, in both languages, and say what they must" {
+              for slug in [ "privacy"; "takedown" ] do
+                  Expect.isTrue (List.contains slug Site.allSlugs) (slug + " has a page")
+                  Expect.isFalse (Site.noIndex slug) (slug + " is listed by search engines")
+
+                  for language in [ Language.PtBr; Language.En ] do
+                      Expect.isTrue
+                          (Meta.sitemap.Contains(Layout.origin + Layout.path language slug))
+                          (slug + " in the sitemap")
+
+              let en = render "privacy" Language.En
+              let pt = render "privacy" Language.PtBr
+
+              for needle in [ "not legal advice"; "IP address"; "tombstone"; "/account" ] do
+                  Expect.isTrue (en.Contains needle) ("en: " + needle)
+
+              for needle in [ "aconselhamento jurídico"; "endereço IP"; "lápide"; "/account" ] do
+                  Expect.isTrue (pt.Contains needle) ("pt: " + needle)
+          }
           test "every nav link has a page in the build" {
               for slug in Layout.navSlugs do
                   Expect.isTrue (List.contains slug Site.allSlugs) (slug + " has no page")
@@ -159,10 +183,14 @@ let tests =
                         "en/contact.html"
                         "en/members.html"
                         "en/news.html"
+                        "en/privacy.html"
                         "en/support.html"
+                        "en/takedown.html"
                         "members.html"
                         "news.html"
-                        "support.html" ]
+                        "privacy.html"
+                        "support.html"
+                        "takedown.html" ]
                       "files"
               | Error e -> failwith e
           } ]

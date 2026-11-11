@@ -96,4 +96,25 @@ check((await go(`${base}${where}.pdf`)).status === 404, "the withdrawn file is n
 const out = await post("/logout", { csrf });
 check(out.status === 303 && (await go(`${base}/account`)).status === 303, "logout ends the session");
 
+// 6. Delete the account: the typed login is needed, then keys, sessions and the account go, and a new login
+// with the same GitHub id starts empty. The study stays as a tombstone with its hash.
+async function signIn() {
+  const l = await go(`${base}/auth/github/login`);
+  const g = await go(l.headers.get("location"));
+  return go(g.headers.get("location"));
+}
+await signIn();
+const html2 = await (await go(`${base}/account`)).text();
+const csrf2 = csrfOf(html2);
+check(!!csrf2 && html2.includes("/account/delete"), "after a new login the account page has the delete form");
+const wrong = await post("/account/delete", { csrf: csrf2, confirm: "not-me" });
+check(wrong.status === 400 && (await go(`${base}/account`)).status === 200, "a wrong typed login deletes nothing");
+const gone = await post("/account/delete", { csrf: csrf2, confirm: "smoke-sci" });
+check(gone.status === 303 && (await go(`${base}/account`)).status === 303, "the typed login deletes the account and ends the session");
+await signIn();
+const html3 = await (await go(`${base}/account`)).text();
+check(!html3.includes(id) && !/msk_|Chave [0-9]|Key [0-9]/.test(html3), "a login after the deletion is a fresh account: no study, no key");
+const tomb2 = await (await go(base + where)).text();
+check(tomb2.includes(expectedSha) && (await go(`${base}${where}.pdf`)).status === 404, "the study stays as a tombstone with its hash after the deletion");
+
 process.exit(failed ? 1 : 0);

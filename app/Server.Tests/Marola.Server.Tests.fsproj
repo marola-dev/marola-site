@@ -12,6 +12,7 @@
     <Compile Include="SessionTests.fs" />
     <Compile Include="LoginTests.fs" />
     <Compile Include="PdfTests.fs" />
+    <Compile Include="BoardTests.fs" />
     <Compile Include="StudyApiTests.fs" />
     <Compile Include="WebTests.fs" />
     <Compile Include="HeaderTests.fs" />

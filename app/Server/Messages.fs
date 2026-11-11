@@ -36,6 +36,12 @@ module Messages =
           "active_content",
           "o PDF tem script, anexo ou ação de abertura; exporte de novo sem isso",
           "the PDF has a script, an attachment or an open action; export it again without them"
+          "pdf_encrypted",
+          "o PDF é criptografado e não dá para verificá-lo; exporte de novo sem senha",
+          "the PDF is encrypted and cannot be checked; export it again without a password"
+          "pdf_unscannable",
+          "não foi possível verificar o PDF por dentro; exporte de novo (por exemplo, com outro programa)",
+          "the PDF could not be checked inside; export it again (for example, with another program)"
           "too_large", "o arquivo passa de 20 MB", "the file is over 20 MB"
           "duplicate", "esta conta já enviou este arquivo", "this account already sent this file"
           "quota_exceeded",

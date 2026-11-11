@@ -12,7 +12,8 @@ GitHub account may submit, nobody approves first, and the board may hide a study
 water-quality claim can harm people, so every public view says "not reviewed, not medical advice" and keeps
 the hash and the date of the study. Agents submit over an HTTP API that has a dry-run mode. This ADR covers
 the domain, the storage, the validation and the API (run C3a). Run C3b adds the GitHub login, the sessions, the
-web pages, the reports and the withdrawal. The privacy text and the board's takedown command are not built yet.
+web pages, the reports and the withdrawal. Run C3c closes the PDF scan gap (object streams, encrypted files), adds
+the board's commands, the deletion of an account, and the privacy and takedown pages.
 
 ## Decision
 
@@ -55,7 +56,7 @@ web pages, the reports and the withdrawal. The privacy text and the board's take
    a name that straddles the 64 KB read border, and the accepted forms. The file is streamed in 64 KB chunks to
    `MAROLA_STUDIES/.incoming/<random>` (mode 0640) while SHA-256 is computed, then moved to `<sha256>.pdf`. The
    path is built from a hash that passed a 64 lower-case hex check, never from user text. The size limit applies
-   while reading, so an endless body stops at 20 MB. A dry run does the same checks and creates no file.
+   while reading, so an endless body stops at 20 MB. A dry run does the same checks and stores nothing under `MAROLA_STUDIES` (decision 20: it spools to a temp file in the system temp folder, deleted on close).
 4. **Store and quota.** `MAROLA_STUDIES_QUOTA` (2 GiB) bounds the sum of the stored files. A new file over it gets
    507, a dry run too. A file that is already stored costs nothing: the same bytes from two accounts are one file.
    The same hash from the same account is a 409 with the old id (a unique index on account and hash decides a race).
@@ -135,6 +136,45 @@ web pages, the reports and the withdrawal. The privacy text and the board's take
 19. **What is stored.** The GitHub id, the login and the date the GitHub account was made; a session hash; a key
     hash. No email and no IP address. The study pages are not in the static `sitemap.xml`, because they change at
     run time; the sitemap lists `/submit` and `/studies` in both languages, and the Atom feed lists the studies.
+20. **Object streams.** The name scan of decision 3 now also reads inside compressed object streams, where an action
+    could hide. Rules, exactly: (a) a name `/Encrypt` anywhere refuses the file, code `pdf_encrypted`, because its
+    streams cannot be read. (b) Each `/ObjStm` name starts a search for the next `stream` keyword. The text from
+    the last `<<` before it to the keyword must match a strict grammar and the `<<` must follow `N G obj` that starts
+    a line. The grammar allows only the keys `/Type /ObjStm`, `/N`, `/First`, `/Length` (a number or a reference),
+    `/Extends` (a reference) and `/Filter /FlateDecode`, with no string, comment, array or nested dictionary, so
+    a second filter (`ASCIIHexDecode`), a predictor (`DecodeParms`) or a spoofed `<<` cannot hide. Any other text
+    is refused, code `pdf_unscannable`. A stream with no `/Filter` is plain bytes that the file scan has read.
+    (c) A stream with `/Filter /FlateDecode` is inflated with `ZLibStream` while the file is read back from the
+    temp file in 64 KB pieces, and every piece goes to the same `NameScanner`. The caps are 32 MB of output for a
+    stream and 128 MB for the file; passing a cap, bad data or a stream that ends before its zlib data does is
+    `pdf_unscannable`. The output is never kept, so memory stays bounded (a test measures a 200 MB bomb). The dry
+    run also writes a temp file, in the system temp folder with delete-on-close, and nothing under `MAROLA_STUDIES`.
+    Plain streams (images, fonts, page content) are not scanned for names: they are not object streams and a
+    reader does not run them. Tests build real small PDFs: an action in an object stream, a clean one in the forms
+    Word, LaTeX and qpdf write, a bomb, an encrypted file, other filters and the spoofed forms.
+21. **Board tools.** `marola-server studies list|hide|unhide` and `marola-server reports [--open]|close` (`Board.fs`),
+    run over ssh as the inbox is. They print plain lines, with every control, format and separator character of
+    stored text turned into a space, so a hostile text cannot move a terminal or forge a line. Exit code: 0 done,
+    1 nothing changed, 2 wrong usage. `hide` needs a reason of 5 to 300 characters. `--purge` deletes the file,
+    keeps the row, the hash and the reason, sets `purged_utc` and prints a line for the board's record; it is
+    refused while another public study uses the same file. `unhide` is refused after a purge and after an
+    account deletion. A report is closed with a note of 3 to 300 characters. The runbook is [6-board](../6-board.md).
+22. **Account deletion.** `POST /account/delete` (session, CSRF and the login typed again) runs
+    `StudyStore.deleteAccount` in one transaction: it deletes the keys, the sessions and the account row, hides every
+    public study of the account with the reason "account deleted by the author", sets the author id of every study
+    of the account to `-rowid` and its login to `deleted`, and clears the reporter id of its reports. Then it clears
+    the cookie. The rows and the files stay; the files are not served; deleting them is a board decision
+    (`--purge`). A later login with the same GitHub id makes a new account with no study and no key. Schema version 3
+    rebuilds `studies` without the foreign key to `accounts`, because a detached study has no account, and adds a
+    trigger that refuses a new study whose author has no account. It adds `studies.purged_utc`, and
+    `reports.closed_utc` and `reports.close_note`.
+23. **Privacy and takedown.** The static pages `/privacy` and `/takedown` (and `/en/...`) say what is stored (GitHub id
+    and login, the study and its file, the hash and the dates, key hashes, session hashes for 12 hours, reports, the
+    contact inbox), what is not (email from GitHub, IP address, GitHub token, fingerprint; the server log holds no
+    address), why, for how long, who sees it and what a visitor can do; that account data is deleted on request and a
+    published study stays as a tombstone with its hash; and that the text is the project's own description of its
+    practice, not legal advice. The footer of every page links both, the sitemap lists both, and `/submit` and
+    `/account` link them. Status: the legal text is not approved by the board.
 
 ## Packages
 
@@ -147,13 +187,13 @@ the catalog loader; `Thoth.Json.Newtonsoft` comes with it and was already a pack
 
 | Threat | What we do | What is left |
 |---|---|---|
-| Malicious PDF (script, launch, attachment) | Magic and tail checks, the name scan of decision 3, a sandbox CSP and `nosniff` on the one route that serves it, no path from user text | The scan reads raw bytes. An action inside a compressed object stream (`/ObjStm`) is not seen, and `/ObjStm` cannot be refused because most LaTeX output has it. A random compressed stream can contain `/JS` followed by a delimiter by chance (about 7 in 100 for a 20 MB file of random bytes, 0.3 in 100 for 1 MB), so a rare file is refused wrongly; the author exports it again. A viewer bug is not covered. Serving `inline` was the owner's decision |
+| Malicious PDF (script, launch, attachment) | Magic and tail checks, the name scan of decision 3 over the file and over every compressed object stream (decision 20), an encrypted file refused, a sandbox CSP and `nosniff` on the one route that serves it, no path from user text | Plain streams (images, fonts, page content) are not inflated or scanned for names. A random compressed stream can contain `/JS` followed by a delimiter by chance, so a rare file is refused wrongly; the author exports it again. An object stream with a dictionary outside the strict grammar of decision 20 is refused, so a few odd but valid files are refused too. A viewer bug is not covered. Serving `inline` was the owner's decision |
 | Spam, mass posting | GitHub account of 7 days, 1 per 10 minutes, 10 a day, 30 requests a minute per key, 3 keys, the general limit per address | A person with many old accounts. The board hides after the fact |
-| Abuse (false claims, hate, doxxing) | The label "not reviewed, not medical advice", the hash and the date in every view, the tombstone, the report form, the withdrawal by the author | The harm between the post and the hiding. The board's takedown command is not built yet |
+| Abuse (false claims, hate, doxxing) | The label "not reviewed, not medical advice", the hash and the date in every view, the tombstone, the report form, the withdrawal by the author, the board's commands (decision 21) and the runbook [6-board](../6-board.md) | The harm between the post and the hiding. The board reads reports by hand; there is no alert and no deadline yet |
 | Enumeration and scraping | Random 10-character ids (50 bits), `limit` of 50 | The list is public on purpose, so every public study can be read |
 | Key theft | Only the hash is stored, shown once, 3 keys, revoke, constant-time compare, no key in a log or a header | A stolen key posts until it is revoked, within the limits above |
 | Storage exhaustion | 20 MB a file, 21 MB a request, 2 GiB quota with 507, streaming to disk, one file per hash, 1 per 10 minutes, temp files removed on every error | A full disk from other causes. Watch the folder |
-| LGPD | No email stored, no IP address stored, nothing from GitHub but the id, the login and the account date. The record holds the GitHub login and id of the author, which the author published on GitHub, and the names and ORCID iDs that the author typed. The server logs no address | The names are personal data of the authors listed, who may not be the submitter. The privacy text, the takedown route and the deletion of a record on request are still to do. The file and its hash stay on disk after hiding until a deletion order |
+| LGPD | No email stored, no IP address stored, nothing from GitHub but the id, the login and the account date. The record holds the GitHub login and id of the author, which the author published on GitHub, and the names and ORCID iDs that the author typed. The server logs no address. Account deletion on request (decision 22), the privacy and takedown pages (decision 23) | The names are personal data of the authors listed, who may not be the submitter: the board removes them on a takedown request, with `--purge` for the file. After an account deletion the rows and files stay on the server until the board purges them. The legal text of the privacy page is the project's own description of its practice and is not approved by the board or reviewed by a lawyer |
 | Cross-site request forgery | `SameSite=Lax` cookies, the Origin check, a token bound to the session in every POST form, `form-action 'self'` | A browser that sends no Origin and no Referer on a POST is refused |
 | Session theft | HttpOnly, Secure, `__Host-` cookies, only a hash stored, 12 hours, no script on any page | A person with the cookie is the account until it ends or they log out |
 
@@ -166,3 +206,5 @@ the catalog loader; `Thoth.Json.Newtonsoft` comes with it and was already a pack
 - `url` of a receipt is the study page of decision 16.
 - The owner registers the GitHub OAuth app (see [the hosting page](../5-hosting.md#the-github-login)); until then login answers 503.
 - Disk for `MAROLA_STUDIES_QUOTA` and a backup of the folder with the database are now part of the host plan.
+- Schema version 3 rebuilds `studies` (decision 22). An older server that opens a version 3 file still reads and writes the study tables, but it does not know `purged_utc`; roll back with care.
+- A restore of a backup brings back a purged file ([the hosting page](../5-hosting.md#the-studies-and-their-backup)): the board keeps its own record of purges.

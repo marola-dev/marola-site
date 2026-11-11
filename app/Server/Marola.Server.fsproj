@@ -23,6 +23,7 @@
     <Compile Include="Contact.fs" />
     <Compile Include="Web.fs" />
     <Compile Include="Inbox.fs" />
+    <Compile Include="Board.fs" />
     <Compile Include="DevAccount.fs" />
     <Compile Include="App.fs" />
     <Compile Include="Program.fs" />

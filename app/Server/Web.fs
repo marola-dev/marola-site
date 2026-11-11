@@ -124,13 +124,14 @@ module Web =
         (live: Session.Live)
         (newKey: string option)
         (keyError: bool)
+        (deleteError: bool)
         : Task<IResult> =
         let loc = s.Locale(language ctx)
         let db = s.Config.Db
 
         html
             ctx
-            200
+            (if deleteError then 400 else 200)
             "no-store"
             (Views.accountPage
                 loc
@@ -139,7 +140,8 @@ module Web =
                 (StudyStore.listKeys db live.Account.GithubId)
                 (StudyStore.listByAuthor db live.Account.GithubId)
                 newKey
-                keyError)
+                keyError
+                deleteError)
 
     // ---- handlers -------------------------------------------------------------------------------------
 
@@ -246,13 +248,13 @@ module Web =
     let private accountGet (s: State) (ctx: HttpContext) : Task<IResult> =
         match session s ctx with
         | None -> toLogin s ctx
-        | Some live -> accountView s ctx live None false
+        | Some live -> accountView s ctx live None false false
 
     let private createKey (s: State) (ctx: HttpContext) : Task<IResult> =
         accountPost s ctx (fun live _ ->
             match StudyStore.issueKey s.Config.Db (clock ctx) live.Account.GithubId with
-            | Ok key -> accountView s ctx live (Some key) false
-            | Error StudyStore.TooManyKeys -> accountView s ctx live None true)
+            | Ok key -> accountView s ctx live (Some key) false false
+            | Error StudyStore.TooManyKeys -> accountView s ctx live None true false)
 
     let private revokeKey (s: State) (ctx: HttpContext) : Task<IResult> =
         accountPost s ctx (fun live _ ->
@@ -276,6 +278,24 @@ module Web =
             StudyStore.deleteSession s.Config.Db live.Token |> ignore
             Session.clear ctx s.Config.Dev (Session.sessionCookie s.Config.Dev)
             redirect ctx (if language ctx = Language.En then "/?lang=en" else "/"))
+
+    /// The author deletes the account: a typed confirmation of the login, then `StudyStore.deleteAccount`
+    /// and the session cookie is cleared. The studies stay as tombstones (ADR 0004).
+    let private deleteAccount (s: State) (ctx: HttpContext) : Task<IResult> =
+        accountPost s ctx (fun live form ->
+            let typed =
+                if form.ContainsKey "confirm" then
+                    form["confirm"].Trim()
+                else
+                    ""
+
+            if String.Equals(typed, live.Account.Login, StringComparison.OrdinalIgnoreCase) then
+                StudyStore.deleteAccount s.Config.Db (clock ctx) live.Account.GithubId |> ignore
+                Session.clear ctx s.Config.Dev (Session.sessionCookie s.Config.Dev)
+                s.Log.LogInformation "account deleted"
+                redirect ctx (if language ctx = Language.En then "/?lang=en" else "/")
+            else
+                accountView s ctx live None false true)
 
     let private reportGet (s: State) (ctx: HttpContext) : Task<IResult> =
         let id = ctx.Request.RouteValues["id"].ToString()
@@ -366,6 +386,7 @@ module Web =
         post "/account/keys" false createKey
         post "/account/keys/{id}/revoke" false revokeKey
         post "/account/withdraw/{id}" false withdraw
+        post "/account/delete" false deleteAccount
         post "/logout" false logout
         get "/report/{id}" reportGet
         post "/report/{id}" true reportPost

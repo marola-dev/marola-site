@@ -80,6 +80,25 @@ fi
 
 # The web side: login, a key, the form with its token, the study page, a report, a withdrawal.
 node scripts/server_smoke_submit.mjs "http://127.0.0.1:$port" "$tmp/study.pdf" "$sha"
+
+# The board's commands on the same database (docs/6-board.md): hide a study, see its tombstone and that its file is
+# not served, purge it, see the file go, and see the exit codes.
+board() { dotnet "$dll" "$@"; }
+read -r api_id _ < <(board studies list --status public)
+[ -n "$api_id" ] || { echo "server_smoke: the board's list shows no public study" >&2; exit 1; }
+board studies hide "$api_id" --reason "smoke: hidden by the board" > /dev/null
+node scripts/server_smoke_board.mjs "http://127.0.0.1:$port" "$api_id" "$sha" "$tmp/studies" hidden
+purged="$(board studies hide "$api_id" --reason "smoke: purge" --purge)"
+case "$purged" in "purged $sha"*) ;; *) echo "server_smoke: the purge printed no record line: $purged" >&2; exit 1 ;; esac
+node scripts/server_smoke_board.mjs "http://127.0.0.1:$port" "$api_id" "$sha" "$tmp/studies" purged
+rc=0; board studies unhide "$api_id" > /dev/null 2>&1 || rc=$?
+[ "$rc" -eq 1 ] || { echo "server_smoke: unhide of a purged study exited $rc, not 1" >&2; exit 1; }
+rc=0; board studies hide "$api_id" > /dev/null 2>&1 || rc=$?
+[ "$rc" -eq 2 ] || { echo "server_smoke: hide with no reason exited $rc, not 2" >&2; exit 1; }
+board reports --open | grep -q '^#1 ' || { echo "server_smoke: the board's report list lacks the report" >&2; exit 1; }
+board reports close 1 --note "smoke: closed" > /dev/null
+[ -z "$(board reports --open)" ] || { echo "server_smoke: a closed report is still open" >&2; exit 1; }
+echo "server_smoke: the board's commands hide, purge and close as documented"
 for secret in "$gh_secret" gho_fakeSmokeToken0123456789 fakecode; do
   if grep -q -e "$secret" "$tmp/server.log"; then
     echo "server_smoke: a GitHub token, code or secret is in the server log" >&2

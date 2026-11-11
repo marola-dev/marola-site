@@ -264,7 +264,11 @@ module Views =
                                      loc
                                      "Tenho o direito de publicar este arquivo com a licença que escolhi."
                                      "I have the right to publish this file under the licence I chose."
-                             ) ])
+                                 + " "
+                             )
+                             link (url loc "/privacy") [ txt (tr loc "Privacidade" "Privacy") ]
+                             txt " · "
+                             link (url loc "/takedown") [ txt (tr loc "Remoção" "Takedown") ] ])
                    field
                        "pdf"
                        (tr loc "Arquivo PDF" "PDF file")
@@ -571,6 +575,7 @@ module Views =
         (studies: Record list)
         (newKey: string option)
         (keyError: bool)
+        (deleteError: bool)
         : string =
         let page =
             { head loc "account" (tr loc "Sua conta" "Your account") "" true with
@@ -631,7 +636,55 @@ module Views =
                  postForm loc "/account/keys" csrf [] [ button (tr loc "Criar uma chave" "Create a key") ]
                  h3 (tr loc "Seus estudos" "Your studies")
                  el "ul" [] (studies |> List.map studyRow)
-                 p [ link (url loc "/submit") [ txt (tr loc "Enviar um estudo" "Submit a study") ] ] ])
+                 p [ link (url loc "/submit") [ txt (tr loc "Enviar um estudo" "Submit a study") ] ]
+                 h3 (tr loc "Excluir a conta" "Delete the account")
+                 p
+                     [ txt (
+                           tr
+                               loc
+                               "Apaga suas chaves, suas sessões e a conta. Seus estudos saem do ar na hora, mas as linhas ficam como lápide, com o hash e o motivo \"conta excluída pelo autor\"; os arquivos ficam guardados e não são servidos. Quem quiser os arquivos apagados também pede à equipe. Veja "
+                               "Deletes your keys, your sessions and the account. Your studies go offline at once, but the rows stay as tombstones with the hash and the reason \"account deleted by the author\"; the files are kept and not served. To have the files deleted as well, ask the board. See "
+                       )
+                       link (url loc "/privacy") [ txt (tr loc "Privacidade" "Privacy") ]
+                       txt " · "
+                       link (url loc "/takedown") [ txt (tr loc "Remoção" "Takedown") ] ]
+                 postForm
+                     loc
+                     "/account/delete"
+                     csrf
+                     []
+                     ([ el
+                            "label"
+                            []
+                            [ el
+                                  "span"
+                                  []
+                                  [ txt (
+                                        tr
+                                            loc
+                                            ("Para confirmar, digite seu login do GitHub: " + account.Login)
+                                            ("To confirm, type your GitHub login: " + account.Login)
+                                    ) ]
+                              el
+                                  "input"
+                                  [ attr "type" "text"
+                                    attr "name" "confirm"
+                                    attr "autocomplete" "off"
+                                    attr "required" "" ]
+                                  [] ] ]
+                      @ (if deleteError then
+                             [ el
+                                   "p"
+                                   [ Vdom.cls "field-error"; attr "role" "alert" ]
+                                   [ txt (
+                                         tr
+                                             loc
+                                             "O login não confere. Nada foi apagado."
+                                             "The login does not match. Nothing was deleted."
+                                     ) ] ]
+                         else
+                             [])
+                      @ [ button (tr loc "Excluir minha conta" "Delete my account") ]) ])
 
     // ---- /report/<id> ---------------------------------------------------------------------------------
 

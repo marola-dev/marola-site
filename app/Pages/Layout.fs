@@ -233,6 +233,16 @@ module Layout =
                                   [ Vdom.el
                                         "a"
                                         [ Vdom.attr "href" (dynamicPath loc.Language "submit") ]
-                                        [ Vdom.text (text loc "footer.submit") ] ] ] ] ]
+                                        [ Vdom.text (text loc "footer.submit") ]
+                                    Vdom.text " · "
+                                    Vdom.el
+                                        "a"
+                                        [ Vdom.attr "href" (path loc.Language "privacy") ]
+                                        [ Vdom.text (text loc "footer.privacy_page") ]
+                                    Vdom.text " · "
+                                    Vdom.el
+                                        "a"
+                                        [ Vdom.attr "href" (path loc.Language "takedown") ]
+                                        [ Vdom.text (text loc "footer.takedown") ] ] ] ] ]
 
         "<!doctype html>\n" + Vdom.toHtml html + "\n"

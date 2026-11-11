@@ -77,7 +77,49 @@ module StudyStore =
                  token_hash text primary key,
                  github_id integer not null references accounts(github_id),
                  created_utc text not null,
-                 expires_utc text not null)" ] ]
+                 expires_utc text not null)" ]
+          3,
+          [ // Account deletion detaches a study from its author. The old table had a foreign key to `accounts`,
+            // which a detached study cannot satisfy, so the table is rebuilt without it (SQLite cannot drop a
+            // constraint). `purged_utc` marks a file that the board deleted. A report can be closed with a note.
+            "create table studies_new (
+                 id text primary key,
+                 received_utc text not null,
+                 sha256 text not null,
+                 title text not null,
+                 authors text not null,
+                 abstract text not null,
+                 area text not null,
+                 topic text not null,
+                 sources text not null,
+                 repository text,
+                 licence text not null,
+                 ai_models text not null,
+                 ai_contribution text not null,
+                 ai_process text not null,
+                 author_login text not null,
+                 author_github_id integer not null,
+                 status text not null default 'public',
+                 hidden_reason text,
+                 hidden_utc text,
+                 purged_utc text,
+                 unique (author_github_id, sha256))"
+            "insert into studies_new (id, received_utc, sha256, title, authors, abstract, area, topic, sources,
+                 repository, licence, ai_models, ai_contribution, ai_process, author_login, author_github_id,
+                 status, hidden_reason, hidden_utc)
+             select id, received_utc, sha256, title, authors, abstract, area, topic, sources,
+                 repository, licence, ai_models, ai_contribution, ai_process, author_login, author_github_id,
+                 status, hidden_reason, hidden_utc from studies"
+            "drop table studies"
+            "alter table studies_new rename to studies"
+            "create index studies_received on studies (received_utc desc, id desc)"
+            // What the dropped foreign key did for a new study. A detached study has a negative author id, no account.
+            "create trigger studies_author_exists before insert on studies
+             when new.author_github_id > 0
+               and not exists (select 1 from accounts where github_id = new.author_github_id)
+             begin select raise(abort, 'FOREIGN KEY constraint failed: the author has no account'); end"
+            "alter table reports add column closed_utc text"
+            "alter table reports add column close_note text" ] ]
 
     let schemaVersion = steps |> List.map fst |> List.max
 
@@ -99,9 +141,13 @@ module StudyStore =
         scalar connection "pragma user_version" [] :?> int64
 
     /// Applies the steps above the file's `user_version`, each in a transaction. Safe to call at every start.
+    /// Foreign keys are off while the steps run: step 3 drops and renames a table that `reports` points at.
     let migrate (path: string) : unit =
         use connection = open' path
         let current = scalar connection "pragma user_version" [] :?> int64
+
+        use off = Store.run connection "pragma foreign_keys = off" []
+        off.ExecuteNonQuery() |> ignore
 
         for (v, statements) in steps do
             if int64 v > current then
@@ -617,6 +663,163 @@ module StudyStore =
                   "$gid", box githubId ]
 
         command.ExecuteNonQuery() > 0
+
+    // ---- the board ----------------------------------------------------------------------------------
+
+    /// Studies of any status, newest first, for the board's command line.
+    let listForBoard (path: string) (status: string option) (limit: int) : Record list =
+        use connection = open' path
+
+        use command =
+            Store.run
+                connection
+                ("select "
+                 + columns
+                 + " from studies where ($status is null or status = $status)
+                   order by received_utc desc, id desc limit $limit")
+                [ "$status",
+                  (match status with
+                   | Some s -> box s
+                   | None -> box DBNull.Value)
+                  "$limit", box limit ]
+
+        use reader = command.ExecuteReader()
+
+        [ while reader.Read() do
+              readRecord reader ]
+
+    /// When the file of a study was deleted by the board, or `None`.
+    let purgedUtc (path: string) (id: string) : string option =
+        use connection = open' path
+
+        match scalar connection "select purged_utc from studies where id = $id" [ "$id", box id ] with
+        | :? string as t -> Some t
+        | _ -> None
+
+    /// Ids of the public studies that use the file of this hash, for the check before a purge.
+    let publicWithHash (path: string) (sha256: string) : string list =
+        use connection = open' path
+
+        use command =
+            Store.run
+                connection
+                "select id from studies where sha256 = $sha and status = 'public' order by id"
+                [ "$sha", box sha256 ]
+
+        use reader = command.ExecuteReader()
+
+        [ while reader.Read() do
+              reader.GetString 0 ]
+
+    /// Marks every study of this hash as purged: they share one file on disk.
+    let markPurged (path: string) (now: DateTimeOffset) (sha256: string) : unit =
+        use connection = open' path
+
+        use command =
+            Store.run
+                connection
+                "update studies set purged_utc = $now where sha256 = $sha and purged_utc is null"
+                [ "$now", box (utc now); "$sha", box sha256 ]
+
+        command.ExecuteNonQuery() |> ignore
+
+    /// The board republishes a hidden study. Refused (false) when its file was purged or when its author
+    /// deleted the account: that author asked for the study to go.
+    let unhide (path: string) (id: string) : bool =
+        use connection = open' path
+
+        use command =
+            Store.run
+                connection
+                "update studies set status = 'public', hidden_reason = null, hidden_utc = null
+                 where id = $id and status = 'hidden' and purged_utc is null and author_github_id > 0"
+                [ "$id", box id ]
+
+        command.ExecuteNonQuery() > 0
+
+    type ReportRow =
+        { Id: int64
+          StudyId: string
+          CreatedUtc: string
+          Reason: string
+          ClosedUtc: string option
+          CloseNote: string option }
+
+    /// Reports, oldest first, so the board answers in order.
+    let listReports (path: string) (openOnly: bool) : ReportRow list =
+        use connection = open' path
+
+        use command =
+            Store.run
+                connection
+                ("select id, study_id, created_utc, reason, closed_utc, close_note from reports "
+                 + (if openOnly then "where closed_utc is null " else "")
+                 + "order by id")
+                []
+
+        use reader = command.ExecuteReader()
+
+        let opt i =
+            if reader.IsDBNull i then None else Some(reader.GetString i)
+
+        [ while reader.Read() do
+              { Id = reader.GetInt64 0
+                StudyId = reader.GetString 1
+                CreatedUtc = reader.GetString 2
+                Reason = reader.GetString 3
+                ClosedUtc = opt 4
+                CloseNote = opt 5 } ]
+
+    /// True when an open report was closed.
+    let closeReport (path: string) (now: DateTimeOffset) (id: int64) (note: string) : bool =
+        use connection = open' path
+
+        use command =
+            Store.run
+                connection
+                "update reports set closed_utc = $now, close_note = $note where id = $id and closed_utc is null"
+                [ "$now", box (utc now); "$note", box note; "$id", box id ]
+
+        command.ExecuteNonQuery() > 0
+
+    // ---- account deletion ---------------------------------------------------------------------------
+
+    let accountDeletedReason = "account deleted by the author"
+
+    /// Deletes the keys, the sessions and the account row. Every study of the account is hidden (the rows and
+    /// the files stay) and detached: its author id becomes `-rowid`, which no GitHub id can be, and its login
+    /// becomes `deleted`, so a later login with the same GitHub id starts with nothing. Reports keep their
+    /// text and lose the reporter's id. All in one transaction. Returns the number of studies hidden now.
+    let deleteAccount (path: string) (now: DateTimeOffset) (githubId: int64) : int =
+        use connection = open' path
+        use tx = connection.BeginTransaction()
+
+        let exec sql parameters =
+            use command = Store.run connection sql parameters
+            command.Transaction <- tx
+            command.ExecuteNonQuery()
+
+        let id = [ "$id", box githubId ]
+
+        let hidden =
+            exec
+                "update studies set status = 'hidden', hidden_reason = $reason, hidden_utc = $now
+                 where author_github_id = $id and status = 'public'"
+                [ "$reason", box accountDeletedReason
+                  "$now", box (utc now)
+                  "$id", box githubId ]
+
+        exec "update studies set author_github_id = -rowid, author_login = 'deleted' where author_github_id = $id" id
+        |> ignore
+
+        exec "update reports set reporter_github_id = null where reporter_github_id = $id" id
+        |> ignore
+
+        exec "delete from api_keys where github_id = $id" id |> ignore
+        exec "delete from sessions where github_id = $id" id |> ignore
+        exec "delete from accounts where github_id = $id" id |> ignore
+        tx.Commit()
+        hidden
 
     /// A report of a study: the time and the reason, and nothing that names the reporter (no address, no account).
     let insertReport (path: string) (now: DateTimeOffset) (studyId: string) (reason: string) : bool =

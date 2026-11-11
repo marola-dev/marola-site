@@ -557,4 +557,90 @@ let tests =
                                   Expect.contains (hrefs html) (prefix + "/studies") (where + ": nav")
                                   Expect.contains (hrefs html) (prefix + "/submit") (where + ": footer")
                       })
+          }
+          testTask "a board reason is escaped on the tombstone page and in the API" {
+              do!
+                  run (fun site ->
+                      task {
+                          let cookie, csrf = loggedIn site 1L "ana"
+                          let id = publish site cookie csrf good validPdf |> fun t -> t.Result
+                          let hostile = "<script>alert(1)</script> \"onmouseover=x & <b>"
+                          Expect.isTrue (StudyStore.hide site.Config.Db site.Clock.Now id hostile) "hide"
+
+                          for path in [ "/studies/" + id; "/en/studies/" + id ] do
+                              use! page = getPage site path None
+                              let html = text page
+                              Expect.isFalse (html.Contains "<script>alert") (path + ": no raw script")
+
+                              Expect.stringContains
+                                  html
+                                  "&amp; &lt;b&gt;"
+                                  (path + ": the ampersand and the tag are escaped")
+
+                              Expect.stringContains html "&lt;script&gt;alert(1)&lt;/script&gt;" (path + ": escaped")
+
+                          use! api = getPage site ("/api/v1/studies/" + id) None
+                          let json = text api
+                          Expect.isFalse (json.Contains "<script>") "the JSON escapes <"
+                          Expect.stringContains json "\\u003cscript\\u003e" "escaped in JSON"
+                      })
+          }
+          testTask "deleting the account needs the typed login, hides the studies, detaches them and logs out" {
+              do!
+                  run (fun site ->
+                      task {
+                          let cookie, csrf = loggedIn site 1L "Ana"
+                          let id = publish site cookie csrf good validPdf |> fun t -> t.Result
+
+                          let key =
+                              StudyStore.issueKey site.Config.Db site.Clock.Now 1L
+                              |> Result.toOption
+                              |> Option.get
+
+                          let post (fields: (string * string) list) =
+                              send site HttpMethod.Post "/account/delete" (Some cookie) (Some same) (Some(form fields))
+
+                          use! page = getPage site "/account" (Some cookie)
+                          Expect.stringContains (text page) "/account/delete" "the form is there"
+
+                          use! noToken = post [ "confirm", "Ana"; "csrf", "bad" ]
+                          Expect.equal (status noToken) 403 "no token"
+                          use! wrong = post [ "confirm", "someone"; "csrf", csrf ]
+                          Expect.equal (status wrong) 400 "the login must match"
+                          Expect.isSome (StudyStore.getAccount site.Config.Db 1L) "nothing deleted"
+                          Expect.equal (StudyStore.getStudy site.Config.Db id).Value.Status Study.Public "still public"
+
+                          use! yes = post [ "confirm", " ana "; "csrf", csrf ]
+                          Expect.equal (status yes) 303 "deleted"
+                          Expect.stringContains (string yes.Headers) "msess=;" "the session cookie is cleared"
+
+                          Expect.isNone (StudyStore.getAccount site.Config.Db 1L) "account row gone"
+                          Expect.isNone (StudyStore.verifyKey site.Config.Db key) "key gone"
+                          use! after = getPage site "/account" (Some cookie)
+                          Expect.equal (status after) 303 "the session is gone"
+
+                          let study = (StudyStore.getStudy site.Config.Db id).Value
+                          Expect.equal study.Status Study.Hidden "hidden"
+                          Expect.equal study.HiddenReason (Some "account deleted by the author") "reason"
+                          Expect.equal study.AuthorLogin "deleted" "login scrubbed"
+                          Expect.isLessThan study.AuthorGithubId 0L "detached from every GitHub id"
+                          Expect.equal (files site |> Array.length) 1 "the file stays"
+
+                          use! tomb = getPage site ("/studies/" + id) None
+                          Expect.stringContains (text tomb) "account deleted by the author" "tombstone"
+                          use! pdf = getPage site ("/studies/" + id + ".pdf") None
+                          Expect.equal (status pdf) 404 "the file is not served"
+
+                          // The same GitHub id logs in again: a fresh account, with none of the old studies.
+                          let cookie2, csrf2 = loggedIn site 1L "Ana"
+                          Expect.isEmpty (StudyStore.listByAuthor site.Config.Db 1L) "no old study on the new account"
+                          Expect.isEmpty (StudyStore.listKeys site.Config.Db 1L) "no old key"
+                          use! fresh = getPage site "/account" (Some cookie2)
+                          Expect.isFalse ((text fresh).Contains id) "the account page lists nothing old"
+                          Expect.isFalse (StudyStore.unhide site.Config.Db id) "the old study cannot come back"
+
+                          // The same bytes again are a new study, not the old one: the old row has another author.
+                          let again = publish site cookie2 csrf2 good validPdf |> fun t -> t.Result
+                          Expect.notEqual again id "a new study"
+                      })
           } ]

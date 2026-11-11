@@ -15,4 +15,6 @@ let all =
           LoginTests.tests
           WebTests.tests
           PdfTests.tests
+          PdfTests.objStmTests
+          BoardTests.tests
           StudyApiTests.tests ]

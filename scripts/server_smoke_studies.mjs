@@ -1,6 +1,7 @@
 // The study API on the built server: no key is a 401, a dry run stores nothing, a real submission is read
 // back and its hash is the one `sha256sum` printed. Usage: node server_smoke_studies.mjs <base> <key> <pdf> <sha256> <studies-dir>
 import { readFileSync, existsSync, readdirSync } from "node:fs";
+import zlib from "node:zlib";
 
 const [base, key, pdfPath, expectedSha, studiesDir] = process.argv.slice(2);
 const pdf = readFileSync(pdfPath);
@@ -39,6 +40,31 @@ check(dryBody.sha256 === expectedSha, "the dry run hash equals sha256sum");
 check(files().length === 0, "a dry run leaves no file");
 const empty = await (await fetch(`${base}/api/v1/studies`)).json();
 check(empty.studies.length === 0, "a dry run leaves no row");
+
+// The scan reaches inside object streams and refuses a file it cannot read (ADR 0004): all as dry runs.
+function pdfWith(extraTrailer, objects = "") {
+  return Buffer.from(`%PDF-1.5\n1 0 obj\n<< /Type /Catalog >>\nendobj\n${objects}trailer\n<< /Root 1 0 R ${extraTrailer} >>\nstartxref\n9\n%%EOF\n`, "latin1");
+}
+function objStm(inner) {
+  const body = zlib.deflateSync(Buffer.from(`5 0 ${inner}`));
+  return Buffer.concat([
+    Buffer.from("10 0 obj\n<</Type/ObjStm/N 1/First 4/Filter/FlateDecode/Length 99>>\nstream\n"),
+    body,
+    Buffer.from("\nendstream\nendobj\n"),
+  ]).toString("latin1");
+}
+async function dryCode(bytes) {
+  const f = form(true);
+  f.set("pdf", new Blob([bytes], { type: "application/pdf" }), "x.pdf");
+  const r = await fetch(`${base}/api/v1/studies?dry_run=1`, { method: "POST", headers: auth, body: f });
+  const j = await r.json();
+  return [r.status, j.errors?.[0]?.code ?? (j.dry_run ? "ok" : "?")];
+}
+check((await dryCode(pdfWith("/Encrypt 7 0 R"))).join() === "400,pdf_encrypted", "an encrypted PDF is refused (pdf_encrypted)");
+check((await dryCode(pdfWith("", objStm("<< /S /JavaScript /JS (x) >>")))).join() === "400,active_content", "an action inside an object stream is refused");
+check((await dryCode(pdfWith("", objStm("<< /Type /Page >>")))).join() === "200,ok", "a clean object stream is accepted");
+check((await dryCode(pdfWith("", "10 0 obj\n<</Type/ObjStm/N 1/First 4/Filter/ASCIIHexDecode/Length 9>>\nstream\n35203020\nendstream\nendobj\n"))).join() === "400,pdf_unscannable", "an object stream with another filter is refused (pdf_unscannable)");
+check(files().length === 0, "the refused and dry-run files leave nothing");
 
 const real = await fetch(`${base}/api/v1/studies`, { method: "POST", headers: auth, body: form() });
 const receipt = await real.json();

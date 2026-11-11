@@ -66,8 +66,14 @@ rsync -a /var/lib/marola/studies/ /var/backups/marola/studies/
 
 Files are named by their SHA-256, so `rsync` copies each one once. Delete nothing under `.incoming` while the
 server runs; a file there older than a day is a failed upload and is safe to remove. A study that the board hides
-keeps its file on disk (the tombstone keeps the hash); delete the file by hand only on a legal order, and then
-the study shows its file as gone.
+keeps its file on disk (the tombstone keeps the hash). The board deletes a file with `studies hide <id> --purge`
+([the board runbook](6-board.md)), never by hand.
+
+**A restore of a backup undoes a purge.** A backup taken before the purge still holds
+the file and the old database row. After a restore, the file is back on disk and the row no longer says it was
+purged, so a hidden study stays unserved but the file exists again. The board records every purge (the line that
+the command prints: date, id, hash). After any restore, read that record and purge those studies again. Keep
+backups only as long as you need them: a deleted file lives in every backup that is older than its purge.
 
 ## nginx
 
@@ -174,6 +180,10 @@ Restart=on-failure
 `/opt/marola/dist` and `/opt/marola/data` as another user. The target of `MemoryMax=256M` comes
 from a measured start at 75 MB resident (`scripts/server_smoke.sh` fails above 100 MB). Nobody
 measured the server under load yet; watch `MemoryPeak` after the first weeks.
+
+A dry run and a real upload both write the upload to a file while it is read (decision 20 of [ADR 0004](adr/0004-study-submission.md)): the real one under
+`MAROLA_STUDIES/.incoming`, the dry run in the unit's private `/tmp` (`PrivateTmp=yes`), deleted when the request ends. On a
+host where `/tmp` is a memory file system, a 20 MB dry run counts against `MemoryMax` while it runs.
 
 ## The messages and their backup
 

@@ -701,7 +701,7 @@ curl -sS "https://marola.dev/api/v1/studies/<id>"
 `400` returns `{{"errors":[{{"field","code","message"}}]}}` with every error at once. The codes are
 `required`, `too_short`, `too_long`, `too_many`, `invalid`, `unknown_value`, `bad_name`, `bad_orcid`, `bad_link`,
 `must_be_true`, `invalid_utf8`, `duplicate_field`, `unknown_field`, `too_many_parts`, `malformed_multipart`,
-and for the file `not_pdf`, `truncated`, `active_content`.
+and for the file `not_pdf`, `truncated`, `active_content`, `pdf_encrypted`, `pdf_unscannable`.
 `401` bad or missing key. `403` the account is under 7 days old. `409` this account sent this file already (the answer has the old `id`).
 `413` the file or the request is too large. `415` not multipart. `429` too many requests: one real submission per account every 10 minutes and 10 a day,
 30 requests a minute per key (a dry run counts a third); read `Retry-After`. `507` the study store is full.

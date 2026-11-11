@@ -18,7 +18,11 @@ module Meta =
           "news.html", "News", "releases, how the project is built and what is in progress"
           "members.html", "Members", "who builds marola, the same people as the Zenodo record"
           "support.html", "Support", "how to donate, where the money goes and how to check the accounts"
-          "contact.html", "Contact", "a form whose message reaches the team's e-mail" ]
+          "contact.html", "Contact", "a form whose message reaches the team's e-mail"
+          "privacy.html",
+          "Privacy",
+          "what marola stores about authors and visitors, what it does not, and what you can do"
+          "takedown.html", "Takedown", "how to ask for a study to be removed and what the board does" ]
 
     let private securityPolicy =
         "https://github.com/marola-dev/.github/blob/main/SECURITY.md"
