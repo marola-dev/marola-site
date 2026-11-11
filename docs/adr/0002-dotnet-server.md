@@ -48,7 +48,7 @@ submission.
    body, and checks that none of them reaches the log.
 9. Take the contact form at `POST /contact`. Check the fields (email syntax, message of 10 to 4000
    characters, no control character other than tab and newline), store the message in SQLite
-   (`messages`: `id`, `created_utc`, `email`, `body`) and answer 303 to `/contact?sent=1`. The
+   (`messages`: `id`, `created_utc`, `email`, `body`) and answer 303 to `/contact-sent.html` ([ADR 0003](0003-pages-in-fsharp.md) adds the English route). The
    honeypot field `website` must be empty. A bot that fills it gets 200 and nothing is stored.
 10. Protect the form against cross-site posts with a check of `Origin` against `Host`, and of
     `Referer` when `Origin` is absent. A browser sends `Origin` on a cross-site POST and a page
@@ -81,7 +81,7 @@ The server project references `app/Shared` for `Csp.policy ()`.
   `Strict-Transport-Security` to them (see the hosting page); the CSP and the other headers have
   nothing to protect on a body of a few words.
 - The `.html` fallback makes a clean URL work: `GET /contact` finds `contact.html`, while
-  `POST /contact` is the form route. The built page has no `contact.html` yet.
+  `POST /contact` is the form route. The build writes `contact.html` ([ADR 0003](0003-pages-in-fsharp.md)).
 - The rate limit lives in memory and resets on a restart. It limits a client, not a botnet: many
   addresses could still fill the message table. The hosting page says to look at `inbox` from time to
   time. The server has no cap on the table.

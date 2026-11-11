@@ -55,6 +55,11 @@ map-load tier, billed above it).
   (`just server-run`, `just server-test`, `just server-build`, `scripts/server_smoke.sh`;
   [docs/5-hosting.md](docs/5-hosting.md), [ADR 0002](docs/adr/0002-dotnet-server.md)). `app/Server.Tests`
   runs its pipeline in memory (Expecto and TestHost). Every response header comes from `Security.fs`.
+  `app/Pages` (pure F#, .NET only) renders the static pages (about, support, contact, contact-sent, 404) to HTML:
+  `Markdown.fs` reads `site/content/pages/<page>.<lang>.md`, `Layout.fs` is the shared head, nav and footer, and
+  `app/Pages.Build` writes pt-BR at the root of `app/dist` and English under `en/` (`just pages-build`,
+  `just pages-test`; [ADR 0003](docs/adr/0003-pages-in-fsharp.md)). Edit the Markdown, never the HTML; the pages
+  carry no script and no inline style. `news` and `members` are still the old static files until they are ported.
 - `scripts/`: `site_check.js` (app.js and flow.js in a stub DOM and Mapbox GL), `site_meta.py`
   (`llms.txt`, `sitemap.xml` and `.well-known/security.txt`, written into `site/dist` at build),
   `mapbox_config.sh`

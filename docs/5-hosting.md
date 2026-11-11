@@ -39,7 +39,9 @@ A wrong `MAROLA_PORT` stops the start with exit code 2.
 - Answers an exception with a plain 500 page.
 - Refuses a body over 1 MB (413) and a client over its rate limit (429, with `Retry-After`): 300
   requests a minute, and 10 POST requests in 10 minutes.
-- Takes `POST /contact` (`email`, `message`, honeypot `website`) and stores it in SQLite.
+- Sends a path that matches no file the 404 page (`404.html`, or `en/404.html` below `/en/`) with status 404.
+- Takes `POST /contact` and `POST /en/contact` (`email`, `message`, honeypot `website`) and stores it in SQLite.
+  It answers 303 to `/contact-sent.html`, or `/en/contact-sent.html` for the English route.
 - Logs one JSON line for each request (method, path, status, time). No address, no query, no body.
 
 ## nginx

@@ -102,6 +102,22 @@ module Files =
 
     let notFound: IResult = plain 404 "not found\n"
 
+    /// The 404 page of the language the path is under (`404.html`, or `en/404.html` below `/en/`), sent with
+    /// status 404. A build without pages has none, and the plain text answers.
+    let private notFoundPage (config: Config) (path: string) : IResult =
+        let page =
+            if not (isNull path) && path.StartsWith "/en/" then
+                [ "en"; "404.html" ]
+            else
+                [ "404.html" ]
+
+        let file = under config.Static page
+
+        if File.Exists file then
+            Results.Text(File.ReadAllText file, "text/html; charset=utf-8", Text.Encoding.UTF8, Nullable 404)
+        else
+            notFound
+
     /// GET and HEAD only; `Results.File` answers `If-None-Match` and `If-Modified-Since` and sends no
     /// body for HEAD. The ETag is size plus mtime: cheap, and it changes with every deploy.
     let handle (config: Config) (ctx: HttpContext) : IResult =
@@ -112,7 +128,7 @@ module Files =
             plain 405 "method not allowed\n"
         else
             match resolve config (request.Path.Value) with
-            | None -> notFound
+            | None -> notFoundPage config request.Path.Value
             | Some file ->
                 let info = FileInfo file
                 let modified = DateTimeOffset(info.LastWriteTimeUtc)

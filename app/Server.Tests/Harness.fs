@@ -87,6 +87,8 @@ let start (customize: WebApplication -> unit) : Site =
     write (Path.Combine(root, "secret.txt")) secret
     write (Path.Combine(static', "index.html")) ("<!doctype html><p>home</p>\n" + bulk)
     write (Path.Combine(static', "contact.html")) ("<!doctype html><form></form>\n" + bulk)
+    write (Path.Combine(static', "404.html")) "<!doctype html><p>nada aqui</p>\n"
+    write (Path.Combine(static', "en", "404.html")) "<!doctype html><p>nothing here</p>\n"
     write (Path.Combine(static', "app.js")) ("export const x = 1;\n" + bulk)
     write (Path.Combine(static', "app.1a2b3c4d5e.js")) "export const y = 2;\n"
     write (Path.Combine(static', "style.css")) ("body { margin: 0 }\n" + bulk)

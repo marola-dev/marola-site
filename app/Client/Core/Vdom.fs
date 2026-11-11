@@ -296,3 +296,49 @@ module Vdom =
                           | _ -> None)
                   )
                   "children", JArr(List.map toJson e.Children) ]
+
+    let private voidTags =
+        set
+            [ "area"
+              "base"
+              "br"
+              "col"
+              "hr"
+              "img"
+              "input"
+              "link"
+              "meta"
+              "source"
+              "wbr" ]
+
+    let private escapeText (s: string) : string =
+        s.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;")
+
+    let private escapeAttr (s: string) : string = (escapeText s).Replace("\"", "&quot;")
+
+    let private attrHtml (a: Attr<'msg>) : string =
+        match a with
+        | Attr(n, v)
+        | Prop(n, v) -> " " + n + "=\"" + escapeAttr v + "\""
+        | Flag(n, true) -> " " + n
+        | Flag(_, false)
+        | On _ -> ""
+
+    /// A static tree as HTML text, for a page rendered ahead of time (app/Pages). Text and attribute
+    /// values are escaped and there is no raw node, so no message can add markup. A name is trusted:
+    /// tags and attribute names come from code, never from data. Handlers are left out.
+    let rec toHtml (node: Node<'msg>) : string =
+        match node with
+        | Text t -> escapeText t
+        | El e ->
+            let open' = "<" + e.Tag + (e.Attrs |> List.map attrHtml |> String.concat "")
+
+            if e.Ns = "" && Set.contains e.Tag voidTags then
+                open' + ">"
+            else
+                open'
+                + ">"
+                + (e.Children |> List.map toHtml |> String.concat "")
+                + "</"
+                + e.Tag
+                + ">"

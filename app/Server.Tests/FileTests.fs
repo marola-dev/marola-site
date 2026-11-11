@@ -87,6 +87,19 @@ let tests =
                       })
           }
 
+          testTask "a missing path gets the 404 page of its language, with status 404" {
+              do!
+                  plainSite (fun site ->
+                      task {
+                          for (path, text) in [ "/nope", "nada aqui"; "/en/nope", "nothing here" ] do
+                              use! response = site.Client.GetAsync path
+                              Expect.equal (int response.StatusCode) 404 path
+                              Expect.equal (header response "Content-Type") (Some "text/html; charset=utf-8") path
+                              let! body = response.Content.ReadAsStringAsync()
+                              Expect.stringContains body text path
+                      })
+          }
+
           testTask "HEAD has the headers and no body" {
               do!
                   plainSite (fun site ->

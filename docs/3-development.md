@@ -173,6 +173,8 @@ just app-build            # Fable compiles app/Client/App, then app/dist/ is ass
 just app-build --fixtures # also writes data/<area>/ boards from site/fixtures/board.json
 just server-run           # http://127.0.0.1:8080, with the security headers (see below)
 just client-check         # a Node smoke test of the compiled client
+just pages-test           # the static pages: renderer, Markdown subset, every page in both languages
+just pages-build          # write the pages into app/dist alone (app-build does it too)
 ```
 
 `scripts/app_build.sh` runs `fable app/Client/App --outDir app/Client/out` with a locked NuGet
@@ -180,7 +182,11 @@ restore, then builds `app/dist/`: `index.html`, `style.css`, `vendor/` and `data
 `app/Client/public/`, Fable's output in `app/dist/app/` (with its `fable_modules/`), the two files of
 `app/Client/ffi/` in `app/dist/ffi/`, and the catalogs of `site/i18n/`. It writes `csp.txt` from
 `Csp.fs`. There is no `boot.mjs`: `index.html` loads `app/Program.js`, whose last line calls `main`.
-`--no-fable` reuses `app/Client/out`. `app/dist/` and `app/Client/out/` are not in git.
+The build also renders the static pages (about, support, contact, contact-sent, 404) from
+`site/content/pages/` into `app/dist/` and `app/dist/en/` ([ADR 0003](adr/0003-pages-in-fsharp.md)). Edit
+the Markdown there and the chrome words in `site/i18n/`, never the HTML. `news.html` and `members.html`
+are copies of the old static files until they are ported. `--no-fable` reuses `app/Client/out`.
+`app/dist/` and `app/Client/out/` are not in git.
 
 Fable writes each FFI import as the path from its output file to the `.mjs` in the source tree. That
 is why the build compiles into `app/Client/out`, next to `app/Client/ffi`, and `app/dist/app` and

@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- The static pages (about, support, contact, 404), rendered to HTML text ahead of time. .NET only:
+       it reads files and uses the virtual DOM of the client core to build markup that is escaped by construction. -->
+  <ItemGroup>
+    <Compile Include="Markdown.fs" />
+    <Compile Include="Layout.fs" />
+    <Compile Include="Site.fs" />
+    <Compile Include="Loader.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Shared/Marola.Shared.fsproj" />
+    <ProjectReference Include="../Client/Core/Marola.Client.Core.fsproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Reads the catalogs, as the tests in app/Tests do. -->
+    <PackageReference Include="Thoth.Json.Newtonsoft" Version="0.5.0" />
+  </ItemGroup>
+</Project>

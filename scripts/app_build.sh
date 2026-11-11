@@ -47,6 +47,16 @@ cp site/i18n/en.json site/i18n/pt-BR.json "$dist/i18n/"
 # Fable's own .js files import each other as ES modules; Node needs to be told (a browser does not).
 printf '{ "type": "module" }\n' > "$dist/app/package.json"
 
+# The static pages, rendered from F# (app/Pages) into pt-BR files at the root and English ones under en/.
+command -v dotnet >/dev/null || { echo "app_build: dotnet is not installed; run inside 'nix develop'" >&2; exit 1; }
+RestoreLockedMode=true dotnet run --project app/Pages.Build -c Release -- site/content/pages site/i18n "$dist"
+mkdir -p "$dist/img"
+cp site/static/img/umbrella.svg site/static/img/umbrella.pt-BR.svg "$dist/img/"
+# news and members are not ported yet (run C2b): the nav still has to reach them, so the old static
+# pages and what they load go in as they are. Remove this block when Pages renders both.
+cp site/static/news.html site/static/members.html site/static/ui.js site/static/i18n.js "$dist/"
+cp -r site/static/img/members "$dist/img/members"
+
 node scripts/app_fixtures.mjs areas "$dist"
 if [ "$fixtures" -eq 1 ]; then
   node scripts/app_fixtures.mjs boards "$dist"

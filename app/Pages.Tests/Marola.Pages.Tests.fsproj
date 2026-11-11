@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <GenerateProgramFile>false</GenerateProgramFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Support.fs" />
+    <Compile Include="HtmlTests.fs" />
+    <Compile Include="MarkdownTests.fs" />
+    <Compile Include="PageTests.fs" />
+    <Compile Include="All.fs" />
+    <Compile Include="Discover.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Pages/Marola.Pages.fsproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Expecto runs the tests, as in app/Tests; the Test SDK and the adapter let `dotnet test` find them. -->
+    <PackageReference Include="Expecto" Version="10.2.3" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="YoloDev.Expecto.TestSdk" Version="0.15.5" />
+  </ItemGroup>
+</Project>

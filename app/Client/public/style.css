@@ -96,7 +96,11 @@ small { font-size: var(--fs-13); letter-spacing: var(--tr-13); }
 /* the language toggle pairs with the repo link (MIP-0054 §5.8) */
 .sitenav .lang { margin-left: auto; }
 .lang-icon { width: 14px; height: 14px; margin: 0 4px 0 6px; flex: none; fill: none; stroke: var(--muted); stroke-width: 1.2; }
-.lang button { text-transform: none; }
+.lang button, .lang a { text-transform: none; }
+/* the static pages switch language with two plain links; they look like the map page's buttons */
+.lang a { display: inline-flex; align-items: center; min-height: 24px; padding: 0 8px; border: 1px solid transparent; border-radius: 6px; color: var(--muted); text-decoration: none; font-size: var(--fs-12); letter-spacing: var(--tr-12); font-weight: 500; }
+.lang a:hover { background: rgb(255 255 255 / .6); color: var(--ink); }
+.lang a[aria-current="true"] { background: var(--bg); border: 1px solid var(--line); color: var(--ink); box-shadow: 0 1px 2px rgb(17 24 32 / .08); }
 
 /* header: wordmark and what the page does at left, the controls at right */
 .bar {
@@ -446,11 +450,15 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
 #chat-input { flex: 1; min-width: 0; min-height: 36px; padding: 0 12px; border: 1px solid var(--line-strong); border-radius: var(--r-control); font: inherit; font-size: var(--fs-14); letter-spacing: var(--tr-14); }
 
 @media (max-width: 640px) {
-  .sitenav { padding: 4px 16px; gap: 4px 12px; }
+  /* one row on a phone: a wrapped second row clipped the LinkedIn and GitHub icons. The strip scrolls
+   * sideways on the narrowest screens instead of wrapping; the icons keep their aria-label. */
+  .sitenav { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding: 4px 12px; gap: 4px 10px; }
+  .sitenav > * { flex: none; }
+  .lang button, .lang a { padding: 0 6px; }
   /* sections with no page yet would take a second row on a phone for nothing to tap */
   .sitenav > span { display: none; }
   /* a sixth link wraps the strip onto a second row; on a phone the members page is reached from about.html */
-  .sitenav > a[href="members.html"] { display: none; }
+  .sitenav > a[href$="members.html"] { display: none; }
   /* research and contribute too: about.html ("quem faz") links both */
   .sitenav > a[href*="marola-research"] { display: none; }
   .sitenav .gh .gh-name, .sitenav .gh .gh-star, .sitenav .li .li-name { display: none; }

@@ -82,6 +82,7 @@ quality:
     just app-fmt --check
     just app-test
     just server-test
+    just pages-test
     python3 scripts/site_live_check.py --self-test
     python3 scripts/i18n_bundle.py --self-test
     python3 scripts/news_build.py --self-test
@@ -120,6 +121,14 @@ server-test:
 # Publish the server (framework-dependent, Release) into app/Server/out, the folder a host runs.
 server-build:
     RestoreLockedMode=true dotnet publish app/Server -c Release -o app/Server/out
+
+# The static pages' tests (Expecto): the renderer, the Markdown subset and every page in both languages. NuGet restores in locked mode.
+pages-test:
+    RestoreLockedMode=true dotnet test app/Pages.Tests
+
+# Render the static pages (site/content/pages) into a folder: pt-BR at its root, English under en/. app-build does this into app/dist.
+pages-build out="app/dist":
+    RestoreLockedMode=true dotnet run --project app/Pages.Build -c Release -- site/content/pages site/i18n {{ out }}
 
 # Start the built server on a free port against app/dist and check its headers, hostile paths and contact form (run app-build --fixtures first).
 server-smoke:

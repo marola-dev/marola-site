@@ -108,7 +108,16 @@ module Contact =
                             let id = Store.insert config.Db DateTimeOffset.UtcNow email message
                             // The id only: the address and the text are personal data.
                             log.LogInformation("contact message stored {MessageId}", id)
-                            ctx.Response.Headers.Location <- "/contact?sent=1"
+                            // The page that thanks the visitor is a static file, in the language of the path posted to.
+                            let prefix =
+                                if request.Path.StartsWithSegments(PathString "/en") then
+                                    "/en"
+                                else
+                                    ""
+
+                            ctx.Response.Headers.Location <-
+                                Microsoft.Extensions.Primitives.StringValues(prefix + "/contact-sent.html")
+
                             return Results.StatusCode 303
                         | Error bad, _
                         | _, Error bad -> return plain 400 ("invalid " + bad)

@@ -48,7 +48,7 @@ let tests =
                                     "name", "Ana" ]
 
                           Expect.equal (int response.StatusCode) 303 "see other"
-                          Expect.equal (header response "Location") (Some "/contact?sent=1") "back to the form"
+                          Expect.equal (header response "Location") (Some "/contact-sent.html") "on to the thanks page"
                           Expect.isSome (header response "Content-Security-Policy") "headers"
 
                           match stored site with
@@ -167,6 +167,20 @@ let tests =
                               (stored site |> List.map (fun m -> m.Body))
                               [ text; "A mensagem tem mais de dez caracteres." ]
                               "both rows"
+                      })
+          }
+
+          testTask "the English form posts to /en/contact and lands on the English thanks page" {
+              do!
+                  plainSite (fun site ->
+                      task {
+                          let request = new HttpRequestMessage(HttpMethod.Post, "/en/contact")
+                          request.Content <- form goodForm
+                          request.Headers.Add("Origin", "http://localhost")
+                          use! response = site.Client.SendAsync request
+                          Expect.equal (int response.StatusCode) 303 "see other"
+                          Expect.equal (header response "Location") (Some "/en/contact-sent.html") "English page"
+                          Expect.equal (stored site |> List.length) 1 "stored once"
                       })
           }
 

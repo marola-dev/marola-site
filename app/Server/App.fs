@@ -166,10 +166,12 @@ module App =
 
         let contactLog = logs.CreateLogger "Marola.Contact"
 
-        app
-            .MapPost("/contact", Func<HttpContext, Task<IResult>>(Contact.handle config contactLog))
-            .RequireRateLimiting("strict")
-        |> ignore
+        // /en/contact is the English form's action: the same handler, which answers in that language.
+        for route in [ "/contact"; "/en/contact" ] do
+            app
+                .MapPost(route, Func<HttpContext, Task<IResult>>(Contact.handle config contactLog))
+                .RequireRateLimiting("strict")
+            |> ignore
 
         app.MapFallback("{**path}", Func<HttpContext, IResult>(Files.handle config))
         |> ignore

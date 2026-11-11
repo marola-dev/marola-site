@@ -64,7 +64,19 @@ checkHeaders("/data/floripa/latest.json", data);
 
 const missing = await get("/nope");
 ok(missing.status === 404, "GET /nope is 404", String(missing.status));
+ok(/text\/html/.test(missing.headers["content-type"]) && missing.body.toString().includes("<html lang=\"pt-BR\">"), "/nope is the pt-BR 404 page");
 checkHeaders("/nope", missing);
+const missingEn = await get("/en/nope");
+ok(missingEn.status === 404 && missingEn.body.toString().includes("<html lang=\"en\">"), "/en/nope is the English 404 page", String(missingEn.status));
+
+// The pages of app/Pages, in both languages (run app-build first).
+for (const [path, lang] of [["/about.html", "pt-BR"], ["/en/about.html", "en"], ["/contact.html", "pt-BR"], ["/en/contact.html", "en"], ["/contact-sent.html", "pt-BR"], ["/en/support.html", "en"]]) {
+  const page = await get(path);
+  ok(page.status === 200 && /text\/html/.test(page.headers["content-type"]) && page.body.toString().includes(`<html lang="${lang}">`), `GET ${path} is the ${lang} page`, String(page.status));
+  checkHeaders(path, page);
+}
+const clean = await get("/en/about");
+ok(clean.status === 200 && clean.body.toString().includes("<html lang=\"en\">"), "/en/about finds en/about.html", String(clean.status));
 
 const head = await request("HEAD", "/");
 ok(head.status === 200 && head.body.length === 0, "HEAD / has no body");
@@ -79,7 +91,7 @@ for (const path of ["/..%2f..%2f..%2fetc/passwd", "/%2e%2e/%2e%2e/etc/passwd", "
 const origin = `http://${url.host}`;
 const good = form({ email: "smoke@example.org", message: "A smoke test message, ten characters or more.", website: "" });
 const sent = await request("POST", "/contact", { headers: formHeaders(good, { Origin: origin }), body: good });
-ok(sent.status === 303 && sent.headers["location"] === "/contact?sent=1", "POST /contact with the site's Origin: 303 to /contact?sent=1", String(sent.status));
+ok(sent.status === 303 && sent.headers["location"] === "/contact-sent.html", "POST /contact with the site's Origin: 303 to /contact-sent.html", String(sent.status));
 checkHeaders("POST /contact", sent);
 
 const noOrigin = await request("POST", "/contact", { headers: formHeaders(good), body: good });
