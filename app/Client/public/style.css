@@ -451,10 +451,12 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
 
 @media (max-width: 640px) {
   /* one row on a phone: a wrapped second row clipped the LinkedIn and GitHub icons. The strip scrolls
-   * sideways on the narrowest screens instead of wrapping; the icons keep their aria-label. */
-  .sitenav { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding: 4px 12px; gap: 4px 10px; }
+   * sideways on the narrowest screens instead of wrapping; the icons keep their aria-label. The gaps
+   * and the language padding are tight so the pt-BR strip (the longest) fits 375 px and up without
+   * scrolling: scripts/nav_measure.sh measures it in a real browser (not part of just quality). */
+  .sitenav { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding: 4px 12px; gap: 4px 6px; }
   .sitenav > * { flex: none; }
-  .lang button, .lang a { padding: 0 6px; }
+  .lang button, .lang a { padding: 0 4px; }
   /* sections with no page yet would take a second row on a phone for nothing to tap */
   .sitenav > span { display: none; }
   /* a sixth link wraps the strip onto a second row; on a phone the members page is reached from about.html */

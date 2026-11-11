@@ -65,6 +65,11 @@ app-test:
 golden *args:
     node scripts/golden.js {{ args }}
 
+# DESIGN.md against app/Client/public/style.css: every :root token is documented with its value, and no hex colour sits outside :root. Runs its self-test first.
+design-check:
+    node scripts/design_check.js --self-test
+    node scripts/design_check.js
+
 # Every gate CI runs that needs no docker (app-test and server-test download their NuGet packages).
 quality:
     #!/usr/bin/env bash
@@ -83,6 +88,7 @@ quality:
     node scripts/site_check.js
     node scripts/redirect_check.js
     node scripts/golden.js --check
+    just design-check
     just app-fmt --check
     just app-test
     just server-test
