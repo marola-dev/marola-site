@@ -57,11 +57,54 @@ check() {
   return 1
 }
 
+# A git hook exports GIT_DIR (and maybe GIT_WORK_TREE, GIT_INDEX_FILE), which beats `git -C`: the
+# fixtures below then commit, branch and merge in the caller's own repo, and the push sends them.
+# Dropping every repository-local variable, as git itself lists them, keeps the fixtures in "$t".
+isolate_git_env() {
+  local v
+  for v in $(git rev-parse --local-env-vars); do unset "$v"; done
+}
+
+# Runs the self-test body as a hook does (GIT_DIR names another repo) and fails when that repo
+# changes. Run it first: a leak is caught on a scratch repo.
+isolation_test() {
+  local t before after self
+  t="$(mktemp -d)"
+  trap 'rm -rf "$t"' RETURN
+  self="$(readlink -f "$0")"
+  (
+    isolate_git_env
+    git init -q -b main "$t/s"
+    git -C "$t/s" -c user.name=t -c user.email=t@t commit -q --allow-empty -m base
+  )
+  # A subshell, so the caller's GIT_DIR (a hook's) cannot redirect these reads to its own repo.
+  state() { (isolate_git_env; git -C "$t/s" rev-parse HEAD; git -C "$t/s" for-each-ref; git -C "$t/s" rev-list --count --all); }
+  before="$(state)"
+  # The child's own verdict is the main body's business; only the scratch repo's state counts here.
+  # Only GIT_DIR, as the hook that leaked had it. With GIT_WORK_TREE and GIT_INDEX_FILE too, the
+  # unfixed fixtures fail early and the test would pass on the bug.
+  (cd "$t/s" && GIT_DIR="$t/s/.git" \
+    "$self" --self-test-body) >/dev/null 2>&1 || true
+  after="$(state)"
+  if [ "$before" = "$after" ]; then
+    echo "ok   the self-test leaves a repo named by GIT_DIR untouched"
+  else
+    echo "FAIL: the self-test changed a repo named by GIT_DIR"
+    return 1
+  fi
+}
+
 self_test() {
   local t f=0 base page
+  isolate_git_env
   t="$(mktemp -d)"
   trap 'rm -rf "$t"' RETURN
   git init -q -b main "$t/r"
+  # Checked before any commit: a repo that is not ours must never get one.
+  if [ "$(git -C "$t/r" rev-parse --show-toplevel)" != "$(cd "$t/r" && pwd -P)" ]; then
+    echo "FAIL: the self-test repo is not isolated"
+    return 1
+  fi
   g() { git -C "$t/r" -c user.name=t -c user.email=t@t "$@"; }
   c() { (cd "$t/r" && check "$@") >/dev/null 2>&1; }
   mkdir -p "$t/r/site/static" "$t/r/scripts"
@@ -92,7 +135,8 @@ self_test() {
 }
 
 case "${1:-}" in
-  --self-test) self_test ;;
+  --self-test) isolation_test; self_test ;;
+  --self-test-body) self_test ;;
   -h|--help) sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
   *) check "$@" ;;
 esac

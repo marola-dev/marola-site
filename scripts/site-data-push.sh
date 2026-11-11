@@ -34,9 +34,10 @@ push() {
 }
 
 self_test() {
-  # A pre-push hook exports GIT_DIR (and a worktree, GIT_COMMON_DIR); the fixtures below would
-  # otherwise commit into the caller's own repo.
-  unset GIT_DIR GIT_WORK_TREE GIT_INDEX_FILE GIT_PREFIX GIT_COMMON_DIR
+  # A pre-push hook exports GIT_DIR and more; the fixtures below would otherwise commit into the
+  # caller's own repo. Git lists the repository-local variables itself, so none is missed.
+  local v
+  for v in $(git rev-parse --local-env-vars); do unset "$v"; done
   local t f=0
   t="$(mktemp -d)"
   trap 'rm -rf "$t"' RETURN
