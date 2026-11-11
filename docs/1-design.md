@@ -74,3 +74,56 @@ The page's only two third-party origins ([`AGENTS.md`](../AGENTS.md)'s Code styl
 the page reach Mapbox's tile/style/event endpoints and, when set, the chat widget's own endpoint
 (`chatbot-config.js`). No other third-party script, font or analytics origin is loaded — Inter is
 self-hosted (`vendor/fonts/`), not pulled from a font CDN.
+
+## The Gleam map page (`app/client`)
+
+`app/client` is the new map page, a Lustre app that compiles to JavaScript. It replaces
+`site/static/` in a later step. Until then both exist and `site/static/` is the live page.
+
+| Path | What it holds |
+|---|---|
+| `app/client/src/marola_client.gleam` | `main`: reads the browser, starts Lustre in `#app` |
+| `src/marola_client/model.gleam`, `msg.gleam` | The state, and what can happen |
+| `src/marola_client/update.gleam`, `update/` | The state machine: `load` (data arrives), `visit` (the visitor), `support` (shared helpers). It returns commands, and does not touch the browser |
+| `src/marola_client/effects.gleam` | Carries out the commands: `rsvp` requests and the two FFI files |
+| `src/marola_client/view.gleam`, `view/` | The page, one module for each panel |
+| `src/marola_client/map_view.gleam`, `trail_geo.gleam`, `flow_data.gleam` | The JSON that the map reads: markers, trail routes, the wind or wave field |
+| `src/marola_client/maplibre_ffi.mjs`, `flow_layer_ffi.mjs` | The only hand-written JavaScript. The first holds the MapLibre calls, the second the WebGL wind and wave layer |
+| `static/` | `index.html`, `style.css`, `vendor/` and `data/trails/` |
+
+`scripts/app_build.sh` writes `boot.mjs` into `app/dist/`. It holds one import and one call to
+`main`, because the page has no inline script.
+
+### The board, beach by beach, and markers
+
+The mapping is the same as the old page's. `marola/band` gives a beach one of five bands, and the
+band is a CSS class, never an inline `style=`. Each beach is one DOM marker: a 16 px dot with a
+white ring. The picked beach grows to 32 px and shows its score. A water sampling point is a
+droplet, so it never looks like a beach. `map_view.sync_json` writes all markers as one JSON text.
+`maplibre_ffi.mjs` builds the DOM nodes from that JSON with `createElement` and `createTextNode`.
+A beach name that holds `<` stays text.
+
+The Mapbox `composite` water layer (the thin coastline) does not exist in the OpenFreeMap style.
+The new page does not draw it.
+
+### CSP
+
+`marola/csp.policy()` is the one value of the policy. `scripts/app_build.sh` writes it to
+`app/dist/csp.txt`, `scripts/serve.mjs` sends it as a header, and `index.html` carries the same text
+in a `<meta>` tag without `frame-ancestors`, which a meta tag cannot set.
+`scripts/client_check.js` checks that the two agree.
+
+The policy has `'self'` for scripts, styles, fonts and workers, and two third-party hosts:
+`tiles.openfreemap.org` (the base map) and `gibs.earthdata.nasa.gov` (the satellite layers). It
+also has `object-src 'none'`, `base-uri 'self'` and `frame-ancestors 'none'`. It has no
+`unsafe-inline`, no `unsafe-eval`, and no bare `https:` or `*`.
+
+`img-src` has `data:` and `blob:` because MapLibre decodes its sprite sheet through an image made
+from a blob. `worker-src` has no `blob:`: MapLibre starts its worker from the same-origin file
+`vendor/maplibre/maplibre-gl-worker.mjs`. It uses a blob worker only for a cross-origin worker URL.
+The form action of the contact page is not part of this policy.
+
+The base map style, `https://tiles.openfreemap.org/styles/liberty`, is a constant in `config.gleam`.
+Nobody has loaded this URL yet. Its sprite and glyph hosts are assumed to be `tiles.openfreemap.org`.
+If they are not, the map fails to start and the page shows the beach list. The page keeps the
+OpenStreetMap credit (ODbL) in the attribution control.

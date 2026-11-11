@@ -44,10 +44,12 @@ board-schema *args:
 # Format the Gleam code in app/ (--check only reports, as CI does).
 app-fmt *args:
     cd app/shared && gleam format {{ args }} src test
+    cd app/client && gleam format {{ args }} src test
 
 # The Gleam tests of app/ on both targets. The first run downloads the Hex packages that manifest.toml locks.
 app-test:
     cd app/shared && gleam test && gleam test --target javascript
+    cd app/client && gleam test
 
 # The old page's pure functions run into app/shared/test/golden.json, which the Gleam tests compare against: --check fails on a stale file.
 golden *args:
@@ -95,3 +97,15 @@ precommit:
 prepush:
     scripts/mip-trailer-check.sh
     just quality
+
+# Build the Gleam client into app/dist: --fixtures adds offline boards, --no-gleam reuses app/client/build.
+app-build *args:
+    scripts/app_build.sh {{ args }}
+
+# Serve app/dist at http://127.0.0.1:8000 (run app-build first).
+app-serve:
+    node scripts/serve.mjs
+
+# Node smoke test of the compiled client in app/dist: DOM and MapLibre stubs, no browser (run app-build --fixtures first).
+client-check:
+    node scripts/client_check.js

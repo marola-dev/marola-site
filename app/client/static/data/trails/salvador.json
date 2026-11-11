@@ -1,0 +1,10 @@
+{
+ "schema": 1,
+ "area": "salvador",
+ "ibge_municipality": "2927408",
+ "source": "OpenStreetMap contributors",
+ "licence": "ODbL-1.0",
+ "osm_base": "2026-11-11T08:01:49Z",
+ "bairros": [],
+ "note": "OpenStreetMap has almost no hiking trails within 25 km of Salvador. No trail list is shipped."
+}

@@ -124,10 +124,13 @@ pub fn water_points_and_lore_pick_their_classes_test() {
 }
 
 pub fn areas_decode_from_a_bare_list_and_from_the_site_file_test() {
-  let expected = [area.Area("rio", "Rio de Janeiro")]
-  let bare = "[{\"id\": \"rio\", \"name\": \"Rio de Janeiro\", \"lat\": -22.9}]"
+  let expected = [area.Area("rio", "Rio de Janeiro", -22.9, -43.2)]
+  let bare =
+    "[{\"id\": \"rio\", \"name\": \"Rio de Janeiro\", \"lat\": -22.9, \"lon\": -43.2, \"radius_km\": 20}]"
   let wrapped = "{\"areas\": " <> bare <> "}"
   assert json.parse(bare, area.list_decoder()) == Ok(expected)
   assert json.parse(wrapped, area.list_decoder()) == Ok(expected)
   assert json.parse("{\"id\": \"rio\"}", area.list_decoder()) |> is_error
+  let no_centre = "[{\"id\": \"rio\", \"name\": \"Rio\", \"lat\": -22.9}]"
+  assert json.parse(no_centre, area.list_decoder()) |> is_error
 }

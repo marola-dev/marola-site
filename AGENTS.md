@@ -44,7 +44,8 @@ map-load tier, billed above it).
   functions, tested on Erlang and JavaScript (`just app-test`, `just app-fmt`);
   `app/shared/manifest.toml` locks the Hex packages. `app/shared/test/golden.json` holds what the old
   `ui.js`, `app.js` and `flow.js` return, written by `scripts/golden.js` (`just golden`); the Gleam
-  tests must match it. `app/client` and `app/server` are not in the tree yet.
+  tests must match it. `app/client` is the map page (Lustre on JavaScript, MapLibre; `just
+  app-build`, `just app-serve`, `just client-check`); `app/server` is not in the tree yet.
 - `scripts/`: `site_check.js` (app.js and flow.js in a stub DOM and Mapbox GL), `site_meta.py`
   (`llms.txt`, `sitemap.xml` and `.well-known/security.txt`, written into `site/dist` at build),
   `mapbox_config.sh`

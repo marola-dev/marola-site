@@ -118,9 +118,10 @@ bundle.
 
 The rewrite of the page is in Gleam ([ADR 0001](adr/0001-gleam-maplibre-dynamic-hosting.md)).
 `app/shared` holds the domain types, the board decoder and the pure functions, with no code for one
-target; `app/client` (JavaScript) and `app/server` (Erlang) come later and depend on it by path.
-`just app-test` runs the tests on Erlang and on JavaScript, `just app-fmt` formats, `just golden`
-writes `app/shared/test/golden.json`, and `just quality` runs all three.
+target. `app/client` (JavaScript) is the map page and depends on it by path. `app/server` (Erlang)
+comes later. `just app-test` runs the tests of `app/shared` on Erlang and on JavaScript and the tests
+of `app/client` on JavaScript, `just app-fmt` formats both, `just golden` writes
+`app/shared/test/golden.json`, and `just quality` runs all three.
 
 The golden file is the parity contract with the old page. `scripts/golden.js` runs the pure functions of
 `ui.js`, `app.js` and `flow.js` over a table of inputs and writes what they return. The Gleam tests
@@ -154,3 +155,23 @@ its words over 200 a minute, rounded up; the `news-post` skill has the rule.
 A commit touching `site/static/**` carries `MIP: MIP-NNNN` or `MIP: none — <reason>`.
 `scripts/mip-trailer-check.sh` enforces it; `just prepush` runs it over the commits about to be
 pushed.
+
+### Build and serve the client
+
+```bash
+just app-build            # gleam build, then app/dist/
+just app-build --fixtures # also writes data/<area>/ boards from site/fixtures/board.json
+just app-serve            # http://127.0.0.1:8000, with the CSP header
+just client-check         # a Node smoke test of the compiled client
+```
+
+`scripts/app_build.sh` builds `app/client` for JavaScript. Then it copies the compiled modules, the
+vendored files, the i18n catalogs from `site/i18n/` and the trail files into `app/dist/`. It writes
+`boot.mjs` and `csp.txt` there. `app/dist/` is not in git.
+
+`scripts/serve.mjs` has no dependency. It sends the policy of `csp.txt` and refuses to start when
+that file is missing. A visitor needs the same header from the real host. The hosting comes in a
+later step.
+
+`just client-check` runs the compiled client in Node with a small DOM and a MapLibre stub. It
+does not start a browser, so it does not prove that the real MapLibre draws the map.

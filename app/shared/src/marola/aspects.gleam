@@ -20,7 +20,9 @@ pub type Facility {
 }
 
 pub type Cell {
-  Wind(text: String)
+  /// `dir` is the compass word, kept apart so the page can mark it up: it is
+  /// the one part of the cell that keeps its capitals.
+  Wind(text: String, dir: Option(String))
   WaterTemp(text: String)
   Waves(text: String)
   Jellyfish(text: String)
@@ -37,11 +39,9 @@ pub type Aspects {
 /// The cell's reading as one line of text.
 pub fn cell_text(cell: Cell) -> String {
   case cell {
-    Wind(text)
-    | WaterTemp(text)
-    | Waves(text)
-    | Jellyfish(text)
-    | Whales(text) -> text
+    Wind(text, None) -> text
+    Wind(text, Some(dir)) -> text <> " " <> dir
+    WaterTemp(text) | Waves(text) | Jellyfish(text) | Whales(text) -> text
     Quality(text, _, _) -> text
     FacilityCounts(parts) ->
       list.map(parts, fn(p) { p.text }) |> string.join(" · ")
@@ -74,7 +74,7 @@ fn cells(beach: Beach, e: Hour, s: Shown, loc: Locale) -> List(Cell) {
   }
   list.flatten([
     [
-      Wind(wind_text(beach, e, s, loc)),
+      wind_cell(beach, e, s, loc),
       WaterTemp(
         i18n.t(loc, "cell.water", [
           i18n.arg("v", fmt.value(loc, e.sea_temp_c, " °C", 1)),
@@ -106,7 +106,7 @@ fn level_word(loc: Locale, level: Level) -> String {
   i18n.word(loc, "lvl.", level.to_string(level))
 }
 
-fn wind_text(beach: Beach, e: Hour, s: Shown, loc: Locale) -> String {
+fn wind_cell(beach: Beach, e: Hour, s: Shown, loc: Locale) -> Cell {
   let kmh = fmt.value(loc, e.wind_kmh, " km/h", 0)
   // An older board has no band: the number only, no word.
   let band_word = case option.map(e.wind_level, wind.to_string) {
@@ -119,8 +119,8 @@ fn wind_text(beach: Beach, e: Hour, s: Shown, loc: Locale) -> String {
   }
   case s.best, beach.sea.wind_dir_deg {
     True, Some(deg) ->
-      reading <> " " <> i18n.word(loc, "dir.", geo.compass_key(deg))
-    _, _ -> reading
+      Wind(reading, Some(i18n.word(loc, "dir.", geo.compass_key(deg))))
+    _, _ -> Wind(reading, None)
   }
 }
 

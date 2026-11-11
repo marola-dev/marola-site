@@ -11,3 +11,6 @@ __pycache__/
 
 # wrangler's local state
 .wrangler/
+
+# `just app-build` output
+/app/dist/

@@ -21,3 +21,18 @@ The original map (MIP-0005) was Leaflet over OpenStreetMap's tile servers. [PR
 the Windy-style layer rail; nothing under `site/static/vendor/` is Leaflet any more, and
 `site/areas.json`'s `tiles`/`tiles_attribution` fields are vestigial for this repo
 ([reference](4-reference.md#area-fields)).
+
+## The Gleam client's libraries
+
+`app/client` has no bundler and no npm. The Hex packages are locked in `app/client/manifest.toml`.
+The browser libraries that it loads are vendored under `app/client/static/vendor/`.
+
+| Library | Version | Why | Licence |
+|---|---|---|---|
+| MapLibre GL JS | 6.17.0 (`vendor/maplibre/`: `maplibre-gl.mjs`, `maplibre-gl-worker.mjs`, `maplibre-gl-shared.mjs`, `maplibre-gl.css`) | The base map. It replaces Mapbox GL JS and needs no account or token. The files are the upstream `dist/` files, not edited. `INTEGRITY.txt` holds the npm sha512 of the tarball | BSD-3-Clause (`vendor/maplibre/LICENSE.maplibre-gl`) |
+| Lustre | 5.7.1 (Hex) | The view and the update loop | MIT |
+| rsvp | 1.2.0 (Hex) | The `fetch` requests | MIT |
+
+`maplibre-gl-shared.mjs` is empty in 6.17.0 and nothing imports it. It stays so that the folder is
+the upstream one. `maplibre_ffi.mjs` loads `maplibre-gl.mjs` with a dynamic `import()` of an
+absolute path and sets the worker with `setWorkerUrl`.

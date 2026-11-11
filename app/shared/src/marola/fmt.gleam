@@ -1,5 +1,6 @@
 //// How app.js writes a number with its unit: `num`, `fmt` and `wavesText`.
 
+import gleam/float
 import gleam/option.{type Option, None, Some}
 import gleam/string
 import marola/i18n.{type Locale}
@@ -46,4 +47,16 @@ pub fn waves(
     }),
     i18n.arg("s", value(loc, period_s, " s", 0)),
   ])
+}
+
+/// A number with a sign unless it prints as zero: `Intl.NumberFormat` with
+/// `signDisplay: 'exceptZero'`. The tide's height above the mean level.
+pub fn signed(loc: Locale, n: Float, digits: Int) -> String {
+  let body = num(loc, float.absolute_value(n), digits)
+  let is_zero = body == num(loc, 0.0, digits)
+  case is_zero, n <. 0.0 {
+    True, _ -> body
+    False, True -> "-" <> body
+    False, False -> "+" <> body
+  }
 }
