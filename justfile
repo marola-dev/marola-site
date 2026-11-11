@@ -37,6 +37,10 @@ site-live-check *args:
 members *args:
     python3 scripts/members_build.py {{ args }}
 
+# The vendored site/members/MEMBERS.md against the blob id on the second line of site/members.version.
+members-check:
+    scripts/members_vendor_check.sh
+
 # The pinned image's board schema: --check, --update after bumping marola-image, --image.
 board-schema *args:
     scripts/board-schema.sh {{ args }}
@@ -87,6 +91,7 @@ quality:
     python3 scripts/i18n_bundle.py --self-test
     python3 scripts/news_build.py --self-test
     python3 scripts/members_build.py --self-test
+    scripts/members_vendor_check.sh
     python3 scripts/site_meta.py --self-test
     scripts/site-data-push.sh --self-test
     scripts/board-schema.sh --self-test
@@ -137,3 +142,18 @@ server-smoke:
 # Node smoke test of the compiled client in app/dist: DOM and MapLibre stubs, no browser (run app-build --fixtures first).
 client-check:
     node scripts/client_check.js
+
+# Build the whole site (server, static pages, Fable client) as one Nix package with no network in the build. Output: result/ (bin/marola-server, share/marola/dist).
+nix-build:
+    nix build .#default
+
+# Rewrite nix/deps.json (the NuGet packages the offline build uses) after a change to any fsproj or packages.lock.json. Needs the network.
+nix-deps:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    script="$(nix build .#default.passthru.fetch-deps --no-link --print-out-paths)"
+    "$script" "$PWD/nix/deps.json"
+
+# Start the Nix package's server on a free port with its state in a temp dir and check four URLs for 200 and the CSP header.
+package-smoke *args:
+    scripts/package_smoke.sh {{ args }}

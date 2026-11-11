@@ -7,18 +7,23 @@ open Marola.Pages
 
 let private usage = "usage: marola-pages-build <site-dir> <out-dir>"
 
-// MEMBERS.md lives in marola-dev/.github, not here: the repo keeps only the commit it was built from
-// (site/members.version). MEMBERS_SOURCE names a local copy, for a build with no network.
+// MEMBERS.md lives in marola-dev/.github. The repo keeps a copy at site/members/MEMBERS.md, and
+// site/members.version names the commit it came from and its blob id, so a build needs no network.
+// MEMBERS_SOURCE names another local copy and takes precedence. With neither file, the build fetches the commit.
 let private membersText (site: string) : Result<string, string> =
     let local = Environment.GetEnvironmentVariable "MEMBERS_SOURCE"
+    let version = File.ReadAllText(Path.Combine(site, "members.version"))
+    let vendored = Path.Combine(site, "members", "MEMBERS.md")
 
     if not (String.IsNullOrEmpty local) then
         if File.Exists local then
             Ok(File.ReadAllText local)
         else
             Error("MEMBERS_SOURCE is not a file: " + local)
+    elif File.Exists vendored then
+        Members.vendored version (File.ReadAllBytes vendored)
     else
-        let sha = File.ReadAllText(Path.Combine(site, "members.version")).Trim()
+        let sha = (version.Split '\n' |> Array.head).Trim()
 
         let url =
             "https://raw.githubusercontent.com/marola-dev/.github/" + sha + "/MEMBERS.md"

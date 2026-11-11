@@ -40,6 +40,36 @@ module Members =
     let zenodo = "https://doi.org/10.5281/zenodo.23224155"
     let file = "https://github.com/marola-dev/.github/blob/main/MEMBERS.md"
 
+    /// The git blob id of a file's bytes: SHA-1 of "blob <length>\0" and the bytes, what `git hash-object` prints.
+    let blobId (bytes: byte[]) : string =
+        let head = Text.Encoding.ASCII.GetBytes("blob " + string bytes.Length + "\000")
+        Convert.ToHexString(Security.Cryptography.SHA1.HashData(Array.append head bytes)).ToLowerInvariant()
+
+    let private blobLine = Regex(@"^blob ([0-9a-f]{40})$", RegexOptions.Compiled)
+
+    /// The blob id on the second line of site/members.version ("blob <sha>"), if the pin has one.
+    let pinnedBlob (version: string) : string option =
+        match version.Split '\n' |> Array.map (fun line -> line.Trim()) with
+        | [||]
+        | [| _ |] -> None
+        | lines ->
+            let m = blobLine.Match lines[1]
+            if m.Success then Some m.Groups[1].Value else None
+
+    /// The vendored MEMBERS.md as text, when its bytes are the blob the pin names. A copy that drifted from
+    /// the pin is an error, never a silent switch to another source.
+    let vendored (version: string) (bytes: byte[]) : Result<string, string> =
+        match pinnedBlob version with
+        | None -> Error "site/members.version has no second line 'blob <sha>' for site/members/MEMBERS.md"
+        | Some pinned when blobId bytes <> pinned ->
+            Error(
+                "site/members/MEMBERS.md is blob "
+                + blobId bytes
+                + " but site/members.version pins "
+                + pinned
+            )
+        | Some _ -> Ok(Text.Encoding.UTF8.GetString bytes)
+
     let private orcid =
         Regex(@"^\[([0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{3}[0-9X])\]\(https://orcid\.org/\1\)$", RegexOptions.Compiled)
 

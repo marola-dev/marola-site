@@ -2,6 +2,8 @@
 /// sniffing stay in the Python: the F# build copies nothing from GitHub), plus the real members page.
 module Marola.Pages.Tests.MembersTests
 
+open System
+open System.IO
 open Expecto
 open Marola
 open Marola.Client
@@ -177,4 +179,38 @@ let tests =
               // The repo's img/members/ has one file per login of the page the old builder wrote.
               let members = parsed Support.membersTable
               Expect.isOk (Members.checkAvatars Support.env.Avatars members) "avatars"
+          }
+          test "blobId is what git hash-object prints" {
+              // `printf '' | git hash-object --stdin` and `printf 'hello\n' | git hash-object --stdin`.
+              Expect.equal (Members.blobId [||]) "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391" "empty"
+
+              Expect.equal
+                  (Members.blobId (Text.Encoding.UTF8.GetBytes "hello\n"))
+                  "ce013625030ba8dba906f756967f9e9ca394464a"
+                  "hello"
+          }
+          test "the pin's blob line is its second line" {
+              let blob = String.replicate 40 "b"
+              Expect.equal (Members.pinnedBlob (sha + "\nblob " + blob + "\n")) (Some blob) "two lines"
+              Expect.equal (Members.pinnedBlob (sha + "\n")) None "no second line"
+              Expect.equal (Members.pinnedBlob (sha + "\nblob xyz\n")) None "not a blob id"
+              Expect.equal (Members.pinnedBlob (sha + "\n" + sha + "\n")) None "a bare sha is not a blob line"
+          }
+          test "a vendored copy that does not hash to the pin is an error, a matching one is its text" {
+              let bytes = Text.Encoding.UTF8.GetBytes good
+              let pin (blob: string) = sha + "\nblob " + blob + "\n"
+              Expect.equal (Members.vendored (pin (Members.blobId bytes)) bytes) (Ok good) "match"
+              Expect.isError (Members.vendored (pin (String.replicate 40 "0")) bytes) "drift"
+              Expect.isError (Members.vendored (sha + "\n") bytes) "no blob line"
+          }
+          test "site/members/MEMBERS.md is the blob site/members.version pins, and it parses" {
+              let version =
+                  File.ReadAllText(Path.Combine(Support.root, "site", "members.version"))
+
+              let bytes =
+                  File.ReadAllBytes(Path.Combine(Support.root, "site", "members", "MEMBERS.md"))
+
+              match Members.vendored version bytes with
+              | Error e -> failwith e
+              | Ok text -> Expect.isOk (Members.parse text) "parse"
           } ]

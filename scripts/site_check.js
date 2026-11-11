@@ -767,8 +767,8 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
     'the form has the honeypot the server checks (website) and a required email for the reply');
   ok((MEMBERS.match(/<a [^>]*>/g) || []).every(a => /^<a (class="(li|gh)" )?href="[^"]+"( [^>]*)?>$/.test(a) && !/\son[a-z]+=/.test(a)),
     'every link on the members page is a plain anchor');
-  ok(/^[0-9a-f]{40}$/.test(fs.readFileSync(path.join(ROOT, 'site/members.version'), 'utf8').trim()),
-    'site/members.version pins a marola-dev/.github commit by its full SHA');
+  ok(/^[0-9a-f]{40}$/.test(fs.readFileSync(path.join(ROOT, 'site/members.version'), 'utf8').split('\n')[0].trim()),
+    "site/members.version's first line pins a marola-dev/.github commit by its full SHA");
   const FUNDING = fs.readFileSync(path.join(ROOT, '.github/FUNDING.yml'), 'utf8');
   const patreon = (/^patreon:\s*(\S+)/m.exec(FUNDING) || [])[1];
   const patreonLinks = SUPPORT.match(/href="https:\/\/www\.patreon\.com\/[^"]*"/g) || [];

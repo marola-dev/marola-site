@@ -38,6 +38,11 @@ map-load tier, billed above it).
   `scripts/members_build.py` writes into `members.html`, with the avatars in `img/members/`; the
   list lives there, edit it there; `members.yml` opens the daily PR that moves the pin and rebuilds
   the page. Never edit the block.
+- `site/members/MEMBERS.md`: the copy of that file the build reads, with its git blob id on the second line of
+  `site/members.version` (`just members-check`); the build refuses a copy that drifted.
+- `nix/package.nix`, `nix/deps.json`: the whole site (server, pages, Fable client) as one Nix package that builds
+  with no network, for piabrota/nix-os (`just nix-build`, `just package-smoke`, `just nix-deps` after a change to an
+  `fsproj`; [docs/5-hosting.md](docs/5-hosting.md#build-with-nix)). `flake.nix` exposes it as `packages.default`.
 - `site/areas.json`: the areas the boards are built for. `site/fixtures/board.json`: the board the
   harness renders. `site/board.schema.json`: the board contract, vendored from the pinned image.
 - `app/`: the F# rewrite, compiled to JavaScript by Fable. `app/Shared` has the domain types, the board
@@ -58,7 +63,7 @@ map-load tier, billed above it).
   `app/Pages` (pure F#, .NET only) renders every static page (about, support, contact, contact-sent, 404, news,
   members) and the metadata files (`robots.txt`, `sitemap.xml`, `llms.txt`, `humans.txt`, `.well-known/security.txt`):
   `Markdown.fs` reads `site/content/pages/<page>.<lang>.md`, `News.fs` the posts of `site/content/news/`, `Members.fs`
-  MEMBERS.md (fetched at `site/members.version`, or the file in `MEMBERS_SOURCE`), `Meta.fs` the metadata files,
+  MEMBERS.md (the vendored `site/members/MEMBERS.md`, which must hash to the blob id on line 2 of `site/members.version`; or the file in `MEMBERS_SOURCE`), `Meta.fs` the metadata files,
   `Layout.fs` is the shared head, nav and footer, and
   `app/Pages.Build` writes pt-BR at the root of `app/dist` and English under `en/` (`just pages-build`,
   `just pages-test`; [ADR 0003](docs/adr/0003-pages-in-fsharp.md)). Edit the Markdown and the posts, never the HTML;

@@ -17,6 +17,66 @@ dotnet app/Server/out/marola-server.dll inbox    # the contact messages
 The host needs the ASP.NET Core 10 runtime. The published folder holds the native SQLite library
 under `runtimes/linux-x64/native/`, from the NuGet package.
 
+## Build with Nix
+
+`nix/package.nix` builds the whole site as one package: the server, the static pages and the Fable
+client. The build has no network. The NuGet packages come from `nix/deps.json` (a fixed hash for each),
+Fable and Node from nixpkgs, and MEMBERS.md from `site/members/` (pinned by blob id, see
+[the development guide](3-development.md)). `flake.nix` exposes it as `packages.default` and as
+`checks.package`.
+
+```bash
+just nix-build        # nix build .#default: result/bin/marola-server, result/share/marola/dist
+just package-smoke    # starts result/bin/marola-server on a free port, checks / /about.html /en/studies /api/v1/skill.md
+just nix-deps         # rewrites nix/deps.json after a change to any fsproj (needs the network)
+```
+
+The package holds:
+
+- `bin/marola-server`: a wrapper that sets `DOTNET_ROOT`, the ICU library path and the runtime's `PATH`. It sets no
+  secret and no `MAROLA_*` variable. The unit needs no `dotnet` of its own. The same binary runs the commands
+  (`inbox`, `studies`, `reports`).
+- `share/marola/dist`: the static site, the same tree as `just app-build` writes into `app/dist` (without
+  `app/fable_modules/project_cracked.json`, Fable's cache, which holds the random name of the build's temp folder).
+  `MAROLA_STATIC` points here.
+- `lib/marola-site`: the published server (Release, framework-dependent, with `libe_sqlite3.so`).
+
+There is no `data-seed`. `MAROLA_DATA` is the board data folder, `<area>/latest.json` and the boards, which the board
+pipeline writes; the server reads `/data/<x>` there first and then under `dist/data` (`areas.json` and `trails/`,
+which the package already holds). An empty or missing `MAROLA_DATA` is valid: the boards answer 404 until the
+pipeline writes them.
+
+**What piabrota/nix-os needs.**
+
+1. An input for the source. With `flake = false` it takes no second lockfile (the devkit input of `flake.nix`
+   stays out): `marola-site = { url = "github:marola-dev/marola-site/<commit>"; flake = false; };`. Then
+   `pkgs.callPackage "${inputs.marola-site}/nix/package.nix" { }` gives the package, built with the nix-os nixpkgs.
+   That nixpkgs must have `buildDotnetModule`, `dotnetCorePackages.sdk_10_0` and `aspnetcore_10_0`, `fable` and
+   `nodejs`. The package built with nixpkgs `f4a03c00` (Fable 5.26.0, .NET SDK 10.0.403) and with the nix-os pin
+   `02c087f3` of 2026-11-11 (Fable 5.20.0, .NET SDK 10.0.401); only the first one ran `just package-smoke`.
+2. The unit, with these variables: `MAROLA_PORT`, `MAROLA_STATIC=<package>/share/marola/dist`, `MAROLA_DATA`,
+   `MAROLA_DB`, `MAROLA_STUDIES`, `MAROLA_GITHUB_CLIENT_ID` (see [Variables](#variables)). Never set `MAROLA_DEV`.
+3. A state directory (`StateDirectory=marola`) for the database, `csrf.key` and the studies. The package is
+   read-only in the store; only the state directory is writable.
+4. A secret file for the GitHub client secret, passed with `LoadCredential=` and named by
+   `MAROLA_GITHUB_CLIENT_SECRET_FILE=%d/github-client-secret` ([The GitHub login](#the-github-login)). The secret
+   stays out of the Nix store and out of the environment.
+5. nginx that **replaces** `X-Forwarded-For` (`$remote_addr`, not `$proxy_add_x_forwarded_for`) and sends
+   `Host $host` ([nginx](#nginx)).
+6. `MemoryMax=256M`. The resident set of the package's server was 91 MB after the start and four requests
+   (`just package-smoke`, 2026-11-11), so the limit is 2.8 times that. Nobody measured it under load or
+   during a 20 MB upload; read `MemoryPeak` after the first weeks.
+7. A backup of `marola.db`, `csrf.key` and `MAROLA_STUDIES` together ([The studies and their backup](#the-studies-and-their-backup)).
+
+Size: the package is 11 MB; its closure is 214 MiB, of which the ASP.NET Core runtime is 202 MiB (ICU 87 MiB).
+
+**What the build checks, and what it does not.** `nix build` runs with the sandbox on, so it cannot reach the
+network. It does not check `packages.lock.json`: the nixpkgs restore passes `--runtime` (a locked restore fails with
+NU1004), and Nix repacks each package without its signature (NU1403). `just app-test` and `just quality` check the lock
+files. A package that is missing from `nix/deps.json` fails the build. Two builds on the same day give the same
+bytes (`nix build --rebuild` finds no difference). `security.txt` holds the build day in its `Expires` line (the day
+plus 364 days), so builds on two days differ in that one file.
+
 ## Variables
 
 | Variable | Default | What |

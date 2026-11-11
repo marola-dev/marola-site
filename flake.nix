@@ -16,8 +16,13 @@
       let
         pkgs = import nixpkgs { inherit system; };
         devkit = marola-devkit.lib.${system};
+        package = pkgs.callPackage ./nix/package.nix { };
       in
       {
+        # The whole site as one offline Nix build (server, static pages, Fable client): docs/5-hosting.md.
+        packages.default = package;
+        checks.package = package;
+
         # Docker is the host's, as in every marola repo: `just site-build` runs the pinned app image.
         devShells.default = pkgs.mkShell {
           name = "marola-site";

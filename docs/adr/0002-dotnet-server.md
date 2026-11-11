@@ -90,6 +90,9 @@ The server project references `app/Shared` for `Csp.policy ()`.
 - The static site at `marola.dev` (Cloudflare) has the same `contact.html`, now posted to
   `/contact`. That host has no such route. The form works only on a host that runs this server.
 - `scripts/serve.mjs` is gone, with its development recipe. `just server-run` runs the page now.
+- A Nix package (`nix/package.nix`) builds the server, the pages and the client with no network, for the NixOS host
+  ([Build with Nix](../5-hosting.md#build-with-nix)). The NuGet packages are pinned by hash in `nix/deps.json`, not
+  by `packages.lock.json`, which the Nix build cannot check. The package reads the vendored `site/members/MEMBERS.md`.
 
 ## Alternatives
 

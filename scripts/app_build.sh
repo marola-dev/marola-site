@@ -23,6 +23,11 @@ for arg in "$@"; do
   esac
 done
 
+# Locked restore, as `just app-test`: a stale packages.lock.json fails here too. The Nix build sets
+# RestoreLockedMode=false: its packages are repacked (signatures dropped), so NuGet's content hash
+# check against the lock file cannot pass there (nix/package.nix).
+export RestoreLockedMode="${RestoreLockedMode:-true}"
+
 root="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$root"
 
@@ -32,8 +37,7 @@ out="app/Client/out"
 if [ "$build" -eq 1 ]; then
   command -v fable >/dev/null || { echo "app_build: fable is not installed; run inside 'nix develop'" >&2; exit 1; }
   rm -rf "$out"
-  # Locked restore, as `just app-test`: a stale packages.lock.json fails here too.
-  RestoreLockedMode=true fable app/Client/App --outDir "$out"
+  fable app/Client/App --outDir "$out"
 fi
 [ -f "$out/Program.js" ] || { echo "app_build: $out/Program.js missing; build without --no-fable" >&2; exit 1; }
 
@@ -49,7 +53,7 @@ printf '{ "type": "module" }\n' > "$dist/app/package.json"
 
 # The static pages, rendered from F# (app/Pages) into pt-BR files at the root and English ones under en/.
 command -v dotnet >/dev/null || { echo "app_build: dotnet is not installed; run inside 'nix develop'" >&2; exit 1; }
-RestoreLockedMode=true dotnet run --project app/Pages.Build -c Release -- site "$dist"
+dotnet run --project app/Pages.Build -c Release -- site "$dist"
 mkdir -p "$dist/img"
 cp site/static/img/umbrella.svg site/static/img/umbrella.pt-BR.svg "$dist/img/"
 cp -r site/static/img/members "$dist/img/members"

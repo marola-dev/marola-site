@@ -490,7 +490,7 @@ def main():
     if args.source:
         text = args.source.read_text(encoding="utf-8")
     else:
-        text = fetch(PIN.read_text(encoding="utf-8").strip())
+        text = fetch(PIN.read_text(encoding="utf-8").splitlines()[0].strip())
     sys.exit(run(text, PAGE, args.check))
 
 

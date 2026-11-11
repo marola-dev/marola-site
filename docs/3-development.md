@@ -186,9 +186,14 @@ The build also renders every static page (about, support, contact, contact-sent,
 metadata files (`robots.txt`, `sitemap.xml`, `llms.txt`, `humans.txt`, `.well-known/security.txt`) into
 `app/dist/` and `app/dist/en/` ([ADR 0003](adr/0003-pages-in-fsharp.md)). Edit the Markdown in
 `site/content/pages/` and the posts in `site/content/news/`, and the chrome words in `site/i18n/`,
-never the HTML. The members page reads MEMBERS.md of marola-dev/.github at the commit of
-`site/members.version`, so `just app-build` needs the network; set `MEMBERS_SOURCE=<file>` to build
-without it. `--no-fable` reuses `app/Client/out`.
+never the HTML. The members page reads `site/members/MEMBERS.md`, a copy of marola-dev/.github's file.
+`site/members.version` has two lines: the commit the copy came from, and `blob <sha>`, the git blob id
+of the copy. The build refuses a copy that does not hash to that id, so a build needs no network.
+`just members-check` (in `just quality`) and a test in `app/Pages.Tests` check the same. To move the
+pin, copy MEMBERS.md at the new commit over the file and write both lines of `site/members.version`
+(`git hash-object site/members/MEMBERS.md` prints the blob id). `MEMBERS_SOURCE=<file>` reads another
+file instead. With no `site/members/MEMBERS.md`, the build fetches the commit. `--no-fable` reuses
+`app/Client/out`.
 `app/dist/` and `app/Client/out/` are not in git.
 
 Fable writes each FFI import as the path from its output file to the `.mjs` in the source tree. That
