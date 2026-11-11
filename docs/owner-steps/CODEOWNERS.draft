@@ -1,0 +1,14 @@
+# DRAFT for .github/CODEOWNERS. Not active: this branch may not edit .github/ (docs/7-quality.md, owner step 6).
+#
+# A CODEOWNERS file asks the named people or teams to review a change to these paths. It blocks a merge only when
+# the branch protection rule "Require review from Code Owners" is on (settings.md). Every owner below is a
+# placeholder: the owners of the repository decide who owns what, and write real @user or @org/team names.
+# Until then this file is not valid CODEOWNERS.
+#
+# The paths are the ones where a mistake is a security or a supply-chain mistake. Later lines win in CODEOWNERS.
+
+/app/Server/        OPEN: owners
+/docs/adr/          OPEN: owners
+/nix/               OPEN: owners
+/SECURITY.md        OPEN: owners
+/.github/           OPEN: owners

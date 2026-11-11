@@ -1,0 +1,25 @@
+.tmp/
+.devkit
+result
+result-*
+__pycache__/
+.claude/settings.local.json
+# `just site-build` output (boards + a copy of site/static/): derived, deployed, not committed
+/site/dist/*
+!/site/dist/.gitkeep
+
+
+# wrangler's local state
+.wrangler/
+
+# `just app-build` output
+/app/dist/
+
+# F# builds: .NET, Fable and the Fable test output
+/app/**/bin/
+/app/**/obj/
+/app/Tests.Fable/out/
+/app/Client/out/
+
+# `just server-build` output
+/app/Server/out/

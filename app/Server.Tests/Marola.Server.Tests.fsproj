@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <GenerateProgramFile>false</GenerateProgramFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Harness.fs" />
+    <Compile Include="StudyStoreTests.fs" />
+    <Compile Include="SessionTests.fs" />
+    <Compile Include="LoginTests.fs" />
+    <Compile Include="PdfTests.fs" />
+    <Compile Include="BoardTests.fs" />
+    <Compile Include="StudyApiTests.fs" />
+    <Compile Include="OpenApiTests.fs" />
+    <Compile Include="WebTests.fs" />
+    <Compile Include="HeaderTests.fs" />
+    <Compile Include="FileTests.fs" />
+    <Compile Include="LimitTests.fs" />
+    <Compile Include="ContactTests.fs" />
+    <Compile Include="All.fs" />
+    <Compile Include="Discover.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Server/Marola.Server.fsproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Expecto runs the tests, as in app/Tests; the Test SDK and the adapter let `dotnet test` find them.
+         TestHost runs the real pipeline in memory, with a peer address a test can choose. -->
+    <PackageReference Include="Expecto" Version="10.2.3" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="YoloDev.Expecto.TestSdk" Version="0.15.5" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="10.0.0" />
+  </ItemGroup>
+</Project>

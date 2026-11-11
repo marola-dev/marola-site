@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <GenerateProgramFile>false</GenerateProgramFile>
+  </PropertyGroup>
+  <Import Project="SharedTests.props" />
+  <ItemGroup>
+    <Compile Include="Discover.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Shared/Marola.Shared.fsproj" />
+    <ProjectReference Include="../Client/Core/Marola.Client.Core.fsproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Expecto runs the tests; the Test SDK and the adapter let `dotnet test` find them. Thoth.Json.Newtonsoft reads JSON for the decoders on .NET. -->
+    <PackageReference Include="Expecto" Version="10.2.3" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="YoloDev.Expecto.TestSdk" Version="0.15.5" />
+    <PackageReference Include="Thoth.Json.Newtonsoft" Version="0.5.0" />
+  </ItemGroup>
+</Project>

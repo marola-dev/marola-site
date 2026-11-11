@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Writes the static pages into a folder. A build step with no port: the server only serves the files. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>marola-pages-build</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Pages/Marola.Pages.fsproj" />
+  </ItemGroup>
+</Project>
