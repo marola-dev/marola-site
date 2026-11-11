@@ -56,8 +56,8 @@ The schema (`$schema`: `https://json-schema.org/draft/2020-12/schema`) requires 
 
 ## Trail files
 
-`app/client/static/data/trails/<area>.json` holds the hiking routes of an area. The client fetches
-`data/trails/<id>.json` for the area on show. `app/shared/src/marola/trails.gleam` decodes it.
+`app/Client/public/data/trails/<area>.json` holds the hiking routes of an area. The client fetches
+`data/trails/<id>.json` for the area on show. `Trails.decoder` in `app/Shared/Trails.fs` decodes it.
 
 | Field | Notes |
 |---|---|

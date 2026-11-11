@@ -22,16 +22,20 @@ the Windy-style layer rail; nothing under `site/static/vendor/` is Leaflet any m
 `site/areas.json`'s `tiles`/`tiles_attribution` fields are vestigial for this repo
 ([reference](4-reference.md#area-fields)).
 
-## The Gleam client's libraries
+## The F# client's libraries
 
-`app/client` has no bundler and no npm. The Hex packages are locked in `app/client/manifest.toml`.
-The browser libraries that it loads are vendored under `app/client/static/vendor/`.
+`app/Client` has no bundler and no npm. The browser libraries that it loads are vendored under
+`app/Client/public/vendor/`. The .NET packages come from NuGet. Each `packages.lock.json` pins every
+package and its hash, and `just app-test` restores in locked mode.
 
 | Library | Version | Why | Licence |
 |---|---|---|---|
 | MapLibre GL JS | 6.17.0 (`vendor/maplibre/`: `maplibre-gl.mjs`, `maplibre-gl-worker.mjs`, `maplibre-gl-shared.mjs`, `maplibre-gl.css`) | The base map. It replaces Mapbox GL JS and needs no account or token. The files are the upstream `dist/` files, not edited. `INTEGRITY.txt` holds the npm sha512 of the tarball | BSD-3-Clause (`vendor/maplibre/LICENSE.maplibre-gl`) |
-| Lustre | 5.7.1 (Hex) | The view and the update loop | MIT |
-| rsvp | 1.2.0 (Hex) | The `fetch` requests | MIT |
+| Thoth.Json.Core | 0.10.1 (NuGet) | The board and trail decoders in `app/Shared`. One decoder runs on .NET and on Fable | MIT |
+| Thoth.Json.Newtonsoft | 0.5.0 (NuGet) | Reads JSON on .NET, for the .NET test run only | MIT |
+| Thoth.Json.JavaScript | 0.6.0 (NuGet) | Reads JSON on Node, for the Fable test run only | MIT |
+| Expecto | 10.2.3 (NuGet) | The test framework on .NET. `Microsoft.NET.Test.Sdk` 17.14.1 and `YoloDev.Expecto.TestSdk` 0.15.5 let `dotnet test` find the tests | Apache-2.0 (Expecto), MIT (the two others) |
+| Fable.Mocha | 2.17.0 (NuGet) | The test framework under Fable. It has the Expecto API, so both runs compile the same test files | The nuspec links the licence file in its repository; nobody read it here |
 
 `maplibre-gl-shared.mjs` is empty in 6.17.0 and nothing imports it. It stays so that the folder is
 the upstream one. `maplibre_ffi.mjs` loads `maplibre-gl.mjs` with a dynamic `import()` of an

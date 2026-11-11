@@ -14,3 +14,8 @@ __pycache__/
 
 # `just app-build` output
 /app/dist/
+
+# F# builds: .NET, Fable and the Fable test output
+/app/**/bin/
+/app/**/obj/
+/app/Tests.Fable/out/

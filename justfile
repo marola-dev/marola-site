@@ -41,25 +41,31 @@ members *args:
 board-schema *args:
     scripts/board-schema.sh {{ args }}
 
-# Format the Gleam code in app/ (--check only reports, as CI does).
+# Format the F# code in app/ with Fantomas (--check only reports, as CI does).
 app-fmt *args:
-    cd app/shared && gleam format {{ args }} src test
-    cd app/client && gleam format {{ args }} src test
+    cd app && fantomas {{ args }} .
 
-# The Gleam tests of app/ on both targets. The first run downloads the Hex packages that manifest.toml locks.
+# The F# tests of app/ on .NET (Expecto) and on Node (the same tests compiled by Fable). NuGet restores
+# in locked mode: it fails when a packages.lock.json is stale, and downloads the packages it pins.
 app-test:
-    cd app/shared && gleam test && gleam test --target javascript
-    cd app/client && gleam test
+    #!/usr/bin/env bash
+    set -euo pipefail
+    export RestoreLockedMode=true
+    cd app
+    dotnet test Tests
+    rm -rf Tests.Fable/out
+    (cd Tests.Fable && fable --outDir out)
+    node Tests.Fable/run.mjs Tests.Fable/out/Main.js
 
-# The old page's pure functions run into app/shared/test/golden.json, which the Gleam tests compare against: --check fails on a stale file.
+# The old page's pure functions run into app/Tests/golden.json, which the F# tests compare against: --check fails on a stale file.
 golden *args:
     node scripts/golden.js {{ args }}
 
-# Every gate CI runs that needs no docker or network.
+# Every gate CI runs that needs no docker (app-test downloads its NuGet packages).
 quality:
     #!/usr/bin/env bash
     set -euo pipefail
-    for tool in node python3 ruff shellcheck actionlint agents-check docs-lint gleam erl; do command -v "$tool" >/dev/null || { echo "quality: $tool not installed — run inside 'nix develop'" >&2; exit 1; }; done
+    for tool in node python3 ruff shellcheck actionlint agents-check docs-lint dotnet fable fantomas; do command -v "$tool" >/dev/null || { echo "quality: $tool not installed — run inside 'nix develop'" >&2; exit 1; }; done
     ruff check .
     ruff format --check .
     shellcheck --severity=error scripts/*.sh
@@ -98,7 +104,7 @@ prepush:
     scripts/mip-trailer-check.sh
     just quality
 
-# Build the Gleam client into app/dist: --fixtures adds offline boards, --no-gleam reuses app/client/build.
+# Build the client into app/dist. BROKEN until the F# client lands (run F2): scripts/app_build.sh still runs the Gleam build, which this branch no longer has.
 app-build *args:
     scripts/app_build.sh {{ args }}
 

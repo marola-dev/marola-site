@@ -114,32 +114,42 @@ in the ICU subset `ui.js` implements and names the same arguments as `pt-BR`'s, 
 note in `context.json`. Edit the catalogs, never `i18n.js`; `--check` fails a stale committed
 bundle.
 
-## The Gleam app (`app/`)
+## The F# app (`app/`)
 
-The rewrite of the page is in Gleam ([ADR 0001](adr/0001-gleam-maplibre-dynamic-hosting.md)).
-`app/shared` holds the domain types, the board decoder and the pure functions, with no code for one
-target. `app/client` (JavaScript) is the map page and depends on it by path. `app/server` (Erlang)
-comes later. `just app-test` runs the tests of `app/shared` on Erlang and on JavaScript and the tests
-of `app/client` on JavaScript, `just app-fmt` formats both, `just golden` writes
-`app/shared/test/golden.json`, and `just quality` runs all three.
+The rewrite of the page is in F#, compiled to JavaScript by Fable ([ADR 0001](adr/0001-fsharp-fable-maplibre-dynamic-hosting.md)).
+`app/Shared` holds the domain types, the board decoder and the pure functions. It uses no .NET-only
+API, so .NET and Fable both compile it. `app/Client` is the map page (not written yet; its static
+files and its two JavaScript files are there). `app/Server` (.NET) comes later.
+
+`app/Tests` holds the tests with Expecto. `app/Tests.Fable` compiles the same test files with Fable and
+runs them on Node, so a function has to give the same answer on both runtimes. A `#if FABLE_COMPILER`
+in the test files picks Fable.Mocha in place of Expecto and the JSON reader of the runtime. `app/marola.sln` does not
+exist: each recipe names its project.
+
+| Recipe | What it does |
+|---|---|
+| `just app-test` | `dotnet test`, then `fable` on `Tests.Fable`, then `node Tests.Fable/run.mjs`. NuGet restores in locked mode |
+| `just app-fmt` | Fantomas over `app/` (`--check` only reports, as CI does) |
+| `just golden` | Writes `app/Tests/golden.json` |
+| `just quality` | Runs all three |
 
 The golden file is the parity contract with the old page. `scripts/golden.js` runs the pure functions of
-`ui.js`, `app.js` and `flow.js` over a table of inputs and writes what they return. The Gleam tests
-read the file and must give the same answers. Change the old code or the table, run `just golden`,
-commit the new file; `just golden --check` fails a stale one.
+`ui.js`, `app.js` and `flow.js` over a table of inputs and writes what they return. The F# tests
+read the file and must give the same answers on .NET and on Node. Change the old code or the table,
+run `just golden`, commit the new file; `just golden --check` fails a stale one.
 
-The Hex packages are locked in `app/shared/manifest.toml`: each has a version and an
-`outer_checksum`, and `gleam` checks the checksum on download. `gleam deps download` fetches
-exactly those versions; the first `gleam test` does it by itself. `gleam add` and `gleam update`
-change the lock, so commit `manifest.toml` with the change. Nothing else fetches a package: no `npm`.
-Because the lock names every package and its checksum, a Nix build can fetch the tarballs offline
-from `https://repo.hex.pm/tarballs/<name>-<version>.tar`, as
-[nix-os `site/default.nix`](https://github.com/piabrota/nix-os/blob/main/site/default.nix) does for
-its own site. That build is not made for this repo yet (see the ADR).
+NuGet packages are pinned by `packages.lock.json` in each project (`RestorePackagesWithLockFile`).
+`just app-test` sets `RestoreLockedMode=true`, so a stale lock fails the run. To add or update a
+package, edit the `fsproj`, run `dotnet restore` in that project folder (without the variable) and
+commit the new lock. The restore downloads from nuget.org: it is the only download, and there is no
+`npm`. The dev shell sets `DOTNET_CLI_TELEMETRY_OPTOUT`, `DOTNET_NOLOGO`, `DOTNET_CLI_HOME` and
+`NUGET_PACKAGES`; the last two point into the shell's temporary folder, so each new shell downloads
+the packages again.
 
-`flake.nix` gives the dev shell `gleam` and Erlang from the flake's own `nixpkgs`. The repo does
-not commit a `flake.lock`, so the Gleam version is the one that `nixos-unstable` has when `nix develop`
-first writes one.
+`flake.nix` gives the dev shell `dotnet-sdk_10`, `fable` and `fantomas` from the flake's own `nixpkgs`.
+The repo does not commit a `flake.lock`, so the versions are the ones that `nixos-unstable` has when
+`nix develop` first writes one. On 2026-11-07 that was Fable 5.26.0, .NET SDK 10.0.403 and Fantomas
+7.0.3. Never run `dotnet tool install`: the tools come from Nix.
 
 ## News posts
 
@@ -158,16 +168,19 @@ pushed.
 
 ### Build and serve the client
 
+These recipes still belong to the Gleam client, which this branch removed. They do not work until the
+F# client lands and the scripts change.
+
 ```bash
-just app-build            # gleam build, then app/dist/
+just app-build            # was: gleam build, then app/dist/
 just app-build --fixtures # also writes data/<area>/ boards from site/fixtures/board.json
 just app-serve            # http://127.0.0.1:8000, with the CSP header
 just client-check         # a Node smoke test of the compiled client
 ```
 
-`scripts/app_build.sh` builds `app/client` for JavaScript. Then it copies the compiled modules, the
-vendored files, the i18n catalogs from `site/i18n/` and the trail files into `app/dist/`. It writes
-`boot.mjs` and `csp.txt` there. `app/dist/` is not in git.
+`scripts/app_build.sh` copies the compiled modules, the vendored files, the i18n catalogs from
+`site/i18n/` and the trail files into `app/dist/`. It writes `boot.mjs` and `csp.txt` there.
+`app/dist/` is not in git.
 
 `scripts/serve.mjs` has no dependency. It sends the policy of `csp.txt` and refuses to start when
 that file is missing. A visitor needs the same header from the real host. The hosting comes in a

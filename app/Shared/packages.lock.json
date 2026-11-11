@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "dependencies": {
+    "net10.0": {
+      "FSharp.Core": {
+        "type": "Direct",
+        "requested": "[10.1.403, )",
+        "resolved": "10.1.403",
+        "contentHash": "d1SLUNiv+NinE5l5STyEvhFdxPQmMNIdqf7EkgfFtDM3E1Z1n9OSER1gY8R4m6sNJn3PDz19rX8cFV3mOsFHJQ=="
+      },
+      "Thoth.Json.Core": {
+        "type": "Direct",
+        "requested": "[0.10.1, )",
+        "resolved": "0.10.1",
+        "contentHash": "41Niw7oYecGSDYfWh2siCXlP9ZcTgm6bXnXtY0tYaghRVYZWCU4gLzGEHBnNh8tARV4ODDSWuMICBlRLq7qz3w==",
+        "dependencies": {
+          "FSharp.Core": "10.1.203"
+        }
+      }
+    }
+  }
+}

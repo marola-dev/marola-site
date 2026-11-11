@@ -21,8 +21,11 @@
         # Docker is the host's, as in every marola repo: `just site-build` runs the pinned app image.
         devShells.default = pkgs.mkShell {
           name = "marola-site";
-          packages = [ pkgs.nodejs pkgs.gleam pkgs.beamPackages.erlang ] ++ devkit.tools;
+          packages = [ pkgs.nodejs pkgs.dotnet-sdk_10 pkgs.fable pkgs.fantomas ] ++ devkit.tools;
           shellHook = devkit.shellHook + ''
+            # Nothing leaves the box but NuGet package downloads; the caches live in the temp dir.
+            export DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1
+            export DOTNET_CLI_HOME="''${TMPDIR:-/tmp}/dotnet" NUGET_PACKAGES="''${TMPDIR:-/tmp}/nuget"
             git config core.hooksPath .devkit/.githooks 2>/dev/null || true
             echo "marola-site dev shell. Run 'just' to see available commands."
           '';

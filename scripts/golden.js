@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /** golden: runs the pure functions of the OLD page code (site/static/ui.js, app.js, flow.js) over a
- * table of inputs and writes what they return to app/shared/test/golden.json. The Gleam tests in
- * app/shared read that file and must give the same answers (the parity contract of the Gleam rewrite).
+ * table of inputs and writes what they return to app/Tests/golden.json. The F# tests in
+ * app/Tests read that file and must give the same answers, on .NET and on Fable (the parity contract of the F# rewrite).
  *
  * The old files keep their functions inside an IIFE, so each function is cut out of the source text
  * and evaluated in a vm sandbox next to the real i18n runtime. No browser, no network, no dependency.
@@ -15,7 +15,7 @@ const path = require('path');
 const vm = require('vm');
 
 const ROOT = path.resolve(__dirname, '..');
-const OUT = path.join(ROOT, 'app/shared/test/golden.json');
+const OUT = path.join(ROOT, 'app/Tests/golden.json');
 const read = p => fs.readFileSync(path.join(ROOT, p), 'utf8');
 const UI = read('site/static/ui.js');
 const APP = read('site/static/app.js');
@@ -157,7 +157,7 @@ function textCases(out, env) {
     out.band.push({ score, unfit, out: app['pt-BR'].band(score, unfit) });
   }));
 
-  // numbers: Intl itself, the thing numfmt.gleam stands in for
+  // numbers: Intl itself, the thing NumFmt.fs stands in for
   out.number = [];
   const values = [0, 1, 0.5, 1.005, 1.5, 2.5, 0.05, 0.0004, 0.0005, 0.045, 1234.5, 1234567.891, 999.9995, 99.95, -1.25, -0.04,
     12.345678, 0.1 + 0.2, 1e21, 1e-7, 123456789012, 1000, 999.5, 6.5, 27.4999, 7.45, 0.995, 19.2, 100];
@@ -412,10 +412,10 @@ const text = serialise(build());
 if (process.argv.includes('--check')) {
   const have = fs.existsSync(OUT) ? fs.readFileSync(OUT, 'utf8') : '';
   if (have !== text) {
-    console.error('golden: app/shared/test/golden.json is stale; run `just golden` and commit it');
+    console.error('golden: app/Tests/golden.json is stale; run `just golden` and commit it');
     process.exit(1);
   }
-  console.log('golden: app/shared/test/golden.json is current');
+  console.log('golden: app/Tests/golden.json is current');
 } else {
   fs.writeFileSync(OUT, text);
   console.log('golden: wrote ' + path.relative(ROOT, OUT) + ' (' + text.length + ' bytes)');
