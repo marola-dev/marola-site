@@ -104,6 +104,7 @@ module Site =
           Description = doc.Description
           NoIndex = noIndex slug
           Canonical = slug <> "404"
+          Dynamic = false
           Current =
             match slug with
             | "contact"

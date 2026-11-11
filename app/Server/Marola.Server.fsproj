@@ -14,9 +14,14 @@
     <Compile Include="Files.fs" />
     <Compile Include="Store.fs" />
     <Compile Include="StudyStore.fs" />
+    <Compile Include="Session.fs" />
+    <Compile Include="GithubLogin.fs" />
+    <Compile Include="Messages.fs" />
+    <Compile Include="Views.fs" />
     <Compile Include="PdfIntake.fs" />
     <Compile Include="StudyApi.fs" />
     <Compile Include="Contact.fs" />
+    <Compile Include="Web.fs" />
     <Compile Include="Inbox.fs" />
     <Compile Include="DevAccount.fs" />
     <Compile Include="App.fs" />
@@ -24,6 +29,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../Shared/Marola.Shared.fsproj" />
+    <ProjectReference Include="../Pages/Marola.Pages.fsproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.15" />

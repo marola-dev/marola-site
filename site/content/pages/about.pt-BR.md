@@ -80,6 +80,8 @@ as pessoas que fazem o marola estão na página de [membros](/members.html), a m
 
 a pesquisa do marola está no [marola-research](https://github.com/marola-dev/marola-research/blob/main/README.md). para contribuir ou publicar com a gente, leia a [chamada para contribuição e publicação](https://github.com/marola-dev/marola-research/blob/main/chamada/chamada.pdf) (PDF).
 
+quem pesquisa também pode publicar um estudo aqui. leia os [estudos](/studies) que as pessoas enviaram ou [envie o seu](/submit). o marola não revisa os estudos.
+
 ## agradecimentos
 
 a ideia do botão de emergência veio do [swell-floripa](https://swell-floripa.vercel.app/), de Carlos Toledo ([@carlostoledo1891](https://github.com/carlostoledo1891)).

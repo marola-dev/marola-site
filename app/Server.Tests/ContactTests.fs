@@ -17,7 +17,12 @@ let private config (db: string) =
       Data = ""
       Db = db
       Studies = ""
-      StudiesQuota = 0L }
+      StudiesQuota = 0L
+      Dev = false
+      GithubClientId = None
+      GithubSecretFile = None
+      GithubBase = ""
+      GithubApiBase = "" }
 
 let private tempDb () =
     Path.Combine(Path.GetTempPath(), "marola-db-" + Guid.NewGuid().ToString "N", "marola.db")

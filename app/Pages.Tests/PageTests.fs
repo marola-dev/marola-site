@@ -74,6 +74,12 @@ let tests =
 
               for nav in Layout.navSlugs do
                   Expect.isTrue (List.contains (Layout.path language nav) (hrefs html)) (where + " " + nav))
+          forEach
+              "the nav links the studies list and the footer the submit page, in the page's language"
+              (fun slug language html ->
+                  let where = slug + " " + Language.tag language
+                  Expect.isTrue (List.contains (Layout.dynamicPath language "studies") (hrefs html)) where
+                  Expect.isTrue (List.contains (Layout.dynamicPath language "submit") (hrefs html)) where)
           test "every nav link has a page in the build" {
               for slug in Layout.navSlugs do
                   Expect.isTrue (List.contains slug Site.allSlugs) (slug + " has no page")

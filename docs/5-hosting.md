@@ -27,7 +27,9 @@ under `runtimes/linux-x64/native/`, from the NuGet package.
 | `MAROLA_DB` | `data/marola.db` | The SQLite file: the contact messages, and the accounts, API keys, studies and reports of [ADR 0004](adr/0004-study-submission.md). The server creates it and its folder at start, and moves its tables to the current version (`PRAGMA user_version`). |
 | `MAROLA_STUDIES` | `data/studies` | The PDFs of the studies, as `<sha256>.pdf`, mode 0640, in a folder of mode 0750 with a `.incoming` folder for uploads in progress. Outside `MAROLA_STATIC` and never served as a file tree. |
 | `MAROLA_STUDIES_QUOTA` | `2147483648` (2 GiB) | The most bytes the stored PDFs may take. Past it, a new file gets 507. A wrong number stops the start with exit code 2. |
-| `MAROLA_DEV` | unset | Only the command `dev-account` reads it, and only the value `1` enables it. Never set it in the unit. |
+| `MAROLA_GITHUB_CLIENT_ID` | unset | The client id of the GitHub OAuth app. Public. |
+| `MAROLA_GITHUB_CLIENT_SECRET_FILE` | unset | A path to the file that holds the client secret. The secret is read from that file at each login, never from an environment variable, and never logged. Without the id and the file, `/auth/github/login` answers 503 "login is not configured" and the rest of the site works. |
+| `MAROLA_DEV` | unset | Only the value `1` enables it: the command `dev-account`, cookies without `Secure` and the `__Host-` prefix (plain HTTP), and `MAROLA_GITHUB_BASE` and `MAROLA_GITHUB_API_BASE` (a fake GitHub for tests). Never set it in the unit. |
 
 A relative path counts from the working directory of the process. Use absolute paths on a host.
 A wrong `MAROLA_PORT` or `MAROLA_STUDIES_QUOTA` stops the start with exit code 2.
@@ -96,9 +98,9 @@ server {
     # a larger limit; do not raise this one.
     client_max_body_size 1m;
 
-    # The study upload: 21 MB (a 20 MB file and the form fields). The server streams the file to its
+    # The study upload, by the API and by the web form: 21 MB (a 20 MB file and the form fields). The server streams the file to its
     # own folder, so nginx passes it through and does not buffer it to disk first.
-    location = /api/v1/studies {
+    location ~ ^(/en)?/submit$|^/api/v1/studies$ {
         client_max_body_size 21m;
         proxy_request_buffering off;
         proxy_pass http://127.0.0.1:8080;
@@ -122,6 +124,25 @@ server {
 
 Without `X-Forwarded-For`, every visitor shares the rate-limit window of `127.0.0.1`.
 
+## The GitHub login
+
+The study form and the account page need a login with GitHub (the web flow, empty scope: the server reads only
+the public profile: id, login and the date the account was made). The owner registers the OAuth app on GitHub;
+an agent cannot do it.
+
+1. In GitHub, Settings, Developer settings, OAuth Apps, make an app. Its callback URL is
+   `https://marola.piabrota.art/auth/github/callback`. Ask for no scope.
+2. Put the client id in `MAROLA_GITHUB_CLIENT_ID`.
+3. Write the client secret to a file only root can read, for example `/etc/marola/github-client-secret` (mode 0600).
+   The unit passes it with `LoadCredential=`; systemd puts a copy in `$CREDENTIALS_DIRECTORY`, which `%d` names in
+   `MAROLA_GITHUB_CLIENT_SECRET_FILE`. The secret is never in an environment variable, a log or the repository.
+4. Restart the unit. `/auth/github/login` redirects to GitHub, and the callback starts a session of 12 hours.
+
+The cookies are `__Host-msess` and `__Host-mstate`, so the site must be served over HTTPS (nginx sends
+`X-Forwarded-Proto`; the server always sets `Secure`). The server makes `csrf.key` next to `MAROLA_DB` at the first
+start (mode 0600); back it up with the database, because a restart without it only invalidates open forms.
+The upload location of nginx above covers `/submit` and `/en/submit`.
+
 ## systemd
 
 Recommended settings for the unit. The server needs no write access except to its state folder.
@@ -135,6 +156,9 @@ Environment=MAROLA_DATA=/opt/marola/data
 Environment=MAROLA_DB=/var/lib/marola/marola.db
 Environment=MAROLA_STUDIES=/var/lib/marola/studies
 Environment=MAROLA_STUDIES_QUOTA=2147483648
+Environment=MAROLA_GITHUB_CLIENT_ID=<the public client id>
+Environment=MAROLA_GITHUB_CLIENT_SECRET_FILE=%d/github-client-secret
+LoadCredential=github-client-secret:/etc/marola/github-client-secret
 DynamicUser=yes
 StateDirectory=marola
 MemoryMax=256M

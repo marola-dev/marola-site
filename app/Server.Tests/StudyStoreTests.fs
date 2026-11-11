@@ -231,7 +231,12 @@ let private devAccount (db: string) (dev: string) (args: string list) =
           Data = ""
           Db = db
           Studies = ""
-          StudiesQuota = 0L }
+          StudiesQuota = 0L
+          Dev = false
+          GithubClientId = None
+          GithubSecretFile = None
+          GithubBase = ""
+          GithubApiBase = "" }
 
     let out, err = new StringWriter(), new StringWriter()
     let code = DevAccount.run config now dev args out err

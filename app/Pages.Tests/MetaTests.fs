@@ -59,7 +59,7 @@ let tests =
           test "the sitemap parses and has every indexable page in both languages, the map once" {
               let locs = sitemapLocs ()
               let indexable = Site.allSlugs |> List.filter (Site.noIndex >> not)
-              Expect.equal (List.length locs) (1 + 2 * List.length indexable) "count"
+              Expect.equal (List.length locs) (1 + 2 * (List.length indexable + List.length Meta.dynamicSlugs)) "count"
               Expect.isTrue (locs |> List.forall (fun u -> u.StartsWith(base' + "/"))) "origin"
 
               for slug in indexable do
@@ -95,7 +95,10 @@ let tests =
                   for loc in sitemapLocs () do
                       let path = loc.Substring(base'.Length)
 
-                      if path <> "/" then
+                      if
+                          path <> "/"
+                          && not (Meta.dynamicSlugs |> List.exists (fun s -> path.EndsWith("/" + s)))
+                      then
                           Expect.isTrue (written.Contains(path.TrimStart '/')) loc
           }
           test "Expires is under a year from the build" {

@@ -79,6 +79,8 @@ The people who build marola are on the [members page](/members.html), the same l
 
 marola's research is in [marola-research](https://github.com/marola-dev/marola-research/blob/main/README.md). To contribute or publish with us, read the [call for contribution and publication](https://github.com/marola-dev/marola-research/blob/main/chamada/chamada.pdf) (PDF, in Portuguese).
 
+Scientists can publish a study here too. Read the [studies](/en/studies) that people sent, or [submit one](/en/submit). marola does not review them.
+
 ## Thanks
 
 The emergency button idea came from [swell-floripa](https://swell-floripa.vercel.app/), by Carlos Toledo ([@carlostoledo1891](https://github.com/carlostoledo1891)).

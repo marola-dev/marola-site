@@ -18,6 +18,7 @@ tmp="$(mktemp -d)"
 pid=""
 cleanup() {
   [ -z "$pid" ] || kill "$pid" 2>/dev/null || true
+  [ -z "${gh_pid:-}" ] || kill "$gh_pid" 2>/dev/null || true
   rm -rf "$tmp"
 }
 trap cleanup EXIT
@@ -27,6 +28,17 @@ printf '{"smoke":true}\n' > "$tmp/data/floripa/latest.json"
 
 port="$(node -e 'const s = require("net").createServer().listen(0, "127.0.0.1", () => { console.log(s.address().port); s.close(); });')"
 export MAROLA_PORT="$port" MAROLA_STATIC="$root/app/dist" MAROLA_DATA="$tmp/data" MAROLA_DB="$tmp/marola.db" MAROLA_STUDIES="$tmp/studies"
+
+# The GitHub login runs against a fake GitHub (scripts/fake_github.mjs). MAROLA_DEV=1 lets the server take its
+# URLs from the environment and drop `Secure` and the `__Host-` prefix, which plain HTTP cannot carry.
+gh_secret="fake-smoke-client-secret"
+printf '%s\n' "$gh_secret" > "$tmp/github-secret"
+node scripts/fake_github.mjs "$gh_secret" > "$tmp/github.port" &
+gh_pid=$!
+for _ in $(seq 1 50); do [ -s "$tmp/github.port" ] && break; sleep 0.1; done
+gh_port="$(cat "$tmp/github.port")"
+export MAROLA_DEV=1 MAROLA_GITHUB_CLIENT_ID=smoke-client MAROLA_GITHUB_CLIENT_SECRET_FILE="$tmp/github-secret" \
+  MAROLA_GITHUB_BASE="http://127.0.0.1:$gh_port" MAROLA_GITHUB_API_BASE="http://127.0.0.1:$gh_port"
 
 dotnet "$dll" > "$tmp/server.log" 2>&1 &
 pid=$!
@@ -58,13 +70,23 @@ node scripts/server_smoke.mjs "http://127.0.0.1:$port" dotnet "$dll" inbox
   printf '\n1 0 obj\n<< /Type /Catalog >>\nendobj\ntrailer\n<< /Root 1 0 R >>\nstartxref\n9\n%%%%EOF\n'
 } > "$tmp/study.pdf"
 sha="$(sha256sum "$tmp/study.pdf" | cut -d' ' -f1)"
-key="$(MAROLA_DEV=1 dotnet "$dll" dev-account --login smoke --age-days 30)"
+key="$(dotnet "$dll" dev-account --login smoke --age-days 30)"
 node scripts/server_smoke_studies.mjs "http://127.0.0.1:$port" "$key" "$tmp/study.pdf" "$sha" "$tmp/studies"
 if grep -q "$key" "$tmp/server.log"; then
   echo "server_smoke: the API key is in the server log" >&2
   exit 1
 fi
 
+
+# The web side: login, a key, the form with its token, the study page, a report, a withdrawal.
+node scripts/server_smoke_submit.mjs "http://127.0.0.1:$port" "$tmp/study.pdf" "$sha"
+for secret in "$gh_secret" gho_fakeSmokeToken0123456789 fakecode; do
+  if grep -q -e "$secret" "$tmp/server.log"; then
+    echo "server_smoke: a GitHub token, code or secret is in the server log" >&2
+    exit 1
+  fi
+done
+echo "server_smoke: the log holds no GitHub token, code or secret"
 # Logging: no address, no query, no body in the server's log (LGPD).
 grep -v Microsoft.Hosting.Lifetime "$tmp/server.log" > "$tmp/requests.log" || true
 if grep -q -e '127\.0\.0\.1' -e 'smoke@example' -e 'evil.example' -e 'sent=1' "$tmp/requests.log"; then

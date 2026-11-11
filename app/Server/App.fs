@@ -65,6 +65,9 @@ module App =
         builder.Services.AddSingleton<Config>(config) |> ignore
         builder.Services.AddSingleton<TimeProvider>(TimeProvider.System) |> ignore
 
+        builder.Services.AddSingleton<GithubHttp>(GithubHttp(GithubLogin.newClient ()))
+        |> ignore
+
         builder.Services.AddResponseCompression(fun (o: ResponseCompressionOptions) ->
             o.EnableForHttps <- true
             o.Providers.Add<BrotliCompressionProvider>()
@@ -139,7 +142,9 @@ module App =
         Func<HttpContext, RequestDelegate, Task>(fun ctx next ->
             let upload =
                 HttpMethods.IsPost ctx.Request.Method
-                && ctx.Request.Path.Equals(StudyApi.apiPath, StringComparison.Ordinal)
+                && (ctx.Request.Path.Equals(StudyApi.apiPath, StringComparison.Ordinal)
+                    || ctx.Request.Path.Equals("/submit", StringComparison.Ordinal)
+                    || ctx.Request.Path.Equals("/en/submit", StringComparison.Ordinal))
 
             let limit = if upload then StudyApi.uploadLimit else bodyLimit
 
@@ -182,6 +187,8 @@ module App =
             |> ignore
 
         StudyApi.map app config logs
+        GithubLogin.map app config logs
+        Web.map app config logs
 
         app.MapFallback("{**path}", Func<HttpContext, IResult>(Files.handle config))
         |> ignore

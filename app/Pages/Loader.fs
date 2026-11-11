@@ -7,7 +7,7 @@ open Thoth.Json.Newtonsoft
 /// Reads the catalogs and the page Markdown from disk.
 module Loader =
 
-    let private catalog (i18nDir: string) : Result<Catalog, string> =
+    let catalog (i18nDir: string) : Result<Catalog, string> =
         Language.all
         |> List.fold
             (fun acc language ->

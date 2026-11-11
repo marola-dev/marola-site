@@ -70,7 +70,14 @@ module StudyStore =
                  study_id text not null references studies(id),
                  created_utc text not null,
                  reason text not null,
-                 reporter_github_id integer)" ] ]
+                 reporter_github_id integer)" ]
+          2,
+          [ // Only the SHA-256 of the cookie value is stored: a copy of the database cannot log anyone in.
+            "create table sessions (
+                 token_hash text primary key,
+                 github_id integer not null references accounts(github_id),
+                 created_utc text not null,
+                 expires_utc text not null)" ] ]
 
     let schemaVersion = steps |> List.map fst |> List.max
 
@@ -275,6 +282,91 @@ module StudyStore =
                 [ "$now", box (utc now); "$key", box keyId; "$id", box githubId ]
 
         command.ExecuteNonQuery() > 0
+
+    // ---- sessions -----------------------------------------------------------------------------------
+
+    /// A session lasts 12 hours from login, absolute: using it does not extend it.
+    let sessionLifetime = TimeSpan.FromHours 12.
+
+    let private tokenHash (token: string) : string =
+        Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes token)).ToLowerInvariant()
+
+    /// A random 32-byte value, URL-safe, 43 characters. The hash of it is the session's id everywhere else.
+    let sessionTokenShape (token: string) : bool =
+        not (isNull token)
+        && token.Length = 43
+        && token |> Seq.forall (fun c -> Char.IsAsciiLetterOrDigit c || c = '-' || c = '_')
+
+    /// Returns the cookie value; the row holds its hash. Expired rows of any account go at the same time.
+    let createSession (path: string) (now: DateTimeOffset) (githubId: int64) : string =
+        use connection = open' path
+
+        use purge =
+            Store.run connection "delete from sessions where expires_utc <= $now" [ "$now", box (utc now) ]
+
+        purge.ExecuteNonQuery() |> ignore
+
+        let token =
+            Convert.ToBase64String(RandomNumberGenerator.GetBytes 32).TrimEnd('=').Replace('+', '-').Replace('/', '_')
+
+        use insert =
+            Store.run
+                connection
+                "insert into sessions (token_hash, github_id, created_utc, expires_utc) values ($hash, $id, $now, $end)"
+                [ "$hash", box (tokenHash token)
+                  "$id", box githubId
+                  "$now", box (utc now)
+                  "$end", box (utc (now + sessionLifetime)) ]
+
+        insert.ExecuteNonQuery() |> ignore
+        token
+
+    /// The account of a live session and the hash that names it. The lookup is by hash and the stored hash is
+    /// compared in constant time too.
+    let getSession (path: string) (now: DateTimeOffset) (token: string) : (Account * string) option =
+        if not (sessionTokenShape token) then
+            None
+        else
+            use connection = open' path
+            let hash = tokenHash token
+
+            use command =
+                Store.run
+                    connection
+                    "select s.token_hash, a.github_id, a.github_login, a.created_github_utc
+                     from sessions s join accounts a on a.github_id = s.github_id
+                     where s.token_hash = $hash and s.expires_utc > $now"
+                    [ "$hash", box hash; "$now", box (utc now) ]
+
+            use reader = command.ExecuteReader()
+
+            if
+                reader.Read()
+                && CryptographicOperations.FixedTimeEquals(
+                    ReadOnlySpan(Encoding.ASCII.GetBytes(reader.GetString 0)),
+                    ReadOnlySpan(Encoding.ASCII.GetBytes hash)
+                )
+            then
+                Some(
+                    { GithubId = reader.GetInt64 1
+                      Login = reader.GetString 2
+                      CreatedGithubUtc = reader.GetString 3 },
+                    hash
+                )
+            else
+                None
+
+    /// Logout. True when a row was deleted.
+    let deleteSession (path: string) (token: string) : bool =
+        if not (sessionTokenShape token) then
+            false
+        else
+            use connection = open' path
+
+            use command =
+                Store.run connection "delete from sessions where token_hash = $hash" [ "$hash", box (tokenHash token) ]
+
+            command.ExecuteNonQuery() > 0
 
     // ---- studies ------------------------------------------------------------------------------------
 
@@ -488,3 +580,56 @@ module StudyStore =
 
         [ while reader.Read() do
               reader.GetString 0 ]
+
+    // ---- the web side -------------------------------------------------------------------------------
+
+    /// Every study of one account, hidden ones too, newest first: the account page lists them.
+    let listByAuthor (path: string) (githubId: int64) : Record list =
+        use connection = open' path
+
+        use command =
+            Store.run
+                connection
+                ("select "
+                 + columns
+                 + " from studies where author_github_id = $id order by received_utc desc, id desc")
+                [ "$id", box githubId ]
+
+        use reader = command.ExecuteReader()
+
+        [ while reader.Read() do
+              readRecord reader ]
+
+    let withdrawnReason = "withdrawn by the author"
+
+    /// The author hides their own public study. True when it was hidden; another account's study is never touched.
+    let withdraw (path: string) (now: DateTimeOffset) (githubId: int64) (id: string) : bool =
+        use connection = open' path
+
+        use command =
+            Store.run
+                connection
+                "update studies set status = 'hidden', hidden_reason = $reason, hidden_utc = $now
+                 where id = $id and author_github_id = $gid and status = 'public'"
+                [ "$reason", box withdrawnReason
+                  "$now", box (utc now)
+                  "$id", box id
+                  "$gid", box githubId ]
+
+        command.ExecuteNonQuery() > 0
+
+    /// A report of a study: the time and the reason, and nothing that names the reporter (no address, no account).
+    let insertReport (path: string) (now: DateTimeOffset) (studyId: string) (reason: string) : bool =
+        use connection = open' path
+
+        use command =
+            Store.run
+                connection
+                "insert into reports (study_id, created_utc, reason) select id, $now, $reason from studies where id = $id"
+                [ "$now", box (utc now); "$reason", box reason; "$id", box studyId ]
+
+        command.ExecuteNonQuery() > 0
+
+    let countReports (path: string) (studyId: string) : int64 =
+        use connection = open' path
+        scalar connection "select count(*) from reports where study_id = $id" [ "$id", box studyId ] :?> int64

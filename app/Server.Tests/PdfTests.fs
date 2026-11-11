@@ -37,7 +37,12 @@ let withConfig (quota: int64) (body: Config -> unit) =
           Data = ""
           Db = Path.Combine(root, "db", "marola.db")
           Studies = Path.Combine(root, "studies")
-          StudiesQuota = quota }
+          StudiesQuota = quota
+          Dev = false
+          GithubClientId = Some "test-client-id"
+          GithubSecretFile = None
+          GithubBase = "https://github.test"
+          GithubApiBase = "https://api.github.test" }
 
     try
         body config

@@ -103,6 +103,7 @@ let view (model: Model) : Node<Msg> list =
                   Vdom.text " "
                   Vdom.el "i" [] [ Vdom.text (Words.t model "nav.soon") ] ]
             link model "news.html" "nav.news"
+            link model "/studies" "nav.studies"
             link model "about.html" "nav.about"
             link model "contact.html" "nav.contact"
             link model "https://github.com/marola-dev/marola-research/blob/main/README.md" "nav.research"

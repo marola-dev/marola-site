@@ -17,6 +17,8 @@ type PageHead =
         Canonical: bool
         /// The slug of the nav link to mark as the current page.
         Current: string option
+        /// A page the server renders at run time: its address has no `.html`, `/submit` and `/en/submit`.
+        Dynamic: bool
     }
 
 /// The frame of every static page: head, nav, header, footer and the language switch. The same chrome
@@ -32,6 +34,19 @@ module Layout =
          | Language.PtBr -> "/")
         + slug
         + ".html"
+
+    /// The address of a page the server renders: no extension.
+    let dynamicPath (language: Language) (slug: string) : string =
+        (match language with
+         | Language.En -> "/en/"
+         | Language.PtBr -> "/")
+        + slug
+
+    let private where (page: PageHead) (language: Language) : string =
+        if page.Dynamic then
+            dynamicPath language page.Slug
+        else
+            path language page.Slug
 
     /// The map page, which the language param picks the language of.
     let mapPath (language: Language) : string =
@@ -59,19 +74,19 @@ module Layout =
 
         let canonical =
             if page.Canonical then
-                [ link [ "rel", "canonical"; "href", origin + path language page.Slug ]
+                [ link [ "rel", "canonical"; "href", origin + where page language ]
                   link
                       [ "rel", "alternate"
                         "hreflang", Language.tag Language.PtBr
-                        "href", origin + path Language.PtBr page.Slug ]
+                        "href", origin + where page Language.PtBr ]
                   link
                       [ "rel", "alternate"
                         "hreflang", Language.tag Language.En
-                        "href", origin + path Language.En page.Slug ]
+                        "href", origin + where page Language.En ]
                   link
                       [ "rel", "alternate"
                         "hreflang", "x-default"
-                        "href", origin + path Language.PtBr page.Slug ] ]
+                        "href", origin + where page Language.PtBr ] ]
             else
                 []
 
@@ -90,7 +105,7 @@ module Layout =
             meta [ "property", "og:title"; "content", page.Title ]
             meta [ "property", "og:description"; "content", page.Description ] ]
         @ (if page.Canonical then
-               [ meta [ "property", "og:url"; "content", origin + path language page.Slug ] ]
+               [ meta [ "property", "og:url"; "content", origin + where page language ] ]
            else
                [])
         @ [ meta [ "property", "og:locale"; "content", ogLocale language ]
@@ -101,17 +116,17 @@ module Layout =
 
     let private text (loc: Locale) (key: string) : string = I18n.t loc key []
 
-    let private langLink (loc: Locale) (slug: string) (language: Language) (label: string) (name: string) =
+    let private langLink (loc: Locale) (page: PageHead) (language: Language) (label: string) (name: string) =
         Vdom.el
             "a"
-            [ Vdom.attr "href" (path language slug)
+            [ Vdom.attr "href" (where page language)
               Vdom.attr "lang" (Language.tag language)
               Vdom.attr "hreflang" (Language.tag language)
               Vdom.attr "aria-label" name
               Vdom.attr "aria-current" (if loc.Language = language then "true" else "false") ]
             [ Vdom.text label ]
 
-    let private languageSwitch (loc: Locale) (slug: string) : Node<unit> =
+    let private languageSwitch (loc: Locale) (page: PageHead) : Node<unit> =
         Vdom.el
             "div"
             [ Vdom.cls "lang"
@@ -128,8 +143,8 @@ module Layout =
                           Vdom.attr "ry" "6.5" ]
                         []
                     Vdom.svg "path" [ Vdom.attr "d" "M1.5 8h13" ] [] ]
-              langLink loc slug Language.PtBr "PT-BR" "português (Brasil)"
-              langLink loc slug Language.En "EN" "English" ]
+              langLink loc page Language.PtBr "PT-BR" "português (Brasil)"
+              langLink loc page Language.En "EN" "English" ]
 
     /// The slugs the nav links to, in the order of the map page's nav. Every one is a page of this
     /// site, and the build checks that each has a file.
@@ -160,6 +175,14 @@ module Layout =
                     Vdom.text " "
                     Vdom.el "i" [] [ Vdom.text (text loc "nav.soon") ] ]
               navLink loc page "news" "nav.news"
+              Vdom.el
+                  "a"
+                  ([ Vdom.attr "href" (dynamicPath loc.Language "studies") ]
+                   @ (if page.Current = Some "studies" then
+                          [ Vdom.attr "aria-current" "page" ]
+                      else
+                          []))
+                  [ Vdom.text (text loc "nav.studies") ]
               navLink loc page "about" "nav.about"
               navLink loc page "contact" "nav.contact"
               external loc "https://github.com/marola-dev/marola-research/blob/main/README.md" "nav.research"
@@ -169,7 +192,7 @@ module Layout =
                   "nav.contribute"
               navLink loc page "members" "nav.members"
               navLink loc page "support" "nav.donate"
-              languageSwitch loc page.Slug
+              languageSwitch loc page
               NavView.linkedin loc
               NavView.github loc ]
 
@@ -203,6 +226,13 @@ module Layout =
                         Vdom.el
                             "footer"
                             [ Vdom.cls "footer" ]
-                            [ Vdom.el "p" [] [ Vdom.text (text loc "footer.privacy") ] ] ] ]
+                            [ Vdom.el "p" [] [ Vdom.text (text loc "footer.privacy") ]
+                              Vdom.el
+                                  "p"
+                                  []
+                                  [ Vdom.el
+                                        "a"
+                                        [ Vdom.attr "href" (dynamicPath loc.Language "submit") ]
+                                        [ Vdom.text (text loc "footer.submit") ] ] ] ] ]
 
         "<!doctype html>\n" + Vdom.toHtml html + "\n"

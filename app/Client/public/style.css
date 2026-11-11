@@ -459,6 +459,8 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   .sitenav > span { display: none; }
   /* a sixth link wraps the strip onto a second row; on a phone the members page is reached from about.html */
   .sitenav > a[href$="members.html"] { display: none; }
+  /* the studies link goes the same way: about links it */
+  .sitenav > a[href$="/studies"] { display: none; }
   /* research and contribute too: about.html ("quem faz") links both */
   .sitenav > a[href*="marola-research"] { display: none; }
   .sitenav .gh .gh-name, .sitenav .gh .gh-star, .sitenav .li .li-name { display: none; }

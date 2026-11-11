@@ -85,9 +85,13 @@ module StudyApi =
     // ---- reading the upload -------------------------------------------------------------------------
 
     type private Upload =
-        { Fields: Map<string, string>
-          Pdf: Result<PdfIntake.Received, FieldError> option
-          Errors: FieldError list }
+        {
+            Fields: Map<string, string>
+            Pdf: Result<PdfIntake.Received, FieldError> option
+            Errors: FieldError list
+            /// The gate refused the request: the web form posted no valid CSRF token.
+            Denied: bool
+        }
 
     let private fieldNames =
         set
@@ -140,6 +144,8 @@ module StudyApi =
         (pending: ResizeArray<PdfIntake.Received>)
         (ctx: HttpContext)
         (boundary: string)
+        (extra: Set<string>)
+        (gate: Map<string, string> -> bool)
         : Task<Upload> =
         task {
             let reader =
@@ -156,6 +162,7 @@ module StudyApi =
             let errors = ResizeArray<FieldError>()
             let seen = HashSet<string>()
             let mutable parts = 0
+            let mutable denied = false
             let mutable go = true
 
             let add field code message =
@@ -187,12 +194,16 @@ module StudyApi =
                     elif not (seen.Add name) then
                         // The name is not echoed: it is attacker text.
                         add "request" "duplicate_field" "a field name appears twice"
+                    elif name = "pdf" && not (gate fields) then
+                        // Nothing of the file is read: the token comes first in the form, and a post without it stores nothing.
+                        denied <- true
+                        go <- false
                     elif name = "pdf" then
                         let! r = PdfIntake.receive config store section.Body
                         pdf <- Some r
                         // Kept for the caller: a later part may fail, and the temp file must not stay.
                         r |> Result.iter pending.Add
-                    elif fieldNames.Contains name then
+                    elif fieldNames.Contains name || extra.Contains name then
                         let! text = readText section
 
                         match text with
@@ -212,7 +223,8 @@ module StudyApi =
             return
                 { Fields = fields
                   Pdf = pdf
-                  Errors = List.ofSeq errors }
+                  Errors = List.ofSeq errors
+                  Denied = denied || not (gate fields) }
         }
 
     // ---- POST -----------------------------------------------------------------------------------------
@@ -225,10 +237,263 @@ module StudyApi =
         else
             ""
 
-    let private submit (config: Config) (rates: KeyRates) (log: ILogger) (ctx: HttpContext) : Task =
+    // ---- the intake: one path for the API and the web form ---------------------------------------------
+
+    type Failure =
+        {
+            Status: int
+            RetryAfter: string option
+            Errors: FieldError list
+            /// The id of the study this account already sent (a 409).
+            Existing: string option
+        }
+
+    type Outcome =
+        | Failed of Failure
+        | DryRun of PdfIntake.Received * Submission
+        | Created of Record
+
+    let private failure status retry field code message : Outcome =
+        Failed
+            { Status = status
+              RetryAfter = retry
+              Errors =
+                [ { Field = field
+                    Code = code
+                    Message = message } ]
+              Existing = None }
+
+    /// Everything after the caller is known: account age, rates, the multipart body, the fields, the file,
+    /// the duplicate and the quota, then the insert. The API (bearer key) and the web form (session) both call it.
+    /// `rateKey` names the caller in the per-minute limiter. `extra` are the form fields besides the study's own
+    /// (the web form's `csrf`); `gate` sees the fields read so far, before the file is stored: a `false` stops the
+    /// request with a 403, so a post with no token never writes a file. Returns the text fields too, so the form
+    /// can show them again.
+    let intake
+        (config: Config)
+        (rates: KeyRates)
+        (log: ILogger)
+        (ctx: HttpContext)
+        (account: StudyStore.Account)
+        (rateKey: string)
+        (extra: Set<string>)
+        (gate: Map<string, string> -> bool)
+        : Task<Outcome * Map<string, string>> =
         task {
             let now = clock ctx
             let dry = ctx.Request.Query["dry_run"].ToString() = "1"
+            let nothing = Map.empty<string, string>
+
+            let stop (o: Outcome) = o, nothing
+
+            if
+                (match DateTimeOffset.TryParse account.CreatedGithubUtc with
+                 | true, created -> now - created < minAccountAge
+                 | _ -> true)
+            then
+                return
+                    stop (failure 403 None "request" "account_too_new" "the GitHub account must be at least 7 days old")
+            elif not (rates.TryTake(rateKey, (if dry then dryCost else realCost), now)) then
+                return
+                    stop (
+                        failure
+                            429
+                            (Some "60")
+                            "request"
+                            "rate_limited"
+                            "more than 30 requests a minute for this key (a dry run counts a third)"
+                    )
+            elif
+                isNull ctx.Request.ContentType
+                || not (ctx.Request.ContentType.StartsWith("multipart/form-data", StringComparison.OrdinalIgnoreCase))
+            then
+                return stop (failure 415 None "request" "unsupported_media_type" "send multipart/form-data")
+            elif StudyStore.countSince config.Db account.GithubId (now - gapBetween) > 0L then
+                return
+                    stop (
+                        failure
+                            429
+                            (Some(string (int gapBetween.TotalSeconds)))
+                            "request"
+                            "too_soon"
+                            "one submission per account every 10 minutes"
+                    )
+            elif
+                StudyStore.countSince config.Db account.GithubId (now - TimeSpan.FromDays 1.)
+                >= perDay
+            then
+                return
+                    stop (failure 429 (Some "86400") "request" "daily_limit" "10 submissions per account in 24 hours")
+            else
+                let boundary =
+                    match MediaTypeHeaderValue.TryParse ctx.Request.ContentType with
+                    | true, mt -> HeaderUtilities.RemoveQuotes(mt.Boundary).Value
+                    | _ -> null
+
+                if String.IsNullOrEmpty boundary || boundary.Length > 70 then
+                    return
+                        stop (
+                            failure
+                                400
+                                None
+                                "request"
+                                "malformed_multipart"
+                                "the multipart boundary is missing or too long"
+                        )
+                else
+                    match ctx.Features.Get<IHttpMaxRequestBodySizeFeature>() with
+                    | null -> ()
+                    | f when not f.IsReadOnly -> f.MaxRequestBodySize <- Nullable uploadLimit
+                    | _ -> ()
+
+                    let pending = ResizeArray<PdfIntake.Received>()
+
+                    let! outcome =
+                        task {
+                            try
+                                let! u = readUpload config (not dry) pending ctx boundary extra gate
+                                return Ok u
+                            with
+                            | :? BadHttpRequestException as e when e.StatusCode = 413 ->
+                                pending |> Seq.iter PdfIntake.discard
+                                return Error(413, "too_large", "the request is larger than 21 MB")
+                            // BadHttpRequestException is an IOException too: this arm takes the other cases.
+                            | :? InvalidDataException
+                            | :? IOException ->
+                                pending |> Seq.iter PdfIntake.discard
+
+                                return
+                                    Error(400, "malformed_multipart", "the multipart body is malformed or over a limit")
+                        }
+
+                    match outcome with
+                    | Error(status, code, message) -> return stop (failure status None "request" code message)
+                    | Ok upload when upload.Denied ->
+                        pending |> Seq.iter PdfIntake.discard
+                        return (failure 403 None "request" "csrf" "the form token is missing or wrong", upload.Fields)
+                    | Ok upload ->
+                        let received =
+                            upload.Pdf
+                            |> Option.bind (function
+                                | Ok r -> Some r
+                                | Error _ -> None)
+
+                        let discard () =
+                            received |> Option.iter PdfIntake.discard
+
+                        let checkedFields = validate (fun k -> Map.tryFind k upload.Fields)
+
+                        let pdfErrors =
+                            match upload.Pdf with
+                            | None ->
+                                [ { Field = "pdf"
+                                    Code = "required"
+                                    Message = "send the PDF in the field pdf" } ]
+                            | Some(Error e) -> [ e ]
+                            | Some(Ok _) -> []
+
+                        let errors =
+                            upload.Errors
+                            @ (match checkedFields with
+                               | Error es -> es
+                               | Ok _ -> [])
+                            @ pdfErrors
+
+                        let done' o = o, upload.Fields
+
+                        if not (List.isEmpty errors) then
+                            discard ()
+
+                            let tooLarge =
+                                errors |> List.exists (fun e -> e.Field = "pdf" && e.Code = "too_large")
+
+                            return
+                                done' (
+                                    Failed
+                                        { Status = (if tooLarge then 413 else 400)
+                                          RetryAfter = None
+                                          Errors = errors
+                                          Existing = None }
+                                )
+                        else
+                            let r = received.Value
+
+                            let submission =
+                                match checkedFields with
+                                | Ok s -> s
+                                | Error _ -> failwith "unreachable"
+
+                            match StudyStore.findByHash config.Db account.GithubId r.Sha256 with
+                            | Some old ->
+                                discard ()
+
+                                return
+                                    done' (
+                                        Failed
+                                            { Status = 409
+                                              RetryAfter = None
+                                              Errors =
+                                                [ { Field = "pdf"
+                                                    Code = "duplicate"
+                                                    Message = "this account already sent this file" } ]
+                                              Existing = Some old }
+                                    )
+                            | None when not (PdfIntake.fitsQuota config r) ->
+                                discard ()
+                                log.LogWarning "study store quota reached"
+
+                                return
+                                    done' (
+                                        failure
+                                            507
+                                            None
+                                            "pdf"
+                                            "quota_exceeded"
+                                            "the study store is full; try again later and tell the board"
+                                    )
+                            | None when dry -> return done' (DryRun(r, submission))
+                            | None ->
+                                match StudyStore.insertStudy config.Db now account r.Sha256 submission with
+                                | None ->
+                                    // Lost a race with the same upload: the other request owns the row.
+                                    discard ()
+
+                                    return
+                                        done' (failure 409 None "pdf" "duplicate" "this account already sent this file")
+                                | Some record ->
+                                    PdfIntake.commit config r
+                                    // Ids only: the title, the abstract and the file name are the author's.
+                                    log.LogInformation(
+                                        "study stored {StudyId} account {AccountId}",
+                                        record.Id,
+                                        account.GithubId
+                                    )
+
+                                    return done' (Created record)
+        }
+
+    let private writeFailure (ctx: HttpContext) (f: Failure) : Task =
+        f.RetryAfter |> Option.iter (fun v -> ctx.Response.Headers.RetryAfter <- v)
+
+        match f.Existing with
+        | Some old ->
+            writeJson
+                ctx
+                f.Status
+                "no-store"
+                (JObject
+                    [ "errors",
+                      JArray
+                          [ JObject
+                                [ "field", JString "pdf"
+                                  "code", JString "duplicate"
+                                  "message", JString "this account already sent this file" ] ]
+                      "id", JString old
+                      "url", JString(urlOf old) ])
+        | None -> writeJson ctx f.Status "no-store" (errorsJson f.Errors)
+
+    let private submit (config: Config) (rates: KeyRates) (log: ILogger) (ctx: HttpContext) : Task =
+        task {
             let key = bearer ctx
 
             match StudyStore.verifyKey config.Db key with
@@ -237,188 +502,27 @@ module StudyApi =
 
                 return!
                     failJson ctx 401 "request" "unauthorized" "send a valid API key as: Authorization: Bearer msk_..."
-            | Some account when
-                (match DateTimeOffset.TryParse account.CreatedGithubUtc with
-                 | true, created -> now - created < minAccountAge
-                 | _ -> true)
-                ->
-                return! failJson ctx 403 "request" "account_too_new" "the GitHub account must be at least 7 days old"
             | Some account ->
-                if not (rates.TryTake(StudyStore.hashKey key, (if dry then dryCost else realCost), now)) then
-                    ctx.Response.Headers.RetryAfter <- "60"
+                let! outcome, _ = intake config rates log ctx account (StudyStore.hashKey key) Set.empty (fun _ -> true)
 
+                match outcome with
+                | Failed f -> return! writeFailure ctx f
+                | DryRun(r, submission) ->
                     return!
-                        failJson
+                        writeJson
                             ctx
-                            429
-                            "request"
-                            "rate_limited"
-                            "more than 30 requests a minute for this key (a dry run counts a third)"
-                elif
-                    isNull ctx.Request.ContentType
-                    || not (
-                        ctx.Request.ContentType.StartsWith("multipart/form-data", StringComparison.OrdinalIgnoreCase)
-                    )
-                then
-                    return! failJson ctx 415 "request" "unsupported_media_type" "send multipart/form-data"
-                elif StudyStore.countSince config.Db account.GithubId (now - gapBetween) > 0L then
-                    ctx.Response.Headers.RetryAfter <- string (int gapBetween.TotalSeconds)
-                    return! failJson ctx 429 "request" "too_soon" "one submission per account every 10 minutes"
-                elif
-                    StudyStore.countSince config.Db account.GithubId (now - TimeSpan.FromDays 1.)
-                    >= perDay
-                then
-                    ctx.Response.Headers.RetryAfter <- "86400"
-                    return! failJson ctx 429 "request" "daily_limit" "10 submissions per account in 24 hours"
-                else
-                    let boundary =
-                        match MediaTypeHeaderValue.TryParse ctx.Request.ContentType with
-                        | true, mt -> HeaderUtilities.RemoveQuotes(mt.Boundary).Value
-                        | _ -> null
-
-                    if String.IsNullOrEmpty boundary || boundary.Length > 70 then
-                        return!
-                            failJson
-                                ctx
-                                400
-                                "request"
-                                "malformed_multipart"
-                                "the multipart boundary is missing or too long"
-                    else
-                        match ctx.Features.Get<IHttpMaxRequestBodySizeFeature>() with
-                        | null -> ()
-                        | f when not f.IsReadOnly -> f.MaxRequestBodySize <- Nullable uploadLimit
-                        | _ -> ()
-
-                        let pending = ResizeArray<PdfIntake.Received>()
-
-                        let! outcome =
-                            task {
-                                try
-                                    let! u = readUpload config (not dry) pending ctx boundary
-                                    return Ok u
-                                with
-                                | :? BadHttpRequestException as e when e.StatusCode = 413 ->
-                                    pending |> Seq.iter PdfIntake.discard
-                                    return Error(413, "too_large", "the request is larger than 21 MB")
-                                // BadHttpRequestException is an IOException too: this arm takes the other cases.
-                                | :? InvalidDataException
-                                | :? IOException ->
-                                    pending |> Seq.iter PdfIntake.discard
-
-                                    return
-                                        Error(
-                                            400,
-                                            "malformed_multipart",
-                                            "the multipart body is malformed or over a limit"
-                                        )
-                            }
-
-                        match outcome with
-                        | Error(status, code, message) -> return! failJson ctx status "request" code message
-                        | Ok upload ->
-                            let received =
-                                upload.Pdf
-                                |> Option.bind (function
-                                    | Ok r -> Some r
-                                    | Error _ -> None)
-
-                            let discard () =
-                                received |> Option.iter PdfIntake.discard
-
-                            let checkedFields = validate (fun k -> Map.tryFind k upload.Fields)
-
-                            let pdfErrors =
-                                match upload.Pdf with
-                                | None ->
-                                    [ { Field = "pdf"
-                                        Code = "required"
-                                        Message = "send the PDF in the field pdf" } ]
-                                | Some(Error e) -> [ e ]
-                                | Some(Ok _) -> []
-
-                            let errors =
-                                upload.Errors
-                                @ (match checkedFields with
-                                   | Error es -> es
-                                   | Ok _ -> [])
-                                @ pdfErrors
-
-                            if not (List.isEmpty errors) then
-                                discard ()
-
-                                let tooLarge =
-                                    errors |> List.exists (fun e -> e.Field = "pdf" && e.Code = "too_large")
-
-                                return! writeJson ctx (if tooLarge then 413 else 400) "no-store" (errorsJson errors)
-                            else
-                                let r = received.Value
-
-                                let submission =
-                                    match checkedFields with
-                                    | Ok s -> s
-                                    | Error _ -> failwith "unreachable"
-
-                                match StudyStore.findByHash config.Db account.GithubId r.Sha256 with
-                                | Some old ->
-                                    discard ()
-
-                                    return!
-                                        writeJson
-                                            ctx
-                                            409
-                                            "no-store"
-                                            (JObject
-                                                [ "errors",
-                                                  JArray
-                                                      [ JObject
-                                                            [ "field", JString "pdf"
-                                                              "code", JString "duplicate"
-                                                              "message", JString "this account already sent this file" ] ]
-                                                  "id", JString old
-                                                  "url", JString(urlOf old) ])
-                                | None when not (PdfIntake.fitsQuota config r) ->
-                                    discard ()
-                                    log.LogWarning "study store quota reached"
-
-                                    return!
-                                        failJson
-                                            ctx
-                                            507
-                                            "pdf"
-                                            "quota_exceeded"
-                                            "the study store is full; try again later and tell the board"
-                                | None when dry ->
-                                    return!
-                                        writeJson
-                                            ctx
-                                            200
-                                            "no-store"
-                                            (JObject
-                                                [ "dry_run", JBool true
-                                                  "ok", JBool true
-                                                  "sha256", JString r.Sha256
-                                                  "size_bytes", JInt r.Size
-                                                  "status", JString "public"
-                                                  "review", JString "not reviewed"
-                                                  "notice", JString notice
-                                                  "submission", JObject(submissionJson submission) ])
-                                | None ->
-                                    match StudyStore.insertStudy config.Db now account r.Sha256 submission with
-                                    | None ->
-                                        // Lost a race with the same upload: the other request owns the row.
-                                        discard ()
-                                        return! failJson ctx 409 "pdf" "duplicate" "this account already sent this file"
-                                    | Some record ->
-                                        PdfIntake.commit config r
-                                        // Ids only: the title, the abstract and the file name are the author's.
-                                        log.LogInformation(
-                                            "study stored {StudyId} account {AccountId}",
-                                            record.Id,
-                                            account.GithubId
-                                        )
-
-                                        return! writeJson ctx 201 "no-store" (receiptJson record)
+                            200
+                            "no-store"
+                            (JObject
+                                [ "dry_run", JBool true
+                                  "ok", JBool true
+                                  "sha256", JString r.Sha256
+                                  "size_bytes", JInt r.Size
+                                  "status", JString "public"
+                                  "review", JString "not reviewed"
+                                  "notice", JString notice
+                                  "submission", JObject(submissionJson submission) ])
+                | Created record -> return! writeJson ctx 201 "no-store" (receiptJson record)
         }
 
     // ---- GET ------------------------------------------------------------------------------------------
@@ -494,7 +598,7 @@ module StudyApi =
 
     /// The file of a public study. `sandbox` and `default-src 'none'` replace the page's CSP: whatever
     /// a PDF viewer would run runs with no origin and no network.
-    let private pdf (config: Config) (log: ILogger) (ctx: HttpContext) (file: string) : Task =
+    let pdf (config: Config) (log: ILogger) (ctx: HttpContext) (file: string) : Task =
         let id =
             if file.EndsWith ".pdf" then
                 file.Substring(0, file.Length - 4)
@@ -626,9 +730,4 @@ and for the file `not_pdf`, `truncated`, `active_content`.
                 ctx.Response.WriteAsync skill)
         )
         |> ignore
-
-        app.MapGet(
-            "/studies/{file}",
-            Func<HttpContext, Task>(fun ctx -> pdf config log ctx (ctx.Request.RouteValues["file"].ToString()))
-        )
-        |> ignore
+// `/studies/<id>.pdf` and the page `/studies/<id>` share a pattern: `Web.map` registers both and calls `pdf`.

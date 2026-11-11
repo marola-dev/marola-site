@@ -11,5 +11,8 @@ let all =
           ContactTests.tests
           StudyStoreTests.tests
           StudyStoreTests.devTests
+          SessionTests.tests
+          LoginTests.tests
+          WebTests.tests
           PdfTests.tests
           StudyApiTests.tests ]

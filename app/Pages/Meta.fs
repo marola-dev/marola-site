@@ -104,6 +104,9 @@ module Meta =
 
         String.Join("\n", lines) + "\n"
 
+    /// The pages the server renders and the sitemap lists.
+    let dynamicSlugs = [ "submit"; "studies" ]
+
     /// Every page a crawler may index, in both languages, each with the three alternates; the map once, whose
     /// English version is the same address with `?lang=en`.
     let sitemap: string =
@@ -120,11 +123,18 @@ module Meta =
             let en = baseUrl + Layout.path Language.En slug
             entry pt pt en @ entry en pt en
 
+        // Pages the server renders. Study pages are not listed: they change at run time (ADR 0004).
+        let dynamic (slug: string) =
+            let pt = baseUrl + Layout.dynamicPath Language.PtBr slug
+            let en = baseUrl + Layout.dynamicPath Language.En slug
+            entry pt pt en @ entry en pt en
+
         let lines =
             [ "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
               "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\" xmlns:xhtml=\"http://www.w3.org/1999/xhtml\">" ]
             @ entry (baseUrl + "/") (baseUrl + "/") (baseUrl + "/?lang=en")
             @ (Site.allSlugs |> List.filter (Site.noIndex >> not) |> List.collect page)
+            @ (dynamicSlugs |> List.collect dynamic)
             @ [ "</urlset>" ]
 
         String.Join("\n", lines) + "\n"

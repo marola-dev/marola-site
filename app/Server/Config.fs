@@ -17,6 +17,15 @@ type Config =
         Studies: string
         /// The most bytes the PDFs may take in all.
         StudiesQuota: int64
+        /// `MAROLA_DEV=1`: cookies without `Secure` and the `__Host-` prefix, and the GitHub URLs may be overridden.
+        /// For the smoke script on plain HTTP and a fake GitHub; never set in production.
+        Dev: bool
+        /// The OAuth app's client id (public). Without it and the secret file, login answers 503.
+        GithubClientId: string option
+        /// A path to the file that holds the OAuth client secret. The secret itself is never in the environment.
+        GithubSecretFile: string option
+        GithubBase: string
+        GithubApiBase: string
     }
 
 module Config =
@@ -39,8 +48,20 @@ module Config =
                 | true, n when n >= 1L -> Ok n
                 | _ -> Error("MAROLA_STUDIES_QUOTA is not a number of bytes: " + text)
 
+        let nonEmpty name =
+            get name |> Option.filter (String.IsNullOrWhiteSpace >> not)
+
         let path name fallback =
-            Path.GetFullPath(defaultArg (get name |> Option.filter (String.IsNullOrWhiteSpace >> not)) fallback)
+            Path.GetFullPath(defaultArg (nonEmpty name) fallback)
+
+        let dev = get "MAROLA_DEV" = Some "1"
+
+        // A URL override only counts in dev mode: in production the OAuth code and secret go to github.com.
+        let url name fallback =
+            if dev then
+                defaultArg (nonEmpty name) fallback
+            else
+                fallback
 
         Result.bind (fun p -> quota |> Result.map (fun q -> p, q)) port
         |> Result.map (fun (p, quota) ->
@@ -49,7 +70,12 @@ module Config =
               Data = path "MAROLA_DATA" "data"
               Db = path "MAROLA_DB" "data/marola.db"
               Studies = path "MAROLA_STUDIES" "data/studies"
-              StudiesQuota = quota })
+              StudiesQuota = quota
+              Dev = dev
+              GithubClientId = nonEmpty "MAROLA_GITHUB_CLIENT_ID"
+              GithubSecretFile = nonEmpty "MAROLA_GITHUB_CLIENT_SECRET_FILE" |> Option.map Path.GetFullPath
+              GithubBase = url "MAROLA_GITHUB_BASE" "https://github.com"
+              GithubApiBase = url "MAROLA_GITHUB_API_BASE" "https://api.github.com" })
 
     let fromProcessEnv () : Result<Config, string> =
         fromEnv (fun name ->

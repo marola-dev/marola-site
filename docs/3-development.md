@@ -213,3 +213,18 @@ server cannot drift. `just server-run` keeps the contact database in `.tmp/marol
 ignores. The smoke script needs `just app-build --fixtures` first. How it runs on a host, with the
 variables and the nginx and systemd settings, is in [the hosting page](5-hosting.md).
 
+To try the login by hand, start the fake GitHub and the server in dev mode. The fake GitHub signs in a made-up
+user (`smoke-sci`); `MAROLA_DEV=1` lets the server take its URL from the environment and drop `Secure` and the
+`__Host-` prefix, which plain HTTP cannot carry. Never set `MAROLA_DEV` on a host.
+
+```bash
+node scripts/fake_github.mjs fake-secret 9100 &       # prints the port
+printf 'fake-secret\n' > .tmp/github-secret
+MAROLA_DEV=1 MAROLA_GITHUB_CLIENT_ID=dev MAROLA_GITHUB_CLIENT_SECRET_FILE=.tmp/github-secret \
+  MAROLA_GITHUB_BASE=http://127.0.0.1:9100 MAROLA_GITHUB_API_BASE=http://127.0.0.1:9100 just server-run
+```
+
+Then open `http://127.0.0.1:8080/submit` and press the login button. `scripts/server_smoke.sh` does the same
+flow with `scripts/server_smoke_submit.mjs`: login through the redirects, a key, the form with its CSRF token,
+the study page and its hash, a report, a withdrawal.
+
