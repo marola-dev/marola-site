@@ -49,13 +49,11 @@ printf '{ "type": "module" }\n' > "$dist/app/package.json"
 
 # The static pages, rendered from F# (app/Pages) into pt-BR files at the root and English ones under en/.
 command -v dotnet >/dev/null || { echo "app_build: dotnet is not installed; run inside 'nix develop'" >&2; exit 1; }
-RestoreLockedMode=true dotnet run --project app/Pages.Build -c Release -- site/content/pages site/i18n "$dist"
+RestoreLockedMode=true dotnet run --project app/Pages.Build -c Release -- site "$dist"
 mkdir -p "$dist/img"
 cp site/static/img/umbrella.svg site/static/img/umbrella.pt-BR.svg "$dist/img/"
-# news and members are not ported yet (run C2b): the nav still has to reach them, so the old static
-# pages and what they load go in as they are. Remove this block when Pages renders both.
-cp site/static/news.html site/static/members.html site/static/ui.js site/static/i18n.js "$dist/"
 cp -r site/static/img/members "$dist/img/members"
+cp site/board.schema.json "$dist/"
 
 node scripts/app_fixtures.mjs areas "$dist"
 if [ "$fixtures" -eq 1 ]; then

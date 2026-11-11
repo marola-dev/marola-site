@@ -19,7 +19,9 @@ module Files =
         s.Length > 0 && s[0] <> '.' && s.Length <= 128 && Seq.forall safeChar s
 
     /// The segments of a URL path, or None if the path could leave the roots or reach a hidden file.
-    /// A path that ends in `/` (and `/` itself) names the `index.html` of that folder.
+    /// A path that ends in `/` (and `/` itself) names the `index.html` of that folder. The one hidden name
+    /// allowed is a first segment `.well-known` (RFC 8615: security.txt lives there); everything under it
+    /// must be as plain as any other segment.
     let segments (path: string) : string list option =
         if isNull path || path.Length = 0 || path[0] <> '/' || path.Length > 512 then
             None
@@ -31,7 +33,15 @@ module Files =
                 | "" :: before -> List.rev ("index.html" :: before)
                 | _ -> parts
 
-            if List.forall safeSegment parts then Some parts else None
+            let checkable =
+                match parts with
+                | ".well-known" :: rest when not rest.IsEmpty -> rest
+                | _ -> parts
+
+            if List.forall safeSegment checkable then
+                Some parts
+            else
+                None
 
     let private under (root: string) (parts: string list) =
         Path.Combine(root, String.Join('/', parts))

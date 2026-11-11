@@ -1,5 +1,6 @@
 namespace Marola.Pages
 
+open System.Text.RegularExpressions
 open System
 open System.Text
 open Marola.Client
@@ -16,11 +17,16 @@ type Doc =
 /// `Vdom.toHtml`, and a link may only go to `https:`, `http:` or a path on the site.
 module Markdown =
 
+    // A bare `about.html` is a sibling page: it resolves under `/` and under `/en/` to the page of the
+    // same language, which the news posts rely on.
+    let private sibling = Regex("^[a-z0-9-]+\\.html$", RegexOptions.Compiled)
+
     let private linkOk (url: string) : bool =
         (url.StartsWith "https://"
          || url.StartsWith "http://"
          || (url.StartsWith "/" && not (url.StartsWith "//"))
-         || url.StartsWith "#")
+         || url.StartsWith "#"
+         || sibling.IsMatch url)
         && not (url.Contains ' ')
         && not (url.Contains '"')
 
@@ -105,7 +111,7 @@ module Markdown =
             flush ()
             Ok(List.ofSeq nodes)
 
-    let private collect (items: Result<'a, string> list) : Result<'a list, string> =
+    let collect (items: Result<'a, string> list) : Result<'a list, string> =
         items
         |> List.fold
             (fun acc item ->

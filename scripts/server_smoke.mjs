@@ -78,6 +78,52 @@ for (const [path, lang] of [["/about.html", "pt-BR"], ["/en/about.html", "en"], 
 const clean = await get("/en/about");
 ok(clean.status === 200 && clean.body.toString().includes("<html lang=\"en\">"), "/en/about finds en/about.html", String(clean.status));
 
+// Every page of both languages, and the files that are not pages: status, content type, language, and
+// that each site link on a page (the nav above all) answers 200. A page that moves or goes missing fails here.
+const slugs = ["about", "news", "contact", "members", "support", "contact-sent"];
+const html = /^text\/html; charset=utf-8$/;
+const localLinks = new Set();
+for (const [prefix, lang] of [["", "pt-BR"], ["/en", "en"]]) {
+  for (const slug of slugs) {
+    const path = `${prefix}/${slug}.html`;
+    const res = await get(path);
+    const text = res.body.toString();
+    ok(res.status === 200 && html.test(res.headers["content-type"] ?? "") && text.includes(`<html lang="${lang}">`), `GET ${path} is a ${lang} html page`, `${res.status} ${res.headers["content-type"]}`);
+    for (const [, href] of text.matchAll(/<a [^>]*href="([^"]*)"/g)) {
+      const target = href.replaceAll("&amp;", "&");
+      if (target.startsWith("/") && !target.startsWith("//")) localLinks.add(target.split("#")[0].split("?")[0]);
+    }
+  }
+}
+for (const target of [...localLinks].sort()) {
+  const res = await get(target);
+  ok(res.status === 200, `the page link ${target} answers 200`, String(res.status));
+}
+for (const [path, type] of [
+  ["/robots.txt", /^text\/plain/],
+  ["/sitemap.xml", /^application\/xml/],
+  ["/llms.txt", /^text\/plain/],
+  ["/humans.txt", /^text\/plain/],
+  ["/.well-known/security.txt", /^text\/plain/],
+  ["/favicon.svg", /^image\/svg\+xml/],
+  ["/board.schema.json", /^application\/json/],
+]) {
+  const res = await get(path);
+  ok(res.status === 200 && type.test(res.headers["content-type"] ?? ""), `GET ${path} answers 200 as ${type}`, `${res.status} ${res.headers["content-type"]}`);
+}
+const security = (await get("/.well-known/security.txt")).body.toString();
+ok(/^Contact: https:\/\//m.test(security) && /^Expires: \d{4}-\d{2}-\d{2}T00:00:00Z$/m.test(security), "security.txt has Contact and Expires");
+const sitemap = (await get("/sitemap.xml")).body.toString();
+const locs = [...sitemap.matchAll(/<loc>([^<]*)<\/loc>/g)].map((m) => m[1].replace("https://marola.dev", ""));
+for (const loc of locs) {
+  const res = await get(loc.split("?")[0]);
+  ok(res.status === 200, `the sitemap page ${loc} answers 200`, String(res.status));
+}
+ok(!locs.some((l) => /contact/.test(l)), "no contact page in the sitemap");
+for (const path of ["/.well-known/.hidden", "/.env", "/sub/.well-known/security.txt"]) {
+  ok((await get(path)).status === 404, `${path} is 404`);
+}
+
 const head = await request("HEAD", "/");
 ok(head.status === 200 && head.body.length === 0, "HEAD / has no body");
 checkHeaders("HEAD /", head);

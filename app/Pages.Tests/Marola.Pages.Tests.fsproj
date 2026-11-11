@@ -7,6 +7,10 @@
     <Compile Include="Support.fs" />
     <Compile Include="HtmlTests.fs" />
     <Compile Include="MarkdownTests.fs" />
+    <Compile Include="NewsTests.fs" />
+    <Compile Include="MembersTests.fs" />
+    <Compile Include="MetaTests.fs" />
+    <Compile Include="EqualityTests.fs" />
     <Compile Include="PageTests.fs" />
     <Compile Include="All.fs" />
     <Compile Include="Discover.fs" />

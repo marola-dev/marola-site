@@ -98,6 +98,9 @@ let start (customize: WebApplication -> unit) : Site =
     write (Path.Combine(static', ".env")) secret
     write (Path.Combine(static', "sub", "x.txt")) "x"
     write (Path.Combine(static', "sub", ".hidden")) secret
+    write (Path.Combine(static', ".well-known", "security.txt")) "Contact: https://example.org/report\n"
+    write (Path.Combine(static', ".well-known", ".hidden")) secret
+    write (Path.Combine(static', "sub", ".well-known", "security.txt")) secret
     write (Path.Combine(static', "data", "rio", "latest.json")) "{\"from\":\"static\"}"
     write (Path.Combine(static', "data", "floripa", "latest.json")) "{\"from\":\"static\"}"
     write (Path.Combine(data, "floripa", "latest.json")) "{\"from\":\"data\"}"

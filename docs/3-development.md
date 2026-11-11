@@ -182,10 +182,13 @@ restore, then builds `app/dist/`: `index.html`, `style.css`, `vendor/` and `data
 `app/Client/public/`, Fable's output in `app/dist/app/` (with its `fable_modules/`), the two files of
 `app/Client/ffi/` in `app/dist/ffi/`, and the catalogs of `site/i18n/`. It writes `csp.txt` from
 `Csp.fs`. There is no `boot.mjs`: `index.html` loads `app/Program.js`, whose last line calls `main`.
-The build also renders the static pages (about, support, contact, contact-sent, 404) from
-`site/content/pages/` into `app/dist/` and `app/dist/en/` ([ADR 0003](adr/0003-pages-in-fsharp.md)). Edit
-the Markdown there and the chrome words in `site/i18n/`, never the HTML. `news.html` and `members.html`
-are copies of the old static files until they are ported. `--no-fable` reuses `app/Client/out`.
+The build also renders every static page (about, support, contact, contact-sent, 404, news, members) and the
+metadata files (`robots.txt`, `sitemap.xml`, `llms.txt`, `humans.txt`, `.well-known/security.txt`) into
+`app/dist/` and `app/dist/en/` ([ADR 0003](adr/0003-pages-in-fsharp.md)). Edit the Markdown in
+`site/content/pages/` and the posts in `site/content/news/`, and the chrome words in `site/i18n/`,
+never the HTML. The members page reads MEMBERS.md of marola-dev/.github at the commit of
+`site/members.version`, so `just app-build` needs the network; set `MEMBERS_SOURCE=<file>` to build
+without it. `--no-fable` reuses `app/Client/out`.
 `app/dist/` and `app/Client/out/` are not in git.
 
 Fable writes each FFI import as the path from its output file to the `.mjs` in the source tree. That

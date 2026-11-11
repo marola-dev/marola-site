@@ -1,6 +1,5 @@
 module Marola.Pages.Tests.PageTests
 
-open System.IO
 open System.Text.RegularExpressions
 open Expecto
 open Marola
@@ -8,7 +7,7 @@ open Marola.Pages
 open Marola.Pages.Tests.Support
 
 let private cases =
-    [ for slug in Site.slugs do
+    [ for slug in Site.allSlugs do
           for language in Language.all do
               yield slug, language ]
 
@@ -24,10 +23,6 @@ let private forEach (what: string) (check: string -> Language -> string -> unit)
         for slug, language in cases do
             check slug language (render slug language)
     }
-
-/// Nav pages that a later step of the port renders; until then `scripts/app_build.sh` copies the
-/// old static file of each, so the link has a file.
-let private notRenderedYet = [ "news"; "members" ]
 
 let tests =
     testList
@@ -79,15 +74,9 @@ let tests =
 
               for nav in Layout.navSlugs do
                   Expect.isTrue (List.contains (Layout.path language nav) (hrefs html)) (where + " " + nav))
-          test "every nav link has a file: a page of the build, or an old static file the build copies" {
-              let written = Site.slugs
-
-              let static' (slug: string) =
-                  File.Exists(Path.Combine(root, "site/static", slug + ".html"))
-
+          test "every nav link has a page in the build" {
               for slug in Layout.navSlugs do
-                  if not (List.contains slug written) then
-                      Expect.isTrue (List.contains slug notRenderedYet && static' slug) (slug + " has no file")
+                  Expect.isTrue (List.contains slug Site.allSlugs) (slug + " has no page")
           }
           test "only the contact pages and the 404 stay out of search results" {
               for slug, language in cases do
@@ -162,7 +151,11 @@ let tests =
                         "en/about.html"
                         "en/contact-sent.html"
                         "en/contact.html"
+                        "en/members.html"
+                        "en/news.html"
                         "en/support.html"
+                        "members.html"
+                        "news.html"
                         "support.html" ]
                       "files"
               | Error e -> failwith e

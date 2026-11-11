@@ -44,8 +44,23 @@ form route; it has no page of its own.
   no style, the form, the credits of the about page, and a file for every nav link.
 - The Markdown carries two forms beyond the news subset: `::lede`, `> ` quotes, figures, and
   `{{soon name|label}}` for a channel that is not open yet.
-- `news` and `members` are not ported yet. `scripts/app_build.sh` copies their old static files, with
-  `ui.js`, `i18n.js` and `img/members/`, so the nav has no dead link. The next run replaces the copy.
+- `news` and `members` are built from data, not from prose: `site/content/pages/<page>.<lang>.md` holds only
+  their `title:` and `description:`. `app/Pages/News.fs` reads `site/content/news/` with the rules of
+  `scripts/news_build.py` (a post in both languages, the date line, release cards, the README index,
+  the reading time rounded up). `app/Pages/Members.fs` reads MEMBERS.md with the rules of
+  `scripts/members_build.py`; a wrong row or header fails the build. Each language page shows only its own
+  posts, newest first. A bare `about.html` link in a post stays: it resolves to the page of the same language.
+- MEMBERS.md is not in this repo. `app/Pages.Build` fetches it at the commit of `site/members.version`
+  from raw.githubusercontent.com, or reads the file in `MEMBERS_SOURCE` when the build has no network.
+  The avatars in `site/static/img/members/` are copied into `app/dist/img/members/`; the page never asks
+  GitHub for an image. The tests rebuild a table from the old members page, as the repo has no copy.
+- `app/Pages/Meta.fs` writes `robots.txt`, `sitemap.xml`, `llms.txt`, `humans.txt` and
+  `.well-known/security.txt` (`Expires` 364 days after the build) with the rules of `scripts/site_meta.py`.
+  The sitemap lists every page in both languages with its alternates, and no `noindex` page. The server
+  allows one hidden name, a first segment `.well-known`; every other dot path stays 404.
+- The Python builders and the old `site/static` files stay until the cutover. `EqualityTests` builds the
+  pages from the real content and compares them with the old `news.html`, `members.html`, `humans.txt`
+  and `robots.txt`: the same posts, people and words, in the same order.
 - The old `404.html` forwarded `/docs/*` to `docs.marola.dev` with a script. The new page has no
   script, so that forward must move to nginx before the cutover.
 - The prose of about and privacy still names Mapbox, as the old pages did. It changes with the

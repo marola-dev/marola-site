@@ -87,6 +87,33 @@ let tests =
                       })
           }
 
+          testTask "/.well-known/security.txt is served as text, and no other dot path is" {
+              do!
+                  plainSite (fun site ->
+                      task {
+                          use! ok = site.Client.GetAsync "/.well-known/security.txt"
+                          Expect.equal (int ok.StatusCode) 200 "security.txt"
+                          Expect.equal (header ok "Content-Type") (Some "text/plain; charset=utf-8") "type"
+                          let! text = ok.Content.ReadAsStringAsync()
+                          Expect.stringContains text "Contact:" "body"
+
+                          // Only a first segment `.well-known` is allowed, and a hidden file below it is not.
+                          for path in
+                              [ "/.well-known/.hidden"
+                                "/.well-known/"
+                                "/.well-known"
+                                "/sub/.well-known/security.txt"
+                                "/.well-known/../secret.txt"
+                                "/.well-known/%2e%2e/secret.txt"
+                                "/.env"
+                                "/.git/config" ] do
+                              use! response = site.Client.GetAsync path
+                              Expect.equal (int response.StatusCode) 404 path
+                              let! body = response.Content.ReadAsStringAsync()
+                              Expect.isFalse (body.Contains secret) path
+                      })
+          }
+
           testTask "a missing path gets the 404 page of its language, with status 404" {
               do!
                   plainSite (fun site ->

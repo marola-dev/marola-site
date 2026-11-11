@@ -4,7 +4,10 @@
   <ItemGroup>
     <Compile Include="Markdown.fs" />
     <Compile Include="Layout.fs" />
+    <Compile Include="News.fs" />
+    <Compile Include="Members.fs" />
     <Compile Include="Site.fs" />
+    <Compile Include="Meta.fs" />
     <Compile Include="Loader.fs" />
   </ItemGroup>
   <ItemGroup>

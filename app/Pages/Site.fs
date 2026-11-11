@@ -9,13 +9,31 @@ type Env =
         Catalog: Catalog
         /// `<slug>.<language tag>` to the file's text.
         Content: Map<string, string>
+        /// The news posts: file name of `site/content/news/` and its text, without README.md.
+        News: (string * string) list
+        /// `site/content/news/README.md`, whose index must list every post.
+        NewsIndex: string
+        /// MEMBERS.md of marola-dev/.github: the table the members page and humans.txt come from.
+        Members: string
+        /// The avatar files of `site/static/img/members/`: the GitHub login to its file name.
+        Avatars: Map<string, string>
+        /// `site/areas.json`, for llms.txt.
+        Areas: Area list
     }
 
 /// The pages. One page is a function from a language to its HTML text.
 module Site =
 
-    /// Every page, by file name without `.html`.
+    /// Pages whose body is Markdown, by file name without `.html`.
     let slugs = [ "about"; "support"; "contact"; "contact-sent"; "404" ]
+
+    /// Every page of the site, in the order of the nav.
+    let allSlugs =
+        [ "news"; "about"; "contact"; "members"; "support"; "contact-sent"; "404" ]
+
+    /// A page a search engine must not list.
+    let noIndex (slug: string) : bool =
+        slug = "contact" || slug = "contact-sent" || slug = "404"
 
     let contentKey (slug: string) (language: Language) : string = slug + "." + Language.tag language
 
@@ -84,7 +102,7 @@ module Site =
         { Slug = slug
           Title = doc.Title
           Description = doc.Description
-          NoIndex = slug = "contact" || slug = "contact-sent" || slug = "404"
+          NoIndex = noIndex slug
           Canonical = slug <> "404"
           Current =
             match slug with
@@ -99,27 +117,33 @@ module Site =
             { Catalog = env.Catalog
               Language = language }
 
+        let article (doc: Doc) =
+            Vdom.el "article" [ Vdom.cls "about-body"; Vdom.attr "lang" (Language.tag language) ] doc.Body
+
         match Map.tryFind (contentKey slug language) env.Content with
         | None -> Error("no content for " + contentKey slug language)
         | Some text ->
             Markdown.parse text
             |> Result.mapError (fun e -> contentKey slug language + ": " + e)
-            |> Result.map (fun doc ->
-                let article =
-                    Vdom.el "article" [ Vdom.cls "about-body"; Vdom.attr "lang" (Language.tag language) ] doc.Body
+            |> Result.bind (fun doc ->
+                let page (main: Node<unit> list) =
+                    Ok(Layout.page loc (head slug doc) main)
 
-                Layout.page loc (head slug doc) (article :: (if slug = "contact" then [ form loc ] else [])))
+                match slug with
+                | "news" ->
+                    News.build env.News env.NewsIndex
+                    |> Result.bind (fun posts -> page (News.forLanguage language posts |> List.map _.Article))
+                | "members" ->
+                    Members.parse env.Members
+                    |> Result.bind (fun members ->
+                        Members.checkAvatars env.Avatars members
+                        |> Result.bind (fun () -> page [ Members.article language env.Avatars members ]))
+                | "contact" -> page [ article doc; form loc ]
+                | _ -> page [ article doc ])
 
     /// Every page in every language: the path from the output folder and the text to write there.
     let all (env: Env) : Result<(string * string) list, string> =
-        [ for slug in slugs do
+        [ for slug in allSlugs do
               for language in Language.all do
                   yield render env slug language |> Result.map (fun html -> file language slug, html) ]
-        |> List.fold
-            (fun acc item ->
-                match acc, item with
-                | Ok xs, Ok x -> Ok(x :: xs)
-                | Error e, _
-                | _, Error e -> Error e)
-            (Ok [])
-        |> Result.map List.rev
+        |> Markdown.collect

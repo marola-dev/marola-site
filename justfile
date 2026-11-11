@@ -128,7 +128,7 @@ pages-test:
 
 # Render the static pages (site/content/pages) into a folder: pt-BR at its root, English under en/. app-build does this into app/dist.
 pages-build out="app/dist":
-    RestoreLockedMode=true dotnet run --project app/Pages.Build -c Release -- site/content/pages site/i18n {{ out }}
+    RestoreLockedMode=true dotnet run --project app/Pages.Build -c Release -- site {{ out }}
 
 # Start the built server on a free port against app/dist and check its headers, hostile paths and contact form (run app-build --fixtures first).
 server-smoke:
