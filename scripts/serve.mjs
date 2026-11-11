@@ -1,5 +1,5 @@
 // Dependency-free static server for app/dist: the Content-Security-Policy comes from
-// csp.txt (written by app_build.sh from the Gleam policy) so local runs get the real header.
+// csp.txt (written by app_build.sh from Csp.fs) so local runs get the real header.
 // Usage: node scripts/serve.mjs [dir] [port]
 import { createServer } from "node:http";
 import { existsSync, readFileSync, statSync, createReadStream } from "node:fs";

@@ -168,19 +168,24 @@ pushed.
 
 ### Build and serve the client
 
-These recipes still belong to the Gleam client, which this branch removed. They do not work until the
-F# client lands and the scripts change.
-
 ```bash
-just app-build            # was: gleam build, then app/dist/
+just app-build            # Fable compiles app/Client/App, then app/dist/ is assembled
 just app-build --fixtures # also writes data/<area>/ boards from site/fixtures/board.json
 just app-serve            # http://127.0.0.1:8000, with the CSP header
 just client-check         # a Node smoke test of the compiled client
 ```
 
-`scripts/app_build.sh` copies the compiled modules, the vendored files, the i18n catalogs from
-`site/i18n/` and the trail files into `app/dist/`. It writes `boot.mjs` and `csp.txt` there.
-`app/dist/` is not in git.
+`scripts/app_build.sh` runs `fable app/Client/App --outDir app/Client/out` with a locked NuGet
+restore, then builds `app/dist/`: `index.html`, `style.css`, `vendor/` and `data/trails/` from
+`app/Client/public/`, Fable's output in `app/dist/app/` (with its `fable_modules/`), the two files of
+`app/Client/ffi/` in `app/dist/ffi/`, and the catalogs of `site/i18n/`. It writes `csp.txt` from
+`Csp.fs`. There is no `boot.mjs`: `index.html` loads `app/Program.js`, whose last line calls `main`.
+`--no-fable` reuses `app/Client/out`. `app/dist/` and `app/Client/out/` are not in git.
+
+Fable writes each FFI import as the path from its output file to the `.mjs` in the source tree. That
+is why the build compiles into `app/Client/out`, next to `app/Client/ffi`, and `app/dist/app` and
+`app/dist/ffi` keep the same relation. `app/dist/app/package.json` says `"type": "module"` because Node
+(the check) needs it for Fable's `.js` files; a browser does not read it.
 
 `scripts/serve.mjs` has no dependency. It sends the policy of `csp.txt` and refuses to start when
 that file is missing. A visitor needs the same header from the real host. The hosting comes in a

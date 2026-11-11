@@ -79,18 +79,19 @@ self-hosted (`vendor/fonts/`), not pulled from a font CDN.
 
 The new map page is F# compiled to JavaScript by Fable ([ADR 0001](adr/0001-fsharp-fable-maplibre-dynamic-hosting.md)).
 It replaces `site/static/` in a later step. Until then both exist and `site/static/` is the live page.
-The page itself (`app/Client/*.fs`, Elmish) is not in the tree yet; the pure code, its tests and the
-static files are.
+The page is Elmish: `app/Client/Core` is its pure part and `app/Client/App` its browser part.
 
 | Path | What it holds |
 |---|---|
 | `app/Shared/` | The domain types, the board decoder and the pure functions. Pure F#, for both .NET and Fable |
+| `app/Client/Core/` | The model, the messages, `update` (which returns commands as data), the views as a virtual DOM and `Vdom.diff`. Pure F#, tested on .NET and on Fable |
+| `app/Client/App/` | Fable only. `Dom.fs` applies the diff to the DOM with `createElement` and `setAttribute`, never a markup string. `Effects.fs` carries out the commands, `Ffi.fs` binds `ffi/`, `Program.fs` starts the Elmish loop |
 | `app/Client/public/` | `index.html`, `style.css`, `vendor/` and `data/trails/` |
 | `app/Client/ffi/` | The only hand-written JavaScript. `maplibre_ffi.mjs` holds the MapLibre calls, `flow_layer_ffi.mjs` the WebGL wind and wave layer |
 | `app/Tests/`, `app/Tests.Fable/` | The same tests, run by Expecto on .NET and by Fable on Node |
 
-`scripts/app_build.sh` still has the build of the Gleam client. The F# client replaces it in the next
-step, and `just app-build` does not work until then.
+`scripts/app_build.sh` compiles `app/Client/App` into `app/Client/out` and assembles `app/dist/`. The
+[build section of the development guide](3-development.md#build-and-serve-the-client) has the steps.
 
 ### The board, beach by beach, and markers
 

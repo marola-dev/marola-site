@@ -45,9 +45,12 @@ map-load tier, billed above it).
   `app/Tests.Fable` (the same tests under Fable, on Node) check them (`just app-test`, `just app-fmt`);
   each project's `packages.lock.json` locks the NuGet packages. `app/Tests/golden.json` holds what the
   old `ui.js`, `app.js` and `flow.js` return, written by `scripts/golden.js` (`just golden`); the tests
-  must match it on both runtimes. `app/Client` has the map page's static files (`public/`) and its two
-  JavaScript files (`ffi/`); the Elmish page on MapLibre comes next, and `just app-build`, `just
-  app-serve` and `just client-check` wait for it. `app/Server` is not in the tree yet.
+  must match it on both runtimes. `app/Client` is the map page: `Core` (pure: the model, `update` that returns
+  commands as data, the views as a virtual DOM, `Vdom.diff`; tested on both runtimes), `App` (Fable only:
+  `Dom.fs` patches the real DOM, `Effects.fs` carries out each command, `Ffi.fs` binds the two files of `ffi/`,
+  `Program.fs` is the Elmish loop; it has no .NET test, `scripts/client_check.js` runs it in a fake DOM) and the
+  static files (`public/`). `just app-build` compiles `App` into `app/Client/out` and assembles `app/dist/`;
+  `just app-serve` serves it and `just client-check` tests it. `app/Server` is not in the tree yet.
 - `scripts/`: `site_check.js` (app.js and flow.js in a stub DOM and Mapbox GL), `site_meta.py`
   (`llms.txt`, `sitemap.xml` and `.well-known/security.txt`, written into `site/dist` at build),
   `mapbox_config.sh`

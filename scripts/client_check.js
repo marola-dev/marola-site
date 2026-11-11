@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 /** client_check: smoke test of the COMPILED client in app/dist (run `just app-build --fixtures` first).
- * No browser, no network, no dependencies: a DOM with only the members Lustre 5.7.1 and the two FFI files
- * touch, a MapLibre stub that records every call, and a fetch that serves app/dist. Each scenario runs in a
+ * No browser, no network, no dependencies: a DOM with only the members the F# patcher (app/Client/App/Dom.fs) and the two
+ * FFI files touch, a MapLibre stub that records every call, and a fetch that serves app/dist. Each scenario runs in a
  * child node process because the compiled modules keep state (maplibre_ffi.mjs holds the map in module scope).
  *
  * Not ported from site_check.js (that script tests the old Mapbox page, site/static/app.js):
- *  - the board JSON-Schema validator and the frozen schema-1 board (the Gleam decoder tests and board-schema.sh own that)
+ *  - the board JSON-Schema validator and the frozen schema-1 board (the F# decoder tests and board-schema.sh own that)
  *  - the wind/wave flow layer (flow.js) and its particles: the compiled client ships them disabled, WebGL has no stub here
- *  - the AudioContext wave sound
+ *  - the AudioContext wave sound (the page plays an Audio loop; the sound-blocked scenario covers its url, loop and refusal)
  *  - the aspect-by-aspect tooltip numbers (MIP-0009 section 3), note codes, sea lore and score-note folds, SOS numbers
- *  - data-i18n attributes, the pseudo-locale gate, the lowercase house style, localStorage that throws
+ *  - data-i18n attributes, the pseudo-locale gate, the lowercase house style
  *  - Mapbox token handling and the composite coastline layer (the client uses OpenFreeMap, no token)
  *  - the static pages: section nav, donations, members, contact, favicon, page heads/JSON-LD
  */
@@ -38,7 +38,7 @@ function ok(cond, label, detail) {
 function walk(dir, skip, out = []) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
     const p = path.join(dir, e.name);
-    if (skip(p) || e.isSymbolicLink()) continue; // lustre/priv links out of the tree
+    if (skip(p) || e.isSymbolicLink()) continue;
     if (e.isDirectory()) walk(p, skip, out); else out.push(p);
   }
   return out;
@@ -49,7 +49,7 @@ function staticChecks() {
   const scripts = [...html.matchAll(/<script\b([^>]*)>/g)].map((m) => m[1]);
   ok(scripts.length === 2, 'index.html has the ld+json block and the boot script', scripts.length);
   ok(scripts.every((a) => /\bsrc=/.test(a) || /type="application\/ld\+json"/.test(a)), 'every <script> is src= or ld+json (no inline code)');
-  ok(/<script type="module" src="boot\.mjs"><\/script>/.test(html), 'the page boots through <script type=module src=boot.mjs>');
+  ok(/<script type="module" src="app\/Program\.js"><\/script>/.test(html), 'the page boots through <script type=module src=app/Program.js>');
   ok(!/\sstyle\s*=/i.test(html) && !/<style\b/i.test(html), 'index.html has no style= attribute and no <style>');
   ok(!/\son[a-z]+\s*=\s*["']/i.test(html), 'index.html has no inline event handler');
   const meta = /http-equiv="Content-Security-Policy" content="([^"]*)"/.exec(html);
@@ -62,23 +62,23 @@ function staticChecks() {
   const words = [['innerHTML', /innerHTML/], ['outerHTML', /outerHTML/], ['setHTML', /setHTML/], ['insertAdjacentHTML', /insertAdjacentHTML/],
     ['document.write', /document\.write/], ['eval(', /\beval\(/], ['new Function', /new Function/]];
   for (const f of ['maplibre_ffi.mjs', 'flow_layer_ffi.mjs']) {
-    const src = read('app/client/src/marola_client/' + f);
+    const src = read('app/Client/ffi/' + f);
     ok(src.split('\n').length - 1 < 250, f + ' is under 250 lines', src.split('\n').length - 1);
     for (const [w, re] of words) ok(!re.test(src), f + ' never uses ' + w);
   }
-  const skip = (p) => /\/vendor$/.test(p) || /style\.css$/.test(p);
-  const tree = [...walk(path.join(ROOT, 'app/client/src'), skip), ...walk(path.join(ROOT, 'app/client/static'), skip)];
+  const skip = (p) => /\/(vendor|bin|obj|out)$/.test(p) || /style\.css$/.test(p) || /\.json$/.test(p);
+  const tree = walk(path.join(ROOT, 'app/Client'), skip);
   const text = tree.map((p) => fs.readFileSync(p, 'utf8')).join('\n');
   ok(tree.length > 10, 'the source scan saw the client sources', tree.length);
-  for (const [w, re] of words) ok(!re.test(text), 'app/client/src and static never use ' + w);
+  for (const [w, re] of words) ok(!re.test(text), 'app/Client never uses ' + w);
 
-  const compiled = walk(path.join(DIST, 'app'), () => false).filter((p) => p.endsWith('.mjs')).concat(path.join(DIST, 'boot.mjs'), path.join(DIST, 'index.html'));
+  const compiled = walk(path.join(DIST, 'app'), () => false).filter((p) => /\.m?js$/.test(p)).concat(path.join(DIST, 'index.html'));
   const all = compiled.map((p) => fs.readFileSync(p, 'utf8')).join('\n');
   ok(!/pk\.eyJ[\w-]+/.test(all), 'no Mapbox public token in the compiled output');
   ok(!/api\.mapbox\.com|access_token/i.test(all), 'no Mapbox API host or access_token in the compiled output');
 }
 
-// ---- the DOM stub: only what Lustre's runtime, reconciler and the FFI touch --------------------------------
+// ---- the DOM stub: only what the F# patcher and the FFI touch ----------------------------------------------
 class Node_ {
   constructor(nodeType) { this.nodeType = nodeType; this.parentNode = null; this.childNodes = []; this.listeners = {}; }
   get firstChild() { return this.childNodes[0] || null; }
@@ -98,6 +98,7 @@ class Node_ {
     if (i < 0) throw new Error('removeChild: not a child');
     this.childNodes.splice(i, 1); n.parentNode = null; return n;
   }
+  replaceChild(n, old) { this.insertBefore(n, old); this.removeChild(old); return old; }
   addEventListener(t, f) { (this.listeners[t] ||= []).push(f); }
   removeEventListener(t, f) { this.listeners[t] = (this.listeners[t] || []).filter((x) => x !== f); }
   dispatchEvent(ev) {
@@ -118,6 +119,9 @@ class HTMLElement_ extends Node_ {
   setAttribute(n, v) { this.attrs.set(n, String(v)); }
   removeAttribute(n) { this.attrs.delete(n); }
   hasAttribute(n) { return this.attrs.has(n); }
+  // `disabled` is a reflected property in a browser: the patcher sets the property, the page reads the attribute.
+  get disabled() { return this.attrs.has('disabled'); }
+  set disabled(on) { if (on) this.attrs.set('disabled', ''); else this.attrs.delete('disabled'); }
   focus() { document.activeElement = this; }
 }
 const HTML_NS = 'http://www.w3.org/1999/xhtml';
@@ -237,7 +241,7 @@ const HOOK = `export async function resolve(s, c, next) { if (s === '/vendor/map
 
 // ---- browser globals per scenario ----------------------------------------------------------------------------
 const BASE = 'http://127.0.0.1:8000/';
-const fetched = [], urls = [], store = new Map();
+const fetched = [], raw = [], urls = [], audios = [], store = new Map();
 function installGlobals(search, overrides) {
   const def = (k, value) => Object.defineProperty(globalThis, k, { value, configurable: true, writable: true });
   def('document', document); def('HTMLElement', HTMLElement_);
@@ -249,7 +253,8 @@ function installGlobals(search, overrides) {
   def('localStorage', { getItem: (k) => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)) });
   def('matchMedia', () => ({ matches: false }));
   def('fetch', async (req) => {
-    const url = new URL(typeof req === 'string' ? req : req.url);
+    raw.push(typeof req === 'string' ? req : req.url);
+    const url = new URL(typeof req === 'string' ? req : req.url, BASE);
     fetched.push(url);
     const rel = decodeURIComponent(url.pathname.slice(1));
     const hit = overrides[rel];
@@ -432,6 +437,35 @@ async function styleFail() {
   ok(ml.markers.length === 0 && !ml.maps[0].calls.some((c) => c.name === 'addSource'), 'nothing is drawn on the failed map');
 }
 
+// The slider is a range input whose value is a property, not an attribute: the patcher sets it and the page reads it back.
+async function slider() {
+  const hour = $('#hour'), label = () => $('#hour-label').textContent, best = label();
+  hour.value = '0'; fire(hour, 'input'); await sleep(40);
+  ok(label() !== best, 'moving the slider to an hour changes its label', label());
+  hour.value = '-1'; fire(hour, 'input'); await sleep(40);
+  ok(label() === best, 'the slider back at -1 reads as it did before', label());
+}
+
+async function storageThrows() {
+  ok(document.documentElement.lang === 'en', 'a storage that throws does not stop the page: ?lang=en starts in English');
+  await click($('button[lang=pt-BR]'));
+  ok($('a[href=news.html]').textContent === 'notícias' && document.documentElement.lang === 'pt-BR', 'picking PT-BR works when the storage throws');
+}
+
+async function nearDenied() {
+  await click($('#near'));
+  const text = readJson('app/dist/i18n/pt-BR.json')['near.denied'];
+  ok(ml.alerts && ml.alerts.length === 1 && ml.alerts[0] === text, 'a location that cannot be read is told with one alert', JSON.stringify(ml.alerts));
+  ok($('#near').getAttribute('aria-pressed') === 'false', 'the near button stays off');
+}
+
+async function soundBlocked() {
+  await click($('#sound'));
+  ok(audios.length === 1 && audios[0].url === 'vendor/sounds/waves.mp3' && audios[0].loop === true, 'the sound is the vendored wave loop, set to repeat', audios.map((a) => a.url).join());
+  await sleep(40);
+  ok($('#sound').getAttribute('aria-pressed') === 'false', 'a browser that refuses to play turns the sound button off again');
+}
+
 const SCENARIOS = {
   floripa: { search: '?area=floripa', run: floripa },
   english: { search: '?lang=en', run: english },
@@ -441,6 +475,15 @@ const SCENARIOS = {
   salvador: { search: '?area=salvador', run: salvador },
   'board-trails': { search: '?area=floripa', run: boardTrails, overrides: () => ({ 'data/trails/floripa.json': 404, [dayFile('floripa').replace('app/dist/', '')]: fallbackBoard() }) },
   'style-fail': { search: '', run: styleFail, mode: 'error' },
+  slider: { search: '?area=floripa', run: slider },
+  'storage-throws': { search: '?lang=en', run: storageThrows, setup: () => {
+    const boom = () => { throw new Error('storage is off'); };
+    Object.defineProperty(globalThis, 'localStorage', { value: { getItem: boom, setItem: boom }, configurable: true, writable: true });
+  } },
+  'near-denied': { search: '?area=floripa', run: nearDenied },
+  'sound-blocked': { search: '?area=floripa', run: soundBlocked, setup: () => {
+    globalThis.Audio = class { constructor(url) { this.url = url; audios.push(this); } pause() {} play() { return Promise.reject(new Error('blocked')); } };
+  } },
 };
 
 async function child(name) {
@@ -449,11 +492,12 @@ async function child(name) {
   try {
     ml.mode = sc.mode || 'load';
     installGlobals(sc.search, sc.overrides ? sc.overrides() : {});
+    if (sc.setup) sc.setup();
     require('node:module').register('data:text/javascript,' + encodeURIComponent(HOOK));
-    await import(pathToFileURL(path.join(DIST, 'boot.mjs')).href);
+    await import(pathToFileURL(path.join(DIST, 'app/Program.js')).href);
     await sleep(100);
-    // rsvp resolves only urls that start with ./ or /; any other relative url dies as BadUrl before fetch runs.
-    ok(fetched.length > 0, 'the page reaches fetch (rsvp accepts its relative URLs)');
+    // Every request starts with "./", so the page works from any path; the stub resolves it against the page.
+    ok(fetched.length > 0 && raw.every((u) => u.startsWith('./')), 'the page reaches fetch, and every URL starts with ./', raw.join());
     if (ml.mode === 'error') await until(() => shown($('#map-note')), '#map-note');
     else await until(() => ml.maps[0] && ml.maps[0].loaded && $('li[data-name]'), 'the board and the map');
     await sleep(60);

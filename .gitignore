@@ -19,3 +19,4 @@ __pycache__/
 /app/**/bin/
 /app/**/obj/
 /app/Tests.Fable/out/
+/app/Client/out/

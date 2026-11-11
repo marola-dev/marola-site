@@ -29,10 +29,10 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- The Lustre app draws the nav, header, map, list, card and footer here. -->
+  <!-- The F# page draws the nav, header, map, list, card and footer here. -->
   <div id="app"></div>
   <noscript><p class="nojs">esta página precisa de javascript para mostrar os dados. os arquivos brutos estão em <a href="data/">data/</a>. / this page needs javascript to show the data. the raw files are in <a href="data/">data/</a>.</p></noscript>
-  <!-- boot.mjs is written by scripts/app_build.sh: it imports the compiled app and calls main(). -->
-  <script type="module" src="boot.mjs"></script>
+  <!-- app/Program.js is the compiled page: scripts/app_build.sh copies Fable's output to app/, and the module calls main itself. -->
+  <script type="module" src="app/Program.js"></script>
 </body>
 </html>

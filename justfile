@@ -104,7 +104,7 @@ prepush:
     scripts/mip-trailer-check.sh
     just quality
 
-# Build the client into app/dist. BROKEN until the F# client lands (run F2): scripts/app_build.sh still runs the Gleam build, which this branch no longer has.
+# Build the client with Fable into app/dist (--fixtures adds a board per area for an offline preview).
 app-build *args:
     scripts/app_build.sh {{ args }}
 
