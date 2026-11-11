@@ -6,7 +6,7 @@
   <title data-i18n="title.contact">fale com o marola</title>
   <meta name="description" content="Fale com o marola: uma mensagem pelo formulário chega ao e-mail da equipe.">
   <meta name="theme-color" content="#ffffff">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https:; object-src 'none'; form-action https://formsubmit.co">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https:; object-src 'none'; form-action 'self'">
   <meta name="robots" content="noindex">
   <link rel="canonical" href="https://marola.dev/contact.html">
   <link rel="alternate" hreflang="pt-BR" href="https://marola.dev/contact.html">
@@ -63,23 +63,21 @@
   <main class="main about">
     <article class="about-body" lang="pt-BR">
       <h2>fale com o marola</h2>
-      <p>escreva pelo formulário abaixo. a mensagem chega ao e-mail da equipe, e a resposta vai para o e-mail que você informar.</p>
-      <p>o formulário é enviado pelo <a href="https://formsubmit.co/">FormSubmit</a>, um serviço gratuito que repassa a mensagem por e-mail. ele recebe o que você escrever e pode pedir que você prove que não é um robô.</p>
+      <p>escreva pelo formulário abaixo. a equipe lê a mensagem, e a resposta vai para o e-mail que você informar.</p>
+      <p>o marola guarda a mensagem e o e-mail no próprio servidor do projeto e não os repassa a nenhum serviço de terceiros.</p>
     </article>
 
     <article class="about-body" lang="en">
       <h2>Contact marola</h2>
-      <p>Write through the form below. The message reaches the team's email, and the reply goes to the address you give.</p>
-      <p>The form is sent through <a href="https://formsubmit.co/">FormSubmit</a>, a free service that forwards it by email. It receives what you write and may ask you to prove you are not a robot.</p>
+      <p>Write through the form below. The team reads the message, and the reply goes to the address you give.</p>
+      <p>marola keeps the message and the email on the project's own server and passes them to no third-party service.</p>
     </article>
 
     <div class="about-body">
-      <!-- A static form (no script): FormSubmit forwards each message to admin@marola.dev. The first
-           message sends an activation email to that address; nothing arrives until it is confirmed. -->
-      <form class="contact" action="https://formsubmit.co/admin@marola.dev" method="POST">
-        <input type="hidden" name="_subject" value="marola.dev: contato">
-        <input type="hidden" name="_template" value="table">
-        <input type="text" name="_honey" hidden tabindex="-1" autocomplete="off" aria-hidden="true">
+      <!-- A static form (no script): the marola server (app/Server) stores each message; the team reads
+           them with `marola-server inbox`. `website` is the honeypot: the server drops a post that fills it. -->
+      <form class="contact" action="/contact" method="POST">
+        <input type="text" name="website" hidden tabindex="-1" autocomplete="off" aria-hidden="true">
         <label><span data-i18n="contact.name">nome</span> <input type="text" name="name" required autocomplete="name"></label>
         <label><span data-i18n="contact.email">e-mail</span> <input type="email" name="email" required autocomplete="email"></label>
         <label><span data-i18n="contact.message">mensagem</span> <textarea name="message" rows="6" required></textarea></label>

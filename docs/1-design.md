@@ -107,10 +107,10 @@ The new page does not draw it.
 
 ### CSP
 
-`Csp.policy ()` in `app/Shared` is the one value of the policy. `scripts/app_build.sh` writes it to
-`app/dist/csp.txt`, `scripts/serve.mjs` sends it as a header, and `index.html` carries the same text
-in a `<meta>` tag without `frame-ancestors`, which a meta tag cannot set.
-`scripts/client_check.js` checks that the two agree.
+`Csp.policy ()` in `app/Shared` is the one value of the policy. `app/Server` sends it as a header
+(with `form-action 'self'` added; see [the hosting page](5-hosting.md)), `scripts/app_build.sh` writes
+it to `app/dist/csp.txt`, and `index.html` carries the same text in a `<meta>` tag without
+`frame-ancestors`, which a meta tag cannot set. `scripts/client_check.js` checks that the two agree.
 
 The policy has `'self'` for scripts, styles, fonts and workers, and two third-party hosts:
 `tiles.openfreemap.org` (the base map) and `gibs.earthdata.nasa.gov` (the satellite layers). It

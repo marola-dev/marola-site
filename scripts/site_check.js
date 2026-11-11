@@ -759,12 +759,12 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   const aboutMain = (/<main[\s\S]*?<\/main>/.exec(ABOUT) || [''])[0];
   ok(aboutMain.split('href="' + RESEARCH + '"').length === 3 && aboutMain.split('href="' + CHAMADA + '"').length === 3,
     'about.html links marola-research and the chamada in both languages, the way in on a phone');
-  // --- contact page: a static form that FormSubmit forwards to admin@marola.dev ----------------
-  ok((CONTACT.match(/<form\b[^>]*>/g) || []).join('') === '<form class="contact" action="https://formsubmit.co/admin@marola.dev" method="POST">',
-    'contact.html has one form, posted to FormSubmit for admin@marola.dev');
-  ok(/form-action https:\/\/formsubmit\.co"/.test(CONTACT), "contact.html's CSP lets the form post only to FormSubmit");
-  ok(/name="_honey" hidden/.test(CONTACT) && /<input type="email" name="email" required/.test(CONTACT),
-    'the form has a honeypot and a required email for the reply');
+  // --- contact page: a static form that the marola server (app/Server, POST /contact) stores ----
+  ok((CONTACT.match(/<form\b[^>]*>/g) || []).join('') === '<form class="contact" action="/contact" method="POST">',
+    'contact.html has one form, posted to /contact on the marola server');
+  ok(/form-action 'self'"/.test(CONTACT) && !/formsubmit/i.test(CONTACT), "contact.html's CSP lets the form post only to its own origin, and it does not name FormSubmit");
+  ok(/name="website" hidden/.test(CONTACT) && /<input type="email" name="email" required/.test(CONTACT),
+    'the form has the honeypot the server checks (website) and a required email for the reply');
   ok((MEMBERS.match(/<a [^>]*>/g) || []).every(a => /^<a (class="(li|gh)" )?href="[^"]+"( [^>]*)?>$/.test(a) && !/\son[a-z]+=/.test(a)),
     'every link on the members page is a plain anchor');
   ok(/^[0-9a-f]{40}$/.test(fs.readFileSync(path.join(ROOT, 'site/members.version'), 'utf8').trim()),

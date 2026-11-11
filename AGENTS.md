@@ -50,14 +50,19 @@ map-load tier, billed above it).
   `Dom.fs` patches the real DOM, `Effects.fs` carries out each command, `Ffi.fs` binds the two files of `ffi/`,
   `Program.fs` is the Elmish loop; it has no .NET test, `scripts/client_check.js` runs it in a fake DOM) and the
   static files (`public/`). `just app-build` compiles `App` into `app/Client/out` and assembles `app/dist/`;
-  `just app-serve` serves it and `just client-check` tests it. `app/Server` is not in the tree yet.
+  `just client-check` tests it. `app/Server` (ASP.NET Core, .NET 10, F#, minimal APIs) serves `app/dist` and the
+  board data folder and takes `POST /contact` into SQLite; it listens on `127.0.0.1` behind nginx
+  (`just server-run`, `just server-test`, `just server-build`, `scripts/server_smoke.sh`;
+  [docs/5-hosting.md](docs/5-hosting.md), [ADR 0002](docs/adr/0002-dotnet-server.md)). `app/Server.Tests`
+  runs its pipeline in memory (Expecto and TestHost). Every response header comes from `Security.fs`.
 - `scripts/`: `site_check.js` (app.js and flow.js in a stub DOM and Mapbox GL), `site_meta.py`
   (`llms.txt`, `sitemap.xml` and `.well-known/security.txt`, written into `site/dist` at build),
   `mapbox_config.sh`
   (the public Mapbox token into `mapbox-config.js` at deploy), `redirect_check.js` (the 404
   forwarder), `board-schema.sh` (the image pin and its schema), `stamp_site_version.sh`,
   `site_live_check.py` (what marola.dev actually serves), `site-data-push.sh` (the retrying push
-  every `site-data` writer uses), `mip-trailer-check.sh`.
+  every `site-data` writer uses), `mip-trailer-check.sh`, `server_smoke.sh` (the built server, started on a
+  free port and checked with `server_smoke.mjs`).
 - `site.yml`'s build runs on a self-hosted runner in Brazil (label `marola-br`), because INEA and
   INEMA answer only Brazilian addresses, and only by hand for now
   ([`docs/3-development.md`](docs/3-development.md#the-self-hosted-runner-in-brazil)).
@@ -115,7 +120,8 @@ Nix (MIP-0084); a known keyword is `git grep`.
 links. There is no `docs/index.md`. `docs/` holds numbered pages, not directories (MIP-0074 §5.2):
 `1-design` (files, the board → markers mapping, CSP), `1-design_chat-widget`, `2-libraries`
 (vendored Mapbox GL JS and the rest of `vendor/`, no build step), `3-development` (the build and
-deploy, image bumps), `4-reference` (`areas.json`, the board schema pin). The H1 is the nav label.
+deploy, image bumps), `4-reference` (`areas.json`, the board schema pin), `5-hosting` (the .NET server
+behind nginx: variables, nginx and systemd settings, backup, rollback). The H1 is the nav label.
 A decision that starts and ends here is an ADR at `docs/adr/NNNN-<slug>.md`; anything crossing a
 repo boundary is an umbrella MIP.
 

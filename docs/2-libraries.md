@@ -40,3 +40,18 @@ package and its hash, and `just app-test` restores in locked mode.
 `maplibre-gl-shared.mjs` is empty in 6.17.0 and nothing imports it. It stays so that the folder is
 the upstream one. `maplibre_ffi.mjs` loads `maplibre-gl.mjs` with a dynamic `import()` of an
 absolute path and sets the worker with `setWorkerUrl`.
+
+## The server's packages
+
+`app/Server` uses the ASP.NET Core shared framework (Kestrel, the rate limiter, response compression,
+the logging console): no package for those. The NuGet packages are these, and
+[ADR 0002](adr/0002-dotnet-server.md) says why the list is short.
+
+| Package | Version | Why | Licence |
+|---|---|---|---|
+| Microsoft.Data.Sqlite | 10.0.15 | The contact messages, in one SQLite file. It is the smallest way to a transactional store with no server process | MIT |
+| SQLitePCLRaw.lib.e_sqlite3 | 2.1.14 | The native SQLite library. Microsoft.Data.Sqlite pulls 2.1.11, which carries SQLite before 3.50.2 (CVE-2025-6965) and fails the NuGet audit (NU1903). 2.1.14 carries SQLite 3.54.0 | Apache-2.0 (the wrapper), public domain (SQLite) |
+| Microsoft.AspNetCore.TestHost | 10.0.0 | `app/Server.Tests` only: runs the real pipeline in memory, with a peer address the test chooses | MIT |
+
+`app/Server.Tests` also uses Expecto, `Microsoft.NET.Test.Sdk` and `YoloDev.Expecto.TestSdk`, as in the
+table above. Its `packages.lock.json` and the server's pin every package and its hash.

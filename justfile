@@ -61,7 +61,7 @@ app-test:
 golden *args:
     node scripts/golden.js {{ args }}
 
-# Every gate CI runs that needs no docker (app-test downloads its NuGet packages).
+# Every gate CI runs that needs no docker (app-test and server-test download their NuGet packages).
 quality:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -81,6 +81,7 @@ quality:
     node scripts/golden.js --check
     just app-fmt --check
     just app-test
+    just server-test
     python3 scripts/site_live_check.py --self-test
     python3 scripts/i18n_bundle.py --self-test
     python3 scripts/news_build.py --self-test
@@ -108,9 +109,21 @@ prepush:
 app-build *args:
     scripts/app_build.sh {{ args }}
 
-# Serve app/dist at http://127.0.0.1:8000 (run app-build first).
-app-serve:
-    node scripts/serve.mjs
+# Run the .NET server at http://127.0.0.1:8080 over app/dist and data/ (run app-build first). MAROLA_PORT, MAROLA_STATIC, MAROLA_DATA and MAROLA_DB change the defaults.
+server-run:
+    MAROLA_DB="${MAROLA_DB:-.tmp/marola.db}" RestoreLockedMode=true dotnet run --project app/Server
+
+# The server's tests (Expecto on the ASP.NET test host). NuGet restores in locked mode.
+server-test:
+    RestoreLockedMode=true dotnet test app/Server.Tests
+
+# Publish the server (framework-dependent, Release) into app/Server/out, the folder a host runs.
+server-build:
+    RestoreLockedMode=true dotnet publish app/Server -c Release -o app/Server/out
+
+# Start the built server on a free port against app/dist and check its headers, hostile paths and contact form (run app-build --fixtures first).
+server-smoke:
+    scripts/server_smoke.sh
 
 # Node smoke test of the compiled client in app/dist: DOM and MapLibre stubs, no browser (run app-build --fixtures first).
 client-check:

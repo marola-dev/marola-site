@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Builds the F# client with Fable and assembles app/dist/, the folder scripts/serve.mjs serves.
+# Builds the F# client with Fable and assembles app/dist/, the folder app/Server serves.
 # Why a script: Fable emits ES modules with relative imports and calls main from the last module,
 # so the tree is copied whole and index.html loads that one module; there is no bundler.
 # Fable writes each FFI import as the path from the output file to the .mjs in the source tree, so
@@ -52,10 +52,10 @@ if [ "$fixtures" -eq 1 ]; then
   node scripts/app_fixtures.mjs boards "$dist"
 fi
 
-# serve.mjs sends this header; the policy lives in Csp.fs so the page and the server cannot drift.
+# The server builds its header from Csp.fs; this copy lets client_check.js compare it with the page's <meta>.
 node --input-type=module -e '
 import { policy } from "./app/dist/app/Shared/Csp.js";
 process.stdout.write(policy());
 ' > "$dist/csp.txt"
 
-echo "app_build: $dist ready (serve with: just app-serve)"
+echo "app_build: $dist ready (run with: just server-run)"

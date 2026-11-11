@@ -20,3 +20,6 @@ __pycache__/
 /app/**/obj/
 /app/Tests.Fable/out/
 /app/Client/out/
+
+# `just server-build` output
+/app/Server/out/

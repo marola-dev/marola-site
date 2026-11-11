@@ -171,7 +171,7 @@ pushed.
 ```bash
 just app-build            # Fable compiles app/Client/App, then app/dist/ is assembled
 just app-build --fixtures # also writes data/<area>/ boards from site/fixtures/board.json
-just app-serve            # http://127.0.0.1:8000, with the CSP header
+just server-run           # http://127.0.0.1:8080, with the security headers (see below)
 just client-check         # a Node smoke test of the compiled client
 ```
 
@@ -187,9 +187,20 @@ is why the build compiles into `app/Client/out`, next to `app/Client/ffi`, and `
 `app/dist/ffi` keep the same relation. `app/dist/app/package.json` says `"type": "module"` because Node
 (the check) needs it for Fable's `.js` files; a browser does not read it.
 
-`scripts/serve.mjs` has no dependency. It sends the policy of `csp.txt` and refuses to start when
-that file is missing. A visitor needs the same header from the real host. The hosting comes in a
-later step.
-
 `just client-check` runs the compiled client in Node with a small DOM and a MapLibre stub. It
 does not start a browser, so it does not prove that the real MapLibre draws the map.
+
+### Run and test the server
+
+```bash
+just server-run           # http://127.0.0.1:8080 over app/dist and data/, with every security header
+just server-test          # the server's tests: the real pipeline in memory (Expecto and TestHost)
+just server-build         # publish the server into app/Server/out
+scripts/server_smoke.sh   # start the built server on a free port, check it, stop it
+```
+
+`app/Server` replaces `scripts/serve.mjs`. It builds the CSP header from `Csp.fs`, so the page and the
+server cannot drift. `just server-run` keeps the contact database in `.tmp/marola.db`, which git
+ignores. The smoke script needs `just app-build --fixtures` first. How it runs on a host, with the
+variables and the nginx and systemd settings, is in [the hosting page](5-hosting.md).
+
