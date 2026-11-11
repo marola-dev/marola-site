@@ -21,7 +21,7 @@
         # Docker is the host's, as in every marola repo: `just site-build` runs the pinned app image.
         devShells.default = pkgs.mkShell {
           name = "marola-site";
-          packages = [ pkgs.nodejs ] ++ devkit.tools;
+          packages = [ pkgs.nodejs pkgs.gleam pkgs.beamPackages.erlang ] ++ devkit.tools;
           shellHook = devkit.shellHook + ''
             git config core.hooksPath .devkit/.githooks 2>/dev/null || true
             echo "marola-site dev shell. Run 'just' to see available commands."

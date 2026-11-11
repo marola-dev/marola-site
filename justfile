@@ -41,11 +41,23 @@ members *args:
 board-schema *args:
     scripts/board-schema.sh {{ args }}
 
+# Format the Gleam code in app/ (--check only reports, as CI does).
+app-fmt *args:
+    cd app/shared && gleam format {{ args }} src test
+
+# The Gleam tests of app/ on both targets. The first run downloads the Hex packages that manifest.toml locks.
+app-test:
+    cd app/shared && gleam test && gleam test --target javascript
+
+# The old page's pure functions run into app/shared/test/golden.json, which the Gleam tests compare against: --check fails on a stale file.
+golden *args:
+    node scripts/golden.js {{ args }}
+
 # Every gate CI runs that needs no docker or network.
 quality:
     #!/usr/bin/env bash
     set -euo pipefail
-    for tool in node python3 ruff shellcheck actionlint agents-check docs-lint; do command -v "$tool" >/dev/null || { echo "quality: $tool not installed — run inside 'nix develop'" >&2; exit 1; }; done
+    for tool in node python3 ruff shellcheck actionlint agents-check docs-lint gleam erl; do command -v "$tool" >/dev/null || { echo "quality: $tool not installed — run inside 'nix develop'" >&2; exit 1; }; done
     ruff check .
     ruff format --check .
     shellcheck --severity=error scripts/*.sh
@@ -58,6 +70,9 @@ quality:
     python3 scripts/news_build.py --check
     node scripts/site_check.js
     node scripts/redirect_check.js
+    node scripts/golden.js --check
+    just app-fmt --check
+    just app-test
     python3 scripts/site_live_check.py --self-test
     python3 scripts/i18n_bundle.py --self-test
     python3 scripts/news_build.py --self-test

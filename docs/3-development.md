@@ -114,6 +114,32 @@ in the ICU subset `ui.js` implements and names the same arguments as `pt-BR`'s, 
 note in `context.json`. Edit the catalogs, never `i18n.js`; `--check` fails a stale committed
 bundle.
 
+## The Gleam app (`app/`)
+
+The rewrite of the page is in Gleam ([ADR 0001](adr/0001-gleam-maplibre-dynamic-hosting.md)).
+`app/shared` holds the domain types, the board decoder and the pure functions, with no code for one
+target; `app/client` (JavaScript) and `app/server` (Erlang) come later and depend on it by path.
+`just app-test` runs the tests on Erlang and on JavaScript, `just app-fmt` formats, `just golden`
+writes `app/shared/test/golden.json`, and `just quality` runs all three.
+
+The golden file is the parity contract with the old page. `scripts/golden.js` runs the pure functions of
+`ui.js`, `app.js` and `flow.js` over a table of inputs and writes what they return. The Gleam tests
+read the file and must give the same answers. Change the old code or the table, run `just golden`,
+commit the new file; `just golden --check` fails a stale one.
+
+The Hex packages are locked in `app/shared/manifest.toml`: each has a version and an
+`outer_checksum`, and `gleam` checks the checksum on download. `gleam deps download` fetches
+exactly those versions; the first `gleam test` does it by itself. `gleam add` and `gleam update`
+change the lock, so commit `manifest.toml` with the change. Nothing else fetches a package: no `npm`.
+Because the lock names every package and its checksum, a Nix build can fetch the tarballs offline
+from `https://repo.hex.pm/tarballs/<name>-<version>.tar`, as
+[nix-os `site/default.nix`](https://github.com/piabrota/nix-os/blob/main/site/default.nix) does for
+its own site. That build is not made for this repo yet (see the ADR).
+
+`flake.nix` gives the dev shell `gleam` and Erlang from the flake's own `nixpkgs`. The repo does
+not commit a `flake.lock`, so the Gleam version is the one that `nixos-unstable` has when `nix develop`
+first writes one.
+
 ## News posts
 
 A post is `site/content/news/YYYY-MM-DD-<slug>.pt-BR.md` plus its `.en.md`, in the format

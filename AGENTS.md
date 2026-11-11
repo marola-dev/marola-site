@@ -40,6 +40,11 @@ map-load tier, billed above it).
   the page. Never edit the block.
 - `site/areas.json`: the areas the boards are built for. `site/fixtures/board.json`: the board the
   harness renders. `site/board.schema.json`: the board contract, vendored from the pinned image.
+- `app/`: the Gleam rewrite. `app/shared` has the domain types, the board decoder and the pure
+  functions, tested on Erlang and JavaScript (`just app-test`, `just app-fmt`);
+  `app/shared/manifest.toml` locks the Hex packages. `app/shared/test/golden.json` holds what the old
+  `ui.js`, `app.js` and `flow.js` return, written by `scripts/golden.js` (`just golden`); the Gleam
+  tests must match it. `app/client` and `app/server` are not in the tree yet.
 - `scripts/`: `site_check.js` (app.js and flow.js in a stub DOM and Mapbox GL), `site_meta.py`
   (`llms.txt`, `sitemap.xml` and `.well-known/security.txt`, written into `site/dist` at build),
   `mapbox_config.sh`
@@ -161,9 +166,16 @@ The phase list is the umbrella's `docs/PHASES.md`. Site work serves the current 
 
 ## Code style
 
-Plain JavaScript, no framework and no build step; the page keeps `script-src 'self'`, and its one
-third-party origins are Mapbox for the base map (style, tiles, fonts, the map-load count) and NASA
-GIBS for the satellite layers (public, keyless tiles, fetched only when a visitor picks one). A visible
-change goes through the `site-frontend` skill (which names the others), `node scripts/site_check.js`
-and before/after screenshots. Shell: `set -euo pipefail`, shellcheck-clean. Python: ruff. Comments
-only for why, a trap, or a pointer, as the umbrella's AGENTS.md spells out.
+The page in `site/static/` is still plain JavaScript with no build step, and keeps `script-src 'self'`.
+Its third-party origins are Mapbox for the base map (style, tiles, fonts, the map-load count) and NASA
+GIBS for the satellite layers (public, keyless tiles, fetched only when a visitor picks one).
+New code is Gleam in `app/` ([ADR 0001](docs/adr/0001-gleam-maplibre-dynamic-hosting.md)):
+`app/shared` runs on both targets, `app/client` compiles to JavaScript (a build step, `gleam build`)
+and `app/server` runs on Erlang. The compiled page keeps the same CSP: scripts from `'self'` only,
+no inline script, no `eval`; MapLibre is an ES module served from `'self'`. The ADR swaps Mapbox
+for MapLibre with OpenFreeMap as the base style; until that lands in `site/static/`, the origins
+above stand. Gleam: `gleam format`, tests on both targets with `just app-test`; an `@external` goes
+in one named module with its reason beside it. A visible change goes through the `site-frontend`
+skill (which names the others), `node scripts/site_check.js` and before/after screenshots. Shell:
+`set -euo pipefail`, shellcheck-clean. Python: ruff. Comments only for why, a trap, or a pointer, as
+the umbrella's AGENTS.md spells out.
