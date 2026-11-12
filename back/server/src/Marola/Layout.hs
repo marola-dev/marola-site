@@ -133,6 +133,10 @@ headNodes lang p =
         <> [meta [("property", "og:url"), ("content", origin <> whereOf p lang)] | p.canonical]
         <> [ meta [("property", "og:locale"), ("content", ogLocale lang)],
              meta [("property", "og:locale:alternate"), ("content", ogLocale other)],
+             meta [("property", "og:image"), ("content", origin <> "/og.png")],
+             meta [("property", "og:image:width"), ("content", "1200")],
+             meta [("property", "og:image:height"), ("content", "1200")],
+             meta [("property", "og:image:alt"), ("content", "marola")],
              meta [("name", "twitter:card"), ("content", "summary")],
              link [("rel", "icon"), ("href", "/favicon.svg"), ("type", "image/svg+xml")],
              link [("rel", "stylesheet"), ("href", "/style.css")]

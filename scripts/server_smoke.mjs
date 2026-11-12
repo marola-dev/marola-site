@@ -140,6 +140,7 @@ for (const [path, type] of [
   ["/humans.txt", /^text\/plain/],
   ["/.well-known/security.txt", /^text\/plain/],
   ["/favicon.svg", /^image\/svg\+xml/],
+  ["/og.png", /^image\/png/],
   ["/board.schema.json", /^application\/json/],
 ]) {
   const res = await get(path);
@@ -154,6 +155,10 @@ for (const loc of locs) {
   ok(res.status === 200, `the sitemap page ${loc} answers 200`, String(res.status));
 }
 ok(!locs.some((l) => /contact/.test(l)), "no contact page in the sitemap");
+const mapEn = (await get("/?lang=en")).body.toString();
+ok(/<html lang="en">/.test(mapEn) && /rel="canonical" href="https:\/\/marola\.dev\/\?lang=en"/.test(mapEn), "/?lang=en is the English map head, canonical to itself");
+const mapPt = (await get("/")).body.toString();
+ok(/<html lang="pt-BR">/.test(mapPt) && /rel="canonical" href="https:\/\/marola\.dev\/"/.test(mapPt), "/ is the pt-BR map head");
 for (const path of ["/.well-known/.hidden", "/.env", "/sub/.well-known/security.txt"]) {
   ok((await get(path)).status === 404, `${path} is 404`);
 }

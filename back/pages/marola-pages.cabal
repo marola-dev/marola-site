@@ -25,6 +25,7 @@ library
     Marola.Pages.Members
     Marola.Pages.Site
     Marola.Pages.Meta
+    Marola.Pages.MapPage
     Marola.Pages.Loader
     Marola.Pages.Build
   build-depends:

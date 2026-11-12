@@ -3,6 +3,8 @@
 module Marola.Server.Files (segments, resolve, contentType, cacheControl, handle, notFoundPage, docsRedirect) where
 
 import Control.Monad (filterM)
+import Crypto.Hash (Digest, SHA256, hash)
+import Data.ByteArray.Encoding (Base (Base16), convertToBase)
 import Data.ByteString (ByteString)
 import Data.ByteString qualified as BS
 import Data.ByteString.Char8 qualified as BC
@@ -129,29 +131,62 @@ docsRedirect req
   where
     path = rawPathInfo req
 
--- | GET and HEAD only, with an ETag of size plus mtime (cheap, and it changes with every deploy)
--- and @Last-Modified@, answered with a 304 when the client has them.
+-- | The map page in English, @/?lang=en@: its own file, so a crawler reads an English head whose
+-- canonical is that address (marola-pages writes it next to @index.html@).
+englishMap :: Config -> Request -> Text -> IO (Maybe FilePath)
+englishMap cfg req p
+  | p `elem` ["/", "/index.html"] && queryText req "lang" == "en" = do
+      let file = cfg.static </> "index.en.html"
+      exists <- doesFileExist file
+      pure (if exists then Just file else Nothing)
+  | otherwise = pure Nothing
+
+-- | Files up to this size get an ETag of their content; a larger one of its size and mtime.
+hashLimit :: Integer
+hashLimit = 8 * 1024 * 1024
+
+-- | A Nix store file has mtime 1 (1970), so size and mtime alone would give two deploys of an
+-- @index.html@ of the same length the same ETag, and a browser would keep the old one, which names
+-- asset files the new deploy no longer has. The content hash changes whenever the bytes do.
+entityTag :: FilePath -> Integer -> Integer -> IO ByteString
+entityTag file size seconds
+  | size <= hashLimit = do
+      -- Strict: a lazy read would hold the file open (and locked) until the header is forced.
+      bytes <- BS.readFile file
+      let digest = hash bytes :: Digest SHA256
+          tag = BC.pack "\"" <> BS.take 32 (convertToBase Base16 digest) <> BC.pack "\""
+      BS.length tag `seq` pure tag
+  | otherwise = pure (BC.pack ("\"" <> showHex size "" <> "-" <> showHex seconds "" <> "\""))
+
+-- | An mtime in the first day of 1970 is a normalised one (Nix), not a date: no @Last-Modified@.
+realDate :: Integer -> Bool
+realDate seconds = seconds > 86400
+
+-- | GET and HEAD only, with an ETag of the content and, when the mtime is a real date,
+-- @Last-Modified@, answered with a 304 when the client has them.
 handle :: Config -> Request -> IO Response
 handle cfg req
   | requestMethod req `notElem` [methodGet, methodHead] =
       pure (responseLBS status405 [(hContentType, "text/plain; charset=utf-8"), ("Allow", "GET, HEAD")] "method not allowed\n")
   | otherwise = do
       let p = decodedPath req
-      found <- resolve cfg p
+      english <- englishMap cfg req p
+      found <- maybe (resolve cfg p) (pure . Just) english
       case found of
         Nothing -> maybe (notFoundPage cfg p) pure (docsRedirect req)
         Just file -> do
           size <- getFileSize file
           modified <- getModificationTime file
           let seconds = floor (utcTimeToPOSIXSeconds modified) :: Integer
-              etag = BC.pack ("\"" <> showHex size "" <> "-" <> showHex seconds "" <> "\"")
-              lastModified = BC.pack (formatTime defaultTimeLocale "%a, %d %b %Y %H:%M:%S GMT" modified)
-              common = [("ETag", etag), (hLastModified, lastModified), (hCacheControl, cacheControl file)]
+          etag <- entityTag file size seconds
+          let lastModified = BC.pack (formatTime defaultTimeLocale "%a, %d %b %Y %H:%M:%S GMT" modified)
+              dated = realDate seconds
+              common = [("ETag", etag)] <> [(hLastModified, lastModified) | dated] <> [(hCacheControl, cacheControl file)]
               inm = lookup hIfNoneMatch (requestHeaders req)
               ims = lookup hIfModifiedSince (requestHeaders req)
               notModified = case inm of
                 Just v -> etag `elem` map BC.strip (BC.split ',' v) || BC.strip v == "*"
-                Nothing -> maybe False (== lastModified) ims
+                Nothing -> dated && maybe False (== lastModified) ims
           pure $
             if notModified
               then responseLBS status304 common ""
