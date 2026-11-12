@@ -1,26 +1,26 @@
 #!/usr/bin/env bash
-# Starts the built server on a free port against app/dist, checks what it answers (headers, hostile
-# paths, the contact form, the study API), and stops it. Run `just app-build --fixtures` first.
-# MAROLA_SERVER_BIN=<path> runs that executable (the Haskell back/server) instead of the F# build;
-# SMOKE_STATIC=<dir> serves another built page than app/dist.
+# Starts the built server (back/server) on a free port against dist, checks what it answers (headers,
+# hostile paths, the contact form, the study API), and stops it. Run `scripts/site_build.sh --fixtures` first.
+# MAROLA_SERVER_BIN=<path> runs that executable instead of the one cabal builds (the Nix package's,
+# for example); SMOKE_STATIC=<dir> serves another built page than dist.
 set -euo pipefail
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$root"
 
-static="${SMOKE_STATIC:-$root/app/dist}"
+static="${SMOKE_STATIC:-$root/dist}"
 tools=(node)
-[ -n "${MAROLA_SERVER_BIN:-}" ] || tools+=(dotnet)
+[ -n "${MAROLA_SERVER_BIN:-}" ] || tools+=(cabal)
 for tool in "${tools[@]}"; do
   command -v "$tool" >/dev/null || { echo "server_smoke: $tool is not installed; run inside 'nix develop'" >&2; exit 1; }
 done
-[ -f "$static/index.html" ] || { echo "server_smoke: $static is missing; run 'just app-build --fixtures'" >&2; exit 1; }
+[ -f "$static/index.html" ] || { echo "server_smoke: $static is missing; run 'just dist-build --fixtures'" >&2; exit 1; }
 
 if [ -n "${MAROLA_SERVER_BIN:-}" ]; then
   server=("$MAROLA_SERVER_BIN")
 else
-  RestoreLockedMode=true dotnet build app/Server -c Release --nologo -v q >/dev/null
-  server=(dotnet "$root/app/Server/bin/Release/net10.0/marola-server.dll")
+  cabal build -v0 exe:marola-server >&2
+  server=("$(cabal list-bin marola-server)")
 fi
 
 tmp="$(mktemp -d)"
@@ -72,7 +72,7 @@ node scripts/server_smoke.mjs "http://127.0.0.1:$port" "${server[@]}" inbox
 
 
 # Studies: an account and a key from the CLI (MAROLA_DEV=1 for that one command only), a 2 MB PDF built here,
-# so the upload route's own body limit is proved on Kestrel, whose default for every other route is 1 MB.
+# so the upload route's own body limit is proved, while every other route keeps the 1 MB one.
 {
   printf '%%PDF-1.4\n%%'
   head -c 2000000 /dev/zero | tr '\0' 'x'
@@ -116,7 +116,7 @@ for secret in "$gh_secret" gho_fakeSmokeToken0123456789 fakecode; do
 done
 echo "server_smoke: the log holds no GitHub token, code or secret"
 # Logging: no address, no query, no body in the server's log (LGPD).
-grep -v Microsoft.Hosting.Lifetime "$tmp/server.log" > "$tmp/requests.log" || true
+cp "$tmp/server.log" "$tmp/requests.log"
 if grep -q -e '127\.0\.0\.1' -e 'smoke@example' -e 'evil.example' -e 'sent=1' "$tmp/requests.log"; then
   echo "server_smoke: the log holds a client address, an email, an origin or a query" >&2
   grep -e '127\.0\.0\.1' -e 'smoke@example' -e 'evil.example' -e 'sent=1' "$tmp/requests.log" >&2

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /** golden: runs the pure functions of the OLD page code (site/static/ui.js, app.js, flow.js) over a
- * table of inputs and writes what they return to app/Tests/golden.json. The F# tests in
- * app/Tests read that file and must give the same answers, on .NET and on Fable (the parity contract of the F# rewrite).
+ * table of inputs and writes what they return to front/tests/golden.json. The Elm tests in
+ * front/tests (GoldenTests.elm) read that file and must give the same answers (the parity contract of the port).
  *
  * The old files keep their functions inside an IIFE, so each function is cut out of the source text
  * and evaluated in a vm sandbox next to the real i18n runtime. No browser, no network, no dependency.
@@ -15,7 +15,7 @@ const path = require('path');
 const vm = require('vm');
 
 const ROOT = path.resolve(__dirname, '..');
-const OUT = path.join(ROOT, 'app/Tests/golden.json');
+const OUT = path.join(ROOT, 'front/tests/golden.json');
 const read = p => fs.readFileSync(path.join(ROOT, p), 'utf8');
 const UI = read('site/static/ui.js');
 const APP = read('site/static/app.js');
@@ -412,10 +412,10 @@ const text = serialise(build());
 if (process.argv.includes('--check')) {
   const have = fs.existsSync(OUT) ? fs.readFileSync(OUT, 'utf8') : '';
   if (have !== text) {
-    console.error('golden: app/Tests/golden.json is stale; run `just golden` and commit it');
+    console.error('golden: front/tests/golden.json is stale; run `just golden` and commit it');
     process.exit(1);
   }
-  console.log('golden: app/Tests/golden.json is current');
+  console.log('golden: front/tests/golden.json is current');
 } else {
   fs.writeFileSync(OUT, text);
   console.log('golden: wrote ' + path.relative(ROOT, OUT) + ' (' + text.length + ' bytes)');

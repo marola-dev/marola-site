@@ -28,7 +28,7 @@ trap cleanup EXIT
 
 port="$(node -e 'const s = require("net").createServer().listen(0, "127.0.0.1", () => { console.log(s.address().port); s.close(); });')"
 
-# Only the variables a host sets: no dotnet on PATH, no DOTNET_ROOT, no secret.
+# Only the variables a host sets: an empty PATH, no secret.
 env -i PATH=/nonexistent HOME="$tmp" \
   MAROLA_PORT="$port" MAROLA_STATIC="$dist" MAROLA_DATA="$tmp/data" MAROLA_DB="$tmp/marola.db" MAROLA_STUDIES="$tmp/studies" \
   "$bin" > "$tmp/server.log" 2>&1 &

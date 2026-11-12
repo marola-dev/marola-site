@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Fails when DESIGN.md and app/Client/public/style.css drift apart. No packages.
+// Fails when DESIGN.md and front/public/style.css drift apart. No packages.
 //
 // Rules:
 //   1. Every custom property defined in `:root` has a row in a DESIGN.md token table.
@@ -163,7 +163,7 @@ function selfTest() {
 function main() {
   if (process.argv.includes("--self-test")) return selfTest();
   const md = fs.readFileSync(path.join(ROOT, "DESIGN.md"), "utf8");
-  const css = fs.readFileSync(path.join(ROOT, "app/Client/public/style.css"), "utf8");
+  const css = fs.readFileSync(path.join(ROOT, "front/public/style.css"), "utf8");
   const failures = check(md, css, ALLOW);
   for (const f of failures) console.log(`design_check: ${f}`);
   if (failures.length) process.exit(1);

@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# Renders the static pages with the Haskell renderer (back/pages) into a temporary folder and
-# compares every file the F# renderer (app/Pages.Build) writes with the same file in a reference
-# folder, byte for byte. Usage: scripts/pages_parity.sh <reference-dir>, e.g. app/dist.
+# Renders the static pages with back/pages into a temporary folder and compares every file it
+# writes with the same file in a reference folder, byte for byte: a build of an earlier commit,
+# or of the F# renderer this one replaced (23 of 23 identical at efaaea3, with b8cb19e's rename).
+# Usage: scripts/pages_parity.sh <reference-dir>, e.g. a dist/ from another checkout.
 # MAROLA_PAGES_BIN names a built binary; without it the script builds one with cabal.
 # security.txt's Expires follows the build date, so the date is taken from the reference's own
 # security.txt unless MAROLA_PAGES_TODAY is set.
@@ -11,7 +12,7 @@ root="$(cd "$(dirname "$0")/.." && pwd)"
 ref="${1:?usage: scripts/pages_parity.sh <reference-dir>}"
 [ -d "$ref" ] || { echo "pages_parity: $ref is not a folder" >&2; exit 2; }
 
-# What app/Pages.Build writes: Site.all (every slug in both languages) and Meta.files.
+# What marola-pages writes: Site.all (every slug in both languages) and Meta.files.
 expected=(
   news.html about.html contact.html members.html support.html privacy.html takedown.html contact-sent.html 404.html
   en/news.html en/about.html en/contact.html en/members.html en/support.html en/privacy.html en/takedown.html
@@ -40,7 +41,7 @@ written="$(cd "$out" && find . -type f | sed 's|^\./||' | sort)"
 wanted="$(printf '%s\n' "${expected[@]}" | sort)"
 fail=0
 if [ "$written" != "$wanted" ]; then
-  echo "pages_parity: the Haskell renderer writes another set of files than the F# one:" >&2
+  echo "pages_parity: the renderer writes another set of files than the expected one:" >&2
   diff <(echo "$wanted") <(echo "$written") >&2 || true
   fail=1
 fi

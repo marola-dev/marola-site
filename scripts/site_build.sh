@@ -54,4 +54,4 @@ if [ "$fixtures" -eq 1 ]; then
   node scripts/site_fixtures.mjs boards "$dist"
 fi
 
-echo "site_build: $dist ready (run with: just server-run)" >&2
+echo "site_build: $dist ready (run it with: just server-run)" >&2

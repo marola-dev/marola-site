@@ -3,10 +3,10 @@
 # layout, and fails when the strip is wider than the screen (it would scroll sideways).
 # The repo's stub DOM has no layout, so `just quality` cannot see this; run it by hand:
 #
-#   just app-build --fixtures
+#   just dist-build --fixtures
 #   CHROMIUM=/path/to/chromium scripts/nav_measure.sh [WIDTH ...]     # default: 390 375
 #
-# It copies app/dist to a temp dir, serves it with python3 on 127.0.0.1, loads every page in an iframe
+# It copies dist to a temp dir, serves it with python3 on 127.0.0.1, loads every page in an iframe
 # as wide as the screen and reads scrollWidth of the strip. A browser with its own sandbox needs no
 # flag; CHROMIUM_FLAGS adds some (`--no-sandbox` on a host with no user namespaces).
 set -euo pipefail
@@ -15,7 +15,7 @@ root="$(cd "$(dirname "$0")/.." && pwd)"
 : "${CHROMIUM:?set CHROMIUM to a chromium binary}"
 widths=("$@")
 [ "${#widths[@]}" -gt 0 ] || widths=(390 375)
-[ -f "$root/app/dist/about.html" ] || { echo "nav_measure: run 'just app-build --fixtures' first" >&2; exit 1; }
+[ -f "$root/dist/about.html" ] || { echo "nav_measure: run 'just dist-build --fixtures' first" >&2; exit 1; }
 
 tmp="$(mktemp -d)"
 server=""
@@ -26,7 +26,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-cp -r "$root/app/dist/." "$tmp/"
+cp -r "$root/dist/." "$tmp/"
 cat >"$tmp/measure.html" <<'HTML'
 <!doctype html><meta charset=utf-8><pre id=out>wait</pre>
 <script>

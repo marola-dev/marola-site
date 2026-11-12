@@ -50,11 +50,13 @@ ok(page.status === 200 && /text\/html/.test(page.headers["content-type"]), "GET 
 ok(page.headers["cache-control"] === "no-cache", "the page is no-cache");
 checkHeaders("/", page);
 
-const module_ = await get("/app/Program.js");
-ok(module_.status === 200 && /text\/javascript/.test(module_.headers["content-type"]), "GET /app/Program.js is JavaScript", String(module_.status));
-checkHeaders("/app/Program.js", module_);
+// The Elm bundle's name carries Vite's content hash: read it from the page.
+const script = (/<script type="module"[^>]*src="\.(\/assets\/index-[\w-]+\.js)"/.exec(page.body.toString()) || [])[1] || "/assets/index.js";
+const module_ = await get(script);
+ok(module_.status === 200 && /text\/javascript/.test(module_.headers["content-type"]), `GET ${script} is JavaScript`, String(module_.status));
+checkHeaders(script, module_);
 
-const packed = await get("/app/Program.js", { "Accept-Encoding": "br, gzip" });
+const packed = await get(script, { "Accept-Encoding": "br, gzip" });
 ok(packed.headers["content-encoding"] === "br", "JavaScript goes out compressed (br)", String(packed.headers["content-encoding"]));
 
 const data = await get("/data/floripa/latest.json");
@@ -69,7 +71,7 @@ checkHeaders("/nope", missing);
 const missingEn = await get("/en/nope");
 ok(missingEn.status === 404 && missingEn.body.toString().includes("<html lang=\"en\">"), "/en/nope is the English 404 page", String(missingEn.status));
 
-// The pages of app/Pages, in both languages (run app-build first).
+// The pages of back/pages, in both languages (run scripts/site_build.sh first).
 for (const [path, lang] of [["/about.html", "pt-BR"], ["/en/about.html", "en"], ["/contact.html", "pt-BR"], ["/en/contact.html", "en"], ["/contact-sent.html", "pt-BR"], ["/en/support.html", "en"]]) {
   const page = await get(path);
   ok(page.status === 200 && /text\/html/.test(page.headers["content-type"]) && page.body.toString().includes(`<html lang="${lang}">`), `GET ${path} is the ${lang} page`, String(page.status));
@@ -128,7 +130,7 @@ const head = await request("HEAD", "/");
 ok(head.status === 200 && head.body.length === 0, "HEAD / has no body");
 checkHeaders("HEAD /", head);
 
-for (const path of ["/..%2f..%2f..%2fetc/passwd", "/%2e%2e/%2e%2e/etc/passwd", "/..%5c..%5cetc/passwd", "//etc/passwd", "/app/../../etc/passwd", "/%00", "/.git/config", "/app/fable_modules/.gitignore", "/app/"]) {
+for (const path of ["/..%2f..%2f..%2fetc/passwd", "/%2e%2e/%2e%2e/etc/passwd", "/..%5c..%5cetc/passwd", "//etc/passwd", "/assets/../../etc/passwd", "/%00", "/.git/config", "/vendor/.gitignore", "/assets/"]) {
   const res = await get(path);
   ok(res.status === 404 || res.status === 400, `hostile path ${path} is refused (${res.status})`, String(res.status));
   ok(!res.body.toString().includes("root:"), `hostile path ${path} leaks nothing`);
