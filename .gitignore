@@ -8,6 +8,13 @@ __pycache__/
 /site/dist/*
 !/site/dist/.gitkeep
 
-
 # wrangler's local state
 .wrangler/
+
+# cabal (back/pages, back/server; the project is cabal.project at the root)
+/dist-newstyle/
+cabal.project.local
+cabal.project.local~
+
+# scripts/site_build.sh output: the Elm page, the pages and the assets the server serves
+/dist/

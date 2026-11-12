@@ -1,0 +1,26 @@
+# DRAFT for .github/dependabot.yml. Not active: this branch may not edit .github/ (docs/7-quality.md, owner step 1).
+#
+# What it does: opens a weekly pull request for the npm packages of front/ (package-lock.json) and for the
+# GitHub Actions that .github/workflows/ uses. A person reads and merges; Dependabot never merges.
+#
+# Dependabot has no ecosystem for cabal or Elm: cabal.project.freeze and front/elm.json move by hand
+# (`cabal freeze` after a change of bounds; docs/3-development.md).
+#
+# After an npm bump, two more things are a person's job, because Dependabot does not know this repo:
+#   1. `npmDepsHash` in nix/package.nix must match the new package-lock.json. Without it `just nix-build` fails
+#      and prints the hash it found.
+#   2. `just quality` must pass. The commit trailers the repo asks for (`Tested:`, Co-Authored-By) are not on a
+#      Dependabot commit. [OPEN: owners. Does the trailer rule apply to Dependabot?]
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/front"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5

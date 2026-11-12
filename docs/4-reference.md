@@ -53,3 +53,37 @@ then this repo's `marola-image`/`board-schema.sh --update` pair — see
 
 The schema (`$schema`: `https://json-schema.org/draft/2020-12/schema`) requires `schema`, `area`,
 `day`, `today`, `generated_at`, `sources`, `lore` and `beaches`; `trails` is optional.
+
+## Trail files
+
+`front/public/data/trails/<area>.json` holds the hiking routes of an area. The map page fetches
+`data/trails/<id>.json` for the area on show. `Trail.decoder` in `front/src/Trail.elm` decodes one route.
+
+| Field | Notes |
+|---|---|
+| `schema` | The number 1 |
+| `area` | The area id |
+| `ibge_municipality` | The IBGE code of the municipality (the OSM tag `IBGE:GEOCODIGO`). The panel shows it in its footer |
+| `source`, `licence`, `osm_base` | Where the lines come from: OpenStreetMap contributors, ODbL-1.0 |
+| `note` | Text for the panel. Salvador has no routes, and its note says why |
+| `bairros` | A list of `{bairro, osm_relation, trails}`. Each trail has `name`, `length_km`, `difficulty` (the OSM `sac_scale`, or null), `surface`, `osm_ways` (way ids) and `lines` (lists of `[lat, lon]`) |
+
+The id of a route is its position in the bairros, in order. The map and the panel use that id.
+
+Rio de Janeiro has 113 routes in 17 bairros. Florianópolis has 44 routes. Salvador has an empty
+list and a note: the panel shows the note, never an empty panel. When an area has no file, the
+board's own optional `trails` array stands in.
+
+**Provenance.** One query on the Overpass API made the files. The files are a one-off copy: no job
+refreshes them. The query takes every `way` with `highway` in `path|footway|track|steps` and a
+`name`, and every `relation` with `route` in `hiking|foot`. Both use `around:<radius_m>,<lat>,<lon>`,
+and the radius and the centre come from `site/areas.json`. The bairro of a route comes from the OSM
+relations with `boundary=administrative` and `admin_level` 9 or 10 (or `place=suburb`,
+`neighbourhood` or `quarter`) inside the municipality that has the OSM tag `IBGE:GEOCODIGO`.
+
+**Filter.** A way stays when `sac_scale` is set, or when it is a `highway=path` whose name does not
+start with a street word.
+
+**Licence.** The data is OpenStreetMap data under the ODbL 1.0. The page shows the credit in the
+map's attribution control and in the panel footer. Do not edit the files by hand: make them again
+with the query above.

@@ -1,0 +1,46 @@
+# DRAFT for .github/workflows/codeql.yml. Not active: this branch may not edit .github/ (docs/7-quality.md, owner step 3).
+#
+# CodeQL does not support Elm or Haskell, the languages of the page (front/src) and of the server and pages
+# (back/). So CodeQL cannot analyse the code that carries the security claims. What it can read here is the
+# JavaScript: the legacy page in site/static/, front/ports.js and the hand-written files in front/js/, and the
+# scripts. That is the only language this draft enables.
+# [OPEN: owners. Keep this JavaScript-only job, or drop the file.]
+#
+# Actions are pinned by the SHAs Hermes resolved on 2026-11-11 (docs/owner-steps/pin-actions.md). `permissions: {}`
+# before the jobs, then the least each job needs.
+name: CodeQL
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "41 4 * * 1"
+
+permissions: {}
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [javascript-typescript]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - uses: github/codeql-action/init@9418214df1f2c4b8128c770156c409013b07d6b9 # v3
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: none
+
+      - uses: github/codeql-action/analyze@9418214df1f2c4b8128c770156c409013b07d6b9 # v3
+        with:
+          category: "/language:${{ matrix.language }}"

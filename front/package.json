@@ -1,0 +1,15 @@
+{
+  "name": "marola-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "test": "node tests/gen-fixtures.mjs && elm-test"
+  },
+  "devDependencies": {
+    "elm-format": "0.8.8",
+    "elm-test": "0.19.1-revision17",
+    "vite": "7.3.7",
+    "vite-plugin-elm": "3.0.1"
+  }
+}

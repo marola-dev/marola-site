@@ -759,16 +759,16 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   const aboutMain = (/<main[\s\S]*?<\/main>/.exec(ABOUT) || [''])[0];
   ok(aboutMain.split('href="' + RESEARCH + '"').length === 3 && aboutMain.split('href="' + CHAMADA + '"').length === 3,
     'about.html links marola-research and the chamada in both languages, the way in on a phone');
-  // --- contact page: a static form that FormSubmit forwards to admin@marola.dev ----------------
-  ok((CONTACT.match(/<form\b[^>]*>/g) || []).join('') === '<form class="contact" action="https://formsubmit.co/admin@marola.dev" method="POST">',
-    'contact.html has one form, posted to FormSubmit for admin@marola.dev');
-  ok(/form-action https:\/\/formsubmit\.co"/.test(CONTACT), "contact.html's CSP lets the form post only to FormSubmit");
-  ok(/name="_honey" hidden/.test(CONTACT) && /<input type="email" name="email" required/.test(CONTACT),
-    'the form has a honeypot and a required email for the reply');
+  // --- contact page: a static form that the marola server (back/server, POST /contact) stores ----
+  ok((CONTACT.match(/<form\b[^>]*>/g) || []).join('') === '<form class="contact" action="/contact" method="POST">',
+    'contact.html has one form, posted to /contact on the marola server');
+  ok(/form-action 'self'"/.test(CONTACT) && !/formsubmit/i.test(CONTACT), "contact.html's CSP lets the form post only to its own origin, and it does not name FormSubmit");
+  ok(/name="website" hidden/.test(CONTACT) && /<input type="email" name="email" required/.test(CONTACT),
+    'the form has the honeypot the server checks (website) and a required email for the reply');
   ok((MEMBERS.match(/<a [^>]*>/g) || []).every(a => /^<a (class="(li|gh)" )?href="[^"]+"( [^>]*)?>$/.test(a) && !/\son[a-z]+=/.test(a)),
     'every link on the members page is a plain anchor');
-  ok(/^[0-9a-f]{40}$/.test(fs.readFileSync(path.join(ROOT, 'site/members.version'), 'utf8').trim()),
-    'site/members.version pins a marola-dev/.github commit by its full SHA');
+  ok(/^[0-9a-f]{40}$/.test(fs.readFileSync(path.join(ROOT, 'site/members.version'), 'utf8').split('\n')[0].trim()),
+    "site/members.version's first line pins a marola-dev/.github commit by its full SHA");
   const FUNDING = fs.readFileSync(path.join(ROOT, '.github/FUNDING.yml'), 'utf8');
   const patreon = (/^patreon:\s*(\S+)/m.exec(FUNDING) || [])[1];
   const patreonLinks = SUPPORT.match(/href="https:\/\/www\.patreon\.com\/[^"]*"/g) || [];
@@ -899,7 +899,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(probe.t('footer.generated', { when: 'w', area: 'a', day: 'd', n: 2, sources: 's' }).includes('· 2 praias ·'),
     'the real catalog pluralises footer.generated');
   // Lowercase house style in the catalogs; these are names marola did not choose.
-  const CASE_OK = ['°C', 'UV', 'km/h', 'mL', 'PRÓPRIA', 'IMPRÓPRIA', 'GitHub', 'Instagram', 'LinkedIn', 'Open-Meteo', 'IMA/SC', 'OpenStreetMap', 'Mapbox', 'NASA', 'VIIRS', 'MUR', 'El Niño', 'La Niña', 'Niño'];
+  const CASE_OK = ['°C', 'UV', 'km/h', 'mL', 'PRÓPRIA', 'IMPRÓPRIA', 'GitHub', 'Instagram', 'LinkedIn', 'Open-Meteo', 'IMA/SC', 'OpenStreetMap', 'Mapbox', 'OpenFreeMap', 'NASA', 'VIIRS', 'MUR', 'El Niño', 'La Niña', 'Niño'];
   for (const [lang, cat] of Object.entries(CATALOGS)) {
     const shouty = Object.entries(cat).filter(([k, v]) => {
       if (/^dir\./.test(k)) return !/^[A-Z]{1,2}$/.test(v); // compass abbreviations, shown uppercase
