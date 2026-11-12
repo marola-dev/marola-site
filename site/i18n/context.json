@@ -204,5 +204,10 @@
   "contact.name": "contact form: label of the name field",
   "contact.email": "contact form: label of the email field (the reply goes there)",
   "contact.message": "contact form: label of the message box",
-  "contact.send": "contact form: the submit button"
+  "contact.send": "contact form: the submit button",
+  "brand.piabrota": "accessible name and tooltip of the small piabrota eye logo in the map page's header; a name, not translated",
+  "controls.playlist": "button that shows or hides the Spotify player of the playlist; Spotify is a product name",
+  "controls.playlist_title": "tooltip of controls.playlist; GREAT RESET is the playlist's title and room.piabrota.art a site name, both kept as written",
+  "player.label": "title of the embedded Spotify player, read by screen readers",
+  "player.open": "link under the player that opens the playlist on Spotify's site or app"
 }

@@ -32,6 +32,9 @@ this is the cost and provenance side:
   missing token fails the build instead of shipping a map-less live site.
 - **NASA GIBS** (the four satellite raster layers): free, keyless, public tiles, fetched only when
   a visitor turns one of those layers on. No account and no cost.
+- **Spotify** (the new site's playlist player): the embed of GREAT RESET, the playlist
+  room.piabrota.art plays (`Config.playlist`), loaded in an iframe only when a visitor presses the
+  Spotify button. No account and no cost for marola; playing in full needs the visitor's own login.
 
 ## Board schema pin
 

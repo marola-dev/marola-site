@@ -204,5 +204,10 @@
   "contact.name": "name",
   "contact.email": "email",
   "contact.message": "message",
-  "contact.send": "send"
+  "contact.send": "send",
+  "brand.piabrota": "piabrota",
+  "controls.playlist": "spotify",
+  "controls.playlist_title": "open GREAT RESET, the Spotify playlist of room.piabrota.art",
+  "player.label": "GREAT RESET, a playlist on Spotify",
+  "player.open": "open in Spotify"
 }

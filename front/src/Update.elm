@@ -779,11 +779,8 @@ update message model =
         LanguagePicked language ->
             languagePicked model language
 
-        SoundPressed ->
-            ( { model | soundOn = not model.soundOn }, [ Sound (not model.soundOn) ] )
-
-        SoundFailed ->
-            ( { model | soundOn = False }, [] )
+        PlaylistPressed ->
+            ( { model | playlistOpen = not model.playlistOpen }, [] )
 
         MapEvent kind arg ->
             mapEvent model kind arg

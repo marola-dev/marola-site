@@ -115,8 +115,9 @@ writes it to `dist/csp.txt` (`marola-server csp`), and `front/index.html` carrie
 that the two agree.
 
 The policy has `'self'` for scripts, styles, fonts and workers, and two third-party hosts:
-`tiles.openfreemap.org` (the base map) and `gibs.earthdata.nasa.gov` (the satellite layers). It
-also has `object-src 'none'`, `base-uri 'self'` and `frame-ancestors 'none'`. It has no
+`tiles.openfreemap.org` (the base map) and `gibs.earthdata.nasa.gov` (the satellite layers), plus
+one frame source, `frame-src https://open.spotify.com`: the playlist player, an iframe the page adds
+only after the visitor presses the Spotify button. It also has `object-src 'none'`, `base-uri 'self'` and `frame-ancestors 'none'`. It has no
 `unsafe-inline`, no `unsafe-eval`, and no bare `https:` or `*`.
 
 `img-src` has `data:` and `blob:` because MapLibre decodes its sprite sheet through an image made

@@ -358,16 +358,16 @@ suite =
                         page ""
                 in
                 Expect.equal (Tuple.second (Update.update (Located (Err "denied")) model)) [ Alert (I18n.t model.loc "near.denied" []) ]
-        , test "the sound button flips the flag and a failure turns it off" <|
+        , test "the playlist button opens the player and closes it again, with no effect" <|
             \_ ->
                 let
                     ( on, effects ) =
-                        Update.update SoundPressed (page "")
+                        Update.update PlaylistPressed (page "")
                 in
                 all
-                    [ Expect.equal on.soundOn True
-                    , Expect.equal effects [ Sound True ]
-                    , Expect.equal (Tuple.first (Update.update SoundFailed on)).soundOn False
+                    [ Expect.equal on.playlistOpen True
+                    , Expect.equal effects []
+                    , Expect.equal (Tuple.first (Update.update PlaylistPressed on)).playlistOpen False
                     ]
         , test "the SOS panel opens, and closing it gives the focus back" <|
             \_ ->

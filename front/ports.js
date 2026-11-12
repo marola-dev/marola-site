@@ -1,6 +1,6 @@
 // Why this file exists: Elm reaches the browser only through ports. This file starts the page and
 // carries out each effect Main.elm sends: fetch, MapLibre and the flow layer (js/maplibre_ffi.mjs,
-// js/flow_layer_ffi.mjs), history, storage, audio and focus. Answers go back as plain JSON.
+// js/flow_layer_ffi.mjs), history, storage and focus. Answers go back as plain JSON.
 import { Elm } from "./src/Main.elm";
 import * as ffi from "./js/maplibre_ffi.mjs";
 
@@ -26,7 +26,6 @@ const run = {
   camera: (c) => ffi.camera(c.json),
   locate: () => ffi.locate((lat, lon) => send({ kind: "located", lat, lon }), (why) => send({ kind: "locateFailed", why: String(why) })),
   alert: (c) => ffi.alertText(c.text),
-  sound: (c) => ffi.playSound(c.on, c.url, () => send({ kind: "soundFailed" })),
   focus: (c) => ffi.focusId(c.id),
 };
 

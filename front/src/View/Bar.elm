@@ -1,4 +1,4 @@
-module View.Bar exposing (header, hourIndex, hourLabel, hourbar)
+module View.Bar exposing (header, hourIndex, hourLabel, hourbar, player)
 
 import Area exposing (Area)
 import Beach exposing (Selection(..))
@@ -22,7 +22,43 @@ brand model =
     Html.div [ cls "brand" ]
         [ Html.h1 [] [ Words.icon "brand", Html.text "marola" ]
         , Html.p [ cls "tagline" ] [ Html.text (Words.t model "header.tagline") ]
+        , piabrota model
         ]
+
+
+{-| The mark is room.piabrota.art's favicon (`/favicon.svg`), copied as `piabrota-eye.svg`.
+-}
+piabrota : Model -> Html Msg
+piabrota model =
+    Html.a
+        [ cls "piabrota"
+        , attr "href" Config.piabrota
+        , attr "target" "_blank"
+        , attr "rel" "noopener"
+        , attr "title" (Words.t model "brand.piabrota")
+        , attr "aria-label" (Words.t model "brand.piabrota")
+        ]
+        [ Html.img [ attr "src" "piabrota-eye.svg", attr "alt" "", attr "width" "20", attr "height" "20" ] [] ]
+
+
+{-| The iframe exists only while the player is open, so Spotify is not contacted before a click.
+-}
+player : Model -> Html Msg
+player model =
+    if model.playlistOpen then
+        Html.section [ idAttr "player", cls "player", attr "aria-label" (Words.t model "player.label") ]
+            [ Html.iframe
+                [ attr "src" Config.playlistEmbed
+                , attr "title" (Words.t model "player.label")
+                , attr "allow" "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                , attr "loading" "lazy"
+                ]
+                []
+            , Html.a [ attr "href" Config.playlist, attr "target" "_blank", attr "rel" "noopener" ] [ Html.text (Words.t model "player.open") ]
+            ]
+
+    else
+        Html.section ([ idAttr "player", cls "player" ] ++ Ui.hidden True) []
 
 
 areaOption : Bool -> Area -> ( String, Html Msg )
@@ -157,7 +193,7 @@ header model =
             , insta model
             , days model
             , control model "near" "locate" (Words.t model "controls.near") "controls.near_title" [ Words.pressed (model.here /= Nothing) ] NearPressed
-            , control model "sound" "sound" (Words.t model "controls.sound") "controls.sound_title" [ Words.pressed model.soundOn ] SoundPressed
+            , control model "playlist" "music" (Words.t model "controls.playlist") "controls.playlist_title" [ Words.pressed model.playlistOpen, attr "aria-controls" "player" ] PlaylistPressed
             , control model
                 "toggle-list"
                 "list"

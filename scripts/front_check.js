@@ -7,7 +7,7 @@
  * Not checked here:
  *  - the board JSON-Schema validator and the frozen schema-1 board (the Elm decoder tests and board-schema.sh own that)
  *  - the wind/wave flow layer (flow.js) and its particles: the compiled client ships them disabled, WebGL has no stub here
- *  - the AudioContext wave sound (the page plays an Audio loop; the sound-blocked scenario covers its url, loop and refusal)
+ *  - Spotify's player inside its iframe (the playlist scenario covers the iframe's url, the toggle and the CSP's frame-src)
  *  - the aspect-by-aspect tooltip numbers (MIP-0009 section 3), note codes, sea lore and score-note folds, SOS numbers
  *  - data-i18n attributes, the pseudo-locale gate, the lowercase house style
  *  - Mapbox token handling and the composite coastline layer (the client uses OpenFreeMap, no token)
@@ -24,7 +24,7 @@ const ROOT = path.resolve(__dirname, '..');
 const DIST = process.env.FRONT_CHECK_DIST || path.join(ROOT, 'dist');
 const distJson = (rel) => JSON.parse(fs.readFileSync(path.join(DIST, rel), 'utf8'));
 const read = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8');
-const NOT_CHECKED = ['board schema validation', 'flow layer (wind/waves/particles)', 'wave sound', 'tooltip aspect numbers, note codes, folds, SOS',
+const NOT_CHECKED = ['board schema validation', 'flow layer (wind/waves/particles)', 'Spotify player', 'tooltip aspect numbers, note codes, folds, SOS',
   'data-i18n attributes and the pseudo-locale', 'Mapbox token and composite coastline', 'static pages (nav, donate, members, contact, heads)'];
 
 let fails = 0, total = 0;
@@ -251,7 +251,7 @@ const HOOK = `export async function resolve(s, c, next) { if (s === '/vendor/map
 
 // ---- browser globals per scenario ----------------------------------------------------------------------------
 const BASE = 'http://127.0.0.1:8000/';
-const fetched = [], raw = [], urls = [], audios = [], store = new Map();
+const fetched = [], raw = [], urls = [], store = new Map();
 function installGlobals(search, overrides) {
   const def = (k, value) => Object.defineProperty(globalThis, k, { value, configurable: true, writable: true });
   def('document', document); def('HTMLElement', HTMLElement_);
@@ -470,11 +470,19 @@ async function nearDenied() {
   ok($('#near').getAttribute('aria-pressed') === 'false', 'the near button stays off');
 }
 
-async function soundBlocked() {
-  await click($('#sound'));
-  ok(audios.length === 1 && audios[0].url === 'vendor/sounds/waves.mp3' && audios[0].loop === true, 'the sound is the vendored wave loop, set to repeat', audios.map((a) => a.url).join());
-  await sleep(40);
-  ok($('#sound').getAttribute('aria-pressed') === 'false', 'a browser that refuses to play turns the sound button off again');
+async function playlist() {
+  const embed = 'https://open.spotify.com/embed/playlist/2hsuqvhCouatM8DtmKKl7U?theme=0';
+  ok(!$('#player iframe') && $('#playlist').getAttribute('aria-pressed') === 'false', 'no Spotify iframe before the playlist button is pressed');
+  await click($('#playlist'));
+  const frame = $('#player iframe');
+  ok(frame && frame.getAttribute('src') === embed, 'the playlist button opens the GREAT RESET embed', frame && frame.getAttribute('src'));
+  ok($('#playlist').getAttribute('aria-pressed') === 'true', 'the playlist button reads as pressed while the player is open');
+  const csp = /http-equiv="Content-Security-Policy" content="([^"]*)"/.exec(fs.readFileSync(path.join(DIST, 'index.html'), 'utf8'))[1];
+  ok(/(^|; )frame-src https:\/\/open\.spotify\.com(;|$)/.test(csp), 'the CSP lets the page frame open.spotify.com and nothing else', csp);
+  await click($('#playlist'));
+  ok(!$('#player iframe'), 'pressing it again removes the iframe');
+  const eye = $('a.piabrota');
+  ok(eye && eye.getAttribute('href') === 'https://piabrota.art' && eye.querySelector('img').getAttribute('src') === 'piabrota-eye.svg', 'the piabrota eye links to piabrota.art');
 }
 
 const SCENARIOS = {
@@ -492,9 +500,7 @@ const SCENARIOS = {
     Object.defineProperty(globalThis, 'localStorage', { value: { getItem: boom, setItem: boom }, configurable: true, writable: true });
   } },
   'near-denied': { search: '?area=floripa', run: nearDenied },
-  'sound-blocked': { search: '?area=floripa', run: soundBlocked, setup: () => {
-    globalThis.Audio = class { constructor(url) { this.url = url; audios.push(this); } pause() {} play() { return Promise.reject(new Error('blocked')); } };
-  } },
+  playlist: { search: '?area=floripa', run: playlist },
 };
 
 async function child(name) {

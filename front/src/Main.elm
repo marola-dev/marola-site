@@ -106,14 +106,11 @@ run effect =
         Alert message ->
             send "alert" (text "text" message)
 
-        Sound on ->
-            send "sound" (( "on", E.bool on ) :: text "url" Config.soundUrl)
-
         Focus id ->
             send "focus" (text "id" id)
 
 
-{-| What `ports.js` sends back: an answer to a request, a map event, a position or a refused sound.
+{-| What `ports.js` sends back: an answer to a request, a map event, or a position.
 -}
 incoming : D.Value -> Msg
 incoming value =
@@ -135,9 +132,6 @@ incomingOf kind =
 
         "locateFailed" ->
             D.map (Located << Err) (D.field "why" D.string)
-
-        "soundFailed" ->
-            D.succeed SoundFailed
 
         _ ->
             D.fail kind

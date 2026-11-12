@@ -36,5 +36,4 @@ type Effect
     | MoveCamera Camera
     | Locate
     | Alert String
-    | Sound Bool
     | Focus String
