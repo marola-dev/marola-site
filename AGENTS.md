@@ -83,13 +83,16 @@ app image (`marola-image`); this repo never builds the app.
   nav and footer. pt-BR goes at the root of the output and English under `en/`. Edit the Markdown and the posts,
   never the HTML; the pages carry no script and no inline style. The Python builders and the old `site/static`
   files stay until the cutover.
+- `back/tools` (`marola-tools`): the repo's own checks and test harnesses, in Haskell (ADR 0007): `design-check`
+  (DESIGN.md against `style.css`; `just design-check`), `js-check`, `elm-fixtures` (`front/tests/Fixtures.elm`
+  for elm-test), the server smoke checks and the fake GitHub. `marola-pages fixtures` writes `data/areas.json` and
+  a board per area for an offline preview.
 - `dist/` (not in git): what the server serves, assembled by `scripts/site_build.sh` (`just dist-build`).
 - `scripts/`, the new site: `site_build.sh` (assembles `dist/`), `front_build.sh` (Vite into `front/dist`),
-  `site_fixtures.mjs` (`data/areas.json` and a board per area for an offline preview), `front_check.js` (the
-  built page in a fake DOM and a MapLibre stub), `server_smoke.sh` with `server_smoke*.mjs` (the built server on
-  a free port; `fake_github.mjs` stands in for GitHub), `pages_parity.sh` (the pages against another build's,
-  byte for byte), `package_smoke.sh` (the Nix package's server), `golden.js` (writes and checks
-  `front/tests/golden.json`), `design_check.js` (DESIGN.md against `style.css`; `just design-check`), `nav_measure.sh` (the phone nav strip in a real browser; needs a Chromium, not in
+  `front_check.js` (the built page in a fake DOM and a MapLibre stub), `server_smoke.sh` (the built server on a
+  free port, checked by `marola-tools smoke*` against `marola-tools fake-github`), `pages_parity.sh` (the pages
+  against another build's, byte for byte), `package_smoke.sh` (the Nix package's server), `golden.js` (writes and checks
+  `front/tests/golden.json`), `js-allowlist.tsv` (every JavaScript file and why it is one; `just js-check`), `nav_measure.sh` (the phone nav strip in a real browser; needs a Chromium, not in
   `just quality`), `members_vendor_check.sh`, `basemap_extract.sh` (cuts the host's PMTiles file, and the fixture
   `site/fixtures/basemap.pmtiles`, from the Protomaps build pinned in `site/basemap.version`; network, by hand) and
   `basemap_style.mjs` (writes `front/public/map/`: the style and its glyphs).
@@ -144,6 +147,7 @@ just back-test            # the pages' and the server's tests; `just front-test`
 just front-fmt            # elm-format --validate (`just front-fmt write` formats); `just back-fmt` is ormolu's check, same argument
 just server-smoke         # the built server on a free port, end to end
 just design-check         # DESIGN.md against style.css
+just js-check             # every JavaScript file is on scripts/js-allowlist.tsv with its reason (ADR 0007)
 just audit                # npm vulnerabilities of front/ (by hand, needs network; not in `just quality`)
 just nix-build            # nix build .#default: the whole site as one package
 just site-build floripa   # the legacy build: boards from the pinned image into site/dist (docker, network)
@@ -171,7 +175,7 @@ A new `/api/v1` route needs an entry in `Marola.Server.OpenApi`, or `OpenApiSpec
 dependency needs a bound in its `.cabal` file and `cabal freeze` at the root.
 
 **What CI runs for the new site** (`ci.yml`, all three in `ci-ok`): `back` (ormolu check, `cabal build all`,
-`cabal test all`), `front` (elm-format check, `npm test`, `scripts/site_build.sh --fixtures`,
+`cabal test all`, `marola-tools design-check` and `js-check`), `front` (elm-format check, `npm test`, `scripts/site_build.sh --fixtures`,
 `scripts/front_check.js`) and `smoke` (`scripts/server_smoke.sh` over the `dist/` the `front` job built). The
 legacy checks stay in `static` and `python`. A workflow action added to these jobs is pinned to a full commit SHA
 with the version in a comment.
@@ -288,6 +292,22 @@ touches, in both languages (pt-BR and en), on desktop and phone.
 
 The phase list is the umbrella's `docs/PHASES.md`. Site work serves the current phase.
 
+## Elm or Haskell (hard rule)
+
+Hoffmann, 2026-11-12: this repo is written in Elm or Haskell. JavaScript only when it is 100% necessary, and then
+as small as it can be ([ADR 0007](docs/adr/0007-elm-or-haskell-hard-rule.md)).
+
+- **What counts as necessary**: glue around a library or a browser API that has no Elm or Haskell binding
+  (MapLibre GL JS, WebGL, geolocation, `localStorage`, `history`), a tool that reads only JavaScript (Vite's
+  config), a check that must run compiled JavaScript (`front_check.js`), vendored third-party code, and the legacy
+  page until the cutover. Anything Elm can do is Elm: requests are elm/http, focus is `Browser.Dom`, decoding and
+  every pure function are Elm. Any script, check or harness is Haskell (`back/tools`), or shell when it only calls
+  other tools. A new Node script is never the answer to "it is a small tool".
+- **How it is held**: `scripts/js-allowlist.tsv` lists every JavaScript file git tracks with its reason, and
+  `just js-check` (in `just quality` and CI's `back` job) fails on a file that is not listed and on an entry that
+  matches no file. A pull request that adds a line to it says why Elm or Haskell cannot do it.
+- TypeScript is JavaScript for this rule (marola-dev/marola-site#50 is superseded).
+
 ## Code style
 
 The new site is Elm in `front/` and Haskell in `back/` ([ADR 0005](docs/adr/0005-elm-and-haskell.md)),
@@ -301,8 +321,8 @@ Elm and Haskell: no exception and no partial function for a data error (a `Resul
 set is a custom type with an `Unknown String` case where the board may carry a new value.
 
 - **Elm** (0.19.1): formatted by elm-format 0.8.8, pinned in `front/package.json` (`just front-fmt`). Elm owns the
-  model and `update`; every effect leaves as data through a port, and no port exists beyond the ones
-  `front/ports.js` handles. A hand-written JavaScript file goes in `front/js/` (or is `front/ports.js`) with its
+  model and `update`; every effect leaves as data, Main carries it out with elm/http or `Browser.Dom` where Elm
+  can, and through a port only where it cannot; no port exists beyond the ones `front/ports.js` handles. A hand-written JavaScript file goes in `front/js/` (or is `front/ports.js`) with its
   reason at the top. Tests are elm-test (`just front-test`); a new `update` branch gets a case in `tests/`.
 - **Haskell** (GHC 9.6, `GHC2021`): formatted by ormolu 0.7.7.0 (`just back-fmt`), `-Wall` clean (the `common`
   stanza of each `.cabal` sets it; a new warning is fixed, not silenced), tested with hspec (`just back-test`).

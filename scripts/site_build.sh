@@ -49,9 +49,9 @@ cp -r site/static/img/members "$dist/img/members"
 cp site/board.schema.json "$dist/"
 "$server" csp > "$dist/csp.txt"
 
-node scripts/site_fixtures.mjs areas "$dist"
+"$pages" fixtures areas "$dist"
 if [ "$fixtures" -eq 1 ]; then
-  node scripts/site_fixtures.mjs boards "$dist"
+  "$pages" fixtures boards "$dist"
   # The base map is host data (MAROLA_TILES, docs/5-hosting.md); the server falls back to this copy.
   mkdir -p "$dist/tiles"
   cp site/fixtures/basemap.pmtiles "$dist/tiles/marola.pmtiles"

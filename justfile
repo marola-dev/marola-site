@@ -51,8 +51,12 @@ golden *args:
 
 # DESIGN.md against front/public/style.css: every :root token is documented with its value, and no hex colour sits outside :root. Runs its self-test first.
 design-check:
-    node scripts/design_check.js --self-test
-    node scripts/design_check.js
+    cabal run -v0 exe:marola-tools -- design-check --self-test
+    cabal run -v0 exe:marola-tools -- design-check
+
+# ADR 0007: every JavaScript file git tracks is on scripts/js-allowlist.tsv with the reason it cannot be Elm or Haskell.
+js-check:
+    cabal run -v0 exe:marola-tools -- js-check
 
 # npm packages of front/ with a known vulnerability. By hand, needs network (it asks the npm registry); not in `quality`.
 audit:
@@ -77,6 +81,7 @@ quality:
     node scripts/redirect_check.js
     node scripts/golden.js --check
     just design-check
+    just js-check
     just front-fmt
     just back-fmt
     just front-test
@@ -144,7 +149,7 @@ front-fmt mode="check":
 front-check:
     node scripts/front_check.js
 
-# Build the Haskell packages (back/pages, back/server) from the root cabal.project.
+# Build the Haskell packages (back/pages, back/server, back/tools) from the root cabal.project.
 back-build:
     cabal build all
 
@@ -160,7 +165,7 @@ back-fmt mode="check":
     [ "{{ mode }}" = write ] && ormolu_mode=inplace || ormolu_mode=check
     git ls-files -z 'back/*.hs' | xargs -0 ormolu --mode "$ormolu_mode"
 
-# The Haskell tests (hspec): the page renderer and every page in both languages, and the server on its WAI pipeline.
+# The Haskell tests (hspec): the page renderer and every page in both languages, the server on its WAI pipeline, and marola-tools' checks.
 back-test:
     cabal test all
 

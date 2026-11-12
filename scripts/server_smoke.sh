@@ -2,18 +2,17 @@
 # Starts the built server (back/server) on a free port against dist, checks what it answers (headers,
 # hostile paths, the contact form, the study API), and stops it. Run `scripts/site_build.sh --fixtures` first.
 # MAROLA_SERVER_BIN=<path> runs that executable instead of the one cabal builds (the Nix package's,
-# for example); SMOKE_STATIC=<dir> serves another built page than dist.
+# for example); MAROLA_TOOLS_BIN=<path> the same for marola-tools (the checks, back/tools);
+# SMOKE_STATIC=<dir> serves another built page than dist.
 set -euo pipefail
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$root"
 
 static="${SMOKE_STATIC:-$root/dist}"
-tools=(node)
-[ -n "${MAROLA_SERVER_BIN:-}" ] || tools+=(cabal)
-for tool in "${tools[@]}"; do
-  command -v "$tool" >/dev/null || { echo "server_smoke: $tool is not installed; run inside 'nix develop'" >&2; exit 1; }
-done
+if [ -z "${MAROLA_SERVER_BIN:-}" ] || [ -z "${MAROLA_TOOLS_BIN:-}" ]; then
+  command -v cabal >/dev/null || { echo "server_smoke: cabal is not installed; run inside 'nix develop'" >&2; exit 1; }
+fi
 [ -f "$static/index.html" ] || { echo "server_smoke: $static is missing; run 'just dist-build --fixtures'" >&2; exit 1; }
 
 if [ -n "${MAROLA_SERVER_BIN:-}" ]; then
@@ -21,6 +20,12 @@ if [ -n "${MAROLA_SERVER_BIN:-}" ]; then
 else
   cabal build -v0 exe:marola-server >&2
   server=("$(cabal list-bin marola-server)")
+fi
+if [ -n "${MAROLA_TOOLS_BIN:-}" ]; then
+  tools="$MAROLA_TOOLS_BIN"
+else
+  cabal build -v0 exe:marola-tools >&2
+  tools="$(cabal list-bin marola-tools)"
 fi
 
 tmp="$(mktemp -d)"
@@ -35,18 +40,18 @@ trap cleanup EXIT
 mkdir -p "$tmp/data/floripa"
 printf '{"smoke":true}\n' > "$tmp/data/floripa/latest.json"
 
-port="$(node -e 'const s = require("net").createServer().listen(0, "127.0.0.1", () => { console.log(s.address().port); s.close(); });')"
+port="$("$tools" free-port)"
 # A file only MAROLA_TILES holds; the base map itself, tiles/marola.pmtiles, is the fixture in dist.
 mkdir -p "$tmp/tiles"
 printf 'smoke tiles\n' > "$tmp/tiles/smoke.pmtiles"
 [ -f "$static/tiles/marola.pmtiles" ] || { echo "server_smoke: $static/tiles/marola.pmtiles is missing; run 'just dist-build --fixtures'" >&2; exit 1; }
 export MAROLA_PORT="$port" MAROLA_STATIC="$static" MAROLA_DATA="$tmp/data" MAROLA_DB="$tmp/marola.db" MAROLA_STUDIES="$tmp/studies" MAROLA_TILES="$tmp/tiles"
 
-# The GitHub login runs against a fake GitHub (scripts/fake_github.mjs). MAROLA_DEV=1 lets the server take its
+# The GitHub login runs against a fake GitHub (`marola-tools fake-github`). MAROLA_DEV=1 lets the server take its
 # URLs from the environment and drop `Secure` and the `__Host-` prefix, which plain HTTP cannot carry.
 gh_secret="fake-smoke-client-secret"
 printf '%s\n' "$gh_secret" > "$tmp/github-secret"
-node scripts/fake_github.mjs "$gh_secret" > "$tmp/github.port" &
+"$tools" fake-github "$gh_secret" > "$tmp/github.port" &
 gh_pid=$!
 for _ in $(seq 1 50); do [ -s "$tmp/github.port" ] && break; sleep 0.1; done
 gh_port="$(cat "$tmp/github.port")"
@@ -58,7 +63,7 @@ pid=$!
 
 ready=0
 for _ in $(seq 1 100); do
-  if node -e 'fetch(process.argv[1]).then(() => process.exit(0), () => process.exit(1))' "http://127.0.0.1:$port/" 2>/dev/null; then
+  if "$tools" wait-http "http://127.0.0.1:$port/" 2>/dev/null; then
     ready=1
     break
   fi
@@ -72,7 +77,7 @@ rss_kb="$(grep VmRSS "/proc/$pid/status" | tr -dc '0-9')"
 echo "server_smoke: resident set after start: $((rss_kb / 1024)) MB"
 [ "$rss_kb" -lt 102400 ] || { echo "server_smoke: the server uses more than 100 MB at start" >&2; exit 1; }
 
-node scripts/server_smoke.mjs "http://127.0.0.1:$port" "${server[@]}" inbox
+"$tools" smoke "http://127.0.0.1:$port" "${server[@]}" inbox
 
 
 # Studies: an account and a key from the CLI (MAROLA_DEV=1 for that one command only), a 2 MB PDF built here,
@@ -84,7 +89,7 @@ node scripts/server_smoke.mjs "http://127.0.0.1:$port" "${server[@]}" inbox
 } > "$tmp/study.pdf"
 sha="$(sha256sum "$tmp/study.pdf" | cut -d' ' -f1)"
 key="$("${server[@]}" dev-account --login smoke --age-days 30)"
-node scripts/server_smoke_studies.mjs "http://127.0.0.1:$port" "$key" "$tmp/study.pdf" "$sha" "$tmp/studies"
+"$tools" smoke-studies "http://127.0.0.1:$port" "$key" "$tmp/study.pdf" "$sha" "$tmp/studies"
 if grep -q "$key" "$tmp/server.log"; then
   echo "server_smoke: the API key is in the server log" >&2
   exit 1
@@ -92,7 +97,7 @@ fi
 
 
 # The web side: login, a key, the form with its token, the study page, a report, a withdrawal.
-node scripts/server_smoke_submit.mjs "http://127.0.0.1:$port" "$tmp/study.pdf" "$sha"
+"$tools" smoke-submit "http://127.0.0.1:$port" "$tmp/study.pdf" "$sha"
 
 # The board's commands on the same database (docs/6-board.md): hide a study, see its tombstone and that its file is
 # not served, purge it, see the file go, and see the exit codes.
@@ -100,10 +105,10 @@ board() { "${server[@]}" "$@"; }
 read -r api_id _ < <(board studies list --status public)
 [ -n "$api_id" ] || { echo "server_smoke: the board's list shows no public study" >&2; exit 1; }
 board studies hide "$api_id" --reason "smoke: hidden by the board" > /dev/null
-node scripts/server_smoke_board.mjs "http://127.0.0.1:$port" "$api_id" "$sha" "$tmp/studies" hidden
+"$tools" smoke-board "http://127.0.0.1:$port" "$api_id" "$sha" "$tmp/studies" hidden
 purged="$(board studies hide "$api_id" --reason "smoke: purge" --purge)"
 case "$purged" in "purged $sha"*) ;; *) echo "server_smoke: the purge printed no record line: $purged" >&2; exit 1 ;; esac
-node scripts/server_smoke_board.mjs "http://127.0.0.1:$port" "$api_id" "$sha" "$tmp/studies" purged
+"$tools" smoke-board "http://127.0.0.1:$port" "$api_id" "$sha" "$tmp/studies" purged
 rc=0; board studies unhide "$api_id" > /dev/null 2>&1 || rc=$?
 [ "$rc" -eq 1 ] || { echo "server_smoke: unhide of a purged study exited $rc, not 1" >&2; exit 1; }
 rc=0; board studies hide "$api_id" > /dev/null 2>&1 || rc=$?

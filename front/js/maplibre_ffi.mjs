@@ -238,7 +238,6 @@ export const readLanguage = () => { try { return localStorage.getItem("marola.la
 export const replaceUrl = (path, query) => history.replaceState(null, "", path + (query ? "?" + query : ""));
 export const alertText = (text) => window.alert(text);
 export const setDocument = (language, title) => { document.documentElement.lang = language; document.title = title; };
-export const focusId = (id) => { const el = document.getElementById(id); if (el) el.focus(); };
 
 export const readEnv = () => JSON.stringify({
   path: location.pathname, search: location.search, languages: [...(navigator.languages || [])],

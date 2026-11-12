@@ -10,6 +10,7 @@ import Data.Text.IO qualified as TIO
 import Data.Time.Calendar (Day)
 import Data.Time.Clock (getCurrentTime, utctDay)
 import Data.Time.Format (defaultTimeLocale, parseTimeM)
+import Marola.Pages.Fixtures qualified as Fixtures
 import Marola.Pages.Loader (readText)
 import Marola.Pages.Loader qualified as Loader
 import Marola.Pages.MapPage qualified as MapPage
@@ -66,6 +67,7 @@ main :: IO ()
 main = do
   args <- getArgs
   case args of
+    ("fixtures" : rest) -> Fixtures.main rest
     [site, outDir] -> do
       members <- membersText site
       envE <- either (pure . Left) (Loader.load site) members
