@@ -1,4 +1,4 @@
-module View.Bar exposing (header, hourIndex, hourLabel, hourbar, player)
+module View.Bar exposing (header, hourIndex, hourLabel, hourbar)
 
 import Area exposing (Area)
 import Beach exposing (Selection(..))
@@ -21,9 +21,8 @@ import Words
 brand : Model -> Html Msg
 brand model =
     Html.div [ cls "brand" ]
-        [ Html.h1 [] [ Words.icon "brand", Html.text "marola" ]
+        [ Html.h1 [] [ Words.icon "brand", Html.text "marola", piabrota model ]
         , Html.p [ cls "tagline" ] [ Html.text (Words.t model "header.tagline") ]
-        , piabrota model
         ]
 
 
@@ -209,6 +208,7 @@ header model =
                 [ attr "aria-controls" "list", Words.expanded (model.panel == BeachList) ]
                 ListToggled
             ]
+        , player model
         ]
 
 
