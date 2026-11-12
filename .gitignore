@@ -23,3 +23,8 @@ __pycache__/
 
 # `just server-build` output
 /app/Server/out/
+
+# cabal (back/pages, back/server; the project is cabal.project at the root)
+/dist-newstyle/
+cabal.project.local
+cabal.project.local~

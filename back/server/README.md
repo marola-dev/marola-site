@@ -7,11 +7,12 @@ server is read by the other.
 
 ## Build and test
 
-GHC 9.6.6 and cabal 3.12. Versions are pinned in `cabal.project.freeze`. Run these from this folder:
+GHC 9.6.6 and cabal 3.12. The cabal project is the repo's root `cabal.project` (this package and
+`back/pages`), and the versions are pinned in the root `cabal.project.freeze`. Run these from the root:
 
 ```bash
 cabal build exe:marola-server
-cabal test
+cabal test marola-server
 cabal list-bin marola-server        # the path of the executable
 ```
 
@@ -19,7 +20,7 @@ The smoke test runs the whole site against a built page, using node and the fake
 `scripts/fake_github.mjs`:
 
 ```bash
-MAROLA_SERVER_BIN="$(cabal list-bin marola-server)" SMOKE_STATIC=<built page> bash ../../scripts/server_smoke.sh
+MAROLA_SERVER_BIN="$(cabal list-bin marola-server)" SMOKE_STATIC=<built page> scripts/server_smoke.sh
 ```
 
 ## Run

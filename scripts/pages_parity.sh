@@ -21,8 +21,8 @@ expected=(
 
 bin="${MAROLA_PAGES_BIN:-}"
 if [ -z "$bin" ]; then
-  (cd "$root/back/pages" && cabal build -v0 exe:marola-pages) >&2
-  bin="$(cd "$root/back/pages" && cabal list-bin marola-pages)"
+  (cd "$root" && cabal build -v0 exe:marola-pages) >&2
+  bin="$(cd "$root" && cabal list-bin marola-pages)"
 fi
 
 if [ -z "${MAROLA_PAGES_TODAY:-}" ]; then
