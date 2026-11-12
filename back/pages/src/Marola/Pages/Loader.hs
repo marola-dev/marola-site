@@ -3,22 +3,22 @@ module Marola.Pages.Loader (readText, catalog, load) where
 
 import Control.Monad (filterM, forM)
 import Data.Aeson (FromJSON (..), withObject, (.:))
-import qualified Data.Aeson as Aeson
-import qualified Data.Aeson.Types as Aeson
-import qualified Data.ByteString as B
-import qualified Data.ByteString.Lazy as BL
+import Data.Aeson qualified as Aeson
+import Data.Aeson.Types qualified as Aeson
+import Data.ByteString qualified as B
+import Data.ByteString.Lazy qualified as BL
 import Data.List (sort)
 import Data.Map.Strict (Map)
-import qualified Data.Map.Strict as Map
+import Data.Map.Strict qualified as Map
 import Data.Maybe (catMaybes)
 import Data.Text (Text)
-import qualified Data.Text as T
-import qualified Data.Text.Encoding as TE
-import qualified Data.Text.Encoding.Error as TE
+import Data.Text qualified as T
+import Data.Text.Encoding qualified as TE
+import Data.Text.Encoding.Error qualified as TE
 import Marola.Pages.I18n (Catalog)
-import qualified Marola.Pages.Language as Language
+import Marola.Pages.Language qualified as Language
 import Marola.Pages.Site (Area (..), Env (..))
-import qualified Marola.Pages.Site as Site
+import Marola.Pages.Site qualified as Site
 import System.Directory (doesDirectoryExist, doesFileExist, listDirectory)
 import System.FilePath (dropExtension, takeExtension, (</>))
 
@@ -95,11 +95,11 @@ load site members = do
     as <- areas
     Right
       Env
-        { envCatalog = c
-        , envContent = Map.fromList files
-        , envNews = posts
-        , envNewsIndex = indexText
-        , envMembers = members
-        , envAvatars = Map.fromList [(T.pack (dropExtension f), T.pack f) | f <- avatarPaths]
-        , envAreas = as
+        { envCatalog = c,
+          envContent = Map.fromList files,
+          envNews = posts,
+          envNewsIndex = indexText,
+          envMembers = members,
+          envAvatars = Map.fromList [(T.pack (dropExtension f), T.pack f) | f <- avatarPaths],
+          envAreas = as
         }

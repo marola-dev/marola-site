@@ -1,12 +1,12 @@
 module Main (main) where
 
-import qualified EqualitySpec
-import qualified HtmlSpec
-import qualified MarkdownSpec
-import qualified MembersSpec
-import qualified MetaSpec
-import qualified NewsSpec
-import qualified PageSpec
+import EqualitySpec qualified
+import HtmlSpec qualified
+import MarkdownSpec qualified
+import MembersSpec qualified
+import MetaSpec qualified
+import NewsSpec qualified
+import PageSpec qualified
 import Support (loadEnv)
 import Test.Hspec
 

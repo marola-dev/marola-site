@@ -1,6 +1,7 @@
 module Rank exposing (byDistance, byScore)
 
-{-| The list's two orders; the distance travels beside the beach. -}
+{-| The list's two orders; the distance travels beside the beach.
+-}
 
 import Beach exposing (Beach, Selection)
 import Geo exposing (Point)

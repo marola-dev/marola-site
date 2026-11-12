@@ -1,6 +1,7 @@
 module MapJson exposing (cameraJson, mapConfig)
 
-{-| What `maplibre_ffi.mjs` reads as JSON text: the map's configuration and a camera move. -}
+{-| What `maplibre_ffi.mjs` reads as JSON text: the map's configuration and a camera move.
+-}
 
 import Config
 import Effect exposing (Camera(..))

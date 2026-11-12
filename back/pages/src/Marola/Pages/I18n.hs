@@ -2,11 +2,11 @@
 module Marola.Pages.I18n (Catalog, Locale (..), lookupMessage, t) where
 
 import Data.Map.Strict (Map)
-import qualified Data.Map.Strict as Map
+import Data.Map.Strict qualified as Map
 import Data.Text (Text)
-import qualified Marola.Pages.Icu as Icu
+import Marola.Pages.Icu qualified as Icu
 import Marola.Pages.Language (Language)
-import qualified Marola.Pages.Language as Language
+import Marola.Pages.Language qualified as Language
 
 type Catalog = Map Language (Map Text Text)
 

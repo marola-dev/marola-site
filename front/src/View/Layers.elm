@@ -1,6 +1,7 @@
 module View.Layers exposing (key, rail)
 
-{-| The rail of map layers and the key of the one on show. -}
+{-| The rail of map layers and the key of the one on show.
+-}
 
 import DateFmt
 import Html exposing (Html)

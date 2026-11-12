@@ -133,16 +133,16 @@ spec = describe "github login" $ do
     everything <- T.unlines <$> logLines site
     everything `shouldNotSatisfy` T.isInfixOf (TE.decodeUtf8 token)
 
-  it "without the client id or the secret file login answers 503 and the rest of the site works" $
-    forM_
-      [ \c -> c {githubClientId = Nothing}
-      , \c -> c {githubSecretFile = Nothing}
-      , \c -> c {githubSecretFile = Just "/nonexistent/secret"}
+  it "without the client id or the secret file login answers 503 and the rest of the site works"
+    $ forM_
+      [ \c -> c {githubClientId = Nothing},
+        \c -> c {githubSecretFile = Nothing},
+        \c -> c {githubSecretFile = Just "/nonexistent/secret"}
       ]
-      $ \tweak -> withSiteWith tweak [] $ \site -> do
-        login <- send site (get "/auth/github/login")
-        login.status `shouldBe` 503
-        back <- send site (get "/auth/github/callback?code=c&state=s")
-        back.status `shouldBe` 503
-        home <- send site (get "/contact.html")
-        home.status `shouldBe` 200
+    $ \tweak -> withSiteWith tweak [] $ \site -> do
+      login <- send site (get "/auth/github/login")
+      login.status `shouldBe` 503
+      back <- send site (get "/auth/github/callback?code=c&state=s")
+      back.status `shouldBe` 503
+      home <- send site (get "/contact.html")
+      home.status `shouldBe` 200

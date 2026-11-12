@@ -11,6 +11,7 @@ import Beach exposing (Selection(..))
 import Board
 import Dec
 import Dict exposing (Dict)
+import Expect
 import Flow
 import Fmt
 import Geo exposing (Point)
@@ -23,7 +24,6 @@ import NumFmt
 import Rank
 import Support exposing (allClose, beachNamed, catalog, check, close, langDecoder, locale, selection)
 import Test exposing (Test, describe, test)
-import Expect
 import Water
 
 

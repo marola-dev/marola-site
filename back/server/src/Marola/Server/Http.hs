@@ -1,28 +1,28 @@
 -- | What every handler shares: the environment, request helpers and plain responses.
 module Marola.Server.Http
-  ( Env (..)
-  , Logger
-  , Level (..)
-  , GithubRequest (..)
-  , GithubHttp
-  , BodyTooLarge (..)
-  , plain
-  , html
-  , jsonResponse
-  , redirect303
-  , header
-  , queryText
-  , cookie
-  , decodedPath
-  , readBodyLimited
-  , readForm
-  , FormError (..)
-  , isContentType
-  , tshow
-  , Route (..)
-  , Params
-  , matchRoute
-  , languageOf
+  ( Env (..),
+    Logger,
+    Level (..),
+    GithubRequest (..),
+    GithubHttp,
+    BodyTooLarge (..),
+    plain,
+    html,
+    jsonResponse,
+    redirect303,
+    header,
+    queryText,
+    cookie,
+    decodedPath,
+    readBodyLimited,
+    readForm,
+    FormError (..),
+    isContentType,
+    tshow,
+    Route (..),
+    Params,
+    matchRoute,
+    languageOf,
   )
 where
 
@@ -52,25 +52,25 @@ data Level = Information | Warning | Error deriving (Eq, Show)
 type Logger = Text -> Level -> Text -> IO ()
 
 data GithubRequest = GithubRequest
-  { method :: ByteString
-  , url :: Text
-  , headers :: [Header]
-  , body :: ByteString
+  { method :: ByteString,
+    url :: Text,
+    headers :: [Header],
+    body :: ByteString
   }
 
 -- | The two GitHub calls go through this, so a test swaps in a fake GitHub. Status and body.
 type GithubHttp = GithubRequest -> IO (Int, ByteString)
 
 data Env = Env
-  { config :: Config
-  , clock :: IO UTCTime
-  , github :: GithubHttp
-  , logger :: Logger
-  , csrfKey :: ByteString
-  , catalog :: Catalog
-  , keyRates :: Window Text
-  , general :: Window String
-  , strict :: Window String
+  { config :: Config,
+    clock :: IO UTCTime,
+    github :: GithubHttp,
+    logger :: Logger,
+    csrfKey :: ByteString,
+    catalog :: Catalog,
+    keyRates :: Window Text,
+    general :: Window String,
+    strict :: Window String
   }
 
 tshow :: (Show a) => a -> Text
@@ -104,9 +104,9 @@ cookie :: Request -> ByteString -> Maybe Text
 cookie req name =
   let pairs =
         [ (BC.strip k, BC.strip (BS.drop 1 v))
-        | raw <- [v | (n, v) <- requestHeaders req, n == "Cookie"]
-        , part <- BC.split ';' raw
-        , let (k, v) = BC.break (== '=') part
+        | raw <- [v | (n, v) <- requestHeaders req, n == "Cookie"],
+          part <- BC.split ';' raw,
+          let (k, v) = BC.break (== '=') part
         ]
    in TE.decodeUtf8With lenientDecode <$> lookup name pairs
 
@@ -118,10 +118,10 @@ decodedPath req =
       go acc b = case BS.uncons b of
         Nothing -> BS.pack (reverse acc)
         Just (37, rest)
-          | BS.length rest >= 2
-          , Just hi <- hex (BS.index rest 0)
-          , Just lo <- hex (BS.index rest 1)
-          , hi * 16 + lo /= 47 ->
+          | BS.length rest >= 2,
+            Just hi <- hex (BS.index rest 0),
+            Just lo <- hex (BS.index rest 1),
+            hi * 16 + lo /= 47 ->
               go (fromIntegral (hi * 16 + lo) : acc) (BS.drop 2 rest)
           | BS.length rest >= 2 && BS.take 2 rest `elem` ["2f", "2F"] -> go (map (fromIntegral . fromEnum) (reverse "%2F") <> acc) (BS.drop 2 rest)
         Just (c, rest) -> go (c : acc) rest
@@ -179,10 +179,10 @@ type Params = Map.Map Text Text
 -- | An endpoint: a method, a pattern of literal segments and @{name}@
 -- parameters, and whether the strict rate limit applies.
 data Route = Route
-  { method :: Method
-  , pattern :: Text
-  , strict :: Bool
-  , run :: Env -> Request -> Params -> IO Response
+  { method :: Method,
+    pattern :: Text,
+    strict :: Bool,
+    run :: Env -> Request -> Params -> IO Response
   }
 
 -- | The parameters when @path@ (as 'decodedPath' gives it) matches @pattern@. Literal segments compare

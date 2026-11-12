@@ -1,6 +1,7 @@
 module I18n exposing (Catalog, Locale, arg, lookup, messagesDecoder, numberArg, t, word)
 
-{-| The message catalog and `t()`: a port of ui.js `lookup` and `t`. -}
+{-| The message catalog and `t()`: a port of ui.js `lookup` and `t`.
+-}
 
 import Dict exposing (Dict)
 import Icu

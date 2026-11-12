@@ -3,7 +3,7 @@
 module Marola.Server.Contact (validateEmail, validateMessage, sameSite, authority, handle) where
 
 import Control.Exception (try)
-import Data.Char (generalCategory, isAlphaNum, isAscii, isDigit, isSpace, GeneralCategory (Control))
+import Data.Char (GeneralCategory (Control), generalCategory, isAlphaNum, isAscii, isDigit, isSpace)
 import Data.Map.Strict qualified as Map
 import Data.Text (Text)
 import Data.Text qualified as T

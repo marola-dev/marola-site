@@ -12,13 +12,13 @@ import Test.Hspec
 
 expected :: [(HeaderName, ByteString)]
 expected =
-  [ ("Content-Security-Policy", TE.encodeUtf8 Csp.policy <> "; form-action 'self'")
-  , ("Strict-Transport-Security", "max-age=63072000; includeSubDomains")
-  , ("X-Content-Type-Options", "nosniff")
-  , ("Referrer-Policy", "strict-origin-when-cross-origin")
-  , ("Permissions-Policy", "geolocation=(self), camera=(), microphone=(), payment=(), usb=()")
-  , ("Cross-Origin-Opener-Policy", "same-origin")
-  , ("Cross-Origin-Resource-Policy", "same-origin")
+  [ ("Content-Security-Policy", TE.encodeUtf8 Csp.policy <> "; form-action 'self'"),
+    ("Strict-Transport-Security", "max-age=63072000; includeSubDomains"),
+    ("X-Content-Type-Options", "nosniff"),
+    ("Referrer-Policy", "strict-origin-when-cross-origin"),
+    ("Permissions-Policy", "geolocation=(self), camera=(), microphone=(), payment=(), usb=()"),
+    ("Cross-Origin-Opener-Policy", "same-origin"),
+    ("Cross-Origin-Resource-Policy", "same-origin")
   ]
 
 checkHeaders :: String -> Res -> Expectation
@@ -49,15 +49,15 @@ spec = describe "headers" $ do
 
   it "cache: no-cache for html and json, a day for fonts and images, immutable for hashed files" $ withSite $ \site ->
     forM_
-      [ ("/", "no-cache")
-      , ("/index.html", "no-cache")
-      , ("/app.js", "no-cache")
-      , ("/style.css", "no-cache")
-      , ("/data/floripa/latest.json", "no-cache")
-      , ("/font.woff2", "public, max-age=86400")
-      , ("/photo.png", "public, max-age=86400")
-      , ("/logo.svg", "public, max-age=86400")
-      , ("/app.1a2b3c4d5e.js", "public, max-age=31536000, immutable")
+      [ ("/", "no-cache"),
+        ("/index.html", "no-cache"),
+        ("/app.js", "no-cache"),
+        ("/style.css", "no-cache"),
+        ("/data/floripa/latest.json", "no-cache"),
+        ("/font.woff2", "public, max-age=86400"),
+        ("/photo.png", "public, max-age=86400"),
+        ("/logo.svg", "public, max-age=86400"),
+        ("/app.1a2b3c4d5e.js", "public, max-age=31536000, immutable")
       ]
       $ \(p, cache) -> do
         res <- send site (get p)

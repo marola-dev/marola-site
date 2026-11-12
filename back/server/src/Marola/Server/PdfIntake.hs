@@ -2,20 +2,21 @@
 -- to a temp file. The bytes are never held in memory as a whole. Storing under the hash is 'commit'.
 -- ADR 0004 and docs/5-hosting.md give the rules.
 module Marola.Server.PdfIntake
-  ( maxBytes
-  , forbiddenNames
-  , Received (..)
-  , receive
-  , receiveBytes
-  , pathOf
-  , used
-  , fitsQuota
-  , commit
-  , discard
-  -- * The scanners, for the tests
-  , scanNames
-  , dictionaryOk
-  , headerOk
+  ( maxBytes,
+    forbiddenNames,
+    Received (..),
+    receive,
+    receiveBytes,
+    pathOf,
+    used,
+    fitsQuota,
+    commit,
+    discard,
+
+    -- * The scanners, for the tests
+    scanNames,
+    dictionaryOk,
+    headerOk,
   )
 where
 
@@ -41,8 +42,8 @@ import System.Directory
 import System.FilePath ((</>))
 import System.IO hiding (latin1)
 import System.Posix.Files (setFileMode)
-import System.Posix.Types (FileMode)
 import System.Posix.IO qualified as P
+import System.Posix.Types (FileMode)
 import Text.ParserCombinators.ReadP qualified as R
 
 maxBytes :: Int64
@@ -76,12 +77,12 @@ hexValue b
 
 -- | Reads names byte by byte, across chunk borders. The name bytes are kept reversed, at most 32.
 data Names = Names
-  { inName :: !Bool
-  , len :: !Int
-  , buf :: ![Word8]
-  , pendingOpenAction :: !Bool
-  , encrypted :: !Bool
-  , found :: !(Maybe Text)
+  { inName :: !Bool,
+    len :: !Int,
+    buf :: ![Word8],
+    pendingOpenAction :: !Bool,
+    encrypted :: !Bool,
+    found :: !(Maybe Text)
   }
 
 names0 :: Names
@@ -176,16 +177,16 @@ feedNames s0 chunk = (go s0 0, ())
 -- @N G obj@ that starts a line ('headerOk'). Anything else is a refusal: false positives cost less
 -- than an exploit. A stream with @/Filter /FlateDecode@ records the offset of its first byte.
 data Finder = Finder
-  { head_ :: !ByteString
-  , after :: ![Word8]
-  -- ^ reversed
-  , afterLen :: !Int
-  , pending :: !Bool
-  , skipping :: !Bool
-  , offsets :: ![Int64]
-  -- ^ reversed
-  , count :: !Int
-  , refusal :: !(Maybe Text)
+  { head_ :: !ByteString,
+    -- | reversed
+    after :: ![Word8],
+    afterLen :: !Int,
+    pending :: !Bool,
+    skipping :: !Bool,
+    -- | reversed
+    offsets :: ![Int64],
+    count :: !Int,
+    refusal :: !(Maybe Text)
   }
 
 finder0 :: Finder
@@ -211,12 +212,12 @@ dictionaryOk s = any (null . snd) (R.readP_to_S grammar s)
     ref = ws1 >> int >> ws1 >> int >> ws1 >> R.char 'R'
     entry =
       R.choice
-        [ key "/Type" >> ws0 >> R.string "/ObjStm" >> pure ()
-        , key "/N" >> ws1 >> int >> pure ()
-        , key "/First" >> ws1 >> int >> pure ()
-        , key "/Length" >> ws1 >> int >> R.option () (ws1 >> int >> ws1 >> R.char 'R' >> pure ())
-        , key "/Extends" >> ref >> pure ()
-        , key "/Filter" >> ws0 >> R.string "/FlateDecode" >> pure ()
+        [ key "/Type" >> ws0 >> R.string "/ObjStm" >> pure (),
+          key "/N" >> ws1 >> int >> pure (),
+          key "/First" >> ws1 >> int >> pure (),
+          key "/Length" >> ws1 >> int >> R.option () (ws1 >> int >> ws1 >> R.char 'R' >> pure ()),
+          key "/Extends" >> ref >> pure (),
+          key "/Filter" >> ws0 >> R.string "/FlateDecode" >> pure ()
         ]
     grammar = do
       _ <- R.string "<<"
@@ -281,11 +282,11 @@ feedFinder f0 pos b armed recent
 -- ---- the stream ----------------------------------------------------------------------------------
 
 data Scan = Scan
-  { names :: !Names
-  , finder :: !Finder
-  , position :: !Int64
-  , previous :: !ByteString
-  -- ^ The last 1024 bytes before the current chunk: the head of a dictionary and the tail of the file.
+  { names :: !Names,
+    finder :: !Finder,
+    position :: !Int64,
+    -- | The last 1024 bytes before the current chunk: the head of a dictionary and the tail of the file.
+    previous :: !ByteString
   }
 
 feedChunk :: Scan -> ByteString -> Scan
@@ -299,19 +300,19 @@ feedChunk s0 chunk =
             Nothing -> maybe (ns, fd) (\j -> step ns fd (i + j)) (BS.elemIndex 47 (BU.unsafeDrop i chunk))
         | otherwise = step ns fd i
       step !ns !fd !i =
-            let b = BU.unsafeIndex chunk i
-                (ns', armed) = feedName ns b
-                fd' = feedFinder fd (s0.position + fromIntegral i) b armed (if armed then recentAt i else "")
-             in go ns' fd' (i + 1)
+        let b = BU.unsafeIndex chunk i
+            (ns', armed) = feedName ns b
+            fd' = feedFinder fd (s0.position + fromIntegral i) b armed (if armed then recentAt i else "")
+         in go ns' fd' (i + 1)
       (names', finder') = go s0.names s0.finder 0
       w = s0.previous <> chunk
    in Scan names' finder' (s0.position + fromIntegral n) (BS.drop (BS.length w - tailSize) w)
 
 data Received = Received
-  { sha256 :: Text
-  , size :: Int64
-  , temp :: Maybe FilePath
-  -- ^ The temp file, or 'Nothing' on a dry run.
+  { sha256 :: Text,
+    size :: Int64,
+    -- | The temp file, or 'Nothing' on a dry run.
+    temp :: Maybe FilePath
   }
   deriving (Show)
 
@@ -473,10 +474,14 @@ used config = do
     then pure 0
     else do
       entries <- listDirectory config.studies
-      sizes <- mapM (\e -> do
-        let p = config.studies </> e
-        isFile <- doesFileExist p
-        if isFile && ".pdf" `T.isSuffixOf` T.pack e then fromIntegral <$> getFileSize p else pure 0) entries
+      sizes <-
+        mapM
+          ( \e -> do
+              let p = config.studies </> e
+              isFile <- doesFileExist p
+              if isFile && ".pdf" `T.isSuffixOf` T.pack e then fromIntegral <$> getFileSize p else pure 0
+          )
+          entries
       pure (sum sizes)
 
 -- | True when storing a file of this hash and size would pass the quota. A file already stored costs nothing.

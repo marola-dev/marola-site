@@ -1,13 +1,13 @@
 -- | The contact messages: one SQLite file, one table. Statements are constants with bound parameters.
 module Marola.Server.Store
-  ( Message (..)
-  , connect
-  , init
-  , insert
-  , list
-  , delete
-  , utc
-  , withConn
+  ( Message (..),
+    connect,
+    init,
+    insert,
+    list,
+    delete,
+    utc,
+    withConn,
   )
 where
 

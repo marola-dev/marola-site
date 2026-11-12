@@ -1,58 +1,58 @@
 -- | A study submitted by a scientist: the types, the validation of the form fields and the JSON the
 -- API answers with. The PDF is checked by the server.
 module Marola.Study
-  ( Area (..)
-  , Topic (..)
-  , Licence (..)
-  , AiContribution (..)
-  , Status (..)
-  , Author (..)
-  , Submission (..)
-  , Record (..)
-  , FieldError (..)
-  , areaName
-  , topicName
-  , licenceName
-  , levelName
-  , statusName
-  , parseArea
-  , parseTopic
-  , parseLicence
-  , parseLevel
-  , parseStatus
-  , areaValues
-  , topicValues
-  , licenceValues
-  , levelValues
-  , allLevels
-  , allAreas
-  , allTopics
-  , levelMeaning
-  , titleMin
-  , titleMax
-  , authorsMax
-  , authorNameMin
-  , authorNameMax
-  , abstractMin
-  , abstractMax
-  , sourcesMax
-  , linkMax
-  , aiModelsMax
-  , aiProcessMax
-  , cleanText
-  , validOrcid
-  , httpsLink
-  , validate
-  , urlOf
-  , pdfUrlOf
-  , notice
-  , errorsJson
-  , submissionJson
-  , recordJson
-  , receiptJson
-  , idAlphabet
-  , validId
-  , validSha256
+  ( Area (..),
+    Topic (..),
+    Licence (..),
+    AiContribution (..),
+    Status (..),
+    Author (..),
+    Submission (..),
+    Record (..),
+    FieldError (..),
+    areaName,
+    topicName,
+    licenceName,
+    levelName,
+    statusName,
+    parseArea,
+    parseTopic,
+    parseLicence,
+    parseLevel,
+    parseStatus,
+    areaValues,
+    topicValues,
+    licenceValues,
+    levelValues,
+    allLevels,
+    allAreas,
+    allTopics,
+    levelMeaning,
+    titleMin,
+    titleMax,
+    authorsMax,
+    authorNameMin,
+    authorNameMax,
+    abstractMin,
+    abstractMax,
+    sourcesMax,
+    linkMax,
+    aiModelsMax,
+    aiProcessMax,
+    cleanText,
+    validOrcid,
+    httpsLink,
+    validate,
+    urlOf,
+    pdfUrlOf,
+    notice,
+    errorsJson,
+    submissionJson,
+    recordJson,
+    receiptJson,
+    idAlphabet,
+    validId,
+    validSha256,
   )
 where
 
@@ -82,30 +82,30 @@ data Status = Public | Hidden deriving (Eq, Show)
 data Author = Author {name :: Text, orcid :: Maybe Text} deriving (Eq, Show)
 
 data Submission = Submission
-  { title :: Text
-  , authors :: [Author]
-  , abstract :: Text
-  , area :: Area
-  , topic :: Topic
-  , sources :: [Text]
-  , repository :: Maybe Text
-  , licence :: Licence
-  , aiModels :: Text
-  , aiContribution :: AiContribution
-  , aiProcess :: Text
+  { title :: Text,
+    authors :: [Author],
+    abstract :: Text,
+    area :: Area,
+    topic :: Topic,
+    sources :: [Text],
+    repository :: Maybe Text,
+    licence :: Licence,
+    aiModels :: Text,
+    aiContribution :: AiContribution,
+    aiProcess :: Text
   }
   deriving (Eq, Show)
 
 data Record = Record
-  { id :: Text
-  , receivedUtc :: Text
-  , sha256 :: Text
-  , submission :: Submission
-  , authorLogin :: Text
-  , authorGithubId :: Int64
-  , status :: Status
-  , hiddenReason :: Maybe Text
-  , hiddenUtc :: Maybe Text
+  { id :: Text,
+    receivedUtc :: Text,
+    sha256 :: Text,
+    submission :: Submission,
+    authorLogin :: Text,
+    authorGithubId :: Int64,
+    status :: Status,
+    hiddenReason :: Maybe Text,
+    hiddenUtc :: Maybe Text
   }
   deriving (Eq, Show)
 
@@ -117,14 +117,14 @@ areaNames = [(Rio, "rio"), (Floripa, "floripa"), (Salvador, "salvador"), (OtherA
 
 topicNames :: [(Topic, Text)]
 topicNames =
-  [ (WaterQuality, "water-quality")
-  , (Waves, "waves")
-  , (WindTopic, "wind")
-  , (TrailsTopic, "trails")
-  , (Ecology, "ecology")
-  , (Safety, "safety")
-  , (DataTopic, "data")
-  , (OtherTopic, "other")
+  [ (WaterQuality, "water-quality"),
+    (Waves, "waves"),
+    (WindTopic, "wind"),
+    (TrailsTopic, "trails"),
+    (Ecology, "ecology"),
+    (Safety, "safety"),
+    (DataTopic, "data"),
+    (OtherTopic, "other")
   ]
 
 licenceNames :: [(Licence, Text)]
@@ -132,12 +132,12 @@ licenceNames = [(CcBy40, "CC-BY-4.0"), (CcBySa40, "CC-BY-SA-4.0"), (Cc01, "CC0-1
 
 levelNames :: [(AiContribution, Text)]
 levelNames =
-  [ (NoAi, "none")
-  , (LanguageEditing, "language-editing")
-  , (AnalysisAssistance, "analysis-assistance")
-  , (Drafting, "drafting")
-  , (Substantial, "substantial")
-  , (Autonomous, "autonomous")
+  [ (NoAi, "none"),
+    (LanguageEditing, "language-editing"),
+    (AnalysisAssistance, "analysis-assistance"),
+    (Drafting, "drafting"),
+    (Substantial, "substantial"),
+    (Autonomous, "autonomous")
   ]
 
 statusNames :: [(Status, Text)]
@@ -154,23 +154,31 @@ parseWith table t = fst <$> safeHead (filter ((== t) . snd) table)
 
 areaName :: Area -> Text
 areaName = nameOf areaNames
+
 topicName :: Topic -> Text
 topicName = nameOf topicNames
+
 licenceName :: Licence -> Text
 licenceName = nameOf licenceNames
+
 levelName :: AiContribution -> Text
 levelName = nameOf levelNames
+
 statusName :: Status -> Text
 statusName = nameOf statusNames
 
 parseArea :: Text -> Maybe Area
 parseArea = parseWith areaNames
+
 parseTopic :: Text -> Maybe Topic
 parseTopic = parseWith topicNames
+
 parseLicence :: Text -> Maybe Licence
 parseLicence = parseWith licenceNames
+
 parseLevel :: Text -> Maybe AiContribution
 parseLevel = parseWith levelNames
+
 parseStatus :: Text -> Maybe Status
 parseStatus = parseWith statusNames
 
@@ -182,8 +190,10 @@ levelValues = map snd levelNames
 
 allLevels :: [AiContribution]
 allLevels = map fst levelNames
+
 allAreas :: [Area]
 allAreas = map fst areaNames
+
 allTopics :: [Topic]
 allTopics = map fst topicNames
 
@@ -390,17 +400,17 @@ errorsJson es =
 
 submissionJson :: Submission -> [(Text, Json)]
 submissionJson s =
-  [ ("title", JString s.title)
-  , ("authors", JArray [JObject [("name", JString a.name), ("orcid", optString a.orcid)] | a <- s.authors])
-  , ("abstract", JString s.abstract)
-  , ("area", JString (areaName s.area))
-  , ("topic", JString (topicName s.topic))
-  , ("sources", JArray (map JString s.sources))
-  , ("repository", optString s.repository)
-  , ("licence", JString (licenceName s.licence))
-  , ("ai_models", JString s.aiModels)
-  , ("ai_contribution", JString (levelName s.aiContribution))
-  , ("ai_process", JString s.aiProcess)
+  [ ("title", JString s.title),
+    ("authors", JArray [JObject [("name", JString a.name), ("orcid", optString a.orcid)] | a <- s.authors]),
+    ("abstract", JString s.abstract),
+    ("area", JString (areaName s.area)),
+    ("topic", JString (topicName s.topic)),
+    ("sources", JArray (map JString s.sources)),
+    ("repository", optString s.repository),
+    ("licence", JString (licenceName s.licence)),
+    ("ai_models", JString s.aiModels),
+    ("ai_contribution", JString (levelName s.aiContribution)),
+    ("ai_process", JString s.aiProcess)
   ]
 
 -- | The public record. A hidden study is a tombstone: id, hash, date, status and reason, never the
@@ -409,28 +419,28 @@ recordJson :: Record -> Json
 recordJson r = case r.status of
   Hidden ->
     JObject
-      [ ("id", JString r.id)
-      , ("sha256", JString r.sha256)
-      , ("received_utc", JString r.receivedUtc)
-      , ("status", JString (statusName r.status))
-      , ("reason", optString r.hiddenReason)
-      , ("hidden_utc", optString r.hiddenUtc)
-      , ("notice", JString notice)
+      [ ("id", JString r.id),
+        ("sha256", JString r.sha256),
+        ("received_utc", JString r.receivedUtc),
+        ("status", JString (statusName r.status)),
+        ("reason", optString r.hiddenReason),
+        ("hidden_utc", optString r.hiddenUtc),
+        ("notice", JString notice)
       ]
   Public ->
     JObject
-      ( [ ("id", JString r.id)
-        , ("sha256", JString r.sha256)
-        , ("received_utc", JString r.receivedUtc)
-        , ("status", JString (statusName r.status))
-        , ("review", JString "not reviewed")
-        , ("notice", JString notice)
+      ( [ ("id", JString r.id),
+          ("sha256", JString r.sha256),
+          ("received_utc", JString r.receivedUtc),
+          ("status", JString (statusName r.status)),
+          ("review", JString "not reviewed"),
+          ("notice", JString notice)
         ]
           <> submissionJson r.submission
-          <> [ ("author_login", JString r.authorLogin)
-             , ("author_github_id", JInt r.authorGithubId)
-             , ("url", JString (urlOf r.id))
-             , ("pdf_url", JString (pdfUrlOf r.id))
+          <> [ ("author_login", JString r.authorLogin),
+               ("author_github_id", JInt r.authorGithubId),
+               ("url", JString (urlOf r.id)),
+               ("pdf_url", JString (pdfUrlOf r.id))
              ]
       )
 
@@ -438,13 +448,13 @@ recordJson r = case r.status of
 receiptJson :: Record -> Json
 receiptJson r =
   JObject
-    [ ("id", JString r.id)
-    , ("url", JString (urlOf r.id))
-    , ("pdf_url", JString (pdfUrlOf r.id))
-    , ("sha256", JString r.sha256)
-    , ("received_utc", JString r.receivedUtc)
-    , ("status", JString (statusName r.status))
-    , ("record", recordJson r)
+    [ ("id", JString r.id),
+      ("url", JString (urlOf r.id)),
+      ("pdf_url", JString (pdfUrlOf r.id)),
+      ("sha256", JString r.sha256),
+      ("received_utc", JString r.receivedUtc),
+      ("status", JString (statusName r.status)),
+      ("record", recordJson r)
     ]
 
 -- ---- ids -----------------------------------------------------------------------------------------

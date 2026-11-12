@@ -273,19 +273,19 @@ parseInt64 t =
 routes :: [Route]
 routes =
   concat
-    [ both "GET" "/submit" False submitGet
-    , both "POST" "/submit" False submitPost
-    , both "GET" "/studies" False studiesGet
-    , both "GET" "/studies/{file}" False studyOrPdf
-    , both "GET" "/account" False accountGet
-    , both "POST" "/account/keys" False createKey
-    , both "POST" "/account/keys/{id}/revoke" False revokeKey
-    , both "POST" "/account/withdraw/{id}" False withdraw
-    , both "POST" "/account/delete" False deleteAccount
-    , both "POST" "/logout" False logout
-    , both "GET" "/report/{id}" False reportGet
-    , both "POST" "/report/{id}" True reportPost
-    , [Route "GET" "/studies.atom" False atom]
+    [ both "GET" "/submit" False submitGet,
+      both "POST" "/submit" False submitPost,
+      both "GET" "/studies" False studiesGet,
+      both "GET" "/studies/{file}" False studyOrPdf,
+      both "GET" "/account" False accountGet,
+      both "POST" "/account/keys" False createKey,
+      both "POST" "/account/keys/{id}/revoke" False revokeKey,
+      both "POST" "/account/withdraw/{id}" False withdraw,
+      both "POST" "/account/delete" False deleteAccount,
+      both "POST" "/logout" False logout,
+      both "GET" "/report/{id}" False reportGet,
+      both "POST" "/report/{id}" True reportPost,
+      [Route "GET" "/studies.atom" False atom]
     ]
   where
     both m p st h = [Route m (prefix <> p) st h | prefix <- ["", "/en"]]

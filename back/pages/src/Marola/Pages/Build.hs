@@ -2,19 +2,19 @@
 module Marola.Pages.Build (main, membersText, today) where
 
 import Control.Exception (SomeException, try)
-import qualified Data.ByteString as B
+import Data.ByteString qualified as B
 import Data.Text (Text)
-import qualified Data.Text as T
-import qualified Data.Text.Encoding as TE
-import qualified Data.Text.IO as TIO
+import Data.Text qualified as T
+import Data.Text.Encoding qualified as TE
+import Data.Text.IO qualified as TIO
 import Data.Time.Calendar (Day)
 import Data.Time.Clock (getCurrentTime, utctDay)
 import Data.Time.Format (defaultTimeLocale, parseTimeM)
 import Marola.Pages.Loader (readText)
-import qualified Marola.Pages.Loader as Loader
-import qualified Marola.Pages.Members as Members
-import qualified Marola.Pages.Meta as Meta
-import qualified Marola.Pages.Site as Site
+import Marola.Pages.Loader qualified as Loader
+import Marola.Pages.Members qualified as Members
+import Marola.Pages.Meta qualified as Meta
+import Marola.Pages.Site qualified as Site
 import System.Directory (createDirectoryIfMissing, doesFileExist)
 import System.Environment (getArgs, lookupEnv)
 import System.Exit (ExitCode (..), exitWith)

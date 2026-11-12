@@ -1,6 +1,7 @@
 module WindLevel exposing (WindLevel(..), decoder, parse, toString)
 
-{-| The wind band an hour carries. A board from before MIP-0054 has none. -}
+{-| The wind band an hour carries. A board from before MIP-0054 has none.
+-}
 
 import Dec
 import Json.Decode exposing (Decoder)

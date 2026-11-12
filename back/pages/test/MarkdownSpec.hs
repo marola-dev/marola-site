@@ -2,9 +2,9 @@ module MarkdownSpec (spec) where
 
 import Data.Either (isLeft)
 import Data.Text (Text)
-import qualified Data.Text as T
+import Data.Text qualified as T
 import Marola.Pages.Html (toHtml)
-import qualified Marola.Pages.Markdown as Markdown
+import Marola.Pages.Markdown qualified as Markdown
 import Test.Hspec
 
 hd :: Text

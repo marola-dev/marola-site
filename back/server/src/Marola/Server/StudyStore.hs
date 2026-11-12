@@ -2,53 +2,53 @@
 -- schema moves by @PRAGMA user_version@, one step per version, so an older server reads a newer
 -- database's tables it knows and ignores the rest. No email address is stored anywhere here.
 module Marola.Server.StudyStore
-  ( Account (..)
-  , KeyError (..)
-  , KeyInfo (..)
-  , ReportRow (..)
-  , maxActiveKeys
-  , schemaVersion
-  , version
-  , migrate
-  , upsertAccount
-  , getAccount
-  , keyPrefix
-  , keyShape
-  , hashKey
-  , issueKey
-  , verifyKey
-  , listKeys
-  , revokeKey
-  , sessionLifetime
-  , sessionTokenShape
-  , createSession
-  , getSession
-  , deleteSession
-  , insertStudy
-  , getStudy
-  , listStudies
-  , countSince
-  , findByHash
-  , hide
-  , tableNames
-  , listByAuthor
-  , withdrawnReason
-  , withdraw
-  , listForBoard
-  , purgedUtc
-  , publicWithHash
-  , markPurged
-  , unhide
-  , listReports
-  , closeReport
-  , accountDeletedReason
-  , deleteAccount
-  , insertReport
-  , countReports
-  , sha256Hex
-  , base32
-  , randomBytes
-  , hexLower
+  ( Account (..),
+    KeyError (..),
+    KeyInfo (..),
+    ReportRow (..),
+    maxActiveKeys,
+    schemaVersion,
+    version,
+    migrate,
+    upsertAccount,
+    getAccount,
+    keyPrefix,
+    keyShape,
+    hashKey,
+    issueKey,
+    verifyKey,
+    listKeys,
+    revokeKey,
+    sessionLifetime,
+    sessionTokenShape,
+    createSession,
+    getSession,
+    deleteSession,
+    insertStudy,
+    getStudy,
+    listStudies,
+    countSince,
+    findByHash,
+    hide,
+    tableNames,
+    listByAuthor,
+    withdrawnReason,
+    withdraw,
+    listForBoard,
+    purgedUtc,
+    publicWithHash,
+    markPurged,
+    unhide,
+    listReports,
+    closeReport,
+    accountDeletedReason,
+    deleteAccount,
+    insertReport,
+    countReports,
+    sha256Hex,
+    base32,
+    randomBytes,
+    hexLower,
   )
 where
 
@@ -57,9 +57,9 @@ import Crypto.Hash (Digest, SHA256 (..), hashWith)
 import Crypto.Random (getRandomBytes)
 import Data.Bits (shiftL, shiftR, (.&.), (.|.))
 import Data.ByteArray (constEq)
+import Data.ByteArray.Encoding (Base (Base16, Base64URLUnpadded), convertToBase)
 import Data.ByteString (ByteString)
 import Data.ByteString qualified as BS
-import Data.ByteArray.Encoding (Base (Base16, Base64URLUnpadded), convertToBase)
 import Data.Char (isAsciiLower, isAsciiUpper, isDigit)
 import Data.Int (Int64)
 import Data.Maybe (listToMaybe)
@@ -85,19 +85,19 @@ maxActiveKeys = 3
 -- | Version 1 adds the four tables. A later change appends a step; it never edits one.
 steps :: [(Int, [Query])]
 steps =
-  [ ( 1
-    , [ "create table accounts (\n\
+  [ ( 1,
+      [ "create table accounts (\n\
         \                 github_id integer primary key,\n\
         \                 github_login text not null,\n\
         \                 created_github_utc text not null,\n\
-        \                 created_utc text not null)"
-      , "create table api_keys (\n\
+        \                 created_utc text not null)",
+        "create table api_keys (\n\
         \                 id integer primary key autoincrement,\n\
         \                 github_id integer not null references accounts(github_id),\n\
         \                 key_hash text not null unique,\n\
         \                 created_utc text not null,\n\
-        \                 revoked_utc text)"
-      , "create table studies (\n\
+        \                 revoked_utc text)",
+        "create table studies (\n\
         \                 id text primary key,\n\
         \                 received_utc text not null,\n\
         \                 sha256 text not null,\n\
@@ -117,29 +117,29 @@ steps =
         \                 status text not null default 'public',\n\
         \                 hidden_reason text,\n\
         \                 hidden_utc text,\n\
-        \                 unique (author_github_id, sha256))"
-      , "create index studies_received on studies (received_utc desc, id desc)"
-      , "create table reports (\n\
+        \                 unique (author_github_id, sha256))",
+        "create index studies_received on studies (received_utc desc, id desc)",
+        "create table reports (\n\
         \                 id integer primary key autoincrement,\n\
         \                 study_id text not null references studies(id),\n\
         \                 created_utc text not null,\n\
         \                 reason text not null,\n\
         \                 reporter_github_id integer)"
       ]
-    )
-  , -- Only the SHA-256 of the cookie value is stored: a copy of the database cannot log anyone in.
-    ( 2
-    , [ "create table sessions (\n\
+    ),
+    -- Only the SHA-256 of the cookie value is stored: a copy of the database cannot log anyone in.
+    ( 2,
+      [ "create table sessions (\n\
         \                 token_hash text primary key,\n\
         \                 github_id integer not null references accounts(github_id),\n\
         \                 created_utc text not null,\n\
         \                 expires_utc text not null)"
       ]
-    )
-  , -- Account deletion detaches a study from its author; the old table had a foreign key to
+    ),
+    -- Account deletion detaches a study from its author; the old table had a foreign key to
     -- `accounts`, which a detached study cannot satisfy, so the table is rebuilt without it.
-    ( 3
-    , [ "create table studies_new (\n\
+    ( 3,
+      [ "create table studies_new (\n\
         \                 id text primary key,\n\
         \                 received_utc text not null,\n\
         \                 sha256 text not null,\n\
@@ -160,22 +160,22 @@ steps =
         \                 hidden_reason text,\n\
         \                 hidden_utc text,\n\
         \                 purged_utc text,\n\
-        \                 unique (author_github_id, sha256))"
-      , "insert into studies_new (id, received_utc, sha256, title, authors, abstract, area, topic, sources,\n\
+        \                 unique (author_github_id, sha256))",
+        "insert into studies_new (id, received_utc, sha256, title, authors, abstract, area, topic, sources,\n\
         \                 repository, licence, ai_models, ai_contribution, ai_process, author_login, author_github_id,\n\
         \                 status, hidden_reason, hidden_utc)\n\
         \             select id, received_utc, sha256, title, authors, abstract, area, topic, sources,\n\
         \                 repository, licence, ai_models, ai_contribution, ai_process, author_login, author_github_id,\n\
-        \                 status, hidden_reason, hidden_utc from studies"
-      , "drop table studies"
-      , "alter table studies_new rename to studies"
-      , "create index studies_received on studies (received_utc desc, id desc)"
-      , "create trigger studies_author_exists before insert on studies\n\
+        \                 status, hidden_reason, hidden_utc from studies",
+        "drop table studies",
+        "alter table studies_new rename to studies",
+        "create index studies_received on studies (received_utc desc, id desc)",
+        "create trigger studies_author_exists before insert on studies\n\
         \             when new.author_github_id > 0\n\
         \               and not exists (select 1 from accounts where github_id = new.author_github_id)\n\
-        \             begin select raise(abort, 'FOREIGN KEY constraint failed: the author has no account'); end"
-      , "alter table reports add column closed_utc text"
-      , "alter table reports add column close_note text"
+        \             begin select raise(abort, 'FOREIGN KEY constraint failed: the author has no account'); end",
+        "alter table reports add column closed_utc text",
+        "alter table reports add column close_note text"
       ]
     )
   ]
@@ -373,22 +373,22 @@ insertStudy path now account sha s = withConn path $ \c -> do
     \ values (:id, :now, :sha, :title, :authors, :abstract, :area, :topic, :sources,\n\
     \     :repo, :licence, :models, :level, :process, :login, :gid)\n\
     \ on conflict (author_github_id, sha256) do nothing"
-    [ ":id" := i
-    , ":now" := utc now
-    , ":sha" := sha
-    , ":title" := s.title
-    , ":authors" := authorsText s.authors
-    , ":abstract" := s.abstract
-    , ":area" := areaName s.area
-    , ":topic" := topicName s.topic
-    , ":sources" := T.intercalate "\n" s.sources
-    , ":repo" := s.repository
-    , ":licence" := licenceName s.licence
-    , ":models" := s.aiModels
-    , ":level" := levelName s.aiContribution
-    , ":process" := s.aiProcess
-    , ":login" := account.login
-    , ":gid" := account.githubId
+    [ ":id" := i,
+      ":now" := utc now,
+      ":sha" := sha,
+      ":title" := s.title,
+      ":authors" := authorsText s.authors,
+      ":abstract" := s.abstract,
+      ":area" := areaName s.area,
+      ":topic" := topicName s.topic,
+      ":sources" := T.intercalate "\n" s.sources,
+      ":repo" := s.repository,
+      ":licence" := licenceName s.licence,
+      ":models" := s.aiModels,
+      ":level" := levelName s.aiContribution,
+      ":process" := s.aiProcess,
+      ":login" := account.login,
+      ":gid" := account.githubId
     ]
   n <- changes c
   pure $
@@ -427,17 +427,17 @@ instance FromRow Row where
     let must nm = maybe (error ("bad stored " <> nm)) Prelude.id
         sub =
           Submission
-            { title = title
-            , authors = parseAuthors authors
-            , abstract = abstract
-            , area = must "area" (parseArea areaT)
-            , topic = must "topic" (parseTopic topicT)
-            , sources = if T.null sources then [] else T.splitOn "\n" sources
-            , repository = repo
-            , licence = must "licence" (parseLicence licenceT)
-            , aiModels = models
-            , aiContribution = must "level" (parseLevel levelT)
-            , aiProcess = process
+            { title = title,
+              authors = parseAuthors authors,
+              abstract = abstract,
+              area = must "area" (parseArea areaT),
+              topic = must "topic" (parseTopic topicT),
+              sources = if T.null sources then [] else T.splitOn "\n" sources,
+              repository = repo,
+              licence = must "licence" (parseLicence licenceT),
+              aiModels = models,
+              aiContribution = must "level" (parseLevel levelT),
+              aiProcess = process
             }
     pure (Row (Record i received sha sub login gid (must "status" (parseStatus statusT)) reason hiddenAt))
 
@@ -540,12 +540,12 @@ unhide path i = withConn path $ \c -> do
   (> 0) <$> changes c
 
 data ReportRow = ReportRow
-  { id :: Int64
-  , studyId :: Text
-  , createdUtc :: Text
-  , reason :: Text
-  , closedUtc :: Maybe Text
-  , closeNote :: Maybe Text
+  { id :: Int64,
+    studyId :: Text,
+    createdUtc :: Text,
+    reason :: Text,
+    closedUtc :: Maybe Text,
+    closeNote :: Maybe Text
   }
   deriving (Eq, Show)
 

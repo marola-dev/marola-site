@@ -72,7 +72,15 @@ hours : Board -> List String
 hours board =
     board.beaches
         |> List.concatMap (\b -> List.map .h b.hours)
-        |> List.foldl (\h acc -> if List.member h acc then acc else h :: acc) []
+        |> List.foldl
+            (\h acc ->
+                if List.member h acc then
+                    acc
+
+                else
+                    h :: acc
+            )
+            []
         |> List.sort
 
 

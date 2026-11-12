@@ -1,6 +1,7 @@
 module Fmt exposing (num, signed, value, waves)
 
-{-| How app.js writes a number with its unit. -}
+{-| How app.js writes a number with its unit.
+-}
 
 import I18n exposing (Locale)
 import NumFmt

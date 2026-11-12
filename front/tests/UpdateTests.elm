@@ -70,7 +70,7 @@ unchanged model msg =
     Update.update msg model |> Expect.equal ( model, [] )
 
 
-all : List (Expect.Expectation) -> Expect.Expectation
+all : List Expect.Expectation -> Expect.Expectation
 all checks =
     Expect.all (List.map always checks) ()
 

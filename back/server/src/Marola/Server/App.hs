@@ -1,14 +1,14 @@
 -- | The pipeline, in this order: security headers, the request log, the
 -- exception handler, compression, the rate limits, the body guard, the routes and the static files.
 module Marola.Server.App
-  ( bodyLimit
-  , generalPermits
-  , strictPermits
-  , newEnv
-  , jsonLogger
-  , routes
-  , application
-  , applicationWith
+  ( bodyLimit,
+    generalPermits,
+    strictPermits,
+    newEnv,
+    jsonLogger,
+    routes,
+    application,
+    applicationWith,
   )
 where
 
@@ -23,9 +23,9 @@ import Data.ByteString.Char8 qualified as BC
 import Data.ByteString.Lazy qualified as BL
 import Data.CaseInsensitive qualified as CI
 import Data.IORef
-import Data.Map.Strict qualified as Map
 import Data.Int (Int64)
 import Data.List (find)
+import Data.Map.Strict qualified as Map
 import Data.Maybe (isJust, mapMaybe)
 import Data.Text qualified as T
 import Data.Text.Encoding qualified as TE
@@ -75,11 +75,11 @@ jsonLogger = do
     let line =
           renderText
             ( JObject
-                [ ("Timestamp", JString (utc now <> " "))
-                , ("EventId", JInt 0)
-                , ("LogLevel", JString (tshow level))
-                , ("Category", JString category)
-                , ("Message", JString message)
+                [ ("Timestamp", JString (utc now <> " ")),
+                  ("EventId", JInt 0),
+                  ("LogLevel", JString (tshow level)),
+                  ("Category", JString category),
+                  ("Message", JString message)
                 ]
             )
     withMVar lock $ \_ -> TIO.putStrLn line >> hFlush stdout
@@ -100,15 +100,15 @@ newEnv config clock github logger = do
 -- | Every endpoint; a request that matches none goes to the static files.
 routes :: [Route]
 routes =
-  [ Route "POST" "/contact" True (\env req _ -> Contact.handle env req)
-  , Route "POST" "/en/contact" True (\env req _ -> Contact.handle env req)
-  , Route "POST" StudyApi.apiPath False (\env req _ -> StudyApi.submit env req)
-  , Route "GET" StudyApi.apiPath False (\env req _ -> StudyApi.list env req)
-  , Route "GET" (StudyApi.apiPath <> "/{id}") False (\env _ p -> StudyApi.one env (maybe "" id (lookupParam "id" p)))
-  , Route "GET" "/api/v1/skill.md" False (\_ _ _ -> pure StudyApi.skillResponse)
-  , Route "GET" OpenApi.path False (\_ _ _ -> pure OpenApi.response)
-  , Route "GET" Github.loginPath True (\env req _ -> Github.login env req)
-  , Route "GET" Github.callbackPath True (\env req _ -> Github.callback env req)
+  [ Route "POST" "/contact" True (\env req _ -> Contact.handle env req),
+    Route "POST" "/en/contact" True (\env req _ -> Contact.handle env req),
+    Route "POST" StudyApi.apiPath False (\env req _ -> StudyApi.submit env req),
+    Route "GET" StudyApi.apiPath False (\env req _ -> StudyApi.list env req),
+    Route "GET" (StudyApi.apiPath <> "/{id}") False (\env _ p -> StudyApi.one env (maybe "" id (lookupParam "id" p))),
+    Route "GET" "/api/v1/skill.md" False (\_ _ _ -> pure StudyApi.skillResponse),
+    Route "GET" OpenApi.path False (\_ _ _ -> pure OpenApi.response),
+    Route "GET" Github.loginPath True (\env req _ -> Github.login env req),
+    Route "GET" Github.callbackPath True (\env req _ -> Github.callback env req)
   ]
     <> Web.routes
   where
@@ -125,9 +125,9 @@ chooseCoding :: ByteString -> Maybe Coding
 chooseCoding accept =
   let items =
         [ (CI.foldCase (BC.strip name), q)
-        | part <- BC.split ',' accept
-        , (name : params) <- [BC.split ';' part]
-        , let q = case mapMaybe quality params of
+        | part <- BC.split ',' accept,
+          (name : params) <- [BC.split ';' part],
+          let q = case mapMaybe quality params of
                 (x : _) -> x
                 [] -> 1
         ]

@@ -1,6 +1,7 @@
 module Lore exposing (Kind(..), Lore, decoder, labelKey)
 
-{-| The day's sea-lore paragraph and the source it is quoted from. -}
+{-| The day's sea-lore paragraph and the source it is quoted from.
+-}
 
 import Dec
 import Json.Decode as D exposing (Decoder)

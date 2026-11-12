@@ -39,10 +39,10 @@ newHttp = do
     base <- H.parseRequest (T.unpack r.url)
     let req =
           base
-            { H.method = r.method
-            , H.requestHeaders = r.headers
-            , H.requestBody = H.RequestBodyBS r.body
-            , H.responseTimeout = H.responseTimeoutMicro 10000000
+            { H.method = r.method,
+              H.requestHeaders = r.headers,
+              H.requestBody = H.RequestBodyBS r.body,
+              H.responseTimeout = H.responseTimeoutMicro 10000000
             }
     H.withResponse req manager $ \resp -> do
       body <- H.brReadSome (H.responseBody resp) 65536
@@ -98,9 +98,9 @@ login env req = do
       pure $
         responseLBS
           status302
-          [ (hLocation, location)
-          , (hCacheControl, "no-store")
-          , ("Set-Cookie", Session.setCookie cfg.dev (Session.stateCookie cfg.dev) (state <> "." <> lang) 600)
+          [ (hLocation, location),
+            (hCacheControl, "no-store"),
+            ("Set-Cookie", Session.setCookie cfg.dev (Session.stateCookie cfg.dev) (state <> "." <> lang) 600)
           ]
           ""
   where
@@ -133,10 +133,10 @@ fetchProfile env clientId clientSecret code = do
   tokenAnswer <-
     env.github
       GithubRequest
-        { method = "POST"
-        , url = cfg.githubBase <> "/login/oauth/access_token"
-        , headers = [(hAccept, "application/json"), (hUserAgent, "marola-site"), (hContentType, "application/x-www-form-urlencoded")]
-        , body = form
+        { method = "POST",
+          url = cfg.githubBase <> "/login/oauth/access_token",
+          headers = [(hAccept, "application/json"), (hUserAgent, "marola-site"), (hContentType, "application/x-www-form-urlencoded")],
+          body = form
         }
   case jsonObject tokenAnswer >>= (`str` "access_token") of
     Nothing -> pure Nothing
@@ -144,10 +144,10 @@ fetchProfile env clientId clientSecret code = do
       user <-
         env.github
           GithubRequest
-            { method = "GET"
-            , url = cfg.githubApiBase <> "/user"
-            , headers = [(hAuthorization, "Bearer " <> TE.encodeUtf8 token), (hAccept, "application/vnd.github+json"), (hUserAgent, "marola-site")]
-            , body = ""
+            { method = "GET",
+              url = cfg.githubApiBase <> "/user",
+              headers = [(hAuthorization, "Bearer " <> TE.encodeUtf8 token), (hAccept, "application/vnd.github+json"), (hUserAgent, "marola-site")],
+              body = ""
             }
       pure $ do
         o <- jsonObject user
@@ -197,9 +197,9 @@ callback env req = do
               pure $
                 responseLBS
                   status303
-                  [ clear
-                  , ("Set-Cookie", Session.setCookie dev (Session.sessionCookie dev) token StudyStore.sessionLifetime)
-                  , (hLocation, if lang == "en" then "/en/account" else "/account")
-                  , (hCacheControl, "no-store")
+                  [ clear,
+                    ("Set-Cookie", Session.setCookie dev (Session.sessionCookie dev) token StudyStore.sessionLifetime),
+                    (hLocation, if lang == "en" then "/en/account" else "/account"),
+                    (hCacheControl, "no-store")
                   ]
                   ""

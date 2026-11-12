@@ -1,15 +1,15 @@
 -- | The cookies of the login and the CSRF token of a session. Nothing here is logged.
 module Marola.Server.Session
-  ( sessionCookie
-  , stateCookie
-  , safeEquals
-  , loadKey
-  , csrfToken
-  , csrfValid
-  , Live (..)
-  , current
-  , setCookie
-  , clearCookie
+  ( sessionCookie,
+    stateCookie,
+    safeEquals,
+    loadKey,
+    csrfToken,
+    csrfValid,
+    Live (..),
+    current,
+    setCookie,
+    clearCookie,
   )
 where
 
@@ -82,11 +82,11 @@ csrfValid :: ByteString -> Text -> Text -> Bool
 csrfValid key sessionHash supplied = safeEquals (csrfToken key sessionHash) supplied
 
 data Live = Live
-  { account :: Account
-  , token :: Text
-  -- ^ The cookie value: needed to delete the row at logout.
-  , hash :: Text
-  -- ^ What 'csrfToken' takes.
+  { account :: Account,
+    -- | The cookie value: needed to delete the row at logout.
+    token :: Text,
+    -- | What 'csrfToken' takes.
+    hash :: Text
   }
 
 -- | The logged-in visitor of this request: no cookie, a forged or an expired value is 'Nothing'.

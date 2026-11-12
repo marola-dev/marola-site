@@ -32,8 +32,8 @@ idOf login =
 run :: Config -> UTCTime -> Maybe String -> [Text] -> (Text -> IO ()) -> (Text -> IO ()) -> IO Int
 run config now dev args out err
   | dev /= Just "1" = err "dev-account is for tests: set MAROLA_DEV=1" >> pure 1
-  | ["--login", login, "--age-days", days] <- args
-  , not (T.null login) =
+  | ["--login", login, "--age-days", days] <- args,
+    not (T.null login) =
       case parseInt 2147483647 days of
         Just n | n >= 0 && n <= 36500 -> do
           Store.init config.db

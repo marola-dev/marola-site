@@ -1,6 +1,7 @@
 module Mercator exposing (latOf, lonOf, x, y)
 
-{-| Web Mercator in unit space (0..1 across the world), as flow.js draws in. -}
+{-| Web Mercator in unit space (0..1 across the world), as flow.js draws in.
+-}
 
 
 x : Float -> Float

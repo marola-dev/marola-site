@@ -1,6 +1,7 @@
 module Trail exposing (NearAnchor, Trail, decoder, drawable)
 
-{-| An OSM trail within 500 m of a beach or a named lake (MIP-0030), as a board carries it. -}
+{-| An OSM trail within 500 m of a beach or a named lake (MIP-0030), as a board carries it.
+-}
 
 import Dec exposing (required)
 import Difficulty exposing (Difficulty)

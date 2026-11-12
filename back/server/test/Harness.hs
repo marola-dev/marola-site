@@ -1,49 +1,49 @@
 -- | A site for the tests: the real pipeline, in memory, over a temporary tree, with a clock the test
 -- moves, a fake GitHub and the log kept.
 module Harness
-  ( Site (..)
-  , Req (..)
-  , Res (..)
-  , withSite
-  , withSiteWith
-  , get
-  , post
-  , send
-  , header
-  , bodyText
-  , cookies
-  , setCookieHeader
-  , formBody
-  , contactPost
-  , goodForm
-  , bulk
-  , secret
-  , fakeClientSecret
-  , advance
-  , logLines
-  , start
-  , write
-  , tempDir
-  , withDb
-  , account
-  , submission
-  , hashOf
-  , now0
-  , bareConfig
-  , lines'
-  , pdfBytes
-  , validPdf
-  , sha
-  , latin1
-  , Part (..)
-  , field
-  , multipart
-  , studyBody
-  , jsonOf
-  , jpath
-  , jtext
-  , errorCodes
-  , filesUnder
+  ( Site (..),
+    Req (..),
+    Res (..),
+    withSite,
+    withSiteWith,
+    get,
+    post,
+    send,
+    header,
+    bodyText,
+    cookies,
+    setCookieHeader,
+    formBody,
+    contactPost,
+    goodForm,
+    bulk,
+    secret,
+    fakeClientSecret,
+    advance,
+    logLines,
+    start,
+    write,
+    tempDir,
+    withDb,
+    account,
+    submission,
+    hashOf,
+    now0,
+    bareConfig,
+    lines',
+    pdfBytes,
+    validPdf,
+    sha,
+    latin1,
+    Part (..),
+    field,
+    multipart,
+    studyBody,
+    jsonOf,
+    jpath,
+    jtext,
+    errorCodes,
+    filesUnder,
   )
 where
 
@@ -52,15 +52,15 @@ import Crypto.Hash (Digest, SHA256, hash)
 import Data.Aeson qualified as A
 import Data.Aeson.Key qualified as K
 import Data.Aeson.KeyMap qualified as KM
-import Data.Foldable (toList)
 import Data.ByteString (ByteString)
 import Data.ByteString qualified as BS
 import Data.ByteString.Builder (toLazyByteString)
 import Data.ByteString.Char8 qualified as BC
 import Data.ByteString.Lazy qualified as BL
+import Data.Foldable (toList)
 import Data.IORef
-import Data.Int (Int64)
 import Data.IP (IP (..), toHostAddress, toHostAddress6)
+import Data.Int (Int64)
 import Data.Map.Strict qualified as Map
 import Data.Text (Text)
 import Data.Text qualified as T
@@ -83,23 +83,23 @@ import System.Directory
 import System.FilePath (takeDirectory, (</>))
 
 data Site = Site
-  { env :: Env
-  , root :: FilePath
-  , config :: Config
-  , logs :: IORef [Text]
-  , clock :: IORef UTCTime
-  , seen :: IORef [(Text, Text, ByteString)]
-  -- ^ What the server asked GitHub: the URL, the Authorization header, the body.
-  , respond :: IORef (GithubRequest -> IO (Int, ByteString))
-  , extra :: [Route]
+  { env :: Env,
+    root :: FilePath,
+    config :: Config,
+    logs :: IORef [Text],
+    clock :: IORef UTCTime,
+    -- | What the server asked GitHub: the URL, the Authorization header, the body.
+    seen :: IORef [(Text, Text, ByteString)],
+    respond :: IORef (GithubRequest -> IO (Int, ByteString)),
+    extra :: [Route]
   }
 
 data Req = Req
-  { method :: Method
-  , path :: ByteString
-  , headers :: [Header]
-  , body :: BL.ByteString
-  , peer :: String
+  { method :: Method,
+    path :: ByteString,
+    headers :: [Header],
+    body :: BL.ByteString,
+    peer :: String
   }
 
 data Res = Res {status :: Int, headers :: [Header], body :: BL.ByteString} deriving (Show)
@@ -159,17 +159,17 @@ start tweak extra = do
   let config =
         tweak
           Config
-            { port = 0
-            , static = static
-            , dataDir = dataDir
-            , db = root </> "db" </> "marola.db"
-            , studies = root </> "studies"
-            , studiesQuota = 1000000
-            , dev = False
-            , githubClientId = Just "test-client-id"
-            , githubSecretFile = Just (root </> "github-secret")
-            , githubBase = "https://github.test"
-            , githubApiBase = "https://api.github.test"
+            { port = 0,
+              static = static,
+              dataDir = dataDir,
+              db = root </> "db" </> "marola.db",
+              studies = root </> "studies",
+              studiesQuota = 1000000,
+              dev = False,
+              githubClientId = Just "test-client-id",
+              githubSecretFile = Just (root </> "github-secret"),
+              githubBase = "https://github.test",
+              githubApiBase = "https://api.github.test"
             }
   logs <- newIORef []
   clock <- newIORef (UTCTime (fromGregorian 2026 11 11) (12 * 3600))
@@ -219,13 +219,13 @@ send site r = do
         setRequestBodyChunks
           (atomicModifyIORef' chunks (\case [] -> ([], BS.empty); x : xs -> (xs, x)))
           base
-            { requestMethod = r.method
-            , -- setPath re-encodes the segments, which turns "/" into "".
-              rawPathInfo = BC.takeWhile (/= '?') r.path
-            , requestHeaders = hs
-            , requestHeaderHost = lookup hHost hs
-            , remoteHost = sockAddr r.peer
-            , requestBodyLength = KnownLength (fromIntegral (BL.length r.body))
+            { requestMethod = r.method,
+              -- setPath re-encodes the segments, which turns "/" into "".
+              rawPathInfo = BC.takeWhile (/= '?') r.path,
+              requestHeaders = hs,
+              requestHeaderHost = lookup hHost hs,
+              remoteHost = sockAddr r.peer,
+              requestBodyLength = KnownLength (fromIntegral (BL.length r.body))
             }
   out <- newIORef Nothing
   _ <- App.applicationWith site.extra site.env req $ \res -> do
@@ -250,9 +250,9 @@ cookies :: Res -> Map.Map ByteString ByteString
 cookies res =
   Map.fromList
     [ (k, BS.drop 1 v)
-    | (n, raw) <- res.headers
-    , n == "Set-Cookie"
-    , let (k, v) = BC.break (== '=') (BC.takeWhile (/= ';') raw)
+    | (n, raw) <- res.headers,
+      n == "Set-Cookie",
+      let (k, v) = BC.break (== '=') (BC.takeWhile (/= ';') raw)
     ]
 
 setCookieHeader :: Res -> ByteString -> Maybe ByteString
@@ -290,17 +290,17 @@ account i l = Account {githubId = i, login = l, createdGithubUtc = "2020-01-01T0
 submission :: Submission
 submission =
   Submission
-    { title = "Water at Leblon"
-    , authors = [Author {name = "Ana Silva", orcid = Just "0000-0002-1825-0097"}, Author {name = "Bruno Costa", orcid = Nothing}]
-    , abstract = T.replicate 10 "Enterococcus counts at six points. "
-    , area = Rio
-    , topic = WaterQuality
-    , sources = ["https://example.org/a", "https://example.org/b"]
-    , repository = Just "https://github.com/example/r"
-    , licence = CcBy40
-    , aiModels = ""
-    , aiContribution = NoAi
-    , aiProcess = ""
+    { title = "Water at Leblon",
+      authors = [Author {name = "Ana Silva", orcid = Just "0000-0002-1825-0097"}, Author {name = "Bruno Costa", orcid = Nothing}],
+      abstract = T.replicate 10 "Enterococcus counts at six points. ",
+      area = Rio,
+      topic = WaterQuality,
+      sources = ["https://example.org/a", "https://example.org/b"],
+      repository = Just "https://github.com/example/r",
+      licence = CcBy40,
+      aiModels = "",
+      aiContribution = NoAi,
+      aiProcess = ""
     }
 
 hashOf :: Char -> Text
@@ -309,17 +309,17 @@ hashOf c = T.replicate 64 (T.singleton c)
 bareConfig :: FilePath -> Config
 bareConfig db =
   Config
-    { port = 0
-    , static = ""
-    , dataDir = ""
-    , db = db
-    , studies = ""
-    , studiesQuota = 0
-    , dev = False
-    , githubClientId = Nothing
-    , githubSecretFile = Nothing
-    , githubBase = ""
-    , githubApiBase = ""
+    { port = 0,
+      static = "",
+      dataDir = "",
+      db = db,
+      studies = "",
+      studiesQuota = 0,
+      dev = False,
+      githubClientId = Nothing,
+      githubSecretFile = Nothing,
+      githubBase = "",
+      githubApiBase = ""
     }
 
 -- | Runs a command-line entry point with its two outputs kept: (code, out, err).
@@ -362,17 +362,17 @@ boundary = "marola-test-boundary-7f3a"
 -- | The content type and the body, as HttpClient's MultipartFormDataContent writes them.
 multipart :: [Part] -> ([Header], BL.ByteString)
 multipart parts =
-  ( [(hContentType, "multipart/form-data; boundary=\"" <> boundary <> "\"")]
-  , BL.concat (concatMap one parts) <> BL.fromStrict ("--" <> boundary <> "--\r\n")
+  ( [(hContentType, "multipart/form-data; boundary=\"" <> boundary <> "\"")],
+    BL.concat (concatMap one parts) <> BL.fromStrict ("--" <> boundary <> "--\r\n")
   )
   where
     one p =
-      [ BL.fromStrict ("--" <> boundary <> "\r\n")
-      , BL.fromStrict $ case p.file of
+      [ BL.fromStrict ("--" <> boundary <> "\r\n"),
+        BL.fromStrict $ case p.file of
           Nothing -> "Content-Type: text/plain; charset=utf-8\r\nContent-Disposition: form-data; name=" <> p.name <> "\r\n\r\n"
-          Just f -> "Content-Disposition: form-data; name=" <> p.name <> "; filename=" <> f <> "; filename*=utf-8''" <> f <> "\r\n\r\n"
-      , p.bytes
-      , "\r\n"
+          Just f -> "Content-Disposition: form-data; name=" <> p.name <> "; filename=" <> f <> "; filename*=utf-8''" <> f <> "\r\n\r\n",
+        p.bytes,
+        "\r\n"
       ]
 
 -- | The fields, then the file.

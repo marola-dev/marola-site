@@ -3,16 +3,16 @@ module MetaSpec (spec) where
 
 import Data.Char (isAsciiLower)
 import Data.List (sort)
-import qualified Data.Set as Set
+import Data.Set qualified as Set
 import Data.Text (Text)
-import qualified Data.Text as T
+import Data.Text qualified as T
 import Data.Time.Calendar (diffDays, fromGregorian)
 import Marola.Pages.Language (allLanguages)
-import qualified Marola.Pages.Language as Language
-import qualified Marola.Pages.Layout as Layout
-import qualified Marola.Pages.Meta as Meta
+import Marola.Pages.Language qualified as Language
+import Marola.Pages.Layout qualified as Layout
+import Marola.Pages.Meta qualified as Meta
 import Marola.Pages.Site (Area (..), Env (..))
-import qualified Marola.Pages.Site as Site
+import Marola.Pages.Site qualified as Site
 import Support
 import Test.Hspec
 
@@ -36,10 +36,10 @@ spec env = describe "meta" $ do
     let listed =
           Set.fromList
             [ name
-            | rest <- occurrences "(https://marola.dev/" (Meta.llms areas)
-            , let name = T.takeWhile (\c -> isAsciiLower c || c == '-') rest
-            , not (T.null name)
-            , ".html)" `T.isPrefixOf` T.drop (T.length name) rest
+            | rest <- occurrences "(https://marola.dev/" (Meta.llms areas),
+              let name = T.takeWhile (\c -> isAsciiLower c || c == '-') rest,
+              not (T.null name),
+              ".html)" `T.isPrefixOf` T.drop (T.length name) rest
             ]
         published = Set.fromList (filter (`notElem` ["404", "contact-sent"]) Site.allSlugs)
     listed `shouldBe` published

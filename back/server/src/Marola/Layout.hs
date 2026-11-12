@@ -2,17 +2,17 @@
 -- The static pages' layout (back/pages, with the pieces of the nav and icons it draws), so a study page has
 -- the same chrome as the static pages. The catalogs are the site's, read from @MAROLA_STATIC/i18n@.
 module Marola.Layout
-  ( Language (..)
-  , Catalog
-  , Locale (..)
-  , PageHead (..)
-  , languageTag
-  , loadCatalog
-  , t
-  , origin
-  , path
-  , dynamicPath
-  , page
+  ( Language (..),
+    Catalog,
+    Locale (..),
+    PageHead (..),
+    languageTag,
+    loadCatalog,
+    t,
+    origin,
+    path,
+    dynamicPath,
+    page,
   )
 where
 
@@ -57,17 +57,17 @@ t loc key = case Map.lookup loc.language loc.catalog >>= Map.lookup key of
   Nothing -> maybe key id (Map.lookup PtBr loc.catalog >>= Map.lookup key)
 
 data PageHead = PageHead
-  { slug :: Text
-  -- ^ The file name without @.html@.
-  , title :: Text
-  , description :: Text
-  , noIndex :: Bool
-  , canonical :: Bool
-  -- ^ The canonical link, the language alternates and @og:url@.
-  , current :: Maybe Text
-  -- ^ The slug of the nav link to mark as the current page.
-  , dynamic :: Bool
-  -- ^ A page the server renders: its address has no @.html@.
+  { -- | The file name without @.html@.
+    slug :: Text,
+    title :: Text,
+    description :: Text,
+    noIndex :: Bool,
+    -- | The canonical link, the language alternates and @og:url@.
+    canonical :: Bool,
+    -- | The slug of the nav link to mark as the current page.
+    current :: Maybe Text,
+    -- | A page the server renders: its address has no @.html@.
+    dynamic :: Bool
   }
 
 origin :: Text
@@ -109,31 +109,31 @@ headNodes lang p =
       canon =
         if p.canonical
           then
-            [ link [("rel", "canonical"), ("href", origin <> whereOf p lang)]
-            , link [("rel", "alternate"), ("hreflang", languageTag PtBr), ("href", origin <> whereOf p PtBr)]
-            , link [("rel", "alternate"), ("hreflang", languageTag En), ("href", origin <> whereOf p En)]
-            , link [("rel", "alternate"), ("hreflang", "x-default"), ("href", origin <> whereOf p PtBr)]
+            [ link [("rel", "canonical"), ("href", origin <> whereOf p lang)],
+              link [("rel", "alternate"), ("hreflang", languageTag PtBr), ("href", origin <> whereOf p PtBr)],
+              link [("rel", "alternate"), ("hreflang", languageTag En), ("href", origin <> whereOf p En)],
+              link [("rel", "alternate"), ("hreflang", "x-default"), ("href", origin <> whereOf p PtBr)]
             ]
           else []
-   in [ meta [("charset", "utf-8")]
-      , meta [("name", "viewport"), ("content", "width=device-width, initial-scale=1")]
-      , el "title" [] [text p.title]
-      , meta [("name", "description"), ("content", p.description)]
-      , meta [("name", "theme-color"), ("content", "#ffffff")]
+   in [ meta [("charset", "utf-8")],
+        meta [("name", "viewport"), ("content", "width=device-width, initial-scale=1")],
+        el "title" [] [text p.title],
+        meta [("name", "description"), ("content", p.description)],
+        meta [("name", "theme-color"), ("content", "#ffffff")]
       ]
         <> [meta [("name", "robots"), ("content", "noindex")] | p.noIndex]
         <> canon
-        <> [ meta [("property", "og:type"), ("content", "website")]
-           , meta [("property", "og:site_name"), ("content", "marola")]
-           , meta [("property", "og:title"), ("content", p.title)]
-           , meta [("property", "og:description"), ("content", p.description)]
+        <> [ meta [("property", "og:type"), ("content", "website")],
+             meta [("property", "og:site_name"), ("content", "marola")],
+             meta [("property", "og:title"), ("content", p.title)],
+             meta [("property", "og:description"), ("content", p.description)]
            ]
         <> [meta [("property", "og:url"), ("content", origin <> whereOf p lang)] | p.canonical]
-        <> [ meta [("property", "og:locale"), ("content", ogLocale lang)]
-           , meta [("property", "og:locale:alternate"), ("content", ogLocale other)]
-           , meta [("name", "twitter:card"), ("content", "summary")]
-           , link [("rel", "icon"), ("href", "/favicon.svg"), ("type", "image/svg+xml")]
-           , link [("rel", "stylesheet"), ("href", "/style.css")]
+        <> [ meta [("property", "og:locale"), ("content", ogLocale lang)],
+             meta [("property", "og:locale:alternate"), ("content", ogLocale other)],
+             meta [("name", "twitter:card"), ("content", "summary")],
+             link [("rel", "icon"), ("href", "/favicon.svg"), ("type", "image/svg+xml")],
+             link [("rel", "stylesheet"), ("href", "/style.css")]
            ]
 
 -- | An inline decorative svg: hidden from assistive technology, not focusable (NavView.svg).
@@ -144,11 +144,11 @@ langLink :: Locale -> PageHead -> Language -> Text -> Text -> Node
 langLink loc p lang label nm =
   el
     "a"
-    [ attr "href" (whereOf p lang)
-    , attr "lang" (languageTag lang)
-    , attr "hreflang" (languageTag lang)
-    , attr "aria-label" nm
-    , attr "aria-current" (if loc.language == lang then "true" else "false")
+    [ attr "href" (whereOf p lang),
+      attr "lang" (languageTag lang),
+      attr "hreflang" (languageTag lang),
+      attr "aria-label" nm,
+      attr "aria-current" (if loc.language == lang then "true" else "false")
     ]
     [text label]
 
@@ -159,32 +159,32 @@ languageSwitch loc p =
     [cls "lang", attr "role" "group", attr "aria-label" (t loc "lang.label")]
     [ decorative
         [cls "lang-icon", attr "viewBox" "0 0 16 16"]
-        [ svg "circle" [attr "cx" "8", attr "cy" "8", attr "r" "6.5"] []
-        , svg "ellipse" [attr "cx" "8", attr "cy" "8", attr "rx" "2.8", attr "ry" "6.5"] []
-        , svg "path" [attr "d" "M1.5 8h13"] []
-        ]
-    , langLink loc p PtBr "PT-BR" "português (Brasil)"
-    , langLink loc p En "EN" "English"
+        [ svg "circle" [attr "cx" "8", attr "cy" "8", attr "r" "6.5"] [],
+          svg "ellipse" [attr "cx" "8", attr "cy" "8", attr "rx" "2.8", attr "ry" "6.5"] [],
+          svg "path" [attr "d" "M1.5 8h13"] []
+        ],
+      langLink loc p PtBr "PT-BR" "português (Brasil)",
+      langLink loc p En "EN" "English"
     ]
 
 linkedin :: Locale -> Node
 linkedin loc =
   el
     "a"
-    [ cls "li"
-    , attr "href" "https://www.linkedin.com/company/marola-dev/"
-    , attr "target" "_blank"
-    , attr "rel" "noopener"
-    , attr "aria-label" (t loc "li.label")
-    , attr "title" (t loc "li.label")
+    [ cls "li",
+      attr "href" "https://www.linkedin.com/company/marola-dev/",
+      attr "target" "_blank",
+      attr "rel" "noopener",
+      attr "aria-label" (t loc "li.label"),
+      attr "title" (t loc "li.label")
     ]
     [ decorative
         [cls "li-mark", attr "viewBox" "0 0 24 24"]
-        [ svg "path" [attr "d" "M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"] []
-        , svg "rect" [attr "x" "2", attr "y" "9", attr "width" "4", attr "height" "12"] []
-        , svg "circle" [attr "cx" "4", attr "cy" "4", attr "r" "2"] []
-        ]
-    , el "span" [cls "li-name"] [text (t loc "li.name")]
+        [ svg "path" [attr "d" "M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"] [],
+          svg "rect" [attr "x" "2", attr "y" "9", attr "width" "4", attr "height" "12"] [],
+          svg "circle" [attr "cx" "4", attr "cy" "4", attr "r" "2"] []
+        ],
+      el "span" [cls "li-name"] [text (t loc "li.name")]
     ]
 
 githubMark :: Text
@@ -195,20 +195,20 @@ github :: Locale -> Node
 github loc =
   el
     "a"
-    [ cls "gh"
-    , attr "href" "https://github.com/marola-dev/marola"
-    , attr "aria-label" (t loc "gh.label")
-    , attr "title" (t loc "gh.title")
+    [ cls "gh",
+      attr "href" "https://github.com/marola-dev/marola",
+      attr "aria-label" (t loc "gh.label"),
+      attr "title" (t loc "gh.title")
     ]
-    [ decorative [cls "gh-mark", attr "viewBox" "0 0 16 16"] [svg "path" [attr "fill" "currentColor", attr "d" githubMark] []]
-    , el "span" [cls "gh-name"] [el "span" [cls "gh-owner"] [text "marola-dev/"], text "marola"]
-    , el
+    [ decorative [cls "gh-mark", attr "viewBox" "0 0 16 16"] [svg "path" [attr "fill" "currentColor", attr "d" githubMark] []],
+      el "span" [cls "gh-name"] [el "span" [cls "gh-owner"] [text "marola-dev/"], text "marola"],
+      el
         "span"
         [cls "gh-star"]
         [ decorative
             [attr "viewBox" "0 0 16 16"]
-            [svg "path" [attr "d" "M8 1.6l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.4l-3.8 2 .7-4.3-3.1-3 4.3-.6z"] []]
-        , el "span" [] [text (t loc "gh.star")]
+            [svg "path" [attr "d" "M8 1.6l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.4l-3.8 2 .7-4.3-3.1-3 4.3-.6z"] []],
+          el "span" [] [text (t loc "gh.star")]
         ]
     ]
 
@@ -218,8 +218,8 @@ brand =
   svg
     "svg"
     [cls "ic ic-brand", attr "viewBox" "0 0 24 24", attr "aria-hidden" "true", attr "focusable" "false"]
-    [ svg "path" [attr "d" "M2 9c2.5 0 2.5-2.5 5-2.5S9.5 9 12 9s2.5-2.5 5-2.5S19.5 9 22 9"] []
-    , svg "path" [attr "d" "M2 16c2.5 0 2.5-2.5 5-2.5s2.5 2.5 5 2.5 2.5-2.5 5-2.5 2.5 2.5 5 2.5"] []
+    [ svg "path" [attr "d" "M2 9c2.5 0 2.5-2.5 5-2.5S9.5 9 12 9s2.5-2.5 5-2.5S19.5 9 22 9"] [],
+      svg "path" [attr "d" "M2 16c2.5 0 2.5-2.5 5-2.5s2.5 2.5 5 2.5 2.5-2.5 5-2.5 2.5 2.5 5 2.5"] []
     ]
 
 navLink :: Locale -> PageHead -> Text -> Text -> Node
@@ -234,25 +234,25 @@ nav loc p =
   el
     "nav"
     [cls "sitenav", attr "aria-label" (t loc "nav.label")]
-    [ external loc "https://docs.marola.dev/" "nav.docs"
-    , el
+    [ external loc "https://docs.marola.dev/" "nav.docs",
+      el
         "span"
         [attr "aria-disabled" "true"]
-        [el "span" [] [text (t loc "nav.alerts")], text " ", el "i" [] [text (t loc "nav.soon")]]
-    , navLink loc p "news" "nav.news"
-    , el
+        [el "span" [] [text (t loc "nav.alerts")], text " ", el "i" [] [text (t loc "nav.soon")]],
+      navLink loc p "news" "nav.news",
+      el
         "a"
         ([attr "href" (dynamicPath loc.language "studies")] <> [attr "aria-current" "page" | p.current == Just "studies"])
-        [text (t loc "nav.studies")]
-    , navLink loc p "about" "nav.about"
-    , navLink loc p "contact" "nav.contact"
-    , external loc "https://github.com/marola-dev/marola-research/blob/main/README.md" "nav.research"
-    , external loc "https://github.com/marola-dev/marola-research/blob/main/chamada/chamada.pdf" "nav.contribute"
-    , navLink loc p "members" "nav.members"
-    , navLink loc p "support" "nav.donate"
-    , languageSwitch loc p
-    , linkedin loc
-    , github loc
+        [text (t loc "nav.studies")],
+      navLink loc p "about" "nav.about",
+      navLink loc p "contact" "nav.contact",
+      external loc "https://github.com/marola-dev/marola-research/blob/main/README.md" "nav.research",
+      external loc "https://github.com/marola-dev/marola-research/blob/main/chamada/chamada.pdf" "nav.contribute",
+      navLink loc p "members" "nav.members",
+      navLink loc p "support" "nav.donate",
+      languageSwitch loc p,
+      linkedin loc,
+      github loc
     ]
 
 header :: Locale -> Node
@@ -260,8 +260,8 @@ header loc =
   el
     "header"
     [cls "bar"]
-    [ el "div" [cls "brand"] [el "h1" [] [brand, text "marola"], el "p" [cls "tagline"] [text (t loc "header.tagline")]]
-    , el "div" [cls "controls"] [el "a" [attr "href" (mapPath loc.language)] [text (t loc "about.back")]]
+    [ el "div" [cls "brand"] [el "h1" [] [brand, text "marola"], el "p" [cls "tagline"] [text (t loc "header.tagline")]],
+      el "div" [cls "controls"] [el "a" [attr "href" (mapPath loc.language)] [text (t loc "about.back")]]
     ]
 
 -- | The whole document for the children of @<main class="main about">@.
@@ -272,25 +272,25 @@ page loc hd mainNodes =
         el
           "html"
           [attr "lang" (languageTag lang)]
-          [ el "head" [] (headNodes lang hd)
-          , el
+          [ el "head" [] (headNodes lang hd),
+            el
               "body"
               []
-              [ nav loc hd
-              , header loc
-              , el "main" [cls "main about"] mainNodes
-              , el
+              [ nav loc hd,
+                header loc,
+                el "main" [cls "main about"] mainNodes,
+                el
                   "footer"
                   [cls "footer"]
-                  [ el "p" [] [text (t loc "footer.privacy")]
-                  , el
+                  [ el "p" [] [text (t loc "footer.privacy")],
+                    el
                       "p"
                       []
-                      [ el "a" [attr "href" (dynamicPath lang "submit")] [text (t loc "footer.submit")]
-                      , text " · "
-                      , el "a" [attr "href" (path lang "privacy")] [text (t loc "footer.privacy_page")]
-                      , text " · "
-                      , el "a" [attr "href" (path lang "takedown")] [text (t loc "footer.takedown")]
+                      [ el "a" [attr "href" (dynamicPath lang "submit")] [text (t loc "footer.submit")],
+                        text " · ",
+                        el "a" [attr "href" (path lang "privacy")] [text (t loc "footer.privacy_page")],
+                        text " · ",
+                        el "a" [attr "href" (path lang "takedown")] [text (t loc "footer.takedown")]
                       ]
                   ]
               ]

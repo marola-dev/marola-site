@@ -2,21 +2,22 @@
 -- @Vdom.toHtml@ rules. Text and attribute values are escaped and there is no
 -- raw node, so no message can add markup. Tags and attribute names come from code, never from data.
 module Marola.Pages.Html
-  ( Attr (..)
-  , Node (..)
-  , Element (..)
-  , svgNs
-  , el
-  , svg
-  , text
-  , attr
-  , cls
-  , hidden
-  , toHtml
-  ) where
+  ( Attr (..),
+    Node (..),
+    Element (..),
+    svgNs,
+    el,
+    svg,
+    text,
+    attr,
+    cls,
+    hidden,
+    toHtml,
+  )
+where
 
 import Data.Text (Text)
-import qualified Data.Text as T
+import Data.Text qualified as T
 
 data Attr = Attr Text Text | Flag Text Bool
   deriving (Eq, Show)
@@ -25,10 +26,10 @@ data Node = TextNode Text | El Element
   deriving (Eq, Show)
 
 data Element = Element
-  { ns :: Text
-  , tag :: Text
-  , attrs :: [Attr]
-  , children :: [Node]
+  { ns :: Text,
+    tag :: Text,
+    attrs :: [Attr],
+    children :: [Node]
   }
   deriving (Eq, Show)
 

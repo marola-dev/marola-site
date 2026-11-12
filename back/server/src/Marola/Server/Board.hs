@@ -26,12 +26,12 @@ usage :: Text
 usage =
   T.intercalate
     "\n"
-    [ "usage: marola-server studies list [--status public|hidden] [--limit n]"
-    , "       marola-server studies hide <id> --reason \"<text>\" [--purge]"
-    , "       marola-server studies unhide <id>"
-    , "       marola-server reports [--open]"
-    , "       marola-server reports close <report-id> --note \"<text>\""
-    , "exit code: 0 done, 1 nothing changed, 2 wrong usage"
+    [ "usage: marola-server studies list [--status public|hidden] [--limit n]",
+      "       marola-server studies hide <id> --reason \"<text>\" [--purge]",
+      "       marola-server studies unhide <id>",
+      "       marola-server reports [--open]",
+      "       marola-server reports close <report-id> --note \"<text>\"",
+      "exit code: 0 done, 1 nothing changed, 2 wrong usage"
     ]
 
 -- | Replaces every control, format (for example the right-to-left override), line and paragraph

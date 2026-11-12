@@ -12,23 +12,23 @@ import System.FilePath (normalise)
 import Text.Read (readMaybe)
 
 data Config = Config
-  { port :: Int
-  , static :: FilePath
-  -- ^ The built page (@dist@, scripts/site_build.sh): served at @/@.
-  , dataDir :: FilePath
-  -- ^ The board data folder: @/data/<x>@ is looked up here first, then under 'static'.
-  , db :: FilePath
-  , studies :: FilePath
-  -- ^ The PDFs, as @<sha256>.pdf@. Outside 'static', never served as a file tree.
-  , studiesQuota :: Int64
-  , dev :: Bool
-  -- ^ @MAROLA_DEV=1@: cookies without @Secure@ and the @__Host-@ prefix, and the GitHub URLs may be
-  -- overridden. For the smoke script on plain HTTP and a fake GitHub; never set in production.
-  , githubClientId :: Maybe Text
-  , githubSecretFile :: Maybe FilePath
-  -- ^ The file that holds the OAuth client secret. The secret itself is never in the environment.
-  , githubBase :: Text
-  , githubApiBase :: Text
+  { port :: Int,
+    -- | The built page (@dist@, scripts/site_build.sh): served at @/@.
+    static :: FilePath,
+    -- | The board data folder: @/data/<x>@ is looked up here first, then under 'static'.
+    dataDir :: FilePath,
+    db :: FilePath,
+    -- | The PDFs, as @<sha256>.pdf@. Outside 'static', never served as a file tree.
+    studies :: FilePath,
+    studiesQuota :: Int64,
+    -- | @MAROLA_DEV=1@: cookies without @Secure@ and the @__Host-@ prefix, and the GitHub URLs may be
+    -- overridden. For the smoke script on plain HTTP and a fake GitHub; never set in production.
+    dev :: Bool,
+    githubClientId :: Maybe Text,
+    -- | The file that holds the OAuth client secret. The secret itself is never in the environment.
+    githubSecretFile :: Maybe FilePath,
+    githubBase :: Text,
+    githubApiBase :: Text
   }
   deriving (Show)
 
@@ -63,25 +63,33 @@ fromEnv get = do
       secret <- traverse absolute (nonEmpty "MAROLA_GITHUB_CLIENT_SECRET_FILE")
       pure . Right $
         Config
-          { port = p
-          , static = st
-          , dataDir = da
-          , db = d
-          , studies = su
-          , studiesQuota = q
-          , dev = dev
-          , githubClientId = T.pack <$> nonEmpty "MAROLA_GITHUB_CLIENT_ID"
-          , githubSecretFile = secret
-          , githubBase = url "MAROLA_GITHUB_BASE" "https://github.com"
-          , githubApiBase = url "MAROLA_GITHUB_API_BASE" "https://api.github.com"
+          { port = p,
+            static = st,
+            dataDir = da,
+            db = d,
+            studies = su,
+            studiesQuota = q,
+            dev = dev,
+            githubClientId = T.pack <$> nonEmpty "MAROLA_GITHUB_CLIENT_ID",
+            githubSecretFile = secret,
+            githubBase = url "MAROLA_GITHUB_BASE" "https://github.com",
+            githubApiBase = url "MAROLA_GITHUB_API_BASE" "https://api.github.com"
           }
 
 fromProcessEnv :: IO (Either String Config)
 fromProcessEnv = do
   let names =
-        [ "MAROLA_PORT", "MAROLA_STUDIES_QUOTA", "MAROLA_STATIC", "MAROLA_DATA", "MAROLA_DB", "MAROLA_STUDIES"
-        , "MAROLA_DEV", "MAROLA_GITHUB_CLIENT_ID", "MAROLA_GITHUB_CLIENT_SECRET_FILE", "MAROLA_GITHUB_BASE"
-        , "MAROLA_GITHUB_API_BASE"
+        [ "MAROLA_PORT",
+          "MAROLA_STUDIES_QUOTA",
+          "MAROLA_STATIC",
+          "MAROLA_DATA",
+          "MAROLA_DB",
+          "MAROLA_STUDIES",
+          "MAROLA_DEV",
+          "MAROLA_GITHUB_CLIENT_ID",
+          "MAROLA_GITHUB_CLIENT_SECRET_FILE",
+          "MAROLA_GITHUB_BASE",
+          "MAROLA_GITHUB_API_BASE"
         ]
   values <- mapM (\n -> (n,) <$> lookupEnv n) names
   fromEnv (\n -> maybe Nothing id (lookup n values))

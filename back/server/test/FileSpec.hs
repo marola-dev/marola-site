@@ -3,50 +3,50 @@ module FileSpec (spec) where
 import Control.Monad (forM_)
 import Data.ByteString (ByteString)
 import Data.ByteString.Char8 qualified as BC
-import Data.Text qualified as T
 import Data.ByteString.Lazy qualified as BL
+import Data.Text qualified as T
 import Data.Text.Encoding qualified as TE
 import Harness
 import Marola.Server.App qualified as App
+import Marola.Server.Files qualified as Files
 import Network.HTTP.Client qualified as C
 import Network.HTTP.Types (statusCode)
 import Network.Wai.Handler.Warp (testWithApplication)
-import Marola.Server.Files qualified as Files
 import Test.Hspec
 
 -- | Paths as a client may send them, encoded or not. Each one must be a 404.
 hostile :: [ByteString]
 hostile =
-  [ "/../secret.txt"
-  , "/%2e%2e/secret.txt"
-  , "/..%2fsecret.txt"
-  , "/%2e%2e%2fsecret.txt"
-  , "/..%5csecret.txt"
-  , "/..\\secret.txt"
-  , "/sub/../index.html"
-  , "/data/../secret.txt"
-  , "/data/..%2f..%2fsecret.txt"
-  , "/%252e%252e/secret.txt"
-  , "//index.html"
-  , "/sub//x.txt"
-  , "///"
-  , "/index.html\NUL"
-  , "/index.html%00"
-  , "/index.html\NUL.png"
-  , "/.env"
-  , "/sub/.hidden"
-  , "/.git/config"
-  , "/sub/"
-  , "/sub"
-  , "/index.html/"
-  , "/app.js/"
-  , "/ "
-  , "/%20"
-  , "/index.html "
-  , "/C:/windows/win.ini"
-  , "/sub/x.txt:stream"
-  , "/~/x"
-  , ""
+  [ "/../secret.txt",
+    "/%2e%2e/secret.txt",
+    "/..%2fsecret.txt",
+    "/%2e%2e%2fsecret.txt",
+    "/..%5csecret.txt",
+    "/..\\secret.txt",
+    "/sub/../index.html",
+    "/data/../secret.txt",
+    "/data/..%2f..%2fsecret.txt",
+    "/%252e%252e/secret.txt",
+    "//index.html",
+    "/sub//x.txt",
+    "///",
+    "/index.html\NUL",
+    "/index.html%00",
+    "/index.html\NUL.png",
+    "/.env",
+    "/sub/.hidden",
+    "/.git/config",
+    "/sub/",
+    "/sub",
+    "/index.html/",
+    "/app.js/",
+    "/ ",
+    "/%20",
+    "/index.html ",
+    "/C:/windows/win.ini",
+    "/sub/x.txt:stream",
+    "/~/x",
+    ""
   ]
 
 shown :: ByteString -> String
@@ -71,12 +71,12 @@ spec = describe "static files" $ do
 
   it "the page: / and /index.html, files, and a clean URL for an html file" $ withSite $ \site ->
     forM_
-      [ ("/", "text/html; charset=utf-8", "home")
-      , ("/index.html", "text/html; charset=utf-8", "home")
-      , ("/app.js", "text/javascript; charset=utf-8", "export const x")
-      , ("/style.css", "text/css; charset=utf-8", "margin")
-      , ("/sub/x.txt", "text/plain; charset=utf-8", "x")
-      , ("/contact", "text/html; charset=utf-8", "<form>")
+      [ ("/", "text/html; charset=utf-8", "home"),
+        ("/index.html", "text/html; charset=utf-8", "home"),
+        ("/app.js", "text/javascript; charset=utf-8", "export const x"),
+        ("/style.css", "text/css; charset=utf-8", "margin"),
+        ("/sub/x.txt", "text/plain; charset=utf-8", "x"),
+        ("/contact", "text/html; charset=utf-8", "<form>")
       ]
       $ \(p, kind, txt) -> do
         res <- send site (get p)
@@ -89,14 +89,14 @@ spec = describe "static files" $ do
     header ok "Content-Type" `shouldBe` Just "text/plain; charset=utf-8"
     bodyText ok `shouldSatisfy` T.isInfixOf "Contact:"
     forM_
-      [ "/.well-known/.hidden"
-      , "/.well-known/"
-      , "/.well-known"
-      , "/sub/.well-known/security.txt"
-      , "/.well-known/../secret.txt"
-      , "/.well-known/%2e%2e/secret.txt"
-      , "/.env"
-      , "/.git/config"
+      [ "/.well-known/.hidden",
+        "/.well-known/",
+        "/.well-known",
+        "/sub/.well-known/security.txt",
+        "/.well-known/../secret.txt",
+        "/.well-known/%2e%2e/secret.txt",
+        "/.env",
+        "/.git/config"
       ]
       $ \p -> do
         res <- send site (get p)

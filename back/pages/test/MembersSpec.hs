@@ -2,17 +2,17 @@
 -- Python), plus the real members page and the pinned copy.
 module MembersSpec (spec) where
 
-import qualified Data.ByteString as B
+import Data.ByteString qualified as B
 import Data.Either (isLeft, isRight)
-import qualified Data.Map.Strict as Map
+import Data.Map.Strict qualified as Map
 import Data.Text (Text)
-import qualified Data.Text as T
-import qualified Data.Text.Encoding as TE
+import Data.Text qualified as T
+import Data.Text.Encoding qualified as TE
 import Marola.Pages.Html (toHtml)
 import Marola.Pages.Language (Language (..))
 import Marola.Pages.Loader (readText)
 import Marola.Pages.Members (Member)
-import qualified Marola.Pages.Members as Members
+import Marola.Pages.Members qualified as Members
 import Marola.Pages.Site (Env (..))
 import Support
 import System.FilePath ((</>))

@@ -1,6 +1,7 @@
 module View.Page exposing (view)
 
-{-| The whole page, from the model. The map's `div` stays empty: MapLibre fills it. -}
+{-| The whole page, from the model. The map's `div` stays empty: MapLibre fills it.
+-}
 
 import Html exposing (Html)
 import Layer

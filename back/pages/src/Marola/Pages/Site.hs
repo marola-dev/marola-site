@@ -1,31 +1,32 @@
 -- | The pages: one page is a function from a language to its HTML text.
 module Marola.Pages.Site
-  ( Area (..)
-  , Env (..)
-  , slugs
-  , allSlugs
-  , noIndex
-  , contentKey
-  , file
-  , render
-  , allPages
-  ) where
+  ( Area (..),
+    Env (..),
+    slugs,
+    allSlugs,
+    noIndex,
+    contentKey,
+    file,
+    render,
+    allPages,
+  )
+where
 
 import Data.Map.Strict (Map)
-import qualified Data.Map.Strict as Map
+import Data.Map.Strict qualified as Map
 import Data.Text (Text)
-import qualified Data.Text as T
+import Data.Text qualified as T
 import Marola.Pages.Html (Node)
-import qualified Marola.Pages.Html as H
+import Marola.Pages.Html qualified as H
 import Marola.Pages.I18n (Catalog, Locale (..))
-import qualified Marola.Pages.I18n as I18n
+import Marola.Pages.I18n qualified as I18n
 import Marola.Pages.Language (Language (..))
-import qualified Marola.Pages.Language as Language
-import qualified Marola.Pages.Layout as Layout
+import Marola.Pages.Language qualified as Language
+import Marola.Pages.Layout qualified as Layout
 import Marola.Pages.Markdown (Doc, collect)
-import qualified Marola.Pages.Markdown as Markdown
-import qualified Marola.Pages.Members as Members
-import qualified Marola.Pages.News as News
+import Marola.Pages.Markdown qualified as Markdown
+import Marola.Pages.Members qualified as Members
+import Marola.Pages.News qualified as News
 
 -- | An area of @site/areas.json@: llms.txt reads its id and name.
 data Area = Area {areaId :: Text, areaName :: Text}
@@ -33,18 +34,18 @@ data Area = Area {areaId :: Text, areaName :: Text}
 
 -- | What the pages are made of, as read from disk.
 data Env = Env
-  { envCatalog :: Catalog
-  , envContent :: Map Text Text
-  -- ^ @<slug>.<language tag>@ to the file's text.
-  , envNews :: [(Text, Text)]
-  -- ^ The news posts: file name and text, without README.md.
-  , envNewsIndex :: Text
-  -- ^ @site/content/news/README.md@, whose index must list every post.
-  , envMembers :: Text
-  -- ^ MEMBERS.md of marola-dev/.github.
-  , envAvatars :: Map Text Text
-  -- ^ The avatar files of @site/static/img/members/@: the GitHub login to its file name.
-  , envAreas :: [Area]
+  { envCatalog :: Catalog,
+    -- | @<slug>.<language tag>@ to the file's text.
+    envContent :: Map Text Text,
+    -- | The news posts: file name and text, without README.md.
+    envNews :: [(Text, Text)],
+    -- | @site/content/news/README.md@, whose index must list every post.
+    envNewsIndex :: Text,
+    -- | MEMBERS.md of marola-dev/.github.
+    envMembers :: Text,
+    -- | The avatar files of @site/static/img/members/@: the GitHub login to its file name.
+    envAvatars :: Map Text Text,
+    envAreas :: [Area]
   }
 
 -- | Pages whose body is Markdown, by file name without @.html@.
@@ -74,29 +75,29 @@ form loc =
     [H.cls "about-body"]
     [ H.el
         "form"
-        [ H.cls "contact"
-        , H.attr "action" (if language loc == En then "/en/contact" else "/contact")
-        , H.attr "method" "POST"
+        [ H.cls "contact",
+          H.attr "action" (if language loc == En then "/en/contact" else "/contact"),
+          H.attr "method" "POST"
         ]
         [ -- The honeypot: a person never sees it, the server drops a post that fills it.
           H.el
             "input"
-            ( [ H.attr "type" "text"
-              , H.attr "name" "website"
-              , H.attr "tabindex" "-1"
-              , H.attr "autocomplete" "off"
-              , H.attr "aria-hidden" "true"
+            ( [ H.attr "type" "text",
+                H.attr "name" "website",
+                H.attr "tabindex" "-1",
+                H.attr "autocomplete" "off",
+                H.attr "aria-hidden" "true"
               ]
                 <> H.hidden True
             )
-            []
-        , field "contact.name" $
-            H.el "input" [H.attr "type" "text", H.attr "name" "name", H.attr "required" "", H.attr "autocomplete" "name"] []
-        , field "contact.email" $
-            H.el "input" [H.attr "type" "email", H.attr "name" "email", H.attr "required" "", H.attr "autocomplete" "email"] []
-        , field "contact.message" $
-            H.el "textarea" [H.attr "name" "message", H.attr "rows" "6", H.attr "required" ""] []
-        , H.el "button" [H.attr "type" "submit"] [H.text (I18n.t loc "contact.send")]
+            [],
+          field "contact.name" $
+            H.el "input" [H.attr "type" "text", H.attr "name" "name", H.attr "required" "", H.attr "autocomplete" "name"] [],
+          field "contact.email" $
+            H.el "input" [H.attr "type" "email", H.attr "name" "email", H.attr "required" "", H.attr "autocomplete" "email"] [],
+          field "contact.message" $
+            H.el "textarea" [H.attr "name" "message", H.attr "rows" "6", H.attr "required" ""] [],
+          H.el "button" [H.attr "type" "submit"] [H.text (I18n.t loc "contact.send")]
         ]
     ]
   where
@@ -106,13 +107,13 @@ form loc =
 headOf :: Text -> Doc -> Layout.PageHead
 headOf s doc =
   Layout.PageHead
-    { Layout.slug = s
-    , Layout.title = Markdown.title doc
-    , Layout.description = Markdown.description doc
-    , Layout.noIndex = noIndex s
-    , Layout.canonical = s /= "404"
-    , Layout.dynamic = False
-    , Layout.current = case s of
+    { Layout.slug = s,
+      Layout.title = Markdown.title doc,
+      Layout.description = Markdown.description doc,
+      Layout.noIndex = noIndex s,
+      Layout.canonical = s /= "404",
+      Layout.dynamic = False,
+      Layout.current = case s of
         "contact" -> Just "contact"
         "contact-sent" -> Just "contact"
         "404" -> Nothing

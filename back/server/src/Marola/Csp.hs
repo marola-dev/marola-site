@@ -22,14 +22,14 @@ policy :: Text
 policy =
   T.intercalate
     "; "
-    [ "default-src 'self'"
-    , "script-src 'self'"
-    , "style-src 'self'"
-    , "img-src 'self' data: blob: " <> origins
-    , "connect-src 'self' " <> origins
-    , "font-src 'self'"
-    , "worker-src 'self'"
-    , "object-src 'none'"
-    , "base-uri 'self'"
-    , "frame-ancestors 'none'"
+    [ "default-src 'self'",
+      "script-src 'self'",
+      "style-src 'self'",
+      "img-src 'self' data: blob: " <> origins,
+      "connect-src 'self' " <> origins,
+      "font-src 'self'",
+      "worker-src 'self'",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "frame-ancestors 'none'"
     ]

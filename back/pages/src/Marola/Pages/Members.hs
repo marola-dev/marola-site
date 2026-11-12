@@ -2,52 +2,53 @@
 -- rules and the same words as scripts/members_build.py. A row or a header that is wrong is an error
 -- of the build, never a silent skip.
 module Marola.Pages.Members
-  ( Member (..)
-  , header
-  , legacy
-  , zenodo
-  , file
-  , blobId
-  , pinnedBlob
-  , vendored
-  , parse
-  , initials
-  , checkAvatars
-  , article
-  , humans
-  ) where
+  ( Member (..),
+    header,
+    legacy,
+    zenodo,
+    file,
+    blobId,
+    pinnedBlob,
+    vendored,
+    parse,
+    initials,
+    checkAvatars,
+    article,
+    humans,
+  )
+where
 
-import qualified Crypto.Hash.SHA1 as SHA1
-import qualified Data.ByteString as B
-import qualified Data.ByteString.Char8 as BC
+import Crypto.Hash.SHA1 qualified as SHA1
+import Data.ByteString qualified as B
+import Data.ByteString.Char8 qualified as BC
 import Data.Char (isAsciiLower, isAsciiUpper, isDigit, toUpper)
 import Data.List (sort)
 import Data.Map.Strict (Map)
-import qualified Data.Map.Strict as Map
+import Data.Map.Strict qualified as Map
 import Data.Maybe (catMaybes, isJust)
-import qualified Data.Set as Set
+import Data.Set qualified as Set
 import Data.Text (Text)
-import qualified Data.Text as T
-import qualified Data.Text.Encoding as TE
-import qualified Data.Text.Encoding.Error as TE
+import Data.Text qualified as T
+import Data.Text.Encoding qualified as TE
+import Data.Text.Encoding.Error qualified as TE
 import Marola.Pages.Html (Node)
-import qualified Marola.Pages.Html as H
+import Marola.Pages.Html qualified as H
 import Marola.Pages.Language (Language (..))
-import qualified Marola.Pages.Language as Language
+import Marola.Pages.Language qualified as Language
 import Marola.Pages.Markdown (collect)
 import Numeric (showHex)
 
 data Member = Member
-  { name :: Text
-  -- ^ @Given Family@, from Zenodo's @Family, Given@.
-  , affiliation :: Text
-  , orcid :: Maybe Text
-  , gitHub :: Maybe Text
-  , first :: Maybe (Text, Text)
-  -- ^ The date and the URL of the first commit.
-  , marolaRole :: Text
-  -- ^ Empty under the old header, which has no role columns.
-  , gitHubRole :: Text
+  { -- | @Given Family@, from Zenodo's @Family, Given@.
+    name :: Text,
+    affiliation :: Text,
+    orcid :: Maybe Text,
+    gitHub :: Maybe Text,
+    -- | The date and the URL of the first commit.
+    first :: Maybe (Text, Text),
+    -- | Empty under the old header, which has no role columns.
+    marolaRole :: Text,
+    gitHubRole :: Text
   }
   deriving (Eq, Show)
 
@@ -77,9 +78,9 @@ isHexLower c = isDigit c || (c >= 'a' && c <= 'f')
 pinnedBlob :: Text -> Maybe Text
 pinnedBlob version = case map T.strip (T.splitOn "\n" version) of
   _ : second : _
-    | Just sha <- T.stripPrefix "blob " second
-    , T.length sha == 40
-    , T.all isHexLower sha ->
+    | Just sha <- T.stripPrefix "blob " second,
+      T.length sha == 40,
+      T.all isHexLower sha ->
         Just sha
   _ -> Nothing
 
@@ -124,10 +125,10 @@ commitCell cell = do
   repoAndSha <- T.stripPrefix "https://github.com/marola-dev/" url
   case T.splitOn "/commit/" repoAndSha of
     [repo, sha]
-      | not (T.null repo)
-      , T.all (\c -> isAsciiLower c || isAsciiUpper c || isDigit c || c `elem` ("._-" :: String)) repo
-      , T.length sha == 40
-      , T.all isHexLower sha ->
+      | not (T.null repo),
+        T.all (\c -> isAsciiLower c || isAsciiUpper c || isDigit c || c `elem` ("._-" :: String)) repo,
+        T.length sha == 40,
+        T.all isHexLower sha ->
           Just (d, url)
     _ -> Nothing
 
@@ -156,13 +157,13 @@ row full cells =
                         else
                           Right
                             Member
-                              { name = T.drop 2 givenPart <> " " <> familyPart
-                              , affiliation = aff
-                              , orcid = o
-                              , gitHub = g
-                              , first = c
-                              , marolaRole = if full then cells !! 5 else ""
-                              , gitHubRole = if full then cells !! 6 else ""
+                              { name = T.drop 2 givenPart <> " " <> familyPart,
+                                affiliation = aff,
+                                orcid = o,
+                                gitHub = g,
+                                first = c,
+                                marolaRole = if full then cells !! 5 else "",
+                                gitHubRole = if full then cells !! 6 else ""
                               }
 
 -- | MEMBERS.md's table as members, in the file's order.
@@ -170,8 +171,8 @@ parse :: Text -> Either Text [Member]
 parse txt =
   let cells =
         [ map T.strip (T.splitOn "|" (T.dropAround (== '|') l))
-        | l <- map T.strip (T.splitOn "\n" txt)
-        , "|" `T.isPrefixOf` l
+        | l <- map T.strip (T.splitOn "\n" txt),
+          "|" `T.isPrefixOf` l
         ]
       wanted = "MEMBERS.md needs one table headed | " <> T.intercalate " | " header <> " |"
    in case cells of
@@ -216,12 +217,12 @@ checkAvatars avatars members =
             )
 
 data Copy = Copy
-  { cTitle :: Text
-  , cLede :: [Node]
-  , cCommit :: Text -> Text
-  , cRole :: Text -> Text
-  , cGitHubRole :: Text -> Text
-  , cFoot :: [Node]
+  { cTitle :: Text,
+    cLede :: [Node],
+    cCommit :: Text -> Text,
+    cRole :: Text -> Text,
+    cGitHubRole :: Text -> Text,
+    cFoot :: [Node]
   }
 
 a :: Text -> [Node] -> Node
@@ -230,36 +231,36 @@ a href = H.el "a" [H.attr "href" href]
 copy :: Language -> Copy
 copy PtBr =
   Copy
-    { cTitle = "membros"
-    , cLede =
-        [ H.text "as pessoas que fazem o marola, na ordem do primeiro commit de cada uma nos repositórios do projeto. quem tem ORCID também é autor do "
-        , a zenodo [H.text "registro do marola no Zenodo"]
-        , H.text "."
-        ]
-    , cCommit = ("primeiro commit em " <>)
-    , cRole = ("no marola: " <>)
-    , cGitHubRole = ("no GitHub: " <>)
-    , cFoot =
-        [ H.text "a lista vem do arquivo "
-        , a file [H.el "code" [] [H.text "MEMBERS.md"]]
-        , H.text " da organização no GitHub. para entrar na lista ou corrigir seus dados, abra um pull request nesse arquivo."
+    { cTitle = "membros",
+      cLede =
+        [ H.text "as pessoas que fazem o marola, na ordem do primeiro commit de cada uma nos repositórios do projeto. quem tem ORCID também é autor do ",
+          a zenodo [H.text "registro do marola no Zenodo"],
+          H.text "."
+        ],
+      cCommit = ("primeiro commit em " <>),
+      cRole = ("no marola: " <>),
+      cGitHubRole = ("no GitHub: " <>),
+      cFoot =
+        [ H.text "a lista vem do arquivo ",
+          a file [H.el "code" [] [H.text "MEMBERS.md"]],
+          H.text " da organização no GitHub. para entrar na lista ou corrigir seus dados, abra um pull request nesse arquivo."
         ]
     }
 copy En =
   Copy
-    { cTitle = "Members"
-    , cLede =
-        [ H.text "The people who build marola, in the order of their first commit to the project's repositories. Those with an ORCID are also creators of the "
-        , a zenodo [H.text "marola record on Zenodo"]
-        , H.text "."
-        ]
-    , cCommit = ("first commit on " <>)
-    , cRole = ("marola: " <>)
-    , cGitHubRole = ("GitHub: " <>)
-    , cFoot =
-        [ H.text "The list comes from the organization's "
-        , a file [H.el "code" [] [H.text "MEMBERS.md"]]
-        , H.text " on GitHub. To join it or fix your details, open a pull request on that file."
+    { cTitle = "Members",
+      cLede =
+        [ H.text "The people who build marola, in the order of their first commit to the project's repositories. Those with an ORCID are also creators of the ",
+          a zenodo [H.text "marola record on Zenodo"],
+          H.text "."
+        ],
+      cCommit = ("first commit on " <>),
+      cRole = ("marola: " <>),
+      cGitHubRole = ("GitHub: " <>),
+      cFoot =
+        [ H.text "The list comes from the organization's ",
+          a file [H.el "code" [] [H.text "MEMBERS.md"]],
+          H.text " on GitHub. To join it or fix your details, open a pull request on that file."
         ]
     }
 
@@ -282,20 +283,20 @@ item c avatars m =
       Just f ->
         H.el
           "img"
-          [ H.cls "member-mark"
-          , H.attr "src" ("/img/members/" <> f)
-          , H.attr "width" "48"
-          , H.attr "height" "48"
-          , H.attr "alt" ""
-          , H.attr "loading" "lazy"
+          [ H.cls "member-mark",
+            H.attr "src" ("/img/members/" <> f),
+            H.attr "width" "48",
+            H.attr "height" "48",
+            H.attr "alt" "",
+            H.attr "loading" "lazy"
           ]
           []
       Nothing -> H.el "span" [H.cls "member-mark", H.attr "aria-hidden" "true"] [H.text (initials (name m))]
     linkNodes =
       catMaybes
-        [ (\i -> a ("https://orcid.org/" <> i) [H.text ("ORCID " <> i)]) <$> orcid m
-        , (\l -> a ("https://github.com/" <> l) [H.text ("@" <> l)]) <$> gitHub m
-        , (\(d, url) -> a url [H.text (cCommit c d)]) <$> first m
+        [ (\i -> a ("https://orcid.org/" <> i) [H.text ("ORCID " <> i)]) <$> orcid m,
+          (\l -> a ("https://github.com/" <> l) [H.text ("@" <> l)]) <$> gitHub m,
+          (\(d, url) -> a url [H.text (cCommit c d)]) <$> first m
         ]
     links = case linkNodes of
       [] -> []
@@ -310,10 +311,10 @@ article l avatars members =
    in H.el
         "article"
         [H.cls "about-body", H.attr "lang" (Language.tag l)]
-        [ H.el "h2" [] [H.text (cTitle c)]
-        , H.el "p" [H.cls "lede"] (cLede c)
-        , H.el "ul" [H.cls "members"] (map (item c avatars) members)
-        , H.el "p" [] (cFoot c)
+        [ H.el "h2" [] [H.text (cTitle c)],
+          H.el "p" [H.cls "lede"] (cLede c),
+          H.el "ul" [H.cls "members"] (map (item c avatars) members),
+          H.el "p" [] (cFoot c)
         ]
 
 -- | humanstxt.org's plain format, one block per member in MEMBERS.md's order.
@@ -322,18 +323,18 @@ humans members =
   T.intercalate "\n" lines' <> "\n"
   where
     lines' =
-      [ "/* TEAM */"
-      , "# Generated by back/pages (marola-pages) from marola-dev/.github's MEMBERS.md; do not edit."
-      , ""
+      [ "/* TEAM */",
+        "# Generated by back/pages (marola-pages) from marola-dev/.github's MEMBERS.md; do not edit.",
+        ""
       ]
         <> concatMap block members
-        <> [ "/* SITE */"
-           , "Members: " <> file
-           , "Cite: " <> zenodo
-           , "Code: https://github.com/marola-dev/marola-site"
-           , "Language: Português (Brasil), English"
-           , "Standards: HTML, CSS, Elm compiled to JavaScript, Haskell on the server"
-           , "Components: MapLibre GL JS, Inter"
+        <> [ "/* SITE */",
+             "Members: " <> file,
+             "Cite: " <> zenodo,
+             "Code: https://github.com/marola-dev/marola-site",
+             "Language: Português (Brasil), English",
+             "Standards: HTML, CSS, Elm compiled to JavaScript, Haskell on the server",
+             "Components: MapLibre GL JS, Inter"
            ]
     block m =
       ["Name: " <> name m]

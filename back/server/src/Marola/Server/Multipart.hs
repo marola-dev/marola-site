@@ -1,13 +1,13 @@
 -- | A streaming multipart/form-data reader with fixed limits: the preamble and each part's headers at most 4096 bytes, at most 8 headers a part. A body
 -- that breaks the framing throws 'Malformed'; nothing is ever buffered whole.
 module Marola.Server.Multipart
-  ( Malformed (..)
-  , Reader
-  , Part (..)
-  , boundaryOf
-  , newReader
-  , nextPart
-  , dispositionName
+  ( Malformed (..),
+    Reader,
+    Part (..),
+    boundaryOf,
+    newReader,
+    nextPart,
+    dispositionName,
   )
 where
 
@@ -24,22 +24,22 @@ data Malformed = Malformed String deriving (Show)
 instance Exception Malformed
 
 data Reader = Reader
-  { source :: IO ByteString
-  , buffer :: IORef ByteString
-  , ended :: IORef Bool
-  -- ^ The source returned its last chunk.
-  , delimiter :: ByteString
-  -- ^ @\\r\\n--boundary@
-  , state :: IORef State
+  { source :: IO ByteString,
+    buffer :: IORef ByteString,
+    -- | The source returned its last chunk.
+    ended :: IORef Bool,
+    -- | @\\r\\n--boundary@
+    delimiter :: ByteString,
+    state :: IORef State
   }
 
 -- | 'Between': a part's closing delimiter was consumed, what follows it is not read yet.
 data State = Start | InPart | Between | Done deriving (Eq)
 
 data Part = Part
-  { headers :: [(CI.CI ByteString, ByteString)]
-  , body :: IO ByteString
-  -- ^ The next piece of the part's body; empty at its end.
+  { headers :: [(CI.CI ByteString, ByteString)],
+    -- | The next piece of the part's body; empty at its end.
+    body :: IO ByteString
   }
 
 limit :: Int

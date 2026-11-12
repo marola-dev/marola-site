@@ -25,14 +25,14 @@ import Test.Hspec
 
 goodFields :: [(ByteString, Text)]
 goodFields =
-  [ ("title", "Enterococcus in Praia do Leblon, 2025")
-  , ("authors", "Ana Silva | 0000-0002-1825-0097\nBruno Costa")
-  , ("abstract", T.replicate 12 "Sampling of bathing water. ")
-  , ("area", "rio")
-  , ("topic", "water-quality")
-  , ("sources", "https://example.org/data")
-  , ("rights", "true")
-  , ("ai_contribution", "none")
+  [ ("title", "Enterococcus in Praia do Leblon, 2025"),
+    ("authors", "Ana Silva | 0000-0002-1825-0097\nBruno Costa"),
+    ("abstract", T.replicate 12 "Sampling of bathing water. "),
+    ("area", "rio"),
+    ("topic", "water-quality"),
+    ("sources", "https://example.org/data"),
+    ("rights", "true"),
+    ("ai_contribution", "none")
   ]
 
 -- | An account of that age with a key.

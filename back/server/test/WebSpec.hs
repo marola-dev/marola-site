@@ -149,17 +149,17 @@ spec = describe "web" $ do
     (c, csrf) <- loggedIn site 1 "ana"
     let evil = "<script>alert(1)</script> \"onmouseover=\"alert(2)"
         fields =
-          [ ("title", "T " <> evil)
-          , ("authors", "Ana " <> evil)
-          , ("abstract", T.replicate 3 (evil <> " ") <> T.replicate 12 "padding text. ")
-          , ("area", "rio")
-          , ("topic", "water-quality")
-          , ("sources", "https://example.org/a?x=%22onmouseover=1&y=<b>")
-          , ("repository", "https://example.org/r?q=\"onmouseover=3")
-          , ("rights", "true")
-          , ("ai_contribution", "drafting")
-          , ("ai_models", evil)
-          , ("ai_process", evil)
+          [ ("title", "T " <> evil),
+            ("authors", "Ana " <> evil),
+            ("abstract", T.replicate 3 (evil <> " ") <> T.replicate 12 "padding text. "),
+            ("area", "rio"),
+            ("topic", "water-quality"),
+            ("sources", "https://example.org/a?x=%22onmouseover=1&y=<b>"),
+            ("repository", "https://example.org/r?q=\"onmouseover=3"),
+            ("rights", "true"),
+            ("ai_contribution", "drafting"),
+            ("ai_models", evil),
+            ("ai_process", evil)
           ]
     r <- postSubmit site "/submit" c (Just same) (studyForm (Just csrf) fields (Just validPdf))
     let i = TE.encodeUtf8 (idFrom r)

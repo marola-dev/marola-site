@@ -1,6 +1,7 @@
 module Difficulty exposing (Difficulty(..), band, decoder, parse)
 
-{-| A trail's OSM `sac_scale`; a new OSM value shows as unrated, not as a crash. -}
+{-| A trail's OSM `sac_scale`; a new OSM value shows as unrated, not as a crash.
+-}
 
 import Band exposing (Band)
 import Dec

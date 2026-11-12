@@ -1,32 +1,33 @@
 -- | The files the tests read: the repository's own catalogs and page Markdown, and small text
 -- helpers in place of regexes.
 module Support
-  ( root
-  , oldPage
-  , membersTable
-  , loadEnv
-  , renderWith
-  , has
-  , count
-  , occurrences
-  , between
-  , betweenAll
-  , htmlDecode
-  , visible
-  , hrefs
-  , attrValues
-  ) where
+  ( root,
+    oldPage,
+    membersTable,
+    loadEnv,
+    renderWith,
+    has,
+    count,
+    occurrences,
+    between,
+    betweenAll,
+    htmlDecode,
+    visible,
+    hrefs,
+    attrValues,
+  )
+where
 
 import Data.Char (chr, isDigit, isHexDigit)
 import Data.Maybe (fromMaybe, listToMaybe, mapMaybe)
 import Data.Text (Text)
-import qualified Data.Text as T
+import Data.Text qualified as T
 import Marola.Pages.Language (Language)
 import Marola.Pages.Loader (readText)
-import qualified Marola.Pages.Loader as Loader
-import qualified Marola.Pages.Members as Members
+import Marola.Pages.Loader qualified as Loader
+import Marola.Pages.Members qualified as Members
 import Marola.Pages.Site (Env)
-import qualified Marola.Pages.Site as Site
+import Marola.Pages.Site qualified as Site
 import Numeric (readHex)
 import System.Directory (doesDirectoryExist, getCurrentDirectory)
 import System.FilePath (takeDirectory, (</>))
@@ -129,20 +130,20 @@ membersTable = do
     token prefix ok b =
       listToMaybe
         [ v
-        | r <- occurrences prefix b
-        , let v = T.takeWhile ok r
-        , not (T.null v)
-        , "</a>" `T.isPrefixOf` T.drop (T.length v) r
+        | r <- occurrences prefix b,
+          let v = T.takeWhile ok r,
+          not (T.null v),
+          "</a>" `T.isPrefixOf` T.drop (T.length v) r
         ]
     commit b =
       listToMaybe
         [ (url, d)
-        | r <- occurrences "<a href=\"" b
-        , let url = T.takeWhile (/= '"') r
-        , Just afterUrl <- [T.stripPrefix (url <> "\">primeiro commit em ") r]
-        , let d = T.takeWhile (\c -> isDigit c || c == '-') afterUrl
-        , not (T.null d)
-        , "</a>" `T.isPrefixOf` T.drop (T.length d) afterUrl
+        | r <- occurrences "<a href=\"" b,
+          let url = T.takeWhile (/= '"') r,
+          Just afterUrl <- [T.stripPrefix (url <> "\">primeiro commit em ") r],
+          let d = T.takeWhile (\c -> isDigit c || c == '-') afterUrl,
+          not (T.null d),
+          "</a>" `T.isPrefixOf` T.drop (T.length d) afterUrl
         ]
     one b =
       let name = span' "member-name" b
@@ -158,13 +159,13 @@ membersTable = do
        in "| "
             <> T.intercalate
               " | "
-              [ family <> ", " <> T.dropEnd 1 given
-              , span' "member-aff" b
-              , maybe "" (\o -> "[" <> o <> "](https://orcid.org/" <> o <> ")") orcid
-              , maybe "" (\l -> "[" <> l <> "](https://github.com/" <> l <> ")") login
-              , maybe "" (\(url, d) -> "[" <> d <> "](" <> url <> ")") (commit b)
-              , marola
-              , gh
+              [ family <> ", " <> T.dropEnd 1 given,
+                span' "member-aff" b,
+                maybe "" (\o -> "[" <> o <> "](https://orcid.org/" <> o <> ")") orcid,
+                maybe "" (\l -> "[" <> l <> "](https://github.com/" <> l <> ")") login,
+                maybe "" (\(url, d) -> "[" <> d <> "](" <> url <> ")") (commit b),
+                marola,
+                gh
               ]
             <> " |"
 
@@ -176,4 +177,3 @@ loadEnv = do
 
 renderWith :: Env -> Text -> Language -> Text
 renderWith env s l = either (error . T.unpack) id (Site.render env s l)
-

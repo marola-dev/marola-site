@@ -1,6 +1,7 @@
 module Language exposing (Language(..), all, fromTag, matching, resolve, source, tag)
 
-{-| The two languages of the page (MIP-0054 5.5). -}
+{-| The two languages of the page (MIP-0054 5.5).
+-}
 
 
 type Language

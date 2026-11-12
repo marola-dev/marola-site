@@ -21,7 +21,8 @@ type Arg
     | Text String
 
 
-{-| The source as UTF-16 units, so a position means what it means in ui.js. -}
+{-| The source as UTF-16 units, so a position means what it means in ui.js.
+-}
 type alias Cursor =
     { source : String, units : List Char, pos : Int }
 

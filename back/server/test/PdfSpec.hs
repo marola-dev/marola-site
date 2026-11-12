@@ -27,11 +27,11 @@ withConfig :: Int64 -> (Config -> IO a) -> IO a
 withConfig quota body = bracket (tempDir "marola-pdf-") removePathForcibly $ \root ->
   body
     (bareConfig (root </> "db" </> "marola.db"))
-      { studies = root </> "studies"
-      , studiesQuota = quota
-      , githubClientId = Just "test-client-id"
-      , githubBase = "https://github.test"
-      , githubApiBase = "https://api.github.test"
+      { studies = root </> "studies",
+        studiesQuota = quota,
+        githubClientId = Just "test-client-id",
+        githubBase = "https://github.test",
+        githubApiBase = "https://api.github.test"
       }
 
 receive :: Config -> Bool -> ByteString -> IO (Either FieldError Received)
@@ -106,31 +106,31 @@ spec = do
 
     it "active content is refused: names, escaped names, and an OpenAction with an action" $ withConfig 10_000_000 $ \config -> do
       forM_
-        [ "/AA << /O << /S /JavaScript /JS (app.alert(1)) >> >>"
-        , "/JS (app.alert(1))"
-        , "/JS(app.alert(1))"
-        , "/S /Launch /F (cmd.exe)"
-        , "/Names << /EmbeddedFiles << >> >> /Type /EmbeddedFile"
-        , "/OpenAction << /S /URI /URI (https://evil.example) >>"
-        , "/OpenAction<</S/GoTo>>"
-        , "/OpenAction /Foo"
-        , "/J#53 (x)"
-        , "/#4AavaScript"
-        , "/#4a#61vaScript"
+        [ "/AA << /O << /S /JavaScript /JS (app.alert(1)) >> >>",
+          "/JS (app.alert(1))",
+          "/JS(app.alert(1))",
+          "/S /Launch /F (cmd.exe)",
+          "/Names << /EmbeddedFiles << >> >> /Type /EmbeddedFile",
+          "/OpenAction << /S /URI /URI (https://evil.example) >>",
+          "/OpenAction<</S/GoTo>>",
+          "/OpenAction /Foo",
+          "/J#53 (x)",
+          "/#4AavaScript",
+          "/#4a#61vaScript"
         ]
-        $ \extra -> (extra, ) <$> code config True (pdfBytes extra 0) `shouldReturn` (extra, "active_content")
+        $ \extra -> (extra,) <$> code config True (pdfBytes extra 0) `shouldReturn` (extra, "active_content")
       files config `shouldReturn` []
 
     it "plain PDFs with a destination OpenAction, a reference or a similar name are accepted" $ withConfig 10_000_000 $ \config ->
       forM_ ["/OpenAction [3 0 R /Fit]", "/OpenAction 5 0 R", "/OpenAction null", "/OpenAction\n[3 0 R /XYZ 0 0 0]", "/JSON 1 /JavaScripts 2 /Font /Arial#20Bold"] $ \extra ->
-        (extra, ) <$> code config False (pdfBytes extra 0) `shouldReturn` (extra, "ok")
+        (extra,) <$> code config False (pdfBytes extra 0) `shouldReturn` (extra, "ok")
 
     it "a forbidden name that straddles the 64 KB read border is found" $ withConfig 10_000_000 $ \config -> do
       let bytes = pdfBytes "/S /JavaScript" 0
           at = B.length (fst (B.breakSubstring "/JavaScript" bytes))
       forM_ [-3 .. 3] $ \shift -> do
         let moved = pdfBytes "/S /JavaScript" (65536 - at + shift - 3)
-        (shift, ) <$> code config False moved `shouldReturn` (shift, "active_content")
+        (shift,) <$> code config False moved `shouldReturn` (shift, "active_content")
 
     it "a file over 20 MB is refused while streaming, without reading it all and without a file" $ withConfig 100_000_000 $ \config -> do
       position <- newIORef (0 :: Int64)
@@ -175,15 +175,15 @@ spec = do
     it "a clean object stream is accepted, in the forms that Word, LaTeX and qpdf write" $ withConfig 10_000_000 $ \config -> do
       let clean = zlib (inner "<< /Type /Page /Parent 2 0 R /Contents 7 0 R /OpenAction [3 0 R /Fit] >>")
       forM_
-        [ flateDict
-        , "<</Type/ObjStm/N 69/First 513/Filter/FlateDecode/Length 1531>>"
-        , "<<\n/Type /ObjStm\n/N 2\n/First 10\n/Length 12 0 R\n/Filter /FlateDecode\n>>"
-        , "<</Length 99/Filter/FlateDecode/Extends 3 0 R/First 4/N 1/Type/ObjStm>>"
-        , "<<\r\n/Type /ObjStm /N 1 /First 4 /Filter /FlateDecode /Length 99 \r\n>>"
+        [ flateDict,
+          "<</Type/ObjStm/N 69/First 513/Filter/FlateDecode/Length 1531>>",
+          "<<\n/Type /ObjStm\n/N 2\n/First 10\n/Length 12 0 R\n/Filter /FlateDecode\n>>",
+          "<</Length 99/Filter/FlateDecode/Extends 3 0 R/First 4/N 1/Type/ObjStm>>",
+          "<<\r\n/Type /ObjStm /N 1 /First 4 /Filter /FlateDecode /Length 99 \r\n>>"
         ]
         $ \d -> do
           let pdf = objStmPdf [(d, clean)]
-          (d, ) <$> code config False pdf `shouldReturn` (d, "ok")
+          (d,) <$> code config False pdf `shouldReturn` (d, "ok")
           r <- ok =<< receive config True pdf
           PdfIntake.commit config r
           B.readFile (PdfIntake.pathOf config r.sha256) `shouldReturn` pdf
@@ -193,7 +193,7 @@ spec = do
     it "an object stream that cannot be scanned is refused with pdf_unscannable" $ withConfig 10_000_000 $ \config -> do
       let body = zlib (inner "<< /S /JavaScript >>")
           hex = BC.pack (concatMap (\w -> let s = "0123456789ABCDEF" in [s !! fromIntegral (w `div` 16), s !! fromIntegral (w `mod` 16)]) (B.unpack body))
-          refused why d dat = (why :: Text, ) <$> code config True (objStmPdf [(d, dat)]) `shouldReturn` (why, "pdf_unscannable")
+          refused why d dat = (why :: Text,) <$> code config True (objStmPdf [(d, dat)]) `shouldReturn` (why, "pdf_unscannable")
       refused "other filter" "<</Type/ObjStm/N 1/First 4/Filter/ASCIIHexDecode/Length 9>>" hex
       refused "two filters" "<</Type/ObjStm/N 1/First 4/Filter[/FlateDecode/ASCIIHexDecode]/Length 9>>" body
       refused "two filters, order" "<</Type/ObjStm/Filter[/ASCII85Decode/FlateDecode]/N 1/First 4>>" body

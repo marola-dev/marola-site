@@ -4,11 +4,11 @@ module EqualitySpec (spec) where
 
 import Data.Maybe (fromMaybe)
 import Data.Text (Text)
-import qualified Data.Text as T
+import Data.Text qualified as T
 import Marola.Pages.Language (Language, allLanguages)
-import qualified Marola.Pages.Language as Language
-import qualified Marola.Pages.Members as Members
-import qualified Marola.Pages.Meta as Meta
+import Marola.Pages.Language qualified as Language
+import Marola.Pages.Members qualified as Members
+import Marola.Pages.Meta qualified as Meta
 import Marola.Pages.Site (Env (..))
 import Support
 import Test.Hspec

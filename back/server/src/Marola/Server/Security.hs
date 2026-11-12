@@ -1,12 +1,12 @@
 -- | Headers, the client address and the rate-limit key: what every response and every request shares.
 module Marola.Server.Security
-  ( responseHeaders
-  , contentSecurityPolicy
-  , addHeaders
-  , clientAddress
-  , rateKey
-  , requestKey
-  , peerAddress
+  ( responseHeaders,
+    contentSecurityPolicy,
+    addHeaders,
+    clientAddress,
+    rateKey,
+    requestKey,
+    peerAddress,
   )
 where
 
@@ -29,13 +29,13 @@ contentSecurityPolicy = TE.encodeUtf8 Csp.policy <> "; form-action 'self'"
 -- | Sent on every response.
 responseHeaders :: [Header]
 responseHeaders =
-  [ ("Content-Security-Policy", contentSecurityPolicy)
-  , ("Strict-Transport-Security", "max-age=63072000; includeSubDomains")
-  , ("X-Content-Type-Options", "nosniff")
-  , ("Referrer-Policy", "strict-origin-when-cross-origin")
-  , ("Permissions-Policy", "geolocation=(self), camera=(), microphone=(), payment=(), usb=()")
-  , ("Cross-Origin-Opener-Policy", "same-origin")
-  , ("Cross-Origin-Resource-Policy", "same-origin")
+  [ ("Content-Security-Policy", contentSecurityPolicy),
+    ("Strict-Transport-Security", "max-age=63072000; includeSubDomains"),
+    ("X-Content-Type-Options", "nosniff"),
+    ("Referrer-Policy", "strict-origin-when-cross-origin"),
+    ("Permissions-Policy", "geolocation=(self), camera=(), microphone=(), payment=(), usb=()"),
+    ("Cross-Origin-Opener-Policy", "same-origin"),
+    ("Cross-Origin-Resource-Policy", "same-origin")
   ]
 
 -- | A route may set its own CSP (the PDF route does: it must replace the page's, not add to it); every

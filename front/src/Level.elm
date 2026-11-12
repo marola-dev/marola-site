@@ -1,6 +1,7 @@
 module Level exposing (Level(..), decoder, parse, toString)
 
-{-| The Low / Moderate / High likelihood of jellyfish and whales. -}
+{-| The Low / Moderate / High likelihood of jellyfish and whales.
+-}
 
 import Dec
 import Json.Decode exposing (Decoder)

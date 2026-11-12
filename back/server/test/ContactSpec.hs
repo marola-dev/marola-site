@@ -78,12 +78,12 @@ spec = describe "contact" $ do
 
   it "a bad email or message is a 400 and nothing is stored" $ withSite $ \site -> do
     forM_
-      [ ("no email", [("message", "mensagem longa o bastante")])
-      , ("bad email", [("email", "not-an-email"), ("message", "mensagem longa o bastante")])
-      , ("no message", [("email", "ana@example.org")])
-      , ("short message", [("email", "ana@example.org"), ("message", "curta")])
-      , ("a long message", [("email", "ana@example.org"), ("message", utf8 (T.replicate 4001 "a"))])
-      , ("a NUL in the message", [("email", "ana@example.org"), ("message", "mensagem\NULlonga o bastante")])
+      [ ("no email", [("message", "mensagem longa o bastante")]),
+        ("bad email", [("email", "not-an-email"), ("message", "mensagem longa o bastante")]),
+        ("no message", [("email", "ana@example.org")]),
+        ("short message", [("email", "ana@example.org"), ("message", "curta")]),
+        ("a long message", [("email", "ana@example.org"), ("message", utf8 (T.replicate 4001 "a"))]),
+        ("a NUL in the message", [("email", "ana@example.org"), ("message", "mensagem\NULlonga o bastante")])
       ]
       $ \(what, pairs) -> do
         res <- send site (contactPost "" same pairs)
@@ -119,22 +119,22 @@ spec = describe "contact" $ do
     forM_ ["a@b.co", "ana.silva+marola@example.com.br", "x@a-b.example", "  a@b.co  "] $ \good ->
       (good, isRight (Contact.validateEmail good)) `shouldBe` (good, True)
     forM_
-      [ ""
-      , "a"
-      , "a@b"
-      , "@b.co"
-      , "a@@b.co"
-      , "a b@c.de"
-      , "a@b..de"
-      , "a@-b.com"
-      , "a@b-.com"
-      , "<x>@y.zz"
-      , "a,b@c.de"
-      , "a\n@b.co"
-      , "a@b.co, c@d.co"
-      , "\"a\"@b.co"
-      , T.replicate 65 "a" <> "@b.co"
-      , "a@" <> T.replicate 250 "b" <> ".co"
+      [ "",
+        "a",
+        "a@b",
+        "@b.co",
+        "a@@b.co",
+        "a b@c.de",
+        "a@b..de",
+        "a@-b.com",
+        "a@b-.com",
+        "<x>@y.zz",
+        "a,b@c.de",
+        "a\n@b.co",
+        "a@b.co, c@d.co",
+        "\"a\"@b.co",
+        T.replicate 65 "a" <> "@b.co",
+        "a@" <> T.replicate 250 "b" <> ".co"
       ]
       $ \bad -> (bad, isLeft (Contact.validateEmail bad)) `shouldBe` (bad, True)
 

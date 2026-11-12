@@ -1,6 +1,7 @@
 module Parse exposing (shortest, tryFloat, tryInt)
 
-{-| Strict number parsing: Elm's own `String.toFloat` accepts forms the board never writes. -}
+{-| Strict number parsing: Elm's own `String.toFloat` accepts forms the board never writes.
+-}
 
 
 isDigits : String -> Bool
@@ -70,7 +71,10 @@ tryFloat s =
         Nothing
 
 
+
 -- String.toFloat refuses a leading "+".
+
+
 normalise : String -> String
 normalise s =
     if String.startsWith "+" s then

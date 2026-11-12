@@ -3,10 +3,10 @@ module NewsSpec (spec) where
 
 import Data.Either (isLeft, isRight)
 import Data.Text (Text)
-import qualified Data.Text as T
+import Data.Text qualified as T
 import Marola.Pages.Html (toHtml)
 import Marola.Pages.Language (Language (..), allLanguages)
-import qualified Marola.Pages.News as News
+import Marola.Pages.News qualified as News
 import Marola.Pages.Site (Env)
 import Support
 import Test.Hspec
@@ -79,8 +79,8 @@ spec env = describe "news" $ do
   it "two posts pass, newest first" $ do
     let newer =
           good
-            <> [ ("2026-10-09-b.pt-BR.md", T.replace "2026-10-07" "2026-10-09" pt)
-               , ("2026-10-09-b.en.md", T.replace "2026-10-07" "2026-10-09" en)
+            <> [ ("2026-10-09-b.pt-BR.md", T.replace "2026-10-07" "2026-10-09" pt),
+                 ("2026-10-09-b.en.md", T.replace "2026-10-07" "2026-10-09" en)
                ]
         html = ok En newer "2026-10-07-a 2026-10-09-b"
         at needle = T.length (fst (T.breakOn needle html))

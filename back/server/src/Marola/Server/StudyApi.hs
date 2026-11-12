@@ -2,31 +2,31 @@
 -- Everything a client reads is built from "Marola.Study"; nothing it sends reaches a header, a log
 -- line or a path except a validated id or hash.
 module Marola.Server.StudyApi
-  ( uploadLimit
-  , apiPath
-  , perKeyUnits
-  , keyWindow
-  , minAccountAge
-  , gapBetween
-  , realCost
-  , dryCost
-  , perDay
-  , maxParts
-  , maxFieldBytes
-  , listDefault
-  , listMax
-  , tooLarge
-  , Failure (..)
-  , Outcome (..)
-  , intake
-  , failureResponse
-  , submit
-  , list
-  , one
-  , pdf
-  , skill
-  , skillResponse
-  , route
+  ( uploadLimit,
+    apiPath,
+    perKeyUnits,
+    keyWindow,
+    minAccountAge,
+    gapBetween,
+    realCost,
+    dryCost,
+    perDay,
+    maxParts,
+    maxFieldBytes,
+    listDefault,
+    listMax,
+    tooLarge,
+    Failure (..),
+    Outcome (..),
+    intake,
+    failureResponse,
+    submit,
+    list,
+    one,
+    pdf,
+    skill,
+    skillResponse,
+    route,
   )
 where
 
@@ -96,11 +96,11 @@ tooLarge = failJson status413 "request" "too_large" "the request is larger than 
 -- ---- reading the upload --------------------------------------------------------------------------
 
 data Upload = Upload
-  { fields :: Map.Map Text Text
-  , pdfResult :: Maybe (Either FieldError PdfIntake.Received)
-  , errors :: [FieldError]
-  , denied :: Bool
-  -- ^ The gate refused the request: the web form posted no valid CSRF token.
+  { fields :: Map.Map Text Text,
+    pdfResult :: Maybe (Either FieldError PdfIntake.Received),
+    errors :: [FieldError],
+    -- | The gate refused the request: the web form posted no valid CSRF token.
+    denied :: Bool
   }
 
 fieldNames :: Set.Set Text
@@ -155,11 +155,11 @@ readUpload config store pending reader extra gate = loop Map.empty Nothing [] Se
 -- ---- the intake: one path for the API and the web form -------------------------------------------
 
 data Failure = Failure
-  { status :: Int
-  , retryAfter :: Maybe Text
-  , errors :: [FieldError]
-  , existing :: Maybe Text
-  -- ^ The id of the study this account already sent (a 409).
+  { status :: Int,
+    retryAfter :: Maybe Text,
+    errors :: [FieldError],
+    -- | The id of the study this account already sent (a 409).
+    existing :: Maybe Text
   }
 
 data Outcome
@@ -282,9 +282,9 @@ failureResponse f =
             st
             "no-store"
             ( JObject
-                [ ("errors", JArray [JObject [("field", JString "pdf"), ("code", JString "duplicate"), ("message", JString "this account already sent this file")]])
-                , ("id", JString old)
-                , ("url", JString (urlOf old))
+                [ ("errors", JArray [JObject [("field", JString "pdf"), ("code", JString "duplicate"), ("message", JString "this account already sent this file")]]),
+                  ("id", JString old),
+                  ("url", JString (urlOf old))
                 ]
             )
             extra
@@ -311,14 +311,14 @@ submit env req = do
             status200
             "no-store"
             ( JObject
-                [ ("dry_run", JBool True)
-                , ("ok", JBool True)
-                , ("sha256", JString r.sha256)
-                , ("size_bytes", JInt r.size)
-                , ("status", JString "public")
-                , ("review", JString "not reviewed")
-                , ("notice", JString notice)
-                , ("submission", JObject (submissionJson s))
+                [ ("dry_run", JBool True),
+                  ("ok", JBool True),
+                  ("sha256", JString r.sha256),
+                  ("size_bytes", JInt r.size),
+                  ("status", JString "public"),
+                  ("review", JString "not reviewed"),
+                  ("notice", JString notice),
+                  ("submission", JObject (submissionJson s))
                 ]
             )
             []
@@ -368,9 +368,9 @@ list env req = do
           status200
           "public, max-age=60"
           ( JObject
-              [ ("notice", JString notice)
-              , ("studies", JArray (map recordJson studies))
-              , ("next_before", if length studies == limit && not (null studies) then JString (last studies).id else JNull)
+              [ ("notice", JString notice),
+                ("studies", JArray (map recordJson studies)),
+                ("next_before", if length studies == limit && not (null studies) then JString (last studies).id else JNull)
               ]
           )
           []
@@ -399,11 +399,11 @@ pdf env file = do
           pure $
             responseFile
               status200
-              [ (hContentType, "application/pdf")
-              , ("Content-Disposition", "inline; filename=\"" <> TE.encodeUtf8 i <> ".pdf\"")
-              , ("X-Content-Type-Options", "nosniff")
-              , ("Content-Security-Policy", "sandbox; default-src 'none'")
-              , (hCacheControl, "public, max-age=3600")
+              [ (hContentType, "application/pdf"),
+                ("Content-Disposition", "inline; filename=\"" <> TE.encodeUtf8 i <> ".pdf\""),
+                ("X-Content-Type-Options", "nosniff"),
+                ("Content-Security-Policy", "sandbox; default-src 'none'"),
+                (hCacheControl, "public, max-age=3600")
               ]
               path
               Nothing
@@ -419,75 +419,75 @@ skill =
   let levels = T.intercalate "\n" ["- `" <> v <> "`: " <> levelMeaning l | v <- levelValues, Just l <- [parseLevel v]]
       j = T.intercalate ", "
    in T.unlines
-        [ "# Submit a study to marola"
-        , ""
-        , "marola publishes studies by anyone with a GitHub account that is at least 7 days old. A study is public at once"
-        , "and is labelled \"not reviewed, not medical advice\". The board can hide a study later; it then keeps its hash,"
-        , "its date and a reason. Only open licences are accepted, because marola hosts the file."
-        , ""
-        , "## Get a key"
-        , ""
-        , "Sign in with GitHub on marola.dev and make an API key (`msk_...`). The key is shown once. An account has at most 3 active keys."
-        , "Send it as `Authorization: Bearer $MAROLA_KEY`. Never put a key in a repository or a log."
-        , ""
-        , "## Endpoint"
-        , ""
-        , "`POST https://marola.dev/api/v1/studies` with `multipart/form-data`. Add `?dry_run=1` to check everything"
-        , "(the file and the limits too) with nothing stored. The same API as an OpenAPI 3.1 document: `https://marola.dev/api/v1/openapi.json`."
-        , ""
-        , "| field | rule |"
-        , "|---|---|"
-        , "| `title` | 5 to 200 characters, one line |"
-        , "| `authors` | 1 to 20 lines. One author per line: `Name` or `Name | 0000-0002-1825-0097` (an ORCID iD with its check digit). A name has 2 to 120 characters |"
-        , "| `abstract` | 100 to 4000 characters |"
-        , "| `area` | " <> j areaValues <> " |"
-        , "| `topic` | " <> j topicValues <> " |"
-        , "| `sources` | 0 to 10 https links, one per line |"
-        , "| `repository` | optional https link |"
-        , "| `licence` | " <> j licenceValues <> ". Default `CC-BY-4.0` |"
-        , "| `rights` | `true`: you have the right to publish this file under that licence |"
-        , "| `ai_models` | optional, up to 300 characters |"
-        , "| `ai_contribution` | one of the levels below |"
-        , "| `ai_process` | up to 1500 characters. Required unless `ai_contribution` is `none` |"
-        , "| `pdf` | the file: a PDF of at most 20 MB |"
-        , ""
-        , "Each field appears once. Text is UTF-8. Control characters other than newline and tab are removed."
-        , ""
-        , "## AI contribution levels"
-        , ""
-        , levels
-        , ""
-        , "## The PDF"
-        , ""
-        , "It must start with `%PDF-` and end with `startxref` and `%%EOF`. marola refuses a file that has one of the names"
-        , "`/Launch`, `/JavaScript`, `/JS`, `/EmbeddedFile` (also written with `#xx` escapes) or an `/OpenAction` whose value is"
-        , "an action. Export the PDF again without scripts, attachments or launch actions."
-        , ""
-        , "## Examples"
-        , ""
-        , "```"
-        , "curl -sS -H \"Authorization: Bearer $MAROLA_KEY\" \"https://marola.dev/api/v1/studies?dry_run=1\" \\"
-        , "  -F title=\"Enterococcus at Leblon, 2025\" -F \"authors=Ana Silva | 0000-0002-1825-0097\" \\"
-        , "  -F \"abstract=<abstract.txt\" -F area=rio -F topic=water-quality -F rights=true \\"
-        , "  -F ai_contribution=none -F pdf=@study.pdf"
-        , "```"
-        , ""
-        , "Drop `?dry_run=1` to publish. Success is `201` with `id`, `url`, `pdf_url`, `sha256`, `received_utc`, `status` and `record`."
-        , ""
-        , "```"
-        , "curl -sS \"https://marola.dev/api/v1/studies?area=rio&topic=water-quality&limit=20\""
-        , "curl -sS \"https://marola.dev/api/v1/studies/<id>\""
-        , "```"
-        , ""
-        , "## Errors"
-        , ""
-        , "`400` returns `{\"errors\":[{\"field\",\"code\",\"message\"}]}` with every error at once. The codes are"
-        , "`required`, `too_short`, `too_long`, `too_many`, `invalid`, `unknown_value`, `bad_name`, `bad_orcid`, `bad_link`,"
-        , "`must_be_true`, `invalid_utf8`, `duplicate_field`, `unknown_field`, `too_many_parts`, `malformed_multipart`,"
-        , "and for the file `not_pdf`, `truncated`, `active_content`, `pdf_encrypted`, `pdf_unscannable`."
-        , "`401` bad or missing key. `403` the account is under 7 days old. `409` this account sent this file already (the answer has the old `id`)."
-        , "`413` the file or the request is too large. `415` not multipart. `429` too many requests: one real submission per account every 10 minutes and 10 a day,"
-        , "30 requests a minute per key (a dry run counts a third); read `Retry-After`. `507` the study store is full."
+        [ "# Submit a study to marola",
+          "",
+          "marola publishes studies by anyone with a GitHub account that is at least 7 days old. A study is public at once",
+          "and is labelled \"not reviewed, not medical advice\". The board can hide a study later; it then keeps its hash,",
+          "its date and a reason. Only open licences are accepted, because marola hosts the file.",
+          "",
+          "## Get a key",
+          "",
+          "Sign in with GitHub on marola.dev and make an API key (`msk_...`). The key is shown once. An account has at most 3 active keys.",
+          "Send it as `Authorization: Bearer $MAROLA_KEY`. Never put a key in a repository or a log.",
+          "",
+          "## Endpoint",
+          "",
+          "`POST https://marola.dev/api/v1/studies` with `multipart/form-data`. Add `?dry_run=1` to check everything",
+          "(the file and the limits too) with nothing stored. The same API as an OpenAPI 3.1 document: `https://marola.dev/api/v1/openapi.json`.",
+          "",
+          "| field | rule |",
+          "|---|---|",
+          "| `title` | 5 to 200 characters, one line |",
+          "| `authors` | 1 to 20 lines. One author per line: `Name` or `Name | 0000-0002-1825-0097` (an ORCID iD with its check digit). A name has 2 to 120 characters |",
+          "| `abstract` | 100 to 4000 characters |",
+          "| `area` | " <> j areaValues <> " |",
+          "| `topic` | " <> j topicValues <> " |",
+          "| `sources` | 0 to 10 https links, one per line |",
+          "| `repository` | optional https link |",
+          "| `licence` | " <> j licenceValues <> ". Default `CC-BY-4.0` |",
+          "| `rights` | `true`: you have the right to publish this file under that licence |",
+          "| `ai_models` | optional, up to 300 characters |",
+          "| `ai_contribution` | one of the levels below |",
+          "| `ai_process` | up to 1500 characters. Required unless `ai_contribution` is `none` |",
+          "| `pdf` | the file: a PDF of at most 20 MB |",
+          "",
+          "Each field appears once. Text is UTF-8. Control characters other than newline and tab are removed.",
+          "",
+          "## AI contribution levels",
+          "",
+          levels,
+          "",
+          "## The PDF",
+          "",
+          "It must start with `%PDF-` and end with `startxref` and `%%EOF`. marola refuses a file that has one of the names",
+          "`/Launch`, `/JavaScript`, `/JS`, `/EmbeddedFile` (also written with `#xx` escapes) or an `/OpenAction` whose value is",
+          "an action. Export the PDF again without scripts, attachments or launch actions.",
+          "",
+          "## Examples",
+          "",
+          "```",
+          "curl -sS -H \"Authorization: Bearer $MAROLA_KEY\" \"https://marola.dev/api/v1/studies?dry_run=1\" \\",
+          "  -F title=\"Enterococcus at Leblon, 2025\" -F \"authors=Ana Silva | 0000-0002-1825-0097\" \\",
+          "  -F \"abstract=<abstract.txt\" -F area=rio -F topic=water-quality -F rights=true \\",
+          "  -F ai_contribution=none -F pdf=@study.pdf",
+          "```",
+          "",
+          "Drop `?dry_run=1` to publish. Success is `201` with `id`, `url`, `pdf_url`, `sha256`, `received_utc`, `status` and `record`.",
+          "",
+          "```",
+          "curl -sS \"https://marola.dev/api/v1/studies?area=rio&topic=water-quality&limit=20\"",
+          "curl -sS \"https://marola.dev/api/v1/studies/<id>\"",
+          "```",
+          "",
+          "## Errors",
+          "",
+          "`400` returns `{\"errors\":[{\"field\",\"code\",\"message\"}]}` with every error at once. The codes are",
+          "`required`, `too_short`, `too_long`, `too_many`, `invalid`, `unknown_value`, `bad_name`, `bad_orcid`, `bad_link`,",
+          "`must_be_true`, `invalid_utf8`, `duplicate_field`, `unknown_field`, `too_many_parts`, `malformed_multipart`,",
+          "and for the file `not_pdf`, `truncated`, `active_content`, `pdf_encrypted`, `pdf_unscannable`.",
+          "`401` bad or missing key. `403` the account is under 7 days old. `409` this account sent this file already (the answer has the old `id`).",
+          "`413` the file or the request is too large. `415` not multipart. `429` too many requests: one real submission per account every 10 minutes and 10 a day,",
+          "30 requests a minute per key (a dry run counts a third); read `Retry-After`. `507` the study store is full."
         ]
 
 skillResponse :: Response

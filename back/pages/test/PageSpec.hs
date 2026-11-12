@@ -2,15 +2,15 @@ module PageSpec (spec) where
 
 import Data.Char (isAsciiLower, toLower)
 import Data.List (sort)
-import qualified Data.Map.Strict as Map
+import Data.Map.Strict qualified as Map
 import Data.Text (Text)
-import qualified Data.Text as T
+import Data.Text qualified as T
 import Marola.Pages.Language (Language (..), allLanguages)
-import qualified Marola.Pages.Language as Language
-import qualified Marola.Pages.Layout as Layout
-import qualified Marola.Pages.Meta as Meta
+import Marola.Pages.Language qualified as Language
+import Marola.Pages.Layout qualified as Layout
+import Marola.Pages.Meta qualified as Meta
 import Marola.Pages.Site (Env (..))
-import qualified Marola.Pages.Site as Site
+import Marola.Pages.Site qualified as Site
 import Support
 import Test.Hspec
 
@@ -95,14 +95,14 @@ spec env = describe "pages" $ do
       ( \l ->
           mapM_
             (\n -> renderWith env "about" l `shouldSatisfy` has n)
-            [ "Carlos Toledo"
-            , "https://github.com/carlostoledo1891"
-            , "https://swell-floripa.vercel.app/"
-            , "Luftrum"
-            , "Porrumentzio"
-            , "https://creativecommons.org/licenses/by/3.0/"
-            , "https://github.com/marola-dev/marola/discussions/676"
-            , "https://github.com/marola-dev/marola-research/blob/main/chamada/chamada.pdf"
+            [ "Carlos Toledo",
+              "https://github.com/carlostoledo1891",
+              "https://swell-floripa.vercel.app/",
+              "Luftrum",
+              "Porrumentzio",
+              "https://creativecommons.org/licenses/by/3.0/",
+              "https://github.com/marola-dev/marola/discussions/676",
+              "https://github.com/marola-dev/marola-research/blob/main/chamada/chamada.pdf"
             ]
       )
       allLanguages
@@ -120,7 +120,22 @@ spec env = describe "pages" $ do
   it "the build lists pt-BR at the root and English under en/" $
     fmap (sort . map fst) (Site.allPages env)
       `shouldBe` Right
-        [ "404.html", "about.html", "contact-sent.html", "contact.html", "en/404.html", "en/about.html"
-        , "en/contact-sent.html", "en/contact.html", "en/members.html", "en/news.html", "en/privacy.html"
-        , "en/support.html", "en/takedown.html", "members.html", "news.html", "privacy.html", "support.html"
-        , "takedown.html" ]
+        [ "404.html",
+          "about.html",
+          "contact-sent.html",
+          "contact.html",
+          "en/404.html",
+          "en/about.html",
+          "en/contact-sent.html",
+          "en/contact.html",
+          "en/members.html",
+          "en/news.html",
+          "en/privacy.html",
+          "en/support.html",
+          "en/takedown.html",
+          "members.html",
+          "news.html",
+          "privacy.html",
+          "support.html",
+          "takedown.html"
+        ]

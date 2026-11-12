@@ -2,35 +2,36 @@
 -- scripts/news_build.py: a bad post is an error of the build, never a silently shorter page. The
 -- patterns are written out by hand, with no regex library.
 module Marola.Pages.News
-  ( Post (..)
-  , releases
-  , longDate
-  , words'
-  , readingMinutes
-  , parsePost
-  , build
-  , forLanguage
-  ) where
+  ( Post (..),
+    releases,
+    longDate,
+    words',
+    readingMinutes,
+    parsePost,
+    build,
+    forLanguage,
+  )
+where
 
-import Data.Char (GeneralCategory (..), generalCategory, isDigit, isLetter, isSpace, isAsciiLower)
+import Data.Char (GeneralCategory (..), generalCategory, isAsciiLower, isDigit, isLetter, isSpace)
 import Data.List (sortBy)
-import qualified Data.Set as Set
+import Data.Set qualified as Set
 import Data.Text (Text)
-import qualified Data.Text as T
+import Data.Text qualified as T
 import Marola.Pages.Html (Attr, Node (..))
-import qualified Marola.Pages.Html as H
+import Marola.Pages.Html qualified as H
 import Marola.Pages.Language (Language (..))
-import qualified Marola.Pages.Language as Language
+import Marola.Pages.Language qualified as Language
 import Marola.Pages.Markdown (collect, inlineNodes)
 
 data Post = Post
-  { date :: Text
-  , slug :: Text
-  , language :: Language
-  , title :: Text
-  -- ^ The @# @ line as written, for tests and logs.
-  , minutes :: Int
-  , article :: Node
+  { date :: Text,
+    slug :: Text,
+    language :: Language,
+    -- | The @# @ line as written, for tests and logs.
+    title :: Text,
+    minutes :: Int,
+    article :: Node
   }
 
 releases :: Text
@@ -42,11 +43,33 @@ wordsPerMinute = 200
 
 months :: Language -> [Text]
 months PtBr =
-  [ "janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro"
-  , "outubro", "novembro", "dezembro" ]
+  [ "janeiro",
+    "fevereiro",
+    "março",
+    "abril",
+    "maio",
+    "junho",
+    "julho",
+    "agosto",
+    "setembro",
+    "outubro",
+    "novembro",
+    "dezembro"
+  ]
 months En =
-  [ "January", "February", "March", "April", "May", "June", "July", "August", "September"
-  , "October", "November", "December" ]
+  [ "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  ]
 
 readTime :: Language -> Int -> Text
 readTime PtBr m = tshow m <> " min de leitura"
@@ -161,15 +184,15 @@ releaseCard l file blk =
                               [ H.el
                                   "a"
                                   [H.cls "release-tag", H.attr "href" (releases <> version)]
-                                  [H.text ("marola " <> version)]
-                              , H.text " "
-                              , H.el
+                                  [H.text ("marola " <> version)],
+                                H.text " ",
+                                H.el
                                   "time"
                                   [H.attr "datetime" (y <> "-" <> mo <> "-" <> d)]
                                   [H.text (longDate l y mo d)]
-                              ]
-                          , H.el "ul" [] lis
-                          , linkLine
+                              ],
+                            H.el "ul" [] lis,
+                            linkLine
                           ]
         _ -> Left (file <> ": '::: release vX.Y.Z YYYY-MM-DD' then its lines: " <> first)
 
@@ -219,23 +242,23 @@ parsePost file txt = case fileName file of
                         nodes <- collect (map (bodyBlock l file) rest)
                         Right
                           Post
-                            { date = iso
-                            , slug = s
-                            , language = l
-                            , title = T.drop 2 ttl
-                            , minutes = mins
-                            , article =
+                            { date = iso,
+                              slug = s,
+                              language = l,
+                              title = T.drop 2 ttl,
+                              minutes = mins,
+                              article =
                                 H.el
                                   "article"
                                   [H.cls "about-body", H.attr "lang" (Language.tag l)]
-                                  ( [ heading
-                                    , H.el
+                                  ( [ heading,
+                                      H.el
                                         "p"
                                         [H.cls "post-date"]
-                                        [ H.el "time" [H.attr "datetime" iso] [H.text (longDate l y mo d)]
-                                        , H.text (" · " <> readTime l mins)
-                                        ]
-                                    , ledeNode
+                                        [ H.el "time" [H.attr "datetime" iso] [H.text (longDate l y mo d)],
+                                          H.text (" · " <> readTime l mins)
+                                        ],
+                                      ledeNode
                                     ]
                                       <> nodes
                                   )

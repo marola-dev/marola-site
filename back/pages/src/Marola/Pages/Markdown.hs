@@ -3,19 +3,20 @@
 -- that looks like markup is an error, so a page never goes out half-rendered.
 -- scripts/pages_parity.sh checks that its output does not change byte for byte.
 module Marola.Pages.Markdown
-  ( Doc (..)
-  , linkOk
-  , inlineNodes
-  , collect
-  , parse
-  ) where
+  ( Doc (..),
+    linkOk,
+    inlineNodes,
+    collect,
+    parse,
+  )
+where
 
 import Data.Char (isAsciiLower, isDigit)
 import Data.Maybe (listToMaybe, mapMaybe)
 import Data.Text (Text)
-import qualified Data.Text as T
+import Data.Text qualified as T
 import Marola.Pages.Html (Attr, Node)
-import qualified Marola.Pages.Html as H
+import Marola.Pages.Html qualified as H
 
 data Doc = Doc {title :: Text, description :: Text, body :: [Node]}
 
@@ -115,14 +116,14 @@ figure lines'@(first : _) =
                                   [H.attr "href" src]
                                   [ H.el
                                       "img"
-                                      [ H.attr "src" src
-                                      , H.attr "width" w
-                                      , H.attr "height" h
-                                      , H.attr "alt" alt
+                                      [ H.attr "src" src,
+                                        H.attr "width" w,
+                                        H.attr "height" h,
+                                        H.attr "alt" alt
                                       ]
                                       []
-                                  ]
-                              , H.el "figcaption" [] caption
+                                  ],
+                                H.el "figcaption" [] caption
                               ]
                         )
                         (inlineNodes (T.intercalate " " (drop 1 lines')))

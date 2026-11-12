@@ -1,6 +1,6 @@
 module Main (main) where
 
-import qualified Marola.Pages.Build as Build
+import Marola.Pages.Build qualified as Build
 
 main :: IO ()
 main = Build.main

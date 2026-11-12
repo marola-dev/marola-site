@@ -2,18 +2,18 @@
 -- feed. Every page goes through 'Layout.page' and the Vdom, which
 -- escapes text and attribute values, so no study text can add markup. No script and no inline style.
 module Marola.Server.Views
-  ( url
-  , notice
-  , loginPath
-  , submitPage
-  , studiesPage
-  , studyPage
-  , accountPage
-  , reasons
-  , reportPage
-  , thanksPage
-  , messagePage
-  , atom
+  ( url,
+    notice,
+    loginPath,
+    submitPage,
+    studiesPage,
+    studyPage,
+    accountPage,
+    reasons,
+    reportPage,
+    thanksPage,
+    messagePage,
+    atom,
   )
 where
 
@@ -57,13 +57,13 @@ notice loc = tr loc "Sem revisão. Não é aconselhamento médico." "Not reviewe
 headOf :: Text -> Text -> Text -> Bool -> PageHead
 headOf slug title description noIndex =
   PageHead
-    { slug = slug
-    , title = title <> " | marola"
-    , description = description
-    , noIndex = noIndex
-    , canonical = True
-    , current = Just "studies"
-    , dynamic = True
+    { slug = slug,
+      title = title <> " | marola",
+      description = description,
+      noIndex = noIndex,
+      canonical = True,
+      current = Just "studies",
+      dynamic = True
     }
 
 render :: Locale -> PageHead -> [Node] -> Text
@@ -127,8 +127,8 @@ button label = el "button" [attr "type" "submit"] [text label]
 errorList :: Locale -> [FieldError] -> Text -> [Node]
 errorList loc errors f =
   [ el "p" [cls "field-error", attr "role" "alert"] [text (Messages.text loc.language e)]
-  | e <- errors
-  , e.field == f
+  | e <- errors,
+    e.field == f
   ]
 
 alert :: Text -> Node
@@ -158,101 +158,101 @@ submitPage loc csrf values errors =
           "/submit"
           token
           [cls "contact", attr "enctype" "multipart/form-data"]
-          ( [ fieldNode "title" (tr loc "Título" "Title") "" (input "title" "text" titleMax)
-            , fieldNode
+          ( [ fieldNode "title" (tr loc "Título" "Title") "" (input "title" "text" titleMax),
+              fieldNode
                 "authors"
                 (tr loc "Autores" "Authors")
                 (tr loc "Um autor por linha. Para o ORCID: Nome | 0000-0002-1825-0097" "One author per line. For the ORCID: Name | 0000-0002-1825-0097")
-                (area "authors" 4)
-            , fieldNode "abstract" (tr loc "Resumo" "Abstract") (tr loc "De 100 a 4000 caracteres." "From 100 to 4000 characters.") (area "abstract" 8)
-            , fieldNode "area" (tr loc "Área" "Area") "" (select "area" [(areaName a, areaLabel loc a) | a <- allAreas])
-            , fieldNode "topic" (tr loc "Tema" "Topic") "" (select "topic" [(topicName t, topicLabel loc t) | t <- allTopics])
-            , fieldNode
+                (area "authors" 4),
+              fieldNode "abstract" (tr loc "Resumo" "Abstract") (tr loc "De 100 a 4000 caracteres." "From 100 to 4000 characters.") (area "abstract" 8),
+              fieldNode "area" (tr loc "Área" "Area") "" (select "area" [(areaName a, areaLabel loc a) | a <- allAreas]),
+              fieldNode "topic" (tr loc "Tema" "Topic") "" (select "topic" [(topicName t, topicLabel loc t) | t <- allTopics]),
+              fieldNode
                 "sources"
                 (tr loc "Fontes" "Sources")
                 (tr loc "Um link https por linha, até 10. Pode ficar vazio." "One https link per line, up to 10. May be empty.")
-                (area "sources" 3)
-            , fieldNode
+                (area "sources" 3),
+              fieldNode
                 "repository"
                 (tr loc "Repositório do código" "Code repository")
                 (tr loc "Um link https. Pode ficar vazio." "An https link. May be empty.")
-                (input "repository" "url" linkMax)
-            , fieldNode
+                (input "repository" "url" linkMax),
+              fieldNode
                 "licence"
                 (tr loc "Licença do arquivo" "Licence of the file")
                 (tr loc "O marola guarda e mostra o arquivo, por isso só aceita licenças abertas." "marola stores and shows the file, so it accepts open licences only.")
-                (select "licence" [(l, l) | l <- licenceValues])
-            , fieldNode
+                (select "licence" [(l, l) | l <- licenceValues]),
+              fieldNode
                 "ai_contribution"
                 (tr loc "Quanto a IA fez" "How much the AI did")
                 (tr loc "Você declara; o marola não confere." "You state it; marola does not check it.")
-                (select "ai_contribution" [(levelName l, levelLabel loc l) | l <- allLevels])
-            , fieldNode "ai_models" (tr loc "Modelos de IA usados" "AI models used") (tr loc "Opcional." "Optional.") (input "ai_models" "text" aiModelsMax)
-            , fieldNode
+                (select "ai_contribution" [(levelName l, levelLabel loc l) | l <- allLevels]),
+              fieldNode "ai_models" (tr loc "Modelos de IA usados" "AI models used") (tr loc "Opcional." "Optional.") (input "ai_models" "text" aiModelsMax),
+              fieldNode
                 "ai_process"
                 (tr loc "Como a IA foi usada" "How the AI was used")
                 (tr loc "Obrigatório se alguma IA participou." "Required if any AI took part.")
-                (area "ai_process" 4)
-            , fieldNode
+                (area "ai_process" 4),
+              fieldNode
                 "rights"
                 (tr loc "Direitos" "Rights")
                 ""
                 ( el
                     "span"
                     []
-                    [ el "input" ([attr "type" "checkbox", attr "name" "rights", attr "value" "true"] <> [attr "checked" "" | value "rights" == "true"]) []
-                    , text
+                    [ el "input" ([attr "type" "checkbox", attr "name" "rights", attr "value" "true"] <> [attr "checked" "" | value "rights" == "true"]) [],
+                      text
                         ( " "
                             <> tr loc "Tenho o direito de publicar este arquivo com a licença que escolhi." "I have the right to publish this file under the licence I chose."
                             <> " "
-                        )
-                    , link (url loc "/privacy") [text (tr loc "Privacidade" "Privacy")]
-                    , text " · "
-                    , link (url loc "/takedown") [text (tr loc "Remoção" "Takedown")]
+                        ),
+                      link (url loc "/privacy") [text (tr loc "Privacidade" "Privacy")],
+                      text " · ",
+                      link (url loc "/takedown") [text (tr loc "Remoção" "Takedown")]
                     ]
-                )
-            , fieldNode
+                ),
+              fieldNode
                 "pdf"
                 (tr loc "Arquivo PDF" "PDF file")
                 (tr loc "Até 20 MB, sem script nem anexo." "Up to 20 MB, with no script and no attachment.")
                 (el "input" [attr "type" "file", attr "name" "pdf", attr "accept" "application/pdf"] [])
             ]
-              <> [ el "div" [cls "field-error"] (errorList loc errors "request" <> errorList loc errors "id")
-                 , button (tr loc "Publicar" "Publish")
+              <> [ el "div" [cls "field-error"] (errorList loc errors "request" <> errorList loc errors "id"),
+                   button (tr loc "Publicar" "Publish")
                  ]
           )
       li s = el "li" [] [text s]
       top =
-        [ h2 (tr loc "Enviar um estudo" "Submit a study")
-        , p_
+        [ h2 (tr loc "Enviar um estudo" "Submit a study"),
+          p_
             [ text
                 ( tr
                     loc
                     "Qualquer pessoa com uma conta do GitHub de pelo menos 7 dias pode publicar um estudo sobre o mar, a costa e a água. O estudo fica público na hora, com o aviso \"sem revisão, não é aconselhamento médico\"."
                     "Anyone with a GitHub account that is at least 7 days old can publish a study about the sea, the coast and the water. The study is public at once, with the notice \"not reviewed, not medical advice\"."
                 )
-            ]
-        , h3 (tr loc "O que o marola publica" "What marola publishes")
-        , el
+            ],
+          h3 (tr loc "O que o marola publica" "What marola publishes"),
+          el
             "ul"
             []
-            [ li (tr loc "O PDF, o título, os autores, o resumo, as fontes e a licença, como você enviou." "The PDF, the title, the authors, the abstract, the sources and the licence, as you sent them.")
-            , li (tr loc "Seu usuário do GitHub, como autor do envio. Nenhum e-mail e nenhum endereço de IP é guardado." "Your GitHub login, as the sender. No email and no IP address is stored.")
-            ]
-        , h3 (tr loc "O que o marola não faz" "What marola does not do")
-        , el
+            [ li (tr loc "O PDF, o título, os autores, o resumo, as fontes e a licença, como você enviou." "The PDF, the title, the authors, the abstract, the sources and the licence, as you sent them."),
+              li (tr loc "Seu usuário do GitHub, como autor do envio. Nenhum e-mail e nenhum endereço de IP é guardado." "Your GitHub login, as the sender. No email and no IP address is stored.")
+            ],
+          h3 (tr loc "O que o marola não faz" "What marola does not do"),
+          el
             "ul"
             []
-            [ li (tr loc "Não revisa nem confere o estudo. Não é aconselhamento médico." "It does not review or check the study. It is not medical advice.")
-            , li
+            [ li (tr loc "Não revisa nem confere o estudo. Não é aconselhamento médico." "It does not review or check the study. It is not medical advice."),
+              li
                 ( tr
                     loc
                     "A equipe pode esconder um estudo. Ele fica na lista com o hash, a data e o motivo, sem texto e sem arquivo."
                     "The team can hide a study. It stays in the list with its hash, its date and a reason, with no text and no file."
                 )
-            ]
-        , h3 (tr loc "Quanto a IA fez" "How much the AI did")
-        , el "dl" [] (concat [[el "dt" [] [text (levelLabel loc l)], el "dd" [] [text (levelText loc l)]] | l <- allLevels])
+            ],
+          h3 (tr loc "Quanto a IA fez" "How much the AI did"),
+          el "dl" [] (concat [[el "dt" [] [text (levelLabel loc l)], el "dd" [] [text (levelText loc l)]] | l <- allLevels])
         ]
       body = case csrf of
         Just token -> [formNode token]
@@ -264,20 +264,20 @@ submitPage loc csrf values errors =
                       "Para enviar, entre com o GitHub. O marola lê só o seu perfil público (número, usuário e data de criação)."
                       "To submit, log in with GitHub. marola reads only your public profile (number, login and creation date)."
                   )
-              ]
-          , p_ [link (loginPath loc) [text (tr loc "Entrar com o GitHub" "Log in with GitHub")]]
+              ],
+            p_ [link (loginPath loc) [text (tr loc "Entrar com o GitHub" "Log in with GitHub")]]
           ]
       agents =
-        [ h3 (tr loc "Para agentes" "For agents")
-        , p_
+        [ h3 (tr loc "Para agentes" "For agents"),
+          p_
             [ text
                 ( tr
                     loc
                     "Um agente envia pela API, com uma chave que você cria na sua conta. As regras estão em "
                     "An agent submits through the API, with a key you make in your account. The rules are in "
-                )
-            , link "/api/v1/skill.md" [text "/api/v1/skill.md"]
-            , text "."
+                ),
+              link "/api/v1/skill.md" [text "/api/v1/skill.md"],
+              text "."
             ]
         ]
       pg =
@@ -294,12 +294,12 @@ row loc r =
    in el
         "li"
         []
-        [ el "h3" [] [link (url loc (urlOf r.id)) [text s.title]]
-        , p_ [text (T.intercalate ", " [a.name | a <- s.authors])]
-        , p_
-            [ text (areaLabel loc s.area <> " · " <> topicLabel loc s.topic <> " · " <> date r.receivedUtc <> " ")
-            , badge loc
-            , text (" " <> T.take 12 r.sha256)
+        [ el "h3" [] [link (url loc (urlOf r.id)) [text s.title]],
+          p_ [text (T.intercalate ", " [a.name | a <- s.authors])],
+          p_
+            [ text (areaLabel loc s.area <> " · " <> topicLabel loc s.topic <> " · " <> date r.receivedUtc <> " "),
+              badge loc,
+              text (" " <> T.take 12 r.sha256)
             ]
         ]
 
@@ -309,8 +309,8 @@ studiesPage loc studies ar tp next =
         el
           "label"
           []
-          [ el "span" [] [text anyLabel]
-          , el
+          [ el "span" [] [text anyLabel],
+            el
               "select"
               [attr "name" n]
               ( el "option" [attr "value" ""] [text "-"]
@@ -321,9 +321,9 @@ studiesPage loc studies ar tp next =
         el
           "form"
           [attr "method" "GET", attr "action" (url loc "/studies"), cls "contact"]
-          [ chosen "area" (areaName <$> ar) [(areaName a, areaLabel loc a) | a <- allAreas] (tr loc "Área" "Area")
-          , chosen "topic" (topicName <$> tp) [(topicName t, topicLabel loc t) | t <- allTopics] (tr loc "Tema" "Topic")
-          , button (tr loc "Filtrar" "Filter")
+          [ chosen "area" (areaName <$> ar) [(areaName a, areaLabel loc a) | a <- allAreas] (tr loc "Área" "Area"),
+            chosen "topic" (topicName <$> tp) [(topicName t, topicLabel loc t) | t <- allTopics] (tr loc "Tema" "Topic"),
+            button (tr loc "Filtrar" "Filter")
           ]
       more = case next of
         Just lastId ->
@@ -345,13 +345,13 @@ studiesPage loc studies ar tp next =
    in render
         loc
         pg
-        ( [ h2 (tr loc "Estudos" "Studies")
-          , p_ [text (notice loc <> " "), link (url loc "/submit") [text (tr loc "Enviar um estudo" "Submit a study")]]
-          , filters
+        ( [ h2 (tr loc "Estudos" "Studies"),
+            p_ [text (notice loc <> " "), link (url loc "/submit") [text (tr loc "Enviar um estudo" "Submit a study")]],
+            filters
           ]
             <> ( if null studies
-                  then [p_ [text (tr loc "Nenhum estudo ainda." "No studies yet.")]]
-                  else [el "ul" [cls "members"] (map (row loc) studies)]
+                   then [p_ [text (tr loc "Nenhum estudo ainda." "No studies yet.")]]
+                   else [el "ul" [cls "members"] (map (row loc) studies)]
                )
             <> more
         )
@@ -367,28 +367,28 @@ studyPage loc r = case r.status of
      in render
           loc
           pg
-          [ h2 (tr loc "Estudo escondido" "Hidden study")
-          , p_
+          [ h2 (tr loc "Estudo escondido" "Hidden study"),
+            p_
               [ text
                   ( tr
                       loc
                       "Este estudo não está mais público. Ficam só o número, o hash, a data e o motivo."
                       "This study is no longer public. Only its id, its hash, its date and the reason remain."
                   )
-              ]
-          , el
+              ],
+            el
               "dl"
               []
-              [ dt "id"
-              , dd [el "code" [] [text r.id]]
-              , dt "SHA-256"
-              , dd [el "code" [] [text r.sha256]]
-              , dt (tr loc "Recebido em" "Received on")
-              , dd [text r.receivedUtc]
-              , dt (tr loc "Escondido em" "Hidden on")
-              , dd [text (maybe "" id r.hiddenUtc)]
-              , dt (tr loc "Motivo" "Reason")
-              , dd [text (maybe "" id r.hiddenReason)]
+              [ dt "id",
+                dd [el "code" [] [text r.id]],
+                dt "SHA-256",
+                dd [el "code" [] [text r.sha256]],
+                dt (tr loc "Recebido em" "Received on"),
+                dd [text r.receivedUtc],
+                dt (tr loc "Escondido em" "Hidden on"),
+                dd [text (maybe "" id r.hiddenUtc)],
+                dt (tr loc "Motivo" "Reason"),
+                dd [text (maybe "" id r.hiddenReason)]
               ]
           ]
   Public ->
@@ -401,29 +401,29 @@ studyPage loc r = case r.status of
      in render
           loc
           pg
-          ( [ h2 s.title
-            , p_ [badge loc, text (" " <> notice loc)]
-            , el "ul" [] authorsNodes
-            , p_ [text (areaLabel loc s.area <> " · " <> topicLabel loc s.topic <> " · " <> date r.receivedUtc)]
-            , h3 (tr loc "Resumo" "Abstract")
-            , p_ [text s.abstract]
+          ( [ h2 s.title,
+              p_ [badge loc, text (" " <> notice loc)],
+              el "ul" [] authorsNodes,
+              p_ [text (areaLabel loc s.area <> " · " <> topicLabel loc s.topic <> " · " <> date r.receivedUtc)],
+              h3 (tr loc "Resumo" "Abstract"),
+              p_ [text s.abstract]
             ]
               <> ( if null s.sources
-                    then []
-                    else [h3 (tr loc "Fontes" "Sources"), el "ul" [] [el "li" [] [outside u u] | u <- s.sources]]
+                     then []
+                     else [h3 (tr loc "Fontes" "Sources"), el "ul" [] [el "li" [] [outside u u] | u <- s.sources]]
                  )
               <> maybe [] (\repo -> [h3 (tr loc "Código" "Code"), p_ [outside repo repo]]) s.repository
-              <> [ h3 (tr loc "Licença" "Licence")
-                 , p_ [text (licenceName s.licence)]
-                 , h3 (tr loc "Declaração sobre IA" "AI declaration")
-                 , p_ [text (levelLabel loc s.aiContribution <> ". " <> levelText loc s.aiContribution)]
-                 , p_ [text (tr loc "Modelos: " "Models: " <> (if T.null s.aiModels then "-" else s.aiModels))]
-                 , p_ [text s.aiProcess]
-                 , h3 (tr loc "O arquivo" "The file")
-                 , p_ [link (pdfUrlOf r.id) [text (tr loc "Abrir o PDF" "Open the PDF")]]
-                 , p_ [text "SHA-256: ", el "code" [] [text r.sha256]]
-                 , p_ [text (tr loc "Enviado por " "Sent by " <> r.authorLogin <> ", " <> r.receivedUtc)]
-                 , p_ [link (url loc ("/report/" <> r.id)) [text (tr loc "Denunciar este estudo" "Report this study")]]
+              <> [ h3 (tr loc "Licença" "Licence"),
+                   p_ [text (licenceName s.licence)],
+                   h3 (tr loc "Declaração sobre IA" "AI declaration"),
+                   p_ [text (levelLabel loc s.aiContribution <> ". " <> levelText loc s.aiContribution)],
+                   p_ [text (tr loc "Modelos: " "Models: " <> (if T.null s.aiModels then "-" else s.aiModels))],
+                   p_ [text s.aiProcess],
+                   h3 (tr loc "O arquivo" "The file"),
+                   p_ [link (pdfUrlOf r.id) [text (tr loc "Abrir o PDF" "Open the PDF")]],
+                   p_ [text "SHA-256: ", el "code" [] [text r.sha256]],
+                   p_ [text (tr loc "Enviado por " "Sent by " <> r.authorLogin <> ", " <> r.receivedUtc)],
+                   p_ [link (url loc ("/report/" <> r.id)) [text (tr loc "Denunciar este estudo" "Report this study")]]
                  ]
           )
 
@@ -436,8 +436,8 @@ accountPage loc account csrf keys studies newKey keyError deleteError =
         el
           "li"
           []
-          [ text (tr loc "Chave " "Key " <> T.pack (show k.id) <> ", " <> date k.createdUtc <> " ")
-          , case k.revokedUtc of
+          [ text (tr loc "Chave " "Key " <> T.pack (show k.id) <> ", " <> date k.createdUtc <> " "),
+            case k.revokedUtc of
               Just _ -> text (tr loc "(revogada)" "(revoked)")
               Nothing -> postForm loc ("/account/keys/" <> T.pack (show k.id) <> "/revoke") csrf [] [button (tr loc "Revogar" "Revoke")]
           ]
@@ -453,37 +453,37 @@ accountPage loc account csrf keys studies newKey keyError deleteError =
    in render
         loc
         pg
-        ( [ h2 (tr loc "Sua conta" "Your account")
-          , p_ [text (tr loc "Entrou como " "Logged in as " <> account.login)]
-          , postForm loc "/logout" csrf [] [button (tr loc "Sair" "Log out")]
+        ( [ h2 (tr loc "Sua conta" "Your account"),
+            p_ [text (tr loc "Entrou como " "Logged in as " <> account.login)],
+            postForm loc "/logout" csrf [] [button (tr loc "Sair" "Log out")]
           ]
             <> case newKey of
               Just key ->
-                [ h3 (tr loc "Sua nova chave" "Your new key")
-                , p_ [text (tr loc "Copie agora. Ela não aparece de novo." "Copy it now. It is not shown again.")]
-                , p_ [el "code" [] [text key]]
+                [ h3 (tr loc "Sua nova chave" "Your new key"),
+                  p_ [text (tr loc "Copie agora. Ela não aparece de novo." "Copy it now. It is not shown again.")],
+                  p_ [el "code" [] [text key]]
                 ]
               Nothing -> []
             <> [h3 (tr loc "Chaves da API" "API keys")]
             <> [alert (tr loc "Você já tem 3 chaves ativas. Revogue uma antes." "You already have 3 active keys. Revoke one first.") | keyError]
-            <> [ el "ul" [] (map keyRow keys)
-               , postForm loc "/account/keys" csrf [] [button (tr loc "Criar uma chave" "Create a key")]
-               , h3 (tr loc "Seus estudos" "Your studies")
-               , el "ul" [] (map studyRow studies)
-               , p_ [link (url loc "/submit") [text (tr loc "Enviar um estudo" "Submit a study")]]
-               , h3 (tr loc "Excluir a conta" "Delete the account")
-               , p_
+            <> [ el "ul" [] (map keyRow keys),
+                 postForm loc "/account/keys" csrf [] [button (tr loc "Criar uma chave" "Create a key")],
+                 h3 (tr loc "Seus estudos" "Your studies"),
+                 el "ul" [] (map studyRow studies),
+                 p_ [link (url loc "/submit") [text (tr loc "Enviar um estudo" "Submit a study")]],
+                 h3 (tr loc "Excluir a conta" "Delete the account"),
+                 p_
                    [ text
                        ( tr
                            loc
                            "Apaga suas chaves, suas sessões e a conta. Seus estudos saem do ar na hora, mas as linhas ficam como lápide, com o hash e o motivo \"conta excluída pelo autor\"; os arquivos ficam guardados e não são servidos. Quem quiser os arquivos apagados também pede à equipe. Veja "
                            "Deletes your keys, your sessions and the account. Your studies go offline at once, but the rows stay as tombstones with the hash and the reason \"account deleted by the author\"; the files are kept and not served. To have the files deleted as well, ask the board. See "
-                       )
-                   , link (url loc "/privacy") [text (tr loc "Privacidade" "Privacy")]
-                   , text " · "
-                   , link (url loc "/takedown") [text (tr loc "Remoção" "Takedown")]
-                   ]
-               , postForm
+                       ),
+                     link (url loc "/privacy") [text (tr loc "Privacidade" "Privacy")],
+                     text " · ",
+                     link (url loc "/takedown") [text (tr loc "Remoção" "Takedown")]
+                   ],
+                 postForm
                    loc
                    "/account/delete"
                    csrf
@@ -500,8 +500,8 @@ accountPage loc account csrf keys studies newKey keyError deleteError =
                                      ("Para confirmar, digite seu login do GitHub: " <> account.login)
                                      ("To confirm, type your GitHub login: " <> account.login)
                                  )
-                             ]
-                         , el "input" [attr "type" "text", attr "name" "confirm", attr "autocomplete" "off", attr "required" ""] []
+                             ],
+                           el "input" [attr "type" "text", attr "name" "confirm", attr "autocomplete" "off", attr "required" ""] []
                          ]
                      ]
                        <> [alert (tr loc "O login não confere. Nada foi apagado." "The login does not match. Nothing was deleted.") | deleteError]
@@ -514,11 +514,11 @@ accountPage loc account csrf keys studies newKey keyError deleteError =
 
 reasons :: [(Text, Text, Text)]
 reasons =
-  [ ("spam", "spam", "spam")
-  , ("wrong", "dados ou conclusões erradas", "wrong data or conclusions")
-  , ("rights", "violação de direitos", "rights violation")
-  , ("harm", "pode causar dano", "may cause harm")
-  , ("other", "outro motivo", "another reason")
+  [ ("spam", "spam", "spam"),
+    ("wrong", "dados ou conclusões erradas", "wrong data or conclusions"),
+    ("rights", "violação de direitos", "rights violation"),
+    ("harm", "pode causar dano", "may cause harm"),
+    ("other", "outro motivo", "another reason")
   ]
 
 reportPage :: Locale -> Text -> Bool -> Text
@@ -527,9 +527,9 @@ reportPage loc sid isError =
    in render
         loc
         pg
-        [ h2 (tr loc "Denunciar um estudo" "Report a study")
-        , p_ [text (tr loc "Não pedimos e-mail, e não guardamos seu endereço. Só o motivo e a hora." "We ask for no email and keep no address. Only the reason and the time.")]
-        , el
+        [ h2 (tr loc "Denunciar um estudo" "Report a study"),
+          p_ [text (tr loc "Não pedimos e-mail, e não guardamos seu endereço. Só o motivo e a hora." "We ask for no email and keep no address. Only the reason and the time.")],
+          el
             "form"
             [attr "method" "POST", attr "action" (url loc ("/report/" <> sid)), cls "contact"]
             ( [ el
@@ -537,18 +537,18 @@ reportPage loc sid isError =
                   ( [attr "type" "text", attr "name" "website", attr "tabindex" "-1", attr "autocomplete" "off", attr "aria-hidden" "true"]
                       <> hidden True
                   )
-                  []
-              , el
+                  [],
+                el
                   "label"
                   []
-                  [ el "span" [] [text (tr loc "Motivo" "Reason")]
-                  , el "select" [attr "name" "reason"] [el "option" [attr "value" v] [text (tr loc pt en)] | (v, pt, en) <- reasons]
-                  ]
-              , el
+                  [ el "span" [] [text (tr loc "Motivo" "Reason")],
+                    el "select" [attr "name" "reason"] [el "option" [attr "value" v] [text (tr loc pt en)] | (v, pt, en) <- reasons]
+                  ],
+                el
                   "label"
                   []
-                  [ el "span" [] [text (tr loc "Detalhes (até 1000 caracteres)" "Details (up to 1000 characters)")]
-                  , el "textarea" [attr "name" "details", attr "rows" "5", attr "maxlength" "1000"] []
+                  [ el "span" [] [text (tr loc "Detalhes (até 1000 caracteres)" "Details (up to 1000 characters)")],
+                    el "textarea" [attr "name" "details", attr "rows" "5", attr "maxlength" "1000"] []
                   ]
               ]
                 <> [alert (tr loc "Escreva um motivo ou detalhes." "Write a reason or details.") | isError]
@@ -562,9 +562,9 @@ thanksPage loc =
    in render
         loc
         pg
-        [ h2 (tr loc "Obrigado" "Thank you")
-        , p_ [text (tr loc "Recebemos a denúncia. A equipe vai olhar." "We got the report. The team will look at it.")]
-        , p_ [link (url loc "/studies") [text (tr loc "Voltar aos estudos" "Back to the studies")]]
+        [ h2 (tr loc "Obrigado" "Thank you"),
+          p_ [text (tr loc "Recebemos a denúncia. A equipe vai olhar." "We got the report. The team will look at it.")],
+          p_ [link (url loc "/studies") [text (tr loc "Voltar aos estudos" "Back to the studies")]]
         ]
 
 -- | A page for a refusal or a failure: a title and one sentence, nothing from GitHub or the stack.

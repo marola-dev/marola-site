@@ -1,6 +1,7 @@
 module View.Trails exposing (card, panel, picked)
 
-{-| The trails panel (routes grouped by bairro) and the card of a picked route. -}
+{-| The trails panel (routes grouped by bairro) and the card of a picked route.
+-}
 
 import Difficulty exposing (Difficulty(..))
 import Fmt

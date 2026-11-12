@@ -1,6 +1,7 @@
 module Aspects exposing (Aspects, Cell(..), Facility, cellText, ofBeach)
 
-{-| The aspect cells of a beach tooltip and card: app.js `aspectsHtml` as data. -}
+{-| The aspect cells of a beach tooltip and card: app.js `aspectsHtml` as data.
+-}
 
 import Beach exposing (Beach, Facilities)
 import Fmt

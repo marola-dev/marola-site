@@ -1,6 +1,7 @@
 module Wire exposing (Request(..), board, days, decodeBody, encodeRequest, env, requestDecoder, requestUrl)
 
-{-| What the page reads off the wire and off the browser, as values `Update` understands. -}
+{-| What the page reads off the wire and off the browser, as values `Update` understands.
+-}
 
 import Board
 import Dec

@@ -7,9 +7,9 @@ import Data.Time.Clock (NominalDiffTime, UTCTime, diffUTCTime)
 import Prelude hiding (take)
 
 data Window k = Window
-  { permits :: Int
-  , span :: NominalDiffTime
-  , table :: IORef (Map.Map k (UTCTime, Int))
+  { permits :: Int,
+    span :: NominalDiffTime,
+    table :: IORef (Map.Map k (UTCTime, Int))
   }
 
 newWindow :: Int -> NominalDiffTime -> IO (Window k)
