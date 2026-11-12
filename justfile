@@ -62,7 +62,7 @@ audit:
 quality:
     #!/usr/bin/env bash
     set -euo pipefail
-    for tool in node npm elm ghc cabal python3 ruff shellcheck actionlint agents-check docs-lint; do command -v "$tool" >/dev/null || { echo "quality: $tool not installed — run inside 'nix develop'" >&2; exit 1; }; done
+    for tool in node npm elm ghc cabal ormolu python3 ruff shellcheck actionlint agents-check docs-lint; do command -v "$tool" >/dev/null || { echo "quality: $tool not installed — run inside 'nix develop'" >&2; exit 1; }; done
     ruff check .
     ruff format --check .
     shellcheck --severity=error scripts/*.sh
@@ -77,6 +77,8 @@ quality:
     node scripts/redirect_check.js
     node scripts/golden.js --check
     just design-check
+    just front-fmt
+    just back-fmt
     just front-test
     just back-test
     python3 scripts/site_live_check.py --self-test
@@ -115,6 +117,18 @@ front-test:
     [ -x node_modules/.bin/elm-test ] || npm ci --no-audit --no-fund
     npm test
 
+# elm-format 0.8.8 (npm devDependency of front/) over the Elm sources: check (default) fails on an unformatted file, write rewrites them.
+front-fmt mode="check":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd front
+    [ -x node_modules/.bin/elm-format ] || npm ci --no-audit --no-fund
+    case "{{ mode }}" in
+      check) ./node_modules/.bin/elm-format --validate --elm-version=0.19 src tests ;;
+      write) ./node_modules/.bin/elm-format --yes --elm-version=0.19 src tests ;;
+      *) echo "front-fmt: mode is check or write" >&2; exit 2 ;;
+    esac
+
 # Node smoke test of the built page in dist: DOM and MapLibre stubs, no browser (run dist-build --fixtures first).
 front-check:
     node scripts/front_check.js
@@ -122,6 +136,18 @@ front-check:
 # Build the Haskell packages (back/pages, back/server) from the root cabal.project.
 back-build:
     cabal build all
+
+# ormolu 0.7.7.0 (release binary, or `cabal install ormolu-0.7.7.0`) over back/: check (default) fails on an unformatted file, write rewrites them.
+back-fmt mode="check":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    command -v ormolu >/dev/null || { echo "back-fmt: ormolu is not installed (0.7.7.0)" >&2; exit 1; }
+    case "{{ mode }}" in
+      check|write) ;;
+      *) echo "back-fmt: mode is check or write" >&2; exit 2 ;;
+    esac
+    [ "{{ mode }}" = write ] && ormolu_mode=inplace || ormolu_mode=check
+    git ls-files -z 'back/*.hs' | xargs -0 ormolu --mode "$ormolu_mode"
 
 # The Haskell tests (hspec): the page renderer and every page in both languages, and the server on its WAI pipeline.
 back-test:
