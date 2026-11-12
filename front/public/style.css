@@ -107,7 +107,7 @@ small { font-size: var(--fs-13); letter-spacing: var(--tr-13); }
   display: flex; align-items: center; gap: 12px 24px; flex-wrap: wrap;
   padding: 12px 24px; background: var(--bg); position: relative;
 }
-.brand { display: flex; align-items: baseline; gap: 4px 16px; flex-wrap: wrap; min-width: 0; }
+.brand { display: flex; align-items: baseline; gap: 4px 16px; flex-wrap: wrap; min-width: 0; flex: 1 1 320px; }
 .bar h1 {
   display: flex; align-items: center; gap: 8px; margin: 0;
   font-size: var(--fs-22); font-weight: 650; line-height: 1.2; letter-spacing: var(--tr-22); white-space: nowrap;
