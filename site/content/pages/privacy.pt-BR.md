@@ -35,7 +35,7 @@ Para mostrar quem publicou um estudo, manter um registro público do que foi pub
 
 ## quem vê
 
-Todo mundo vê um estudo público com o seu login do GitHub e as datas. Todo mundo vê uma lápide (id, hash, data, motivo). As pessoas da equipe veem o resto no servidor: as denúncias e as mensagens de contato. O GitHub sabe que você entrou no marola. O mapa de fundo da página do mapa é do Mapbox.
+Todo mundo vê um estudo público com o seu login do GitHub e as datas. Todo mundo vê uma lápide (id, hash, data, motivo). As pessoas da equipe veem o resto no servidor: as denúncias e as mensagens de contato. O GitHub sabe que você entrou no marola. O mapa de fundo da página do mapa é do OpenFreeMap.
 
 ## o que você pode fazer
 

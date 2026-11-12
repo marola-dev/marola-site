@@ -68,11 +68,11 @@ cada praia cai numa das cinco faixas da legenda do mapa: **≥70** bom, **40–6
 
 ## de onde vêm os dados
 
-as praias vêm do [OpenStreetMap](https://www.openstreetmap.org/copyright), a previsão do mar e do tempo vem do [Open-Meteo](https://open-meteo.com/), e a balneabilidade, dos boletins oficiais do IMA/SC, do INEA (RJ) e do INEMA (BA). são fontes públicas e gratuitas. o mapa de fundo é do [Mapbox](https://www.mapbox.com/about/maps/), feito a partir do OpenStreetMap. por enquanto, só as camadas de praias e de balneabilidade estão ligadas. vento, ondas e as imagens de satélite da NASA ([GIBS](https://www.earthdata.nasa.gov/gibs)) chegam em breve.
+as praias vêm do [OpenStreetMap](https://www.openstreetmap.org/copyright), a previsão do mar e do tempo vem do [Open-Meteo](https://open-meteo.com/), e a balneabilidade, dos boletins oficiais do IMA/SC, do INEA (RJ) e do INEMA (BA). são fontes públicas e gratuitas. o mapa de fundo é do [OpenFreeMap](https://openfreemap.org/), desenhado com o MapLibre a partir dos dados do OpenStreetMap. por enquanto, só as camadas de praias e de balneabilidade estão ligadas. vento, ondas e as imagens de satélite da NASA ([GIBS](https://www.earthdata.nasa.gov/gibs)) chegam em breve.
 
 ## privacidade
 
-o marola não usa cookies nem rastreamento próprio. o mapa de fundo é a exceção. para desenhar o mapa, o seu navegador busca o estilo, os pedaços do mapa e as fontes nos servidores do [Mapbox](https://www.mapbox.com/legal/privacy). esses servidores recebem o seu endereço IP e contam cada vez que o mapa abre, porque é assim que o Mapbox cobra. para essa contagem, o Mapbox guarda no seu navegador um identificador aleatório, sem nome nem e-mail. quando você escolhe uma camada de satélite, as imagens vêm dos servidores da NASA, que também veem o seu endereço IP. a opção "perto de mim" usa a sua localização só dentro do navegador, e ela nunca sai dali.
+o marola não usa cookies nem rastreamento próprio. o mapa de fundo é a exceção. para desenhar o mapa, o seu navegador busca o estilo, os pedaços do mapa e as fontes nos servidores do [OpenFreeMap](https://openfreemap.org/). esses servidores recebem o seu endereço IP. o mapa não precisa de chave, e nada fica guardado no seu navegador para ele. quando você escolhe uma camada de satélite, as imagens vêm dos servidores da NASA, que também veem o seu endereço IP. a opção "perto de mim" usa a sua localização só dentro do navegador, e ela nunca sai dali.
 
 ## quem faz
 

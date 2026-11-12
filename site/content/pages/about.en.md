@@ -67,11 +67,11 @@ Each beach gets a number in one of the five bands on the map legend: **≥70** g
 
 ## Where the data comes from
 
-Beaches come from [OpenStreetMap](https://www.openstreetmap.org/copyright), sea and weather from [Open-Meteo](https://open-meteo.com/), and water quality from the official bulletins of IMA/SC, INEA (RJ) and INEMA (BA). They are public, free sources. The base map is [Mapbox](https://www.mapbox.com/about/maps/)'s, built on OpenStreetMap. For now only the beaches and water-quality layers are on; wind, waves and NASA's satellite imagery ([GIBS](https://www.earthdata.nasa.gov/gibs)) are coming soon.
+Beaches come from [OpenStreetMap](https://www.openstreetmap.org/copyright), sea and weather from [Open-Meteo](https://open-meteo.com/), and water quality from the official bulletins of IMA/SC, INEA (RJ) and INEMA (BA). They are public, free sources. The base map is [OpenFreeMap](https://openfreemap.org/)'s, drawn with MapLibre from OpenStreetMap data. For now only the beaches and water-quality layers are on; wind, waves and NASA's satellite imagery ([GIBS](https://www.earthdata.nasa.gov/gibs)) are coming soon.
 
 ## Privacy
 
-marola sets no cookies and does no tracking of its own. The base map is the exception: to draw it, your browser fetches the style, map tiles and fonts from [Mapbox](https://www.mapbox.com/legal/privacy)'s servers, which see your IP address and count each map load (that is how Mapbox bills). For that count Mapbox keeps a random identifier in your browser, with no name or email attached. When you pick a satellite layer, its images come from NASA's servers, which also see your IP address. The "near me" sort uses your location only inside your own browser; it is never sent anywhere.
+marola sets no cookies and does no tracking of its own. The base map is the exception: to draw it, your browser fetches the style, map tiles and fonts from [OpenFreeMap](https://openfreemap.org/)'s servers, which see your IP address. No key is needed and no identifier is kept in your browser for it. When you pick a satellite layer, its images come from NASA's servers, which also see your IP address. The "near me" sort uses your location only inside your own browser; it is never sent anywhere.
 
 ## Who builds it
 
