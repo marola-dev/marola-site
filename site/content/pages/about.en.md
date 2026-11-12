@@ -67,7 +67,7 @@ Each beach gets a number in one of the five bands on the map legend: **≥70** g
 
 ## Where the data comes from
 
-Beaches come from [OpenStreetMap](https://www.openstreetmap.org/copyright), sea and weather from [Open-Meteo](https://open-meteo.com/), and water quality from the official bulletins of IMA/SC, INEA (RJ) and INEMA (BA). They are public, free sources. The base map is marola's own: its tiles are cut from OpenStreetMap data with [Protomaps](https://protomaps.com/), kept on our server and drawn with MapLibre. For now only the beaches and water-quality layers are on; wind, waves and NASA's satellite imagery ([GIBS](https://www.earthdata.nasa.gov/gibs)) are coming soon.
+Beaches come from [OpenStreetMap](https://www.openstreetmap.org/copyright), sea and weather from [Open-Meteo](https://open-meteo.com/), and water quality from the official bulletins of IMA/SC, INEA (RJ) and INEMA (BA). They are public, free sources. The base map is marola's own: its tiles are cut from OpenStreetMap data with [Protomaps](https://protomaps.com/), kept on our server and drawn with [MapLibre](https://maplibre.org/), an open source map library. For now only the beaches and water-quality layers are on; wind, waves and NASA's satellite imagery ([GIBS](https://www.earthdata.nasa.gov/gibs)) are coming soon.
 
 ## Privacy
 

@@ -326,7 +326,8 @@ async function floripa() {
   const attribution = ml.controls.find((c) => c.kind === 'attribution');
   const credits = attribution ? attribution.opts.customAttribution : [];
   ok(credits.some((a) => a.includes('© OpenStreetMap') && a.includes('https://www.openstreetmap.org/copyright')), 'the attribution credits OpenStreetMap with its copyright link');
-  ok(credits.some((a) => a.includes('Protomaps') && a.includes('https://protomaps.com')) && credits.length === 2, 'and Protomaps, and nobody else', credits.join());
+  ok(credits.some((a) => a.includes('Protomaps') && a.includes('https://protomaps.com')), 'and Protomaps', credits.join());
+  ok(credits.some((a) => a.includes('MapLibre') && a.includes('https://maplibre.org')) && credits.length === 3, 'and MapLibre, and nobody else', credits.join());
   ok(ml.controls.some((c) => c.kind === 'navigation') && map.opts.attributionControl === false, 'navigation control added, default attribution off');
   ok(ml.workerUrl === '/vendor/maplibre/maplibre-gl-worker.mjs', 'the worker is the vendored one', ml.workerUrl);
   ok(map.calls.some((c) => c.name === 'fitBounds'), 'the first board fits the map to the beaches');
