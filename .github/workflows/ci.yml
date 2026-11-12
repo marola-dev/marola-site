@@ -51,11 +51,129 @@ jobs:
     with:
       devkit-ref: v0.20.4
 
+  # The Haskell packages (back/pages, back/server) from the root cabal.project: formatting, build, hspec.
+  back:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: haskell-actions/setup@0512451d82f3ca8c147db62e30464e7c4ca63d30 # v2.9.1
+        with:
+          ghc-version: 9.6.6
+          cabal-version: 3.12.1.0
+      # direct-sqlite links the system SQLite (cabal.project).
+      - name: system SQLite
+        run: sudo apt-get install -y --no-install-recommends libsqlite3-dev
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.cabal/store
+            dist-newstyle
+          key: cabal-${{ runner.os }}-ghc9.6.6-${{ hashFiles('cabal.project.freeze') }}-${{ hashFiles('back/**/*.cabal') }}
+          restore-keys: |
+            cabal-${{ runner.os }}-ghc9.6.6-${{ hashFiles('cabal.project.freeze') }}-
+      - name: ormolu 0.7.7.0
+        run: |
+          curl -fsSL -o /tmp/ormolu.zip https://github.com/tweag/ormolu/releases/download/0.7.7.0/ormolu-x86_64-linux.zip
+          echo "647a0c36d5675b9a7108f4bf4e6e703459c3ae33e18399f9ebce2ab4af295457  /tmp/ormolu.zip" | sha256sum -c -
+          mkdir -p "$HOME/.local/bin"
+          unzip -o /tmp/ormolu.zip ormolu -d "$HOME/.local/bin"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - run: git ls-files -z 'back/*.hs' | xargs -0 ormolu --mode check
+      - run: cabal build all
+      - run: cabal test all
+
+  # The Elm page: formatting, elm-test, the Vite build, and the built page under the Node stubs.
+  front:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: front/package-lock.json
+      - name: Elm 0.19.1
+        run: |
+          curl -fsSL -o /tmp/elm.gz https://github.com/elm/compiler/releases/download/0.19.1/binary-for-linux-64-bit.gz
+          echo "e44af52bb27f725a973478e589d990a6428e115fe1bb14f03833134d6c0f155c  /tmp/elm.gz" | sha256sum -c -
+          mkdir -p "$HOME/.local/bin"
+          gunzip -c /tmp/elm.gz > "$HOME/.local/bin/elm"
+          chmod +x "$HOME/.local/bin/elm"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.elm
+          key: elm-${{ runner.os }}-${{ hashFiles('front/elm.json') }}
+      # site_build.sh also builds the pages and the server, so this job needs GHC too.
+      - uses: haskell-actions/setup@0512451d82f3ca8c147db62e30464e7c4ca63d30 # v2.9.1
+        with:
+          ghc-version: 9.6.6
+          cabal-version: 3.12.1.0
+      - name: system SQLite
+        run: sudo apt-get install -y --no-install-recommends libsqlite3-dev
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.cabal/store
+            dist-newstyle
+          key: cabal-${{ runner.os }}-ghc9.6.6-${{ hashFiles('cabal.project.freeze') }}-${{ hashFiles('back/**/*.cabal') }}
+          restore-keys: |
+            cabal-${{ runner.os }}-ghc9.6.6-${{ hashFiles('cabal.project.freeze') }}-
+      - run: cd front && npm ci --no-audit --no-fund
+      - run: cd front && ./node_modules/.bin/elm-format --validate --elm-version=0.19 src tests
+      - run: cd front && npm test
+      - run: scripts/site_build.sh --fixtures --no-install
+      - run: node scripts/front_check.js
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: dist
+          path: dist
+          retention-days: 1
+          if-no-files-found: error
+
+  # The Haskell server binary over the dist/ the front job built: headers, hostile paths, contact form, study API.
+  smoke:
+    needs: [back, front]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+      - uses: haskell-actions/setup@0512451d82f3ca8c147db62e30464e7c4ca63d30 # v2.9.1
+        with:
+          ghc-version: 9.6.6
+          cabal-version: 3.12.1.0
+      - name: system SQLite
+        run: sudo apt-get install -y --no-install-recommends libsqlite3-dev
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.cabal/store
+            dist-newstyle
+          key: cabal-${{ runner.os }}-ghc9.6.6-${{ hashFiles('cabal.project.freeze') }}-${{ hashFiles('back/**/*.cabal') }}
+          restore-keys: |
+            cabal-${{ runner.os }}-ghc9.6.6-${{ hashFiles('cabal.project.freeze') }}-
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: dist
+          path: dist
+      - run: scripts/server_smoke.sh
+
   # The one check ci-rule requires in every marola repo (marola-dev/marola#813); it must report on
   # every run, so it needs every other job and passes on skipped ones.
   ci-ok:
     if: always()
-    needs: [static, python, agents]
+    needs: [static, python, agents, back, front, smoke]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions: {}
