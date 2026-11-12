@@ -31,8 +31,6 @@ jobs:
         node scripts/site_check.js
         node scripts/redirect_check.js
         node scripts/golden.js --check
-        node scripts/design_check.js --self-test
-        node scripts/design_check.js
         scripts/members_vendor_check.sh
         git -c advice.detachedHead=false clone -q --depth 1 -b v0.20.4 https://github.com/marola-dev/marola-devkit /tmp/devkit && python3 /tmp/devkit/scripts/docs_lint.py .
 
@@ -90,6 +88,8 @@ jobs:
       - run: git ls-files -z 'back/*.hs' | xargs -0 ormolu --mode check
       - run: cabal build all
       - run: cabal test all
+      - run: cabal run -v0 exe:marola-tools -- design-check
+      - run: cabal run -v0 exe:marola-tools -- js-check
 
   # The Elm page: formatting, elm-test, the Vite build, and the built page under the Node stubs.
   front:
@@ -156,9 +156,6 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version: 22
       - uses: haskell-actions/setup@0512451d82f3ca8c147db62e30464e7c4ca63d30 # v2.9.1
         with:
           ghc-version: 9.6.6

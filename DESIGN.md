@@ -598,7 +598,7 @@ MapLibre's worker, both from `'self'`. A page that needs behaviour is a form tha
 
 ## How a change is checked
 
-`just design-check` runs `scripts/design_check.js` (Node, no packages) after its own self-test. It
+`just design-check` runs `marola-tools design-check` (`back/tools`) after its own self-test. It
 reads this file and `front/public/style.css` and fails when:
 
 1. a custom property in `:root` is not in a token table here;
