@@ -1,0 +1,3 @@
+sha512-CBeD4SoUluFziGdy/8k7FOjQxQy486n+929W/tWophauvMICpkZ26vGBWhDt/6b1FZQWNaf4jFdT/5+q0Wii5w== pmtiles-4.5.0.tgz (npm registry integrity, checked)
+sha512-tbZNuJrLwGUp3zshBtdy4W+ORxZuIh8a5ilyIEQDC5rY1f3U20JMry0Ll3WBzU58EZKsEuJFXhb5gwv8CsPvgA== fflate-0.8.3.tgz (npm registry integrity, checked)
+pmtiles.mjs, byte for byte: npm i pmtiles@4.5.0 fflate@0.8.3 esbuild@0.28.2 && npx esbuild node_modules/pmtiles/dist/esm/index.js --bundle --format=esm --minify > pmtiles.mjs

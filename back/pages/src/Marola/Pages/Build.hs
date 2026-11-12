@@ -13,8 +13,10 @@ import Data.Time.Format (defaultTimeLocale, parseTimeM)
 import Marola.Pages.Fixtures qualified as Fixtures
 import Marola.Pages.Loader (readText)
 import Marola.Pages.Loader qualified as Loader
+import Marola.Pages.MapPage qualified as MapPage
 import Marola.Pages.Members qualified as Members
 import Marola.Pages.Meta qualified as Meta
+import Marola.Pages.Site (Env (..))
 import Marola.Pages.Site qualified as Site
 import System.Directory (createDirectoryIfMissing, doesFileExist)
 import System.Environment (getArgs, lookupEnv)
@@ -75,12 +77,12 @@ main = do
             d <- day
             pages <- Site.allPages env
             files <- Meta.files env d
-            Right (pages <> files)
+            Right (env, pages <> files)
       case built of
         Left message -> do
           B.hPut stderr (TE.encodeUtf8 ("pages: " <> message <> "\n"))
           exitWith (ExitFailure 1)
-        Right pages -> do
+        Right (env, pages) -> do
           mapM_
             ( \(f, txt) -> do
                 let target = outDir </> T.unpack f
@@ -88,6 +90,18 @@ main = do
                 B.writeFile target (TE.encodeUtf8 txt)
             )
             pages
+          -- The map page is Vite's; it is in the output folder only in a full build (site_build.sh).
+          let mapFile = outDir </> "index.html"
+          hasMap <- doesFileExist mapFile
+          if hasMap
+            then do
+              page <- readText mapFile
+              case MapPage.english (envCatalog env) page of
+                Left message -> do
+                  B.hPut stderr (TE.encodeUtf8 ("pages: " <> message <> "\n"))
+                  exitWith (ExitFailure 1)
+                Right en -> B.writeFile (outDir </> "index.en.html") (TE.encodeUtf8 en)
+            else pure ()
           TIO.putStrLn ("pages: " <> T.pack (show (length pages)) <> " files in " <> T.pack outDir)
     _ -> do
       hPutStrLn stderr usage

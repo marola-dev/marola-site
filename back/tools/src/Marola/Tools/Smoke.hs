@@ -191,6 +191,7 @@ run base inbox = do
       ("/humans.txt", "text/plain"),
       ("/.well-known/security.txt", "text/plain"),
       ("/favicon.svg", "image/svg+xml"),
+      ("/og.png", "image/png"),
       ("/board.schema.json", "application/json")
     ]
     $ \(p, typ) -> do
@@ -208,6 +209,10 @@ run base inbox = do
     res <- g (TE.encodeUtf8 (T.takeWhile (/= '?') loc))
     check (res.status == 200) ("the sitemap page " <> loc <> " answers 200") (tshow res.status)
   check (not (any ("contact" `T.isInfixOf`) locs)) "no contact page in the sitemap" ""
+  mapEn <- g "/?lang=en"
+  check (bodyHas "<html lang=\"en\">" mapEn && bodyHas "rel=\"canonical\" href=\"https://marola.dev/?lang=en\"" mapEn) "/?lang=en is the English map head, canonical to itself" ""
+  mapPt <- g "/"
+  check (bodyHas "<html lang=\"pt-BR\">" mapPt && bodyHas "rel=\"canonical\" href=\"https://marola.dev/\"" mapPt) "/ is the pt-BR map head" ""
   forM_ ["/.well-known/.hidden", "/.env", "/sub/.well-known/security.txt"] $ \p -> do
     res <- g p
     check (res.status == 404) (TE.decodeUtf8 p <> " is 404") ""

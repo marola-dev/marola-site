@@ -75,8 +75,9 @@ app image (`marola-image`); this repo never builds the app.
   [docs/5-hosting.md](docs/5-hosting.md), [back/server/README.md](back/server/README.md)). Every response header
   comes from `Marola.Server.Security`, the CSP from `Marola.Csp`. Its hspec suite runs the pipeline in memory.
   `back/pages` (`marola-pages site <out>`) renders every static page (about, support, contact, contact-sent, 404,
-  news, members) and the metadata files (`robots.txt`, `sitemap.xml`, `llms.txt`, `humans.txt`,
-  `.well-known/security.txt`): `Loader` reads `site/content/pages/<page>.<lang>.md`, the posts of
+  news, members), the metadata files (`robots.txt`, `sitemap.xml`, `llms.txt`, `humans.txt`,
+  `.well-known/security.txt`) and `index.en.html`, the map page's English head, which the server sends for
+  `/?lang=en` (`Marola.Pages.MapPage`; the build fails if `front/index.html` drifts from it): `Loader` reads `site/content/pages/<page>.<lang>.md`, the posts of
   `site/content/news/`, the catalogs and MEMBERS.md (the vendored `site/members/MEMBERS.md`, which must hash to
   the blob id on line 2 of `site/members.version`; or the file in `MEMBERS_SOURCE`); `Layout` is the shared head,
   nav and footer. pt-BR goes at the root of the output and English under `en/`. Edit the Markdown and the posts,

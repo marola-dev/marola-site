@@ -10,6 +10,8 @@ import Data.Time.Calendar (diffDays, fromGregorian)
 import Marola.Pages.Language (allLanguages)
 import Marola.Pages.Language qualified as Language
 import Marola.Pages.Layout qualified as Layout
+import Marola.Pages.Loader (readText)
+import Marola.Pages.MapPage qualified as MapPage
 import Marola.Pages.Meta qualified as Meta
 import Marola.Pages.Site (Area (..), Env (..))
 import Marola.Pages.Site qualified as Site
@@ -86,3 +88,22 @@ spec env = describe "meta" $ do
   it "robots.txt allows all and points at the sitemap" $ do
     Meta.robots `shouldSatisfy` has "User-agent: *\nAllow: /\n"
     Meta.robots `shouldSatisfy` has ("Sitemap: " <> base <> "/sitemap.xml")
+  it "robots.txt keeps crawlers off the sign-in and the account pages, and nothing public" $ do
+    mapM_ (\p -> Meta.robots `shouldSatisfy` has ("Disallow: " <> p <> "\n")) ["/auth/", "/account", "/en/account", "/report/", "/en/report/"]
+    mapM_ (\p -> Meta.robots `shouldNotSatisfy` has ("Disallow: " <> p)) ["/studies", "/submit", "/api", "/data", "/en/\n", "/\n"]
+  it "the English map page: lang, title, description, canonical and og tags, from front/index.html" $ do
+    dir <- root
+    page <- readText (dir <> "/front/index.html")
+    case MapPage.english (envCatalog env) page of
+      Left e -> expectationFailure (T.unpack e)
+      Right en -> do
+        en `shouldSatisfy` has "<html lang=\"en\">"
+        en `shouldSatisfy` has "<link rel=\"canonical\" href=\"https://marola.dev/?lang=en\">"
+        en `shouldSatisfy` has "<meta property=\"og:url\" content=\"https://marola.dev/?lang=en\">"
+        en `shouldSatisfy` has "<meta property=\"og:locale\" content=\"en_US\">"
+        en `shouldSatisfy` has MapPage.descriptionEn
+        en `shouldNotSatisfy` has MapPage.descriptionPt
+        en `shouldNotSatisfy` has "condições do mar"
+        en `shouldSatisfy` has "<link rel=\"alternate\" hreflang=\"en\" href=\"https://marola.dev/?lang=en\">"
+  it "the English map page fails the build when front/index.html drifts from it" $
+    MapPage.english (envCatalog env) "<html lang=\"pt-BR\"><title>x</title>" `shouldSatisfy` either (const True) (const False)

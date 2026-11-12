@@ -70,6 +70,8 @@ spec env = describe "equality with the old static pages" $ do
     old <- oldPage "humans.txt"
     let team s = fst (T.breakOn "/* SITE */" (snd (T.breakOn "Name: " s)))
     fmap (team . Members.humans) (Members.parse (envMembers env)) `shouldBe` Right (team old)
-  it "robots.txt: the same as the old file" $ do
+  it "robots.txt: the old file plus the Disallow block for the server's sign-in and account pages" $ do
     old <- oldPage "robots.txt"
-    Meta.robots `shouldBe` old
+    let serverOnly l = "Disallow:" `T.isPrefixOf` l || "# The sign-in redirect" `T.isPrefixOf` l
+        legacy = T.unlines (filter (not . serverOnly) (T.lines Meta.robots))
+    legacy `shouldBe` old
