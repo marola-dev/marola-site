@@ -138,6 +138,7 @@ these rows. Do not change a row without the same change in `:root`.
 | `--fs-13` | `13px` | font size |
 | `--fs-14` | `14px` | font size |
 | `--fs-15` | `15px` | font size |
+| `--fs-16` | `16px` | font size |
 | `--fs-17` | `17px` | font size |
 | `--fs-18` | `18px` | font size |
 | `--fs-19` | `19px` | font size |
@@ -152,6 +153,7 @@ these rows. Do not change a row without the same change in `:root`.
 | `--tr-13` | `-.003em` | tracking that goes with that size |
 | `--tr-14` | `-.006em` | tracking that goes with that size |
 | `--tr-15` | `-.009em` | tracking that goes with that size |
+| `--tr-16` | `-.011em` | tracking that goes with that size |
 | `--tr-17` | `-.013em` | tracking that goes with that size |
 | `--tr-18` | `-.014em` | tracking that goes with that size |
 | `--tr-19` | `-.016em` | tracking that goes with that size |
@@ -324,10 +326,24 @@ Fjalla name or numeral is what the eye lands on, Inter explains it, mono dates a
   text field). Never remove it. Never replace it with a colour change alone. `--accent` on
   `--bg` is 11.23:1.
 - Minimum target: 24 px by 24 px (WCAG 2.2, criterion 2.5.8), and no control is smaller. A
-  control is 34 px high, 36 px on a phone (28 px inside a segmented track, 22 px inside the 28 px
-  language switch, 28 px for a footer fold on a desktop).
-  A map control is 32 px (the emergency button, a close button, a layer button on a phone). What a
-  thumb taps first on a phone is 44 px: the emergency numbers and the footer folds.
+  control is drawn 34 px high, 36 px on a phone (28 px inside a segmented track, 22 px inside the
+  28 px language switch, 28 px for a footer fold on a desktop). A map control is drawn 32 px (the
+  emergency button, a close button, a layer button on a phone).
+- Under a finger (`max-width: 640px` or `pointer: coarse`, so a phone on its side counts) a control
+  keeps its drawn size and takes a bigger hit area from a transparent `::after`, so the chrome does
+  not grow over the map. Measured by hit test: the tool row's buttons 42 by 44 px (36 by 44 at
+  320 px), the emergency button and the close buttons 44 px, the language switch 38 px high and at
+  least 40 px wide, piabrota's eye 32 px, the two outside links 32 px boxes, MapLibre's zoom
+  buttons 36 px. A section link is 37 px high from its own padding, because the strip is a scroll
+  box and would cut a pseudo-element. Rows a thumb picks are at least 44 px: a beach, a trail, an
+  emergency number, a footer fold, and on the pages every pill, button, select and text field.
+- A form field is 16 px under a finger: below that, iOS zooms the page when the field takes focus.
+- The hour slider under a finger has a 24 px thumb and a touch strip 44 px high on a phone (36 px
+  on its side), with `touch-action: pan-y` so a sideways drag never scrolls the page.
+- Text a person must read on a phone is at least 12 px. The 11 px mono stays for the legend's
+  pills, a metric's unit, a band pill and MapLibre's attribution.
+- Hover styles sit inside `@media (hover: hover)`: on a touch screen a hover sticks after a tap and
+  its accent border reads as pressed. Touch gets `:active` feedback instead (`--raised`).
 - Every control has a name a screen reader can read. An icon-only button keeps its word in a
   visually hidden `span` and in `title`.
 - A state is never told by colour alone: a pressed control has `aria-pressed` or `aria-expanded`
@@ -348,7 +364,12 @@ Fjalla name or numeral is what the eye lands on, Inter explains it, mono dates a
   Instagram link, days, near me, spotify, list), the legend at right. Row two: the hour label, the
   slider (up to 30 rem), and the one-line tagline at the right. Under 900 px the tagline is kept
   for screen readers only and the legend takes a third row that scrolls sideways. On phones the
-  controls are one row that does not wrap, and the action buttons keep only their icon.
+  controls are one row that does not wrap, and the action buttons keep only their icon; the hour
+  label, the slider and the legend each take a full row, so the slider is as wide as the screen
+  and does not change width when its label changes.
+- **A phone on its side** (641 to 1100 px wide, up to 500 px high): the sections join the brand's
+  row, where they scroll sideways behind a fading edge, and the legend joins the slider's row. The
+  chrome is 121 px and the map takes 66% of the screen (it was 53%).
 - **Control**: a 34 px pill (36 px on phones), 1 px `--line-strong` border, `--surface`, Inter 13 px
   / 500, its icon in `--muted`. Hover: `--accent` border, the icon in `--accent`, 1 px lift.
   Pressed (`aria-pressed`, `aria-expanded`): `--accent-soft` fill, `--accent` border and text.
@@ -361,7 +382,7 @@ Fjalla name or numeral is what the eye lands on, Inter explains it, mono dates a
 - **Primary action**: `--sea` fill, white text, one per surface: the chat toggle and the chat
   send button.
 - **Emergency button** (`#sos`): a map control in `--glass`, a 32 px pill, 13 px, Lucide's phone
-  icon in `--emergency`, at the top centre of the map, above every panel (z-index 1001). Its panel
+  icon in `--emergency`, at the top centre of the map, above every panel and the player (z-index 1003). Its panel
   is 18 rem wide under the button, on `--surface`, titled in Fjalla. Under 641 px it is a bottom
   sheet. The numbers are 193, 190, 192, 185 and 199, each a `tel:` row of at least 44 px with the
   number in Fjalla 22 px, then a 12 px note. The panel fades in 150 ms. It comes from Carlos
@@ -387,8 +408,11 @@ Fjalla name or numeral is what the eye lands on, Inter explains it, mono dates a
   band pill, its name, and its length in mono at the right. The picked route takes `--accent-soft`.
   The foot (source, IBGE code) is mono 11 px.
 - **Player** (`#player`): the playlist's frame in a `--surface` panel that hangs under the tool
-  row at the right, with a mono link to open it in Spotify.
+  row at the right, clear of the layer rail, with a mono link to open it in Spotify. Under 900 px
+  it starts under the emergency button, and on a phone it runs from the left gutter to the rail.
 - **Close button**: the control as a borderless 32 px circle in `--muted`, `--raised` on hover.
+  On a phone the card's close button is sticky at the top right of its sheet, so it stays in reach
+  while the card scrolls.
 - **Beach marker** (`.wave`): a 16 px dot in its band colour, a 2 px white ring, a `#1d2733` rim. The
   selected beach is a 32 px badge with its score number. A past hour keeps the dot at 45% fill
   opacity with a dashed ring. No glyphs, halos or shadows. The legend draws the same dot at 8 px.
@@ -415,8 +439,9 @@ Fjalla name or numeral is what the eye lands on, Inter explains it, mono dates a
   layer on, and a pressed layer button turns it off. The pressed button is a solid `--bg` circle
   with an `--accent` ring and icon.
 - **Layer key** (`.flowkeys`, `.flowkey`): at the bottom left, in glass, 13 rem wide (7.5 rem on
-  phones, where the caption hides). A ramp 8 px high with its two ends in mono, or the fit and unfit dots,
-  then a caption.
+  phones, where the caption under a ramp hides; a key that is only its caption, such as bathing
+  water, keeps it). A ramp 8 px high with its two ends in mono, or the fit and unfit dots, then a
+  caption. On a phone it sits 72 px up, above the attribution that MapLibre opens on load.
 - **Flow layer** (wind and waves, `flow_layer_ffi.mjs`): a WebGL layer. The field is drawn at 65%
   opacity, so the light base map shows through, and particles run over it. Its edge fades. Under
   `prefers-reduced-motion: reduce` the particles are drawn once as still streaks. It is built, but
@@ -556,7 +581,7 @@ comma or a period. At most one `·` per line, and only in compact metadata.
 
 ## Motion
 
-Only state changes: colour, border and the 1 px hover lift, 150 ms ease-out. All of it sits inside
+Only state changes: colour, border and the 1 px hover lift (where a pointer hovers), 150 ms ease-out. All of it sits inside
 `prefers-reduced-motion: no-preference`. A footer panel and the emergency panel fade in under their
 control (150 ms, 4 px) and close at once. No entrance animations. The one ambient motion is the flow
 layer's particles, which are data (direction and speed). Under `prefers-reduced-motion: reduce`
@@ -611,7 +636,15 @@ decision.
   decoration beside the word "marola", and it does not show if images are blocked.
 - **The marker's number** for `--c40` has a `dark` class that no CSS rule uses, and the selected
   badge prints its number in Inter, not Fjalla.
-- **The player covers the top of the layer rail** while it is open on a desktop.
+- **Under 44 px on a phone**: the day buttons (30 px high in their 36 px track, which clips a
+  pseudo-element), the area `select` (36 px high; a `select` takes no pseudo-element) and the layer
+  buttons (32 px, 4 px apart). All pass the 24 px minimum.
+- **The beach list has no close button of its own** on a phone: it closes from the list button in
+  the tool row, at the top of the screen.
+- **Between 641 and 900 px** the open list and the open card together cover the map, and the
+  emergency button sits over the card's edge.
+- **The page is taller than a phone's screen**: the map keeps 60% of the height (`60svh`) and the
+  footer starts below the fold.
 - **No rule** for these classes, which the markup emits: `trail-card` and `trail-note`. They
   render with the styles they inherit.
 - **No `aria-invalid`** and no `aria-describedby` on a field with an error.
