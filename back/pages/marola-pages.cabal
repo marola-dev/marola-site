@@ -1,0 +1,59 @@
+cabal-version: 3.0
+name:          marola-pages
+version:       0.1.0
+synopsis:      The static pages of marola.dev, rendered ahead of time
+license:       MIT
+build-type:    Simple
+
+common shared
+  default-language: GHC2021
+  default-extensions: OverloadedStrings
+  ghc-options:      -Wall
+  build-depends:    base >=4.18 && <5, text >=2.0, containers
+
+library
+  import:          shared
+  hs-source-dirs:  src
+  exposed-modules:
+    Marola.Pages.Html
+    Marola.Pages.Language
+    Marola.Pages.Icu
+    Marola.Pages.I18n
+    Marola.Pages.Markdown
+    Marola.Pages.Layout
+    Marola.Pages.News
+    Marola.Pages.Members
+    Marola.Pages.Site
+    Marola.Pages.Meta
+    Marola.Pages.Loader
+    Marola.Pages.Build
+  build-depends:
+    aeson >=2.1,
+    bytestring,
+    cryptohash-sha1 >=0.11,
+    directory,
+    filepath,
+    process,
+    time
+
+executable marola-pages
+  import:         shared
+  hs-source-dirs: app
+  main-is:        Main.hs
+  build-depends:  marola-pages
+
+test-suite spec
+  import:         shared
+  type:           exitcode-stdio-1.0
+  hs-source-dirs: test
+  main-is:        Spec.hs
+  other-modules:
+    Support
+    HtmlSpec
+    MarkdownSpec
+    NewsSpec
+    MembersSpec
+    MetaSpec
+    EqualitySpec
+    PageSpec
+  build-depends:  marola-pages, hspec >=2.10, bytestring, directory, filepath, time
