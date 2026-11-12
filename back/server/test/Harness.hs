@@ -74,7 +74,6 @@ import Marola.Server.StudyStore (Account (..))
 import Marola.Server.StudyStore qualified as StudyStore
 import Marola.Study
 import Network.HTTP.Types
-import Network.HTTP.Types.URI (renderSimpleQuery)
 import Network.Socket (SockAddr (..))
 import Network.Wai
 import Network.Wai.Internal (ResponseReceived (..))

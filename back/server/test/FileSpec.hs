@@ -109,6 +109,21 @@ spec = describe "static files" $ do
       (p, res.status, header res "Content-Type") `shouldBe` (p, 404, Just "text/html; charset=utf-8")
       bodyText res `shouldSatisfy` T.isInfixOf txt
 
+  it "an old /docs path is forwarded to docs.marola.dev, path and query kept" $ withSite $ \site ->
+    forM_
+      [ ("/docs", "https://docs.marola.dev/"),
+        ("/docs/", "https://docs.marola.dev/"),
+        ("/docs/3-development?x=1", "https://docs.marola.dev/3-development?x=1")
+      ]
+      $ \(p, to) -> do
+        res <- send site (get p)
+        (p, res.status, header res "Location") `shouldBe` (p, 301, Just to)
+
+  it "a /docs path with a traversal or odd characters is still a 404" $ withSite $ \site ->
+    forM_ ["/docs/../secret", "/docs/%2e%2e/x", "/docsx", "/docs/a\\b"] $ \p -> do
+      res <- send site (get p)
+      (p, res.status) `shouldBe` (p, 404)
+
   -- Warp drops the body of a HEAD answer; the headers are the pipeline's.
   it "HEAD has the headers" $ withSite $ \site -> do
     res <- send site (get "/app.js") {method = "HEAD"}

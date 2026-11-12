@@ -1,9 +1,10 @@
 -- | Static files from two roots, read-only. The URL path is checked against an allowlist before it
 -- touches the disk, so no encoding trick has to be recognised: it is only never in the list.
-module Marola.Server.Files (segments, resolve, contentType, cacheControl, handle, notFoundPage) where
+module Marola.Server.Files (segments, resolve, contentType, cacheControl, handle, notFoundPage, docsRedirect) where
 
 import Control.Monad (filterM)
 import Data.ByteString (ByteString)
+import Data.ByteString qualified as BS
 import Data.ByteString.Char8 qualified as BC
 import Data.ByteString.Lazy qualified as BL
 import Data.Char (isAsciiLower, isAsciiUpper, isDigit, isHexDigit, toLower)
@@ -114,6 +115,19 @@ notFoundPage cfg p = do
       pure (responseLBS status404 [(hContentType, "text/html; charset=utf-8")] body)
     else pure (plain status404 "not found\n")
 
+-- | The docs moved to docs.marola.dev (MIP-0070 §5.8); the legacy 404 page forwarded @/docs/*@ with
+-- a script, which the CSP forbids here. The host is fixed and the path must be plain URL characters,
+-- so the redirect cannot be pointed anywhere else.
+docsRedirect :: Request -> Maybe Response
+docsRedirect req
+  | path == "/docs" || "/docs/" `BS.isPrefixOf` path,
+    BC.all (\c -> c == '/' || c == '%' || c == '~' || safeChar c) path,
+    not (".." `T.isInfixOf` decodedPath req) =
+      Just (responseLBS status301 [(hLocation, "https://docs.marola.dev/" <> BS.drop 6 path <> rawQueryString req), (hCacheControl, "public, max-age=3600")] "")
+  | otherwise = Nothing
+  where
+    path = rawPathInfo req
+
 -- | GET and HEAD only, with an ETag of size plus mtime (cheap, and it changes with every deploy)
 -- and @Last-Modified@, answered with a 304 when the client has them.
 handle :: Config -> Request -> IO Response
@@ -124,7 +138,7 @@ handle cfg req
       let p = decodedPath req
       found <- resolve cfg p
       case found of
-        Nothing -> notFoundPage cfg p
+        Nothing -> maybe (notFoundPage cfg p) pure (docsRedirect req)
         Just file -> do
           size <- getFileSize file
           modified <- getModificationTime file

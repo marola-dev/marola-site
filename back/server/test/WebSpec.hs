@@ -1,13 +1,13 @@
 module WebSpec (spec) where
 
-import Control.Monad (forM_, when)
+import Control.Monad (forM_)
 import Data.ByteString (ByteString)
 import Data.ByteString.Char8 qualified as BC
 import Data.ByteString.Lazy qualified as BL
 import Data.Char (isAsciiLower)
 import Data.IORef
 import Data.Int (Int64)
-import Data.Maybe (fromJust, isJust, isNothing)
+import Data.Maybe (isJust, isNothing)
 import Data.Text (Text)
 import Data.Text qualified as T
 import Data.Text.Encoding qualified as TE

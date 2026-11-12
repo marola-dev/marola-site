@@ -8,7 +8,6 @@ import Data.List (nub, sort)
 import Data.Maybe (fromJust, isJust, isNothing)
 import Data.Text (Text)
 import Data.Text qualified as T
-import Data.Text.Encoding qualified as TE
 import Data.Time (addUTCTime)
 import Harness
 import Marola.Server.DevAccount qualified as DevAccount

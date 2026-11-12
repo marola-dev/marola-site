@@ -30,6 +30,10 @@ jobs:
         python3 scripts/members_build.py --check
         node scripts/site_check.js
         node scripts/redirect_check.js
+        node scripts/golden.js --check
+        node scripts/design_check.js --self-test
+        node scripts/design_check.js
+        scripts/members_vendor_check.sh
         git -c advice.detachedHead=false clone -q --depth 1 -b v0.20.4 https://github.com/marola-dev/marola-devkit /tmp/devkit && python3 /tmp/devkit/scripts/docs_lint.py .
 
   python:
@@ -63,9 +67,11 @@ jobs:
         with:
           ghc-version: 9.6.6
           cabal-version: 3.12.1.0
-      # direct-sqlite links the system SQLite (cabal.project).
-      - name: system SQLite
-        run: sudo apt-get install -y --no-install-recommends libsqlite3-dev
+      # direct-sqlite links the system SQLite (cabal.project); brotli and zlib bind the system libraries through pkg-config.
+      - name: system libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends pkg-config libsqlite3-dev libbrotli-dev zlib1g-dev
       - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
@@ -115,8 +121,10 @@ jobs:
         with:
           ghc-version: 9.6.6
           cabal-version: 3.12.1.0
-      - name: system SQLite
-        run: sudo apt-get install -y --no-install-recommends libsqlite3-dev
+      - name: system libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends pkg-config libsqlite3-dev libbrotli-dev zlib1g-dev
       - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
@@ -134,6 +142,8 @@ jobs:
         with:
           name: dist
           path: dist
+          # dist/.well-known/security.txt is a hidden path; the action drops those by default.
+          include-hidden-files: true
           retention-days: 1
           if-no-files-found: error
 
@@ -153,8 +163,10 @@ jobs:
         with:
           ghc-version: 9.6.6
           cabal-version: 3.12.1.0
-      - name: system SQLite
-        run: sudo apt-get install -y --no-install-recommends libsqlite3-dev
+      - name: system libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends pkg-config libsqlite3-dev libbrotli-dev zlib1g-dev
       - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |

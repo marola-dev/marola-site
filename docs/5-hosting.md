@@ -14,8 +14,12 @@ marola-server                  # what a host runs
 marola-server inbox            # the contact messages
 ```
 
-The binary links the system SQLite (direct-sqlite with `+systemlib`), so the host needs `libsqlite3`;
-the Nix package carries it in its closure.
+A path that is not a file and starts with `/docs` gets a 301 to the same path on `https://docs.marola.dev/`
+(the legacy 404 page did it with a script, which the CSP forbids; `Marola.Server.Files.docsRedirect`).
+
+The binary links the system SQLite (direct-sqlite with `+systemlib`) and the system brotli, so the host needs
+`libsqlite3` and `libbrotli`; building it with cabal also needs `pkg-config`, the `-dev` packages of both and
+`zlib` (`ci.yml` installs them); the Nix package carries them in its closure.
 
 ## Build with Nix
 
