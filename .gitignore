@@ -22,3 +22,4 @@ cabal.project.local~
 # The base map's tiles are host data (docs/5-hosting.md, MAROLA_TILES); only the small fixture is committed
 *.pmtiles
 !/site/fixtures/basemap.pmtiles
+!/front/public/vendor/pmtiles/LICENSE.pmtiles
