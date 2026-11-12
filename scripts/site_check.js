@@ -899,7 +899,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(probe.t('footer.generated', { when: 'w', area: 'a', day: 'd', n: 2, sources: 's' }).includes('· 2 praias ·'),
     'the real catalog pluralises footer.generated');
   // Lowercase house style in the catalogs; these are names marola did not choose.
-  const CASE_OK = ['°C', 'UV', 'km/h', 'mL', 'PRÓPRIA', 'IMPRÓPRIA', 'GitHub', 'Instagram', 'LinkedIn', 'Open-Meteo', 'IMA/SC', 'OpenStreetMap', 'Mapbox', 'OpenFreeMap', 'NASA', 'VIIRS', 'MUR', 'El Niño', 'La Niña', 'Niño'];
+  const CASE_OK = ['°C', 'UV', 'km/h', 'mL', 'PRÓPRIA', 'IMPRÓPRIA', 'GitHub', 'Instagram', 'LinkedIn', 'Open-Meteo', 'IMA/SC', 'OpenStreetMap', 'Mapbox', 'OpenFreeMap', 'NASA', 'VIIRS', 'MUR', 'El Niño', 'La Niña', 'Niño', 'Spotify', 'GREAT RESET'];
   for (const [lang, cat] of Object.entries(CATALOGS)) {
     const shouty = Object.entries(cat).filter(([k, v]) => {
       if (/^dir\./.test(k)) return !/^[A-Z]{1,2}$/.test(v); // compass abbreviations, shown uppercase
