@@ -1,4 +1,4 @@
--- | The command line: serve, or one of the board's commands. A port of app/Server/Program.fs.
+-- | The command line: serve, or one of the board's commands.
 module Marola.Server.Main (main, usage) where
 
 import Data.Text (Text)
@@ -65,8 +65,8 @@ serve cfg = do
         Warp.setHost "127.0.0.1"
           . Warp.setPort cfg.port
           . Warp.setServerName ""
-          -- Kestrel reads an unread body to its end before the next request; Warp's default of
-          -- 8 KB closes the socket instead, and a browser sending a refused upload sees a reset.
+          -- Read an unread body to its end before the next request: Warp's default of 8 KB
+          -- closes the socket instead, and a browser sending a refused upload sees a reset.
           . Warp.setMaximumBodyFlush (Just (fromIntegral StudyApi.uploadLimit))
           $ Warp.defaultSettings
   Warp.runSettings settings (App.application env)

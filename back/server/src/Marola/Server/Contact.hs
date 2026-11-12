@@ -1,5 +1,5 @@
 -- | The contact form: @POST /contact@ stores the message in SQLite. The board reads it with
--- @marola-server inbox@. A port of app/Server/Contact.fs.
+-- @marola-server inbox@.
 module Marola.Server.Contact (validateEmail, validateMessage, sameSite, authority, handle) where
 
 import Control.Exception (try)
@@ -37,7 +37,7 @@ validateMessage raw =
       bad c = generalCategory c == Control && c `notElem` ("\n\r\t" :: String)
    in if U.len message < 10 || U.len message > 4000 || T.any bad message then Left "message" else Right message
 
--- | The authority of an absolute http or https URL as .NET's Uri gives it: host and port, the
+-- | The authority of an absolute http or https URL: host and port, the
 -- default port left out, lower case.
 authority :: Text -> Maybe Text
 authority value = do

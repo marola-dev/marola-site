@@ -157,7 +157,7 @@ function textCases(out, env) {
     out.band.push({ score, unfit, out: app['pt-BR'].band(score, unfit) });
   }));
 
-  // numbers: Intl itself, the thing NumFmt.fs stands in for
+  // numbers: Intl itself, the thing NumFmt.elm stands in for
   out.number = [];
   const values = [0, 1, 0.5, 1.005, 1.5, 2.5, 0.05, 0.0004, 0.0005, 0.045, 1234.5, 1234567.891, 999.9995, 99.95, -1.25, -0.04,
     12.345678, 0.1 + 0.2, 1e21, 1e-7, 123456789012, 1000, 999.5, 6.5, 27.4999, 7.45, 0.995, 19.2, 100];

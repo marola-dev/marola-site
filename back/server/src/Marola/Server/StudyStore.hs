@@ -1,6 +1,6 @@
 -- | Accounts, API keys, sessions, studies and reports in the SQLite file of the contact form. The
--- schema moves by @PRAGMA user_version@ and is the F# server's, step for step: a database written by
--- one is read by the other. No email address is stored anywhere here.
+-- schema moves by @PRAGMA user_version@, one step per version, so an older server reads a newer
+-- database's tables it knows and ignores the rest. No email address is stored anywhere here.
 module Marola.Server.StudyStore
   ( Account (..)
   , KeyError (..)

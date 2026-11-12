@@ -1,4 +1,4 @@
--- | Links that reach the page: a port of app/Shared/Html.fs @safeHref@.
+-- | Links that reach the page: @safeHref@.
 module Marola.Html (safeHref) where
 
 import Data.Char (isAsciiLower, isAsciiUpper, isDigit)

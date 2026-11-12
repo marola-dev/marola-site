@@ -1,7 +1,7 @@
 module GoldenTests exposing (suite)
 
-{-| The F# client's text, beach and flow functions against app/Tests/golden.json, which
-the old ui.js, app.js and flow.js wrote.
+{-| The text, beach and flow functions against tests/golden.json, which the old ui.js, app.js
+and flow.js wrote (scripts/golden.js).
 -}
 
 import Array

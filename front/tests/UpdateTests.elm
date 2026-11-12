@@ -1,7 +1,6 @@
 module UpdateTests exposing (suite)
 
-{-| The state machine against the fixture board and catalogs, ported from app/Tests/UpdateTests.fs:
-what a visitor's action changes, and which effects it asks for.
+{-| The state machine against the fixture board and catalogs: what a visitor's action changes, and which effects it asks for.
 -}
 
 import Beach exposing (Selection(..))

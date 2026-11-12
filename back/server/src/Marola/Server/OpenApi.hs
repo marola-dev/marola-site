@@ -1,6 +1,6 @@
 -- | @GET /api/v1/openapi.json@: the OpenAPI 3.1 description of @/api/v1@, built from one value. Every
 -- number comes from "Marola.Study", "Marola.Server.StudyApi" or "Marola.Server.PdfIntake", so the
--- document cannot say something the validation does not do. A port of app/Server/OpenApi.fs.
+-- document cannot say something the validation does not do.
 module Marola.Server.OpenApi (path, errorCodes, document, text, response) where
 
 import Data.ByteString.Lazy qualified as BL

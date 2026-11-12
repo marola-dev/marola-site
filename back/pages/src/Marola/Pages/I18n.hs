@@ -1,4 +1,4 @@
--- | The message catalog and @t@: a port of app/Shared/I18n.fs.
+-- | The message catalog and @t@.
 module Marola.Pages.I18n (Catalog, Locale (..), lookupMessage, t) where
 
 import Data.Map.Strict (Map)

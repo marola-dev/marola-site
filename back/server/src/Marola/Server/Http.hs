@@ -110,7 +110,7 @@ cookie req name =
         ]
    in TE.decodeUtf8With lenientDecode <$> lookup name pairs
 
--- | The path as ASP.NET Core's @Request.Path@ shows it: percent-decoded, except an encoded @/@,
+-- | The request path: percent-decoded, except an encoded @/@,
 -- which stays @%2F@ so it can never split a segment. Invalid UTF-8 keeps its escapes.
 decodedPath :: Request -> Text
 decodedPath req =
@@ -161,7 +161,7 @@ isContentType req prefix = case lookup hContentType (requestHeaders req) of
 
 data FormError = NotAForm | BadForm Int deriving (Eq, Show)
 
--- | A urlencoded body as ASP.NET's form reader takes it: at most 20 values of at most 8000 characters
+-- | A urlencoded body: at most 20 values of at most 8000 characters
 -- (a message is at most 4000: a field of 8000 is already an abuse), in a body of at most 1 MB.
 readForm :: Request -> IO (Either FormError (Map.Map Text Text))
 readForm req
@@ -176,7 +176,7 @@ readForm req
 
 type Params = Map.Map Text Text
 
--- | An endpoint as ASP.NET's routing had it: a method, a pattern of literal segments and @{name}@
+-- | An endpoint: a method, a pattern of literal segments and @{name}@
 -- parameters, and whether the strict rate limit applies.
 data Route = Route
   { method :: Method
@@ -203,7 +203,7 @@ matchRoute pat path =
         xs <- segs path
         go Map.empty ps xs
 
--- | @/en@ and everything under it is English, as ASP.NET's StartsWithSegments decides it.
+-- | @/en@ and everything under it, segment by segment, is English (@/english@ is not).
 languageOf :: Text -> Language
 languageOf path =
   let l = T.toCaseFold path

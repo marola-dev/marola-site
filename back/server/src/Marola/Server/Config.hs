@@ -1,5 +1,5 @@
--- | Where the server listens and what it reads and writes. The variable names are the F# server's,
--- so docs/5-hosting.md and the nix-os module keep working.
+-- | Where the server listens and what it reads and writes. The variable names are
+-- docs/5-hosting.md's, which the nix-os module sets.
 module Marola.Server.Config (Config (..), fromEnv, fromProcessEnv) where
 
 import Data.Char (isSpace)

@@ -1,5 +1,4 @@
--- | Reads the catalogs, the page Markdown, the news posts, the avatars and the areas from disk. A
--- port of app/Pages/Loader.fs.
+-- | Reads the catalogs, the page Markdown, the news posts, the avatars and the areas from disk.
 module Marola.Pages.Loader (readText, catalog, load) where
 
 import Control.Monad (filterM, forM)
@@ -23,8 +22,8 @@ import qualified Marola.Pages.Site as Site
 import System.Directory (doesDirectoryExist, doesFileExist, listDirectory)
 import System.FilePath (dropExtension, takeExtension, (</>))
 
--- | A file as .NET's File.ReadAllText reads it: UTF-8, a leading byte order mark dropped, a bad
--- byte replaced rather than fatal.
+-- | A file as text: UTF-8, a leading byte order mark dropped, a bad byte replaced rather than
+-- fatal.
 readText :: FilePath -> IO Text
 readText p = do
   bytes <- B.readFile p

@@ -1,5 +1,5 @@
--- | Lengths and prefixes counted in UTF-16 code units, as .NET's @String.Length@ and @Substring@
--- count them: the field limits of the API are documented in those units (OpenAPI, "Submission").
+-- | Lengths and prefixes counted in UTF-16 code units, as JavaScript's @length@ counts them: the
+-- field limits of the API are documented in those units (OpenAPI, "Submission").
 module Marola.Utf16 (len, take) where
 
 import Data.Char (ord)
@@ -13,8 +13,8 @@ units c = if ord c > 0xFFFF then 2 else 1
 len :: Text -> Int
 len = T.foldl' (\n c -> n + units c) 0
 
--- | The longest prefix of at most @n@ units. A surrogate pair cut in half is dropped whole, where
--- .NET would keep a lone high surrogate.
+-- | The longest prefix of at most @n@ units. A surrogate pair cut in half is dropped whole, never
+-- left as a lone high surrogate.
 take :: Int -> Text -> Text
 take n t = T.take (go 0 0 (T.unpack t)) t
   where

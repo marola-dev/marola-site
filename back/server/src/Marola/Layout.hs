@@ -1,5 +1,5 @@
 -- | The frame of every page the server renders: head, nav, header, footer and the language switch.
--- A port of app/Pages/Layout.fs (and the pieces of NavView and Icons it draws), so a study page has
+-- The static pages' layout (back/pages, with the pieces of the nav and icons it draws), so a study page has
 -- the same chrome as the static pages. The catalogs are the site's, read from @MAROLA_STATIC/i18n@.
 module Marola.Layout
   ( Language (..)

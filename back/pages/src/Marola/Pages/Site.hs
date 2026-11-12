@@ -1,4 +1,4 @@
--- | The pages: one page is a function from a language to its HTML text. A port of app/Pages/Site.fs.
+-- | The pages: one page is a function from a language to its HTML text.
 module Marola.Pages.Site
   ( Area (..)
   , Env (..)

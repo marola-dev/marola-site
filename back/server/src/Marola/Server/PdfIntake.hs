@@ -1,6 +1,6 @@
 -- | Takes a PDF from a stream: counts it, hashes it, checks it and, unless it is a dry run, writes it
 -- to a temp file. The bytes are never held in memory as a whole. Storing under the hash is 'commit'.
--- A port of app/Server/PdfIntake.fs; the rules are the same byte for byte.
+-- ADR 0004 and docs/5-hosting.md give the rules.
 module Marola.Server.PdfIntake
   ( maxBytes
   , forbiddenNames

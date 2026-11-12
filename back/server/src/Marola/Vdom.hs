@@ -1,4 +1,4 @@
--- | A static tree as HTML text: the subset of app/Client/Core/Vdom.fs the server pages use. Text
+-- | A static tree as HTML text: the subset of a virtual DOM the server pages use. Text
 -- and attribute values are escaped and there is no raw node, so no study text can add markup.
 module Marola.Vdom (Node (..), Attr, el, svg, text, attr, cls, hidden, toHtml) where
 

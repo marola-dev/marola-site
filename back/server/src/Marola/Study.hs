@@ -1,5 +1,5 @@
 -- | A study submitted by a scientist: the types, the validation of the form fields and the JSON the
--- API answers with. A port of app/Shared/Study.fs; the PDF is checked by the server.
+-- API answers with. The PDF is checked by the server.
 module Marola.Study
   ( Area (..)
   , Topic (..)

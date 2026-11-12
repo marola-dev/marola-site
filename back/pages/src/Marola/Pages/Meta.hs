@@ -1,5 +1,5 @@
 -- | The files that are not pages: robots.txt, sitemap.xml, llms.txt, humans.txt and
--- .well-known/security.txt. A port of app/Pages/Meta.fs (the rules of scripts/site_meta.py).
+-- .well-known/security.txt. The rules of scripts/site_meta.py.
 module Marola.Pages.Meta
   ( expiresDays
   , robots

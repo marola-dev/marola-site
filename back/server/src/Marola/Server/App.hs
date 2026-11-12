@@ -1,4 +1,4 @@
--- | The pipeline, in the order of app/Server/App.fs: security headers, the request log, the
+-- | The pipeline, in this order: security headers, the request log, the
 -- exception handler, compression, the rate limits, the body guard, the routes and the static files.
 module Marola.Server.App
   ( bodyLimit
@@ -66,7 +66,7 @@ generalPermits, strictPermits :: Int
 generalPermits = 300
 strictPermits = 10
 
--- | One JSON object per line on stdout, as the F# server's JSON console wrote them.
+-- | One JSON object per line on stdout.
 jsonLogger :: IO Logger
 jsonLogger = do
   lock <- newMVar ()
@@ -114,13 +114,13 @@ routes =
   where
     lookupParam = Map.lookup
 
--- | The ASP.NET text types the compression middleware was given.
+-- | The text types that are compressed.
 textTypes :: [ByteString]
 textTypes = ["text/html", "text/css", "text/plain", "text/javascript", "application/json", "application/xml", "image/svg+xml"]
 
 data Coding = Br | Gzip deriving (Eq)
 
--- | The provider ASP.NET picks: the highest quality the client accepts, brotli on a tie.
+-- | The coding: the highest quality the client accepts, brotli on a tie.
 chooseCoding :: ByteString -> Maybe Coding
 chooseCoding accept =
   let items =
@@ -215,8 +215,8 @@ bodyGuard req = do
   where
     throwBody = throwIO BodyTooLarge
 
--- | A file as a plain stream: Warp would add @Accept-Ranges@ and answer ranges, which the F# server
--- did not.
+-- | A file as a plain stream: Warp would add @Accept-Ranges@ and answer ranges, which the site
+-- never offered.
 streamFile :: Response -> IO Response
 streamFile res = case res of
   ResponseFile st hs path Nothing -> do
@@ -228,7 +228,7 @@ streamFile res = case res of
        in loop
   _ -> pure res
 
--- | The reason phrase Kestrel writes, which differs from http-types' for a few codes.
+-- | The reason phrase the site has always sent, which differs from http-types' for a few codes.
 reason :: Int -> Status
 reason = \case
   413 -> mkStatus 413 "Payload Too Large"

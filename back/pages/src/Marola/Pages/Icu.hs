@@ -1,5 +1,5 @@
 -- | The ICU message subset the catalogs use: @{arg}@, @{n, plural, ...}@ with @#@, and
--- @{x, select, ...}@. A port of app/Shared/Icu.fs for the pages, which pass text arguments only:
+-- @{x, select, ...}@. For the pages, which pass text arguments only:
 -- a number argument and its locale formatting stay in the client.
 module Marola.Pages.Icu (IcuNode (..), parse, format) where
 

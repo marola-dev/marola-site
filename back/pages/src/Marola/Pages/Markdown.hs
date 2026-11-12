@@ -1,7 +1,7 @@
 -- | The small Markdown that the pages need, the same subset as scripts/news_build.py plus a few block
 -- forms: @::lede@, @> @ quotes, @![alt](/src WxH)@ figures and @{{soon name|label}}@. Anything else
--- that looks like markup is an error, so a page never goes out half-rendered. A port of
--- app/Pages/Markdown.fs; its output must stay byte-identical to it.
+-- that looks like markup is an error, so a page never goes out half-rendered.
+-- scripts/pages_parity.sh checks that its output does not change byte for byte.
 module Marola.Pages.Markdown
   ( Doc (..)
   , linkOk

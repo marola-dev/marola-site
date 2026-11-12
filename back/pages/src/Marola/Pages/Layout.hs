@@ -1,6 +1,6 @@
 -- | The frame of every static page: head, nav, header, footer and the language switch. The same
--- chrome as the map page, with plain links where the map page has buttons, and no script. A port of
--- app/Pages/Layout.fs with the parts of the client's NavView and Icons it draws.
+-- chrome as the map page, with plain links where the map page has buttons, and no script, with the parts
+-- of the map page's nav and icons it draws.
 module Marola.Pages.Layout
   ( PageHead (..)
   , origin

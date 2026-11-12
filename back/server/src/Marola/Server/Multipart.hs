@@ -1,5 +1,4 @@
--- | A streaming multipart/form-data reader with the limits ASP.NET's MultipartReader had in the F#
--- server: the preamble and each part's headers at most 4096 bytes, at most 8 headers a part. A body
+-- | A streaming multipart/form-data reader with fixed limits: the preamble and each part's headers at most 4096 bytes, at most 8 headers a part. A body
 -- that breaks the framing throws 'Malformed'; nothing is ever buffered whole.
 module Marola.Server.Multipart
   ( Malformed (..)

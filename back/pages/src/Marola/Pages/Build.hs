@@ -1,5 +1,4 @@
--- | The build: MEMBERS.md, the pages and the metadata files into an output folder. A port of
--- app/Pages.Build/Program.fs.
+-- | The build: MEMBERS.md, the pages and the metadata files into an output folder.
 module Marola.Pages.Build (main, membersText, today) where
 
 import Control.Exception (SomeException, try)

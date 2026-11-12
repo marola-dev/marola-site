@@ -1,6 +1,6 @@
 module Ui exposing (attr, cls, flag, hidden, idAttr, onActivate, onClick, onKey)
 
-{-| Attributes as the F# page set them: `setAttribute` for every name, so the DOM reads the same
+{-| Attributes: `setAttribute` for every name, so the DOM reads the same
 and `style.css` keeps working; events through Elm, never an `on...` attribute, which the CSP
 blocks.
 -}

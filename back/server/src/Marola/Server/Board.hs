@@ -1,5 +1,5 @@
 -- | The board's command line, run over ssh: @marola-server studies ...@ and @marola-server reports
--- ...@. A port of app/Server/Board.fs. Everything is plain lines. Text that a visitor wrote (a title,
+-- ...@. Everything is plain lines. Text that a visitor wrote (a title,
 -- a report) goes through 'clean' first, so a hostile text cannot move the cursor, change the title
 -- of the terminal or forge a line of output. Exit code: 0 done, 1 nothing changed, 2 wrong usage.
 module Marola.Server.Board (usage, clean, parseInt, run) where
@@ -52,7 +52,7 @@ shorten n text =
   let t = clean text
    in if U.len t <= n then t else U.take (n - 1) t <> "…"
 
--- | .NET's TryParse of an integer: white space around, an optional sign, digits, within @bound@.
+-- | An integer as docs/6-board.md's commands take it: white space around, an optional sign, digits, within @bound@.
 parseInt :: Integer -> Text -> Maybe Integer
 parseInt bound t =
   let s = T.strip t

@@ -44,7 +44,7 @@ readings model layer =
             )
 
 
-{-| `Math.Round(v, 4)` as Fable runs it: half to even.
+{-| `v` rounded to 4 decimals, half to even.
 -}
 round4 : Float -> Float
 round4 v =

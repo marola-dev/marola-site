@@ -1,5 +1,6 @@
 -- | The Content-Security-Policy of the map page: one value, sent as an HTTP header by whatever
--- serves the page. A port of app/Shared/Csp.fs; 'policy' must equal it byte for byte.
+-- serves the page. @marola-server csp@ prints it into dist/csp.txt, and front/index.html's <meta>
+-- must equal it without frame-ancestors (scripts/front_check.js).
 --
 -- The page loads every script and style from @'self'@. Two third parties answer it: OpenFreeMap
 -- for the base map and NASA GIBS for the satellite layers. @data:@ and @blob:@ are schemes, not

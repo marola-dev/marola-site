@@ -6,7 +6,7 @@ import Beach exposing (Beach, Selection)
 import Geo exposing (Point)
 
 
-{-| Nearest first, each with its distance in km. `List.sortBy` is stable, as F#'s sort is.
+{-| Nearest first, each with its distance in km. `List.sortBy` is stable, so ties keep the board's order.
 -}
 byDistance : List Beach -> Point -> List ( Beach, Float )
 byDistance beaches here =

@@ -1,4 +1,4 @@
--- | @/api/v1@: submit, list and read studies, and the PDF route. A port of app/Server/StudyApi.fs.
+-- | @/api/v1@: submit, list and read studies, and the PDF route.
 -- Everything a client reads is built from "Marola.Study"; nothing it sends reaches a header, a log
 -- line or a path except a validated id or hash.
 module Marola.Server.StudyApi

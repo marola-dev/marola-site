@@ -1,5 +1,4 @@
--- | The human side of the study API: the pages, the forms and their POSTs. A port of
--- app/Server/Web.fs. A POST needs the same site (Origin) and, when it changes an account, a session
+-- | The human side of the study API: the pages, the forms and their POSTs. A POST needs the same site (Origin) and, when it changes an account, a session
 -- and its CSRF token. The form of @/submit@ goes through 'StudyApi.intake', the same function as the API.
 module Marola.Server.Web (routes) where
 
@@ -270,7 +269,7 @@ parseInt64 t =
         then let v = sign * read (T.unpack digits) :: Integer in if abs v <= 9223372036854775807 then Just (fromInteger v) else Nothing
         else Nothing
 
--- | Each pattern under @""@ and @"/en"@, as F#'s @get@ and @post@ registered them.
+-- | Each pattern under @""@ and @"/en"@.
 routes :: [Route]
 routes =
   concat

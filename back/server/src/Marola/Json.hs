@@ -1,5 +1,5 @@
--- | A JSON value written by hand, as app/Shared/Study.fs does: the documents the server sends
--- (the API, the OpenAPI text) keep their key order and the exact escaping of the F# server.
+-- | A JSON value written by hand: the documents the server sends (the API, the OpenAPI text) keep
+-- their key order and their exact escaping, which a JSON library would not promise.
 module Marola.Json (Json (..), render, renderText) where
 
 import Data.ByteString.Builder qualified as B

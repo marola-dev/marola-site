@@ -1,5 +1,5 @@
 -- | The pages the server renders: submit, studies, a study, the account, the report form, the Atom
--- feed. A port of app/Server/Views.fs. Every page goes through 'Layout.page' and the Vdom, which
+-- feed. Every page goes through 'Layout.page' and the Vdom, which
 -- escapes text and attribute values, so no study text can add markup. No script and no inline style.
 module Marola.Server.Views
   ( url

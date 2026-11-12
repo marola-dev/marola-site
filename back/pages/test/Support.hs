@@ -1,5 +1,5 @@
 -- | The files the tests read: the repository's own catalogs and page Markdown, and small text
--- helpers in place of the .NET regexes of app/Pages.Tests.
+-- helpers in place of regexes.
 module Support
   ( root
   , oldPage
@@ -116,7 +116,7 @@ hrefs :: Text -> [Text]
 hrefs = map htmlDecode . attrValues "a" "href"
 
 -- | The repository keeps a pinned copy of MEMBERS.md, but the tests rebuild a table from the old
--- members page, as app/Pages.Tests does: the same people, in the same order.
+-- members page: the same people, in the same order.
 membersTable :: IO Text
 membersTable = do
   page <- oldPage "members.html"

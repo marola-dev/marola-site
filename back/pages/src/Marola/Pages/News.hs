@@ -1,6 +1,6 @@
 -- | The news posts of @site/content/news/@, the same format and the same rules as
--- scripts/news_build.py: a bad post is an error of the build, never a silently shorter page. A port
--- of app/Pages/News.fs; the .NET regexes are written out by hand.
+-- scripts/news_build.py: a bad post is an error of the build, never a silently shorter page. The
+-- patterns are written out by hand, with no regex library.
 module Marola.Pages.News
   ( Post (..)
   , releases
@@ -65,7 +65,7 @@ longDate l y mo d =
         PtBr -> tshow (int d) <> " de " <> month <> " de " <> y
         En -> month <> " " <> tshow (int d) <> ", " <> y
 
--- .NET's \w: letters, non-spacing marks, decimal digits, connector punctuation.
+-- A regex \w: letters, non-spacing marks, decimal digits, connector punctuation.
 isWordChar :: Char -> Bool
 isWordChar c =
   isLetter c || generalCategory c `elem` [NonSpacingMark, DecimalNumber, ConnectorPunctuation]

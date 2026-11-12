@@ -49,7 +49,7 @@ short iso language =
             iso
 
 
-{-| Truncating division, as .NET's `/` on ints, which the date arithmetic below was written for.
+{-| Truncating division (toward zero), which the date arithmetic below was written for.
 -}
 quot : Int -> Int -> Int
 quot a b =

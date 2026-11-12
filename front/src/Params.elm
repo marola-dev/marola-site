@@ -79,7 +79,7 @@ hexValue c =
         Nothing
 
 
-{-| UTF-8 bytes to text; a sequence that is not UTF-8 reads as U+FFFD, as .NET's decoder does.
+{-| UTF-8 bytes to text; a sequence that is not UTF-8 reads as U+FFFD.
 -}
 fromUtf8 : List Int -> String
 fromUtf8 bytes =

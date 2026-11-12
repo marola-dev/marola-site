@@ -1,5 +1,5 @@
--- | The node tree the pages are made of and its HTML text: a port of the client core's
--- @Vdom.toHtml@ (app/Client/Core/Vdom.fs). Text and attribute values are escaped and there is no
+-- | The node tree the pages are made of and its HTML text: the map page's
+-- @Vdom.toHtml@ rules. Text and attribute values are escaped and there is no
 -- raw node, so no message can add markup. Tags and attribute names come from code, never from data.
 module Marola.Pages.Html
   ( Attr (..)

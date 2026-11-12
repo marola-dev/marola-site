@@ -48,8 +48,8 @@ safeEquals a b =
    in BS.length x == BS.length y && constEq x y
 
 -- | The HMAC key of the CSRF tokens: made at the first start next to the database, mode 0600, and
--- read afterwards. A restart keeps it, so a form opened before a deploy still posts. The file is the
--- F# server's: 64 upper-case hex digits.
+-- read afterwards. A restart keeps it, so a form opened before a deploy still posts. The file holds
+-- 64 upper-case hex digits.
 loadKey :: FilePath -> IO ByteString
 loadKey db = do
   dir <- takeDirectory <$> makeAbsolute db
@@ -95,7 +95,7 @@ current db now = \case
   Nothing -> pure Nothing
   Just tok -> fmap (\(a, h) -> Live a tok h) <$> getSession db now tok
 
--- | The @Set-Cookie@ value, in the words and the order ASP.NET Core writes them.
+-- | The @Set-Cookie@ value, its attributes in a fixed order.
 setCookie :: Bool -> ByteString -> Text -> NominalDiffTime -> ByteString
 setCookie dev name value maxAge =
   name <> "=" <> TE.encodeUtf8 value <> "; max-age=" <> BC.pack (show (floor maxAge :: Int)) <> attrs dev

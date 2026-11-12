@@ -1,5 +1,5 @@
 -- | A site for the tests: the real pipeline, in memory, over a temporary tree, with a clock the test
--- moves, a fake GitHub and the log kept. The port of app/Server.Tests/Harness.fs.
+-- moves, a fake GitHub and the log kept.
 module Harness
   ( Site (..)
   , Req (..)
