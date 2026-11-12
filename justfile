@@ -45,54 +45,24 @@ members-check:
 board-schema *args:
     scripts/board-schema.sh {{ args }}
 
-# Format the F# code in app/ with Fantomas (--check only reports, as CI does).
-app-fmt *args:
-    cd app && fantomas {{ args }} .
-
-# The F# tests of app/ on .NET (Expecto) and on Node (the same tests compiled by Fable). NuGet restores
-# in locked mode: it fails when a packages.lock.json is stale, and downloads the packages it pins.
-app-test:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    export RestoreLockedMode=true
-    cd app
-    dotnet test Tests
-    rm -rf Tests.Fable/out
-    (cd Tests.Fable && fable --outDir out)
-    node Tests.Fable/run.mjs Tests.Fable/out/Main.js
-
-# The old page's pure functions run into app/Tests/golden.json, which the F# tests compare against: --check fails on a stale file.
+# The old page's pure functions run into front/tests/golden.json, which the Elm tests compare against: --check fails on a stale file.
 golden *args:
     node scripts/golden.js {{ args }}
 
-# DESIGN.md against app/Client/public/style.css: every :root token is documented with its value, and no hex colour sits outside :root. Runs its self-test first.
+# DESIGN.md against front/public/style.css: every :root token is documented with its value, and no hex colour sits outside :root. Runs its self-test first.
 design-check:
     node scripts/design_check.js --self-test
     node scripts/design_check.js
 
-# The effectful constructs of the F# code per project (mutable, null, raise, .Result, ...) against docs/fp-baseline.json: a count above it fails; --update lowers the baseline. Runs its self-test first.
-fp-audit *args:
-    node scripts/fp_audit.js --self-test
-    node scripts/fp_audit.js {{ args }}
-
-# NuGet packages with a known vulnerability, direct and transitive, for every project. By hand, needs network (it asks nuget.org); not in `quality`. It does not restore, so no lock file changes: run `just app-test` and `just server-test` first if a project has no restore yet.
+# npm packages of front/ with a known vulnerability. By hand, needs network (it asks the npm registry); not in `quality`.
 audit:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    found=0
-    for project in app/*/*.fsproj app/Client/*/*.fsproj; do
-        echo "== $project"
-        out=$(dotnet list "$project" package --vulnerable --include-transitive --no-restore 2>&1) || { echo "$out"; echo "audit: dotnet list failed for $project (no restore yet, or no network)" >&2; exit 2; }
-        echo "$out"
-        if grep -q "has the following vulnerable packages" <<<"$out"; then found=1; fi
-    done
-    [ "$found" = 0 ] || { echo "audit: vulnerable packages found" >&2; exit 1; }
+    cd front && npm audit
 
-# Every gate CI runs that needs no docker (app-test and server-test download their NuGet packages).
+# Every gate CI runs that needs no docker (front-test and back-test download their npm, Elm and Hackage packages once).
 quality:
     #!/usr/bin/env bash
     set -euo pipefail
-    for tool in node python3 ruff shellcheck actionlint agents-check docs-lint dotnet fable fantomas; do command -v "$tool" >/dev/null || { echo "quality: $tool not installed — run inside 'nix develop'" >&2; exit 1; }; done
+    for tool in node npm elm ghc cabal python3 ruff shellcheck actionlint agents-check docs-lint; do command -v "$tool" >/dev/null || { echo "quality: $tool not installed — run inside 'nix develop'" >&2; exit 1; }; done
     ruff check .
     ruff format --check .
     shellcheck --severity=error scripts/*.sh
@@ -107,11 +77,8 @@ quality:
     node scripts/redirect_check.js
     node scripts/golden.js --check
     just design-check
-    just fp-audit
-    just app-fmt --check
-    just app-test
-    just server-test
-    just pages-test
+    just front-test
+    just back-test
     python3 scripts/site_live_check.py --self-test
     python3 scripts/i18n_bundle.py --self-test
     python3 scripts/news_build.py --self-test
@@ -136,48 +103,50 @@ prepush:
     scripts/mip-trailer-check.sh
     just quality
 
-# Build the client with Fable into app/dist (--fixtures adds a board per area for an offline preview).
-app-build *args:
-    scripts/app_build.sh {{ args }}
+# Build the Elm map page with Vite into front/dist (the bundle and front/public). dist-build puts it into dist.
+front-build *args:
+    scripts/front_build.sh {{ args }}
 
-# Run the .NET server at http://127.0.0.1:8080 over app/dist and data/ (run app-build first). MAROLA_PORT, MAROLA_STATIC, MAROLA_DATA and MAROLA_DB change the defaults.
+# The Elm tests (elm-test): the decoders, the URL parameters, update and the golden cases of the old page.
+front-test:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd front
+    [ -x node_modules/.bin/elm-test ] || npm ci --no-audit --no-fund
+    npm test
+
+# Node smoke test of the built page in dist: DOM and MapLibre stubs, no browser (run dist-build --fixtures first).
+front-check:
+    node scripts/front_check.js
+
+# Build the Haskell packages (back/pages, back/server) from the root cabal.project.
+back-build:
+    cabal build all
+
+# The Haskell tests (hspec): the page renderer and every page in both languages, and the server on its WAI pipeline.
+back-test:
+    cabal test all
+
+# Assemble dist/, the folder the server serves: the Elm page, the static pages, the assets and csp.txt (--fixtures: a fixture board per area; --no-install: reuse front/node_modules). Not the legacy site-build.
+dist-build *args:
+    scripts/site_build.sh {{ args }}
+
+# Render the static pages and compare them byte for byte with the same files in a reference folder (a dist of another commit).
+pages-parity ref:
+    scripts/pages_parity.sh {{ ref }}
+
+# Run the Haskell server at http://127.0.0.1:8080 over dist and data/ (run dist-build first). MAROLA_PORT, MAROLA_STATIC, MAROLA_DATA and MAROLA_DB change the defaults.
 server-run:
-    MAROLA_DB="${MAROLA_DB:-.tmp/marola.db}" RestoreLockedMode=true dotnet run --project app/Server
+    cabal build -v0 exe:marola-server
+    MAROLA_DB="${MAROLA_DB:-.tmp/marola.db}" "$(cabal list-bin marola-server)"
 
-# The server's tests (Expecto on the ASP.NET test host). NuGet restores in locked mode.
-server-test:
-    RestoreLockedMode=true dotnet test app/Server.Tests
-
-# Publish the server (framework-dependent, Release) into app/Server/out, the folder a host runs.
-server-build:
-    RestoreLockedMode=true dotnet publish app/Server -c Release -o app/Server/out
-
-# The static pages' tests (Expecto): the renderer, the Markdown subset and every page in both languages. NuGet restores in locked mode.
-pages-test:
-    RestoreLockedMode=true dotnet test app/Pages.Tests
-
-# Render the static pages (site/content/pages) into a folder: pt-BR at its root, English under en/. app-build does this into app/dist.
-pages-build out="app/dist":
-    RestoreLockedMode=true dotnet run --project app/Pages.Build -c Release -- site {{ out }}
-
-# Start the built server on a free port against app/dist and check its headers, hostile paths and contact form (run app-build --fixtures first).
+# Start the built server on a free port against dist and check its headers, hostile paths, contact form and study API (run dist-build --fixtures first).
 server-smoke:
     scripts/server_smoke.sh
 
-# Node smoke test of the compiled client in app/dist: DOM and MapLibre stubs, no browser (run app-build --fixtures first).
-client-check:
-    node scripts/client_check.js
-
-# Build the whole site (server, static pages, Fable client) as one Nix package with no network in the build. Output: result/ (bin/marola-server, share/marola/dist).
+# Build the whole site (Haskell server, static pages, Elm page) as one Nix package with no network in the build. Output: result/ (bin/marola-server, share/marola/dist).
 nix-build:
     nix build .#default
-
-# Rewrite nix/deps.json (the NuGet packages the offline build uses) after a change to any fsproj or packages.lock.json. Needs the network.
-nix-deps:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    script="$(nix build .#default.passthru.fetch-deps --no-link --print-out-paths)"
-    "$script" "$PWD/nix/deps.json"
 
 # Start the Nix package's server on a free port with its state in a temp dir and check four URLs for 200 and the CSP header.
 package-smoke *args:

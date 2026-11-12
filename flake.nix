@@ -19,18 +19,24 @@
         package = pkgs.callPackage ./nix/package.nix { };
       in
       {
-        # The whole site as one offline Nix build (server, static pages, Fable client): docs/5-hosting.md.
+        # The whole site as one offline Nix build (Haskell server, static pages, Elm page): docs/5-hosting.md.
         packages.default = package;
         checks.package = package;
 
         # Docker is the host's, as in every marola repo: `just site-build` runs the pinned app image.
         devShells.default = pkgs.mkShell {
           name = "marola-site";
-          packages = [ pkgs.nodejs pkgs.dotnet-sdk_10 pkgs.fable pkgs.fantomas ] ++ devkit.tools;
+          # GHC 9.6 is what the .cabal files' base bound and cabal.project.freeze (made with 9.6.6) need.
+          packages = [
+            pkgs.nodejs
+            pkgs.elmPackages.elm
+            pkgs.haskell.compiler.ghc96
+            pkgs.cabal-install
+            pkgs.pkg-config
+            pkgs.sqlite
+            pkgs.zlib
+          ] ++ devkit.tools;
           shellHook = devkit.shellHook + ''
-            # Nothing leaves the box but NuGet package downloads; the caches live in the temp dir.
-            export DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1
-            export DOTNET_CLI_HOME="''${TMPDIR:-/tmp}/dotnet" NUGET_PACKAGES="''${TMPDIR:-/tmp}/nuget"
             git config core.hooksPath .devkit/.githooks 2>/dev/null || true
             echo "marola-site dev shell. Run 'just' to see available commands."
           '';

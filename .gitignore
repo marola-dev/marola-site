@@ -8,21 +8,8 @@ __pycache__/
 /site/dist/*
 !/site/dist/.gitkeep
 
-
 # wrangler's local state
 .wrangler/
-
-# `just app-build` output
-/app/dist/
-
-# F# builds: .NET, Fable and the Fable test output
-/app/**/bin/
-/app/**/obj/
-/app/Tests.Fable/out/
-/app/Client/out/
-
-# `just server-build` output
-/app/Server/out/
 
 # cabal (back/pages, back/server; the project is cabal.project at the root)
 /dist-newstyle/
