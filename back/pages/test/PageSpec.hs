@@ -57,6 +57,22 @@ spec env = describe "pages" $ do
   forEach env "the footer links the privacy and takedown pages, in the page's language" $ \_ l html -> do
     allHrefs html `shouldContain` [Layout.path l "privacy"]
     allHrefs html `shouldContain` [Layout.path l "takedown"]
+  forEach env "the chrome is the map page's: the top bar, the wordmark as a link to the map, the eye, the credit line" $ \s l html -> do
+    html `shouldSatisfy` has "<body><header class=\"top\"><div class=\"brand\"><h1><a href=\""
+    html `shouldSatisfy` has ("<a href=\"" <> Layout.mapPath l <> "\"><span class=\"logo\" aria-hidden=\"true\"></span>marola</a></h1>")
+    html `shouldSatisfy` has "<a class=\"piabrota\" href=\"https://piabrota.art\" target=\"_blank\" rel=\"noopener\""
+    html `shouldSatisfy` has "<div class=\"navtools\"><div class=\"lang\" role=\"group\""
+    html `shouldSatisfy` has ("<div class=\"bar pagebar\"><div class=\"controls\"><a href=\"" <> Layout.mapPath l <> "\">")
+    html `shouldSatisfy` has ("<main class=\"main about p-" <> s <> "\">")
+    html `shouldSatisfy` has "<meta name=\"theme-color\" content=\"#0B0D12\">"
+    html `shouldSatisfy` has "<a href=\"https://github.com/h0ffmann\" target=\"_blank\" rel=\"noopener\">h0ffmann</a>"
+    html `shouldSatisfy` has ("<a href=\"" <> Layout.path l "members" <> "\">")
+    html `shouldSatisfy` has "piabrota</a></p></footer></body>"
+    count "<h1" html `shouldBe` 1
+  it "a page of a nav section has its eyebrow; the 404 has none" $ do
+    renderWith env "about" PtBr `shouldSatisfy` has "<p class=\"eyebrow\">marola · sobre</p><article"
+    renderWith env "contact-sent" En `shouldSatisfy` has "<p class=\"eyebrow\">marola · contact</p>"
+    renderWith env "404" En `shouldNotSatisfy` has "class=\"eyebrow\""
   it "the privacy and takedown pages are in the build and the sitemap, in both languages, and say what they must" $ do
     mapM_
       ( \s -> do

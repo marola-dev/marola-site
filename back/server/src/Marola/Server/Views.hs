@@ -45,6 +45,19 @@ h3 s = el "h3" [] [text s]
 link :: Text -> [Node] -> Node
 link href = el "a" [attr "href" href]
 
+-- | A link that acts: drawn as a pill; @primary@ is the one filled action of a page.
+pill, primary :: Text -> Text -> Node
+pill href label = el "a" [cls "pill", attr "href" href] [text label]
+primary href label = el "a" [cls "pill primary", attr "href" href] [text label]
+
+-- | The eyebrow of a page outside the nav's sections; the layout writes the others'.
+eyebrow :: Text -> Node
+eyebrow s = el "p" [cls "eyebrow"] [text ("marola · " <> s)]
+
+-- | A line of facts in the mono face: dates, places, hashes.
+meta :: [Node] -> Node
+meta = el "p" [cls "meta"]
+
 -- | A link a visitor typed: only an https address becomes a link, with no referrer or ranking.
 outside :: Text -> Text -> Node
 outside href label = case httpsLink href of
@@ -127,15 +140,23 @@ button label = el "button" [attr "type" "submit"] [text label]
 errorList :: Locale -> [FieldError] -> Text -> [Node]
 errorList loc errors f =
   [ el "p" [cls "field-error", attr "role" "alert"] [text (Messages.text loc.language e)]
-  | e <- errors,
-    e.field == f
+    | e <- errors,
+      e.field == f
   ]
 
 alert :: Text -> Node
 alert s = el "p" [cls "field-error", attr "role" "alert"] [text s]
 
+-- | "not reviewed" as a status pill: a dot and the words.
 badge :: Locale -> Node
-badge loc = el "span" [cls "release-tag"] [text (tr loc "sem revisão" "not reviewed")]
+badge loc = el "span" [cls "status warn"] [el "i" [] [], text (tr loc "sem revisão" "not reviewed")]
+
+-- | The notice every study carries, as a banner.
+banner :: Locale -> [Node] -> Node
+banner loc more = el "p" [cls "notice", attr "role" "note"] ([badge loc, el "span" [] [text (notice loc)]] <> more)
+
+tombstone :: Text -> Node
+tombstone s = el "span" [cls "status off"] [el "i" [] [], text s]
 
 -- ---- /submit -------------------------------------------------------------------------------------
 
@@ -199,7 +220,7 @@ submitPage loc csrf values errors =
                 ""
                 ( el
                     "span"
-                    []
+                    [cls "check"]
                     [ el "input" ([attr "type" "checkbox", attr "name" "rights", attr "value" "true"] <> [attr "checked" "" | value "rights" == "true"]) [],
                       text
                         ( " "
@@ -223,8 +244,11 @@ submitPage loc csrf values errors =
           )
       li s = el "li" [] [text s]
       top =
-        [ h2 (tr loc "Enviar um estudo" "Submit a study"),
-          p_
+        [ eyebrow (tr loc "estudos" "studies"),
+          h2 (tr loc "Enviar um estudo" "Submit a study"),
+          el
+            "p"
+            [cls "lede"]
             [ text
                 ( tr
                     loc
@@ -252,20 +276,24 @@ submitPage loc csrf values errors =
                 )
             ],
           h3 (tr loc "Quanto a IA fez" "How much the AI did"),
-          el "dl" [] (concat [[el "dt" [] [text (levelLabel loc l)], el "dd" [] [text (levelText loc l)]] | l <- allLevels])
+          el "dl" [cls "levels"] (concat [[el "dt" [] [text (levelLabel loc l)], el "dd" [] [text (levelText loc l)]] | l <- allLevels])
         ]
       body = case csrf of
         Just token -> [formNode token]
         Nothing ->
-          [ p_
-              [ text
-                  ( tr
-                      loc
-                      "Para enviar, entre com o GitHub. O marola lê só o seu perfil público (número, usuário e data de criação)."
-                      "To submit, log in with GitHub. marola reads only your public profile (number, login and creation date)."
-                  )
-              ],
-            p_ [link (loginPath loc) [text (tr loc "Entrar com o GitHub" "Log in with GitHub")]]
+          [ el
+              "div"
+              [cls "panel"]
+              [ p_
+                  [ text
+                      ( tr
+                          loc
+                          "Para enviar, entre com o GitHub. O marola lê só o seu perfil público (número, usuário e data de criação)."
+                          "To submit, log in with GitHub. marola reads only your public profile (number, login and creation date)."
+                      )
+                  ],
+                p_ [primary (loginPath loc) (tr loc "Entrar com o GitHub" "Log in with GitHub")]
+              ]
           ]
       agents =
         [ h3 (tr loc "Para agentes" "For agents"),
@@ -293,13 +321,15 @@ row loc r =
   let s = r.submission
    in el
         "li"
-        []
+        [cls "study"]
         [ el "h3" [] [link (url loc (urlOf r.id)) [text s.title]],
-          p_ [text (T.intercalate ", " [a.name | a <- s.authors])],
-          p_
-            [ text (areaLabel loc s.area <> " · " <> topicLabel loc s.topic <> " · " <> date r.receivedUtc <> " "),
-              badge loc,
-              text (" " <> T.take 12 r.sha256)
+          el "p" [cls "study-authors"] [text (T.intercalate ", " [a.name | a <- s.authors])],
+          meta
+            [ badge loc,
+              el "span" [cls "tag"] [text (areaLabel loc s.area)],
+              el "span" [cls "tag"] [text (topicLabel loc s.topic)],
+              el "time" [attr "datetime" (date r.receivedUtc)] [text (date r.receivedUtc)],
+              el "code" [] [text (T.take 12 r.sha256)]
             ]
         ]
 
@@ -320,7 +350,7 @@ studiesPage loc studies ar tp next =
       filters =
         el
           "form"
-          [attr "method" "GET", attr "action" (url loc "/studies"), cls "contact"]
+          [attr "method" "GET", attr "action" (url loc "/studies"), cls "contact filters"]
           [ chosen "area" (areaName <$> ar) [(areaName a, areaLabel loc a) | a <- allAreas] (tr loc "Área" "Area"),
             chosen "topic" (topicName <$> tp) [(topicName t, topicLabel loc t) | t <- allTopics] (tr loc "Tema" "Topic"),
             button (tr loc "Filtrar" "Filter")
@@ -334,7 +364,7 @@ studiesPage loc studies ar tp next =
                       <> maybe [] (\a -> ["area=" <> areaName a]) ar
                       <> maybe [] (\t -> ["topic=" <> topicName t]) tp
                   )
-           in [p_ [link (url loc "/studies" <> "?" <> q) [text (tr loc "Mais antigos" "Older")]]]
+           in [p_ [pill (url loc "/studies" <> "?" <> q) (tr loc "Mais antigos" "Older")]]
         Nothing -> []
       pg =
         headOf
@@ -346,12 +376,13 @@ studiesPage loc studies ar tp next =
         loc
         pg
         ( [ h2 (tr loc "Estudos" "Studies"),
-            p_ [text (notice loc <> " "), link (url loc "/submit") [text (tr loc "Enviar um estudo" "Submit a study")]],
+            banner loc [],
+            p_ [primary (url loc "/submit") (tr loc "Enviar um estudo" "Submit a study")],
             filters
           ]
             <> ( if null studies
-                   then [p_ [text (tr loc "Nenhum estudo ainda." "No studies yet.")]]
-                   else [el "ul" [cls "members"] (map (row loc) studies)]
+                   then [el "p" [cls "empty"] [text (tr loc "Nenhum estudo ainda." "No studies yet.")]]
+                   else [el "ul" [cls "studies"] (map (row loc) studies)]
                )
             <> more
         )
@@ -368,6 +399,7 @@ studyPage loc r = case r.status of
           loc
           pg
           [ h2 (tr loc "Estudo escondido" "Hidden study"),
+            p_ [tombstone (tr loc "escondido" "hidden")],
             p_
               [ text
                   ( tr
@@ -378,7 +410,7 @@ studyPage loc r = case r.status of
               ],
             el
               "dl"
-              []
+              [cls "facts"]
               [ dt "id",
                 dd [el "code" [] [text r.id]],
                 dt "SHA-256",
@@ -396,15 +428,19 @@ studyPage loc r = case r.status of
         pg = headOf ("studies/" <> r.id) s.title (U.take 160 s.abstract) False
         authorsNodes =
           [ el "li" [] ([text a.name] <> maybe [] (\o -> [text " ", outside ("https://orcid.org/" <> o) ("ORCID " <> o)]) a.orcid)
-          | a <- s.authors
+            | a <- s.authors
           ]
      in render
           loc
           pg
-          ( [ h2 s.title,
-              p_ [badge loc, text (" " <> notice loc)],
-              el "ul" [] authorsNodes,
-              p_ [text (areaLabel loc s.area <> " · " <> topicLabel loc s.topic <> " · " <> date r.receivedUtc)],
+          ( [ el "h2" [cls "study-title"] [text s.title],
+              banner loc [],
+              el "ul" [cls "authors"] authorsNodes,
+              meta
+                [ el "span" [cls "tag"] [text (areaLabel loc s.area)],
+                  el "span" [cls "tag"] [text (topicLabel loc s.topic)],
+                  el "time" [attr "datetime" (date r.receivedUtc)] [text (date r.receivedUtc)]
+                ],
               h3 (tr loc "Resumo" "Abstract"),
               p_ [text s.abstract]
             ]
@@ -420,10 +456,10 @@ studyPage loc r = case r.status of
                    p_ [text (tr loc "Modelos: " "Models: " <> (if T.null s.aiModels then "-" else s.aiModels))],
                    p_ [text s.aiProcess],
                    h3 (tr loc "O arquivo" "The file"),
-                   p_ [link (pdfUrlOf r.id) [text (tr loc "Abrir o PDF" "Open the PDF")]],
-                   p_ [text "SHA-256: ", el "code" [] [text r.sha256]],
-                   p_ [text (tr loc "Enviado por " "Sent by " <> r.authorLogin <> ", " <> r.receivedUtc)],
-                   p_ [link (url loc ("/report/" <> r.id)) [text (tr loc "Denunciar este estudo" "Report this study")]]
+                   p_ [primary (pdfUrlOf r.id) (tr loc "Abrir o PDF" "Open the PDF")],
+                   meta [text "SHA-256: ", el "code" [] [text r.sha256]],
+                   meta [text (tr loc "Enviado por " "Sent by " <> r.authorLogin <> ", " <> r.receivedUtc)],
+                   p_ [pill (url loc ("/report/" <> r.id)) (tr loc "Denunciar este estudo" "Report this study")]
                  ]
           )
 
@@ -436,41 +472,46 @@ accountPage loc account csrf keys studies newKey keyError deleteError =
         el
           "li"
           []
-          [ text (tr loc "Chave " "Key " <> T.pack (show k.id) <> ", " <> date k.createdUtc <> " "),
+          [ el "span" [cls "row-main"] [text (tr loc "Chave " "Key " <> T.pack (show k.id) <> ", " <> date k.createdUtc <> " ")],
             case k.revokedUtc of
-              Just _ -> text (tr loc "(revogada)" "(revoked)")
+              Just _ -> tombstone (tr loc "(revogada)" "(revoked)")
               Nothing -> postForm loc ("/account/keys/" <> T.pack (show k.id) <> "/revoke") csrf [] [button (tr loc "Revogar" "Revoke")]
           ]
       studyRow r =
         el
           "li"
           []
-          ( [link (url loc (urlOf r.id)) [text r.submission.title], text (" " <> date r.receivedUtc <> " ")]
+          ( [el "span" [cls "row-main"] [link (url loc (urlOf r.id)) [text r.submission.title], text (" " <> date r.receivedUtc <> " ")]]
               <> case r.status of
                 Public -> [postForm loc ("/account/withdraw/" <> r.id) csrf [] [button (tr loc "Retirar" "Withdraw")]]
-                Hidden -> [text (tr loc "(escondido)" "(hidden)")]
+                Hidden -> [tombstone (tr loc "(escondido)" "(hidden)")]
           )
    in render
         loc
         pg
-        ( [ h2 (tr loc "Sua conta" "Your account"),
-            p_ [text (tr loc "Entrou como " "Logged in as " <> account.login)],
-            postForm loc "/logout" csrf [] [button (tr loc "Sair" "Log out")]
+        ( [ eyebrow (tr loc "conta" "account"),
+            h2 (tr loc "Sua conta" "Your account"),
+            el
+              "div"
+              [cls "who"]
+              [ el "p" [] [text (tr loc "Entrou como " "Logged in as "), el "b" [] [text account.login]],
+                postForm loc "/logout" csrf [] [button (tr loc "Sair" "Log out")]
+              ]
           ]
             <> case newKey of
               Just key ->
                 [ h3 (tr loc "Sua nova chave" "Your new key"),
                   p_ [text (tr loc "Copie agora. Ela não aparece de novo." "Copy it now. It is not shown again.")],
-                  p_ [el "code" [] [text key]]
+                  el "p" [cls "key"] [el "code" [] [text key]]
                 ]
               Nothing -> []
             <> [h3 (tr loc "Chaves da API" "API keys")]
             <> [alert (tr loc "Você já tem 3 chaves ativas. Revogue uma antes." "You already have 3 active keys. Revoke one first.") | keyError]
-            <> [ el "ul" [] (map keyRow keys),
+            <> [ el "ul" [cls "rows"] (map keyRow keys),
                  postForm loc "/account/keys" csrf [] [button (tr loc "Criar uma chave" "Create a key")],
                  h3 (tr loc "Seus estudos" "Your studies"),
-                 el "ul" [] (map studyRow studies),
-                 p_ [link (url loc "/submit") [text (tr loc "Enviar um estudo" "Submit a study")]],
+                 el "ul" [cls "rows"] (map studyRow studies),
+                 p_ [pill (url loc "/submit") (tr loc "Enviar um estudo" "Submit a study")],
                  h3 (tr loc "Excluir a conta" "Delete the account"),
                  p_
                    [ text
@@ -487,7 +528,7 @@ accountPage loc account csrf keys studies newKey keyError deleteError =
                    loc
                    "/account/delete"
                    csrf
-                   []
+                   [cls "contact danger"]
                    ( [ el
                          "label"
                          []
@@ -527,7 +568,8 @@ reportPage loc sid isError =
    in render
         loc
         pg
-        [ h2 (tr loc "Denunciar um estudo" "Report a study"),
+        [ eyebrow (tr loc "estudos" "studies"),
+          h2 (tr loc "Denunciar um estudo" "Report a study"),
           p_ [text (tr loc "Não pedimos e-mail, e não guardamos seu endereço. Só o motivo e a hora." "We ask for no email and keep no address. Only the reason and the time.")],
           el
             "form"
@@ -562,16 +604,17 @@ thanksPage loc =
    in render
         loc
         pg
-        [ h2 (tr loc "Obrigado" "Thank you"),
-          p_ [text (tr loc "Recebemos a denúncia. A equipe vai olhar." "We got the report. The team will look at it.")],
-          p_ [link (url loc "/studies") [text (tr loc "Voltar aos estudos" "Back to the studies")]]
+        [ eyebrow (tr loc "estudos" "studies"),
+          h2 (tr loc "Obrigado" "Thank you"),
+          el "p" [cls "lede"] [text (tr loc "Recebemos a denúncia. A equipe vai olhar." "We got the report. The team will look at it.")],
+          p_ [pill (url loc "/studies") (tr loc "Voltar aos estudos" "Back to the studies")]
         ]
 
 -- | A page for a refusal or a failure: a title and one sentence, nothing from GitHub or the stack.
 messagePage :: Locale -> Text -> Text -> Text
 messagePage loc title sentence =
   let pg = (headOf "message" title "" True) {current = Nothing, canonical = False}
-   in render loc pg [h2 title, p_ [text sentence]]
+   in render loc pg [el "p" [cls "eyebrow"] [text "marola"], h2 title, el "p" [cls "lede"] [text sentence]]
 
 -- ---- /studies.atom -------------------------------------------------------------------------------
 

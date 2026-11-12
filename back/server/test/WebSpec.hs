@@ -117,6 +117,7 @@ spec = describe "web" $ do
     length <$> filesUnder site.config.studies >>= (`shouldBe` 1)
     p <- page site ("/studies/" <> TE.encodeUtf8 i) Nothing
     forM_ [sha validPdf, "https://orcid.org/0000-0002-1825-0097", "/report/"] $ \n -> bodyText p `shouldSatisfy` T.isInfixOf n
+    bodyText p `shouldSatisfy` T.isInfixOf "<p class=\"notice\" role=\"note\"><span class=\"status warn\"><i></i>sem revisão</span>"
     header p "Cache-Control" `shouldSatisfy` maybe False (BC.isInfixOf "max-age=60")
     (.status) <$> page site ("/studies/" <> TE.encodeUtf8 i <> ".pdf") Nothing >>= (`shouldBe` 200)
     again <- postSubmit site "/submit" c (Just same) (studyForm (Just csrf) goodFields (Just (pdfBytes "" 5)))

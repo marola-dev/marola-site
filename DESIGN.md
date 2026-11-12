@@ -23,7 +23,8 @@ Three parts of the code draw what a visitor sees:
 - The map page is the Elm page: `front/src` (the views) and `front/js` (the MapLibre and WebGL
   glue, reached through `front/ports.js`).
 - The static pages (about, support, contact, news, members, privacy, takedown, 404) are rendered
-  by `back/pages` from Markdown. `back/pages/src/Marola/Pages/Layout.hs` is their head, nav, header and footer.
+  by `back/pages` from Markdown. `back/pages/src/Marola/Pages/Layout.hs` is their head, top bar, page bar and
+  footer.
 - The study pages (`/submit`, `/studies`, `/studies/<id>`, `/account`, `/report/<id>`) are
   rendered by `back/server/src/Marola/Server/Views.hs` inside the same layout.
 
@@ -65,18 +66,19 @@ these rows. Do not change a row without the same change in `:root`.
 | `--surface` | `#14171F` | panels, controls, tracks, footer, chat answers, release cards |
 | `--raised` | `#1A1E28` | hover on a row, the raised segment |
 | `--line` | `#2A303C` | hairlines, panel borders |
-| `--line-strong` | `#3A4252` | control borders, quote rule |
+| `--line-strong` | `#3A4252` | control and field borders, the empty state's dashes, the "404" numeral |
 | `--ink` | `#EDEFF3` | text, headings |
 | `--muted` | `#9AA3B2` | secondary text, icons at rest |
 | `--accent` | `#3DD6F5` | the logo's cyan: links, focus ring, pressed text and border, slider, the "you" marker |
 | `--accent-hover` | `#8BE9FB` | hover on a link |
-| `--accent-soft` | `rgb(61 214 245 / .12)` | pressed fill, the visitor's chat messages, member initials |
-| `--sea` | `#0B5FA5` | the one primary fill (chat toggle and send, the release tag), and the header's glow |
+| `--accent-soft` | `rgb(61 214 245 / .12)` | pressed fill, the visitor's chat messages, member initials, the new API key |
+| `--sea` | `#0B5FA5` | the one primary fill (chat toggle and send, the release tag, a reading page's primary pill and submit button), and the header's glow |
 | `--sea-hover` | `#0E6DBB` | hover on the primary fill |
 | `--on-fill` | `#ffffff` | text on `--sea` and on `--c0`; the white ring of a marker on the map |
 | `--map-sea` | `#cfe6f1` | the map before the base map loads |
 | `--emergency` | `#FF6B5E` | the emergency button's phone icon, and unfit or improper water text on ink |
 | `--ok` | `#3FB950` | the "proper" water text on ink |
+| `--warn` | `#E3B341` | the dot of the "not reviewed" status pill and the edge of its banner; never text, never a score |
 
 ### Glass
 
@@ -207,6 +209,11 @@ least 3:1.
 | `--emergency` | `--bg` | 6.96:1 | pass |
 | `--emergency` | `--surface` (unfit water text) | 6.41:1 | pass |
 | `--ok` | `--surface` (the "proper" water text) | 7.05:1 | pass |
+| `--accent` | `--raised` | 9.63:1 | pass |
+| `--ink` | `--accent-soft` over `--bg` (the new API key) | 13.73:1 | pass |
+| `--warn` | `--surface` (the status dot, the banner's edge; not text) | 9.21:1 | pass |
+| `--warn` | `--bg` (the status dot in the banner) | 9.99:1 | pass |
+| `--line-strong` | `--bg` (the "404" numeral, decoration) | 1.93:1 | fail |
 | `--glass-ink` | `--glass` over a white map | 12.47:1 | pass |
 | `--glass-muted` | `--glass` over a white map | 5.64:1 | pass |
 | `--glass-unfit` | `--glass` over a white map | 5.14:1 | pass |
@@ -220,7 +227,8 @@ least 3:1.
 | `--accent` | `--map-sea` (the "you" marker with no ring) | 1.34:1 | fail |
 
 A score chip prints its number in ink (`--bg`) on its band colour, and in white on the red, so all
-five pass. The numbers come from a small Node script that implements the WCAG formula, with a
+five pass. The "404" numeral is decoration behind the sentence "not found", which is the h2 in
+`--ink`; it is not the only carrier of anything. The numbers come from a small Node script that implements the WCAG formula, with a
 colour that has an alpha composited over its ground first. The two failing rows are answered in
 [Known gaps](#known-gaps): a control is told by its fill and its text too, and the "you" marker
 has a white ring and an ink rim because its cyan does not read on the map alone.
@@ -233,9 +241,9 @@ licence file sits beside its font and names the npm package and version it was c
 
 | Family | File | Job |
 |---|---|---|
-| Fjalla One 400 (`--display`) | `fjalla-one-latin-400-normal.woff2` | the wordmark, panel titles, beach names in the list and the card, score and metric numerals, the emergency numbers. Line-height 1 to 1.2, tracking `--tr-fjalla`, never bold: the family has one weight |
+| Fjalla One 400 (`--display`) | `fjalla-one-latin-400-normal.woff2` | the wordmark, page titles and section heads of the reading pages, panel titles, beach names in the list and the card, member names, study titles, score and metric numerals, the emergency numbers. Line-height 1 to 1.2, tracking `--tr-fjalla`, never bold: the family has one weight |
 | Inter, variable (`--sans`) | `inter-latin-wght-normal.woff2` | body text and controls |
-| JetBrains Mono, variable 100 to 800 (`--mono`) | `jetbrains-mono-latin-wght-normal.woff2` | hours, dates, distances, units, sources, the status and credit lines, the section links, the legend, the language switch. Weight 400, or 500 for the hour label |
+| JetBrains Mono, variable 100 to 800 (`--mono`) | `jetbrains-mono-latin-wght-normal.woff2` | hours, dates, distances, units, sources, the status and credit lines, the section links, the legend, the language switch; on the reading pages the `§ 01` counters, a post's date and reading time, hashes, tags, status pills, inline `code`. Weight 400, or 500 for the hour label |
 
 Sizes are `--fs-*` tokens. For Inter, each size has a `--tr-*` tracking that follows Inter's dynamic
 metrics (`-0.0223 + 0.185 * e^(-0.1745 * px)` em): small text stays open, large text tightens. A
@@ -244,27 +252,25 @@ and the mono face take `--tr-fjalla` and `--tr-mono` at every size.
 
 | Role | Size token | Family / size / weight / line-height | Where |
 |---|---|---|---|
-| Display | `--fs-display` | Inter, 36 to 56 px (`clamp`) / 700 / 1.05 | the first h2 of a reading column |
-| Section | `--fs-28` | Inter, 28 px / 650 / 1.15 (24 px on phones, `--fs-24`) | h2 in a reading column |
+| Display | `--fs-display` | Fjalla, 36 to 56 px (`clamp`) / 1.04 | the first h2 of a reading column (a post's title in its card is 30 to 42 px, a study's title 28 to 40 px) |
+| Section | `--fs-28` | Fjalla, 28 px / 1.15 (24 px on phones, `--fs-24`), after a mono `§ 01` counter in `--accent` | h2 in a reading column |
 | Card title, metric | `--fs-28` | Fjalla, 28 px / 1.1 (24 px on phones) | the beach card's h2 and its four numerals |
 | Wordmark | `--fs-24` | Fjalla, 24 px / 1 (22 px on phones, `--fs-22`) | top bar |
 | Score, panel title | `--fs-22` | Fjalla, 22 px / 1 | the list's score chip, the trails panel title, the emergency numbers |
 | Lede | `--fs-21` | Inter, 21 px / 400 / 1.45, `--muted` (19 px on phones, `--fs-19`) | the paragraph under a page title |
 | Beach name | `--fs-19` | Fjalla, 19 px / 1.15 | a list row |
 | Quote | `--fs-19` | Inter, 19 px / 400 / 1.5 | a short cited quote in a reading column |
-| Reading | `--fs-17` | Inter, 17 px / 400 / 1.6; h3 at 600 / 1.4 | the body of every page in a reading column |
+| Reading | `--fs-17` | Inter, 17 px / 400 / 1.65 (15 px on phones); h3 at 600 / 1.4 | the body of every page in a reading column |
 | Body | `--fs-15` | Inter, 15 px / 400 / 1.5 | the page default, inline `code` |
 | Card reading | `--fs-14` | Inter, 14 px / 400 | card rows, the lore, the emergency rows |
 | UI | `--fs-13` | Inter, 13 px / 500 | controls, the tagline, popups, the card's aspects |
-| Caption | `--fs-12` | mono or Inter, 12 px | section links, the hour label, metric labels, footer folds |
+| Eyebrow | `--fs-12` | Inter, 12 px / 600, uppercase, tracking `--tr-eyebrow`, `--accent` | the line above a page title |
+| Caption | `--fs-12` | mono or Inter, 12 px | section links, the hour label, metric labels, footer folds, a post's date, a study's facts |
 | Fine | `--fs-11` | mono, 11 px | the legend, list and card metadata, the status and credit lines, eyebrows, map attribution |
-
-The reading pages still use the Inter roles above (Display, Section, Lede); their move to Fjalla
-titles, eyebrows and `§ 01` counters is the second half of the redraw.
 
 Headings get `text-wrap: balance` and `optimizeLegibility`. Reading paragraphs get `text-wrap:
 pretty`. The page has `font-kerning: normal`. Scores, hours and distances use `tabular-nums`.
-Prose stays within 65 characters where it can (the reading column is 40 rem). The area code in the
+The reading column is 44 rem, about 80 characters of the 17 px reading size. The area code in the
 picker keeps a wider tracking of +0.02em.
 
 The map page is a dense tool. Its hierarchy comes from the three families, then from size: a
@@ -399,63 +405,116 @@ Fjalla name or numeral is what the eye lands on, Inter explains it, mono dates a
 
 ## Components: pages and forms
 
-The static pages and the study pages share one reading column and the chrome of the strip, the
-header and the footer. They carry no script (see [No inline style, no script on content
-pages](#no-inline-style-no-script-on-content-pages)).
+The static pages (`back/pages`) and the study pages (`back/server`) share the map page's chrome and
+one reading column. They carry no script (see [No inline style, no script on content
+pages](#no-inline-style-no-script-on-content-pages)). Each layout mirrors `View/Nav.elm` and
+`View/Footer.elm` class for class.
 
-- **Reading column** (`main.about > article.about-body`): 40 rem wide, 17 px / 1.6. Headings and
-  rhythm are in [Type](#type).
-- **Header on a content page**: the wordmark, the tagline, and one control: the link back to the
-  map. There is no area picker and no day buttons.
-- **Footer on a content page**: the same `.footer` with two paragraphs. The first is the privacy
-  sentence. The second holds three links, "submit", "privacy", "takedown", with a literal `·`
-  between them. Links are `--accent` on `--surface` (10.35:1).
-- **Form** (`form.contact`): a grid with a 12 px gap, at most 520 px wide. The submit button is the
-  plain control, not the primary one, and it sits at the start of the row. The same class styles
-  the contact form, the submit form, the studies filter (a `GET` form with two selects), the
-  account forms and the report form.
-- **Form field** (`label` in `form.contact`): a grid with a 4 px gap. The label text is a `span`
-  at the body size. The hint is a `small` (13 px) under it, in the text colour (not `--muted`). The
-  control follows the hint. Text fields and text areas: `font: inherit`, 8 px 10 px padding, 1 px
-  `--line-strong` border, `--r-inner`, `--bg`, `--ink`, no case change. Focus: the 2 px `--accent`
-  ring with a 1 px offset. A `select` is the plain control. A text area resizes vertically.
-  States: hover on a `select` uses the control hover. Disabled and read-only fields are not used.
-- **Error text** (`p.field-error[role="alert"]`): one paragraph under the field it names, or above
-  the submit button for an error of the request. It has no CSS rule yet, so it shows as body text.
-  The markup sets no `aria-invalid` and no `aria-describedby`. See [Known gaps](#known-gaps).
-- **File input** (`input[type="file"]`, `accept="application/pdf"`): it takes the text-field rule
-  above, and the browser draws its button. The hint under the label gives the limit.
-- **Checkbox** (the "rights" field): the browser's own box, then the sentence and two links. It
-  takes the text-field rule, and the browser draws the box.
-- **Honeypot** (the report form): a text input with `hidden`, `tabindex="-1"`, `aria-hidden="true"`
-  and `autocomplete="off"`. It is never visible.
-- **"Not reviewed" badge** (`span.release-tag`): `--sea` fill, white text, 15 px / 600, pill,
-  2 px 10 px padding, no case change. White on `--sea` is 6.57:1. It shares the class with the
-  release tag in the news posts. It says "sem revisão" or "not reviewed", and it appears in the list
-  row and under the title of a study, followed by the notice "Not reviewed. Not medical advice."
-- **Key box** (the new API key, shown once): an `h3`, a sentence that says the key is not shown
-  again, and the key in `code` inside a `p`. `code` is 15 px, `--surface` fill, 1 px 5 px padding,
-  4 px radius, no case change. It has no border and no copy button.
-- **Tombstone card** (a hidden study): the page of a study the board hid. An `h2`, a sentence, and
-  a `dl` with the id, the SHA-256 hash, the dates and the reason, the id and the hash in `code`. No
-  text of the study, no link to the file. The page has `noindex`. It has no card border or fill: it
-  is a plain reading column.
-- **Study row** (the list at `/studies`): an `li` inside `ul.members`, with an `h3` that links to
-  the study, a `p` with the authors, and a `p` with area, topic, date, the badge and the first 12
-  characters of the hash. `ul.members` has a top rule and no bullets. The row has no bottom rule,
-  because that rule belongs to `.member`, which this row does not use.
-- **Study page header** (`/studies/<id>`): the title as the display h2, a line with the badge and
-  the notice, a list of the authors (an ORCID is a link with `rel="noopener noreferrer nofollow
-  ugc"`), and a line with area, topic and date. Then the sections as h3: abstract, sources, code,
-  licence, AI declaration, the file, and the "report this study" link.
-- **Report form** (`/report/<id>`): the form above with a reason `select`, a details text area of 5
-  rows and 1000 characters, the error paragraph and the submit button.
-- **Pager** (`/studies`): one link, "Mais antigos" or "Older", in a paragraph under the list. It
-  carries `before`, `area` and `topic` in its query. There is no numbered pager and no link back.
-- **Release card** (`.release`, news posts): `--surface` fill, 1 px `--line`, `--r-panel`, with the
-  tag as a pill at the top.
-- **Member row** (`.member`, the members page): a 48 px circle at the left (the avatar or the
-  initials in `--accent` on `--accent-soft`), then the name at weight 600 and three muted lines.
+- **Top bar** (`header.top`): the same as the map page's. The wordmark is a link to the map
+  (`.brand h1 a`). The language switch is two plain links to the same page in each language.
+- **Page bar** (`div.bar.pagebar`): where the map page has its tool row. One pill, "back to the
+  map", with a mono arrow drawn by CSS, and the tagline at the right (hidden to the eye under
+  900 px, like on the map page). There is no area picker and no day buttons.
+- **Reading column** (`main.about > *`): 44 rem wide, centred, 17 px / 1.65 (15 px on a phone).
+  `main` grows, so the footer sits at the foot of a short page. `main` also carries `p-<slug>`
+  (`p-news`, `p-support`, `p-404`, `p-studies`), which is how the style sheet tells one page from
+  another; a study's own page has none, because its address carries its id.
+- **Eyebrow** (`p.eyebrow`, after piabrota.art's `.eyebrow`): "marola · " and the section's nav
+  label, uppercase Inter 600 at 12 px, tracking `--tr-eyebrow`, `--accent`. The layout writes it
+  above the article for a page of a nav section, of privacy and of takedown; the server writes it
+  inside the article for submit, account, report and the message pages. The 404 page has none.
+- **Title and lede**: the first `h2` of an article is the display title in Fjalla. A `p.lede`
+  under it is 21 px in `--muted` (18 px on a phone).
+- **Section head**: every later `h2` has a hairline above it and a mono counter before it, `§ 01`,
+  `§ 02`, in `--accent` (after piabrota.art's `.sec-n`). The counter is a CSS counter that each
+  article resets, so the Markdown carries no number. `h3` is Inter 600 at the reading size.
+- **Inline code**: mono at .86 em, `--raised` fill, 1 px `--line`, 6 px radius, no case change,
+  and it wraps anywhere, so a SHA-256 of 64 characters stays inside a 390 px column. `pre` and
+  `table` have rules (a `--surface` block with a hairline; a mono header row and hairline rows),
+  though the Markdown of today's pages makes neither.
+- **Quote** (`blockquote`): a 2 px `--accent` rule at the left, 19 px text, the source in mono
+  12 px `--muted`.
+- **Figure**: the image is a link to itself in a 12 px hairline frame that turns `--accent` on
+  hover; the caption is mono 12 px `--muted`. The umbrella diagram on the about page is drawn on
+  its own dark ground (`#020617`), so it needs no light plate.
+- **Definition list** (`dl`): terms in mono 12 px `--muted` at the left, their meaning at the
+  right; one column on a phone. Used for the AI levels on `/submit` and the facts of a hidden
+  study.
+- **Card**: `--surface`, 1 px `--line`, `--r-panel`, no shadow. The cards are: a news post
+  (`.p-news article.about-body`, with its title at 30 to 42 px, its date and reading time in mono
+  under the title, then the lede), a release card inside a post (`.release`, on `--bg` so it reads
+  inside the post's card, the tag a `--sea` pill in mono), a member (`.member`), a study
+  (`.study`), a funding channel (the list items of `.p-support`), a panel (`.panel`, the login
+  prompt of `/submit`) and the account's "logged in as" row (`.who`).
+- **Member card** (`ul.members > li.member`): a grid of cards, two across in the column and one on
+  a phone. A 48 px circle (the avatar, or the initials in Fjalla, `--accent` on `--accent-soft`),
+  the name in Fjalla 20 px, the affiliation in `--muted` 14 px, the roles and the links in mono
+  11 px. The links are `--ink` with no underline until hovered. Names wrap anywhere.
+- **Funding channel** (`.p-support .about-body li`): the channel's name in Fjalla 22 px across the
+  whole card, with a mono arrow at the right; a channel that is not open yet is `--muted` with its
+  "soon" in mono.
+- **Status pill** (`span.status`, after piabrota.art's `.status`): a dot and a word in mono 11 px
+  in a hairline pill. `.status.warn` has the `--warn` dot and says "sem revisão" or "not
+  reviewed"; `.status.off` is `--muted` and marks a hidden study or a revoked key.
+- **Notice banner** (`p.notice[role="note"]`): the "not reviewed" pill, then the sentence "Not
+  reviewed. Not medical advice.", in a `--surface` card whose edge is `--warn` mixed 45% into
+  `--line`. It is under the title of the study list and of every study.
+- **Tag** (`span.tag`): a study's area and topic, mono 12 px in a hairline pill.
+- **Facts line** (`p.meta`, `p.post-date`): mono 12 px `--muted`, tabular numerals: a post's date
+  and reading time; a study's pill, tags, date and the first 12 characters of its hash; the full
+  SHA-256 and who sent it on the study's page.
+- **Pill link** (`a.pill`): a link that acts takes the shared control's shape. `a.pill.primary`
+  and a form's submit button take the `--sea` fill with `--on-fill` text (6.57:1): one filled
+  action per page (submit a study, log in with GitHub, open the PDF, send). The filter button, the
+  account's row buttons and "older" stay plain pills.
+- **Study card** (`ul.studies > li.study`): the title in Fjalla 22 px as a link in `--ink`
+  (`--accent` on hover), the authors in `--muted`, then the facts line. Titles and names keep the
+  case their author gave them and wrap anywhere.
+- **Empty state** (`p.empty`): a dashed `--line-strong` frame with one mono sentence, when a list
+  of studies has no row.
+- **Study page** (`/studies/<id>`): the title as `h2.study-title` (28 to 40 px, the author's
+  letter case), the banner, the authors (an ORCID is a mono link with `rel="noopener noreferrer
+  nofollow ugc"`), the tags and the date, then the sections as h3: abstract, sources, code,
+  licence, AI declaration, the file. "Open the PDF" is the primary pill, and "report this study" a
+  plain one.
+- **Tombstone** (a hidden study): the title, a `.status.off` pill, one sentence, and a `dl.facts`
+  with the id, the SHA-256, the dates and the reason. No text of the study, no link to the file,
+  and `noindex`.
+- **Account page**: the `.who` card (the login in bold, the log out button), then `ul.rows`: one
+  hairline row per key or study, its text at the left and its one action at the right (revoke,
+  withdraw) or a `.status.off` pill. A new key is shown once in `p.key`: ink on `--accent-soft`
+  with an `--accent` border (13.73:1), wrapping anywhere. Deleting the account is
+  `form.contact.danger`: a frame whose edge is `--emergency` mixed 45% into `--line`, and a button
+  with an `--emergency` border and text (6.96:1 on `--bg`) and no fill.
+- **Form** (`form.contact`): a grid with an 18 px gap, at most 34 rem wide. The same class styles
+  the contact form, the submit form, the report form, the account's confirmation and the filters.
+- **Form field** (`label` in `form.contact`): the label text is a `span` in Inter 600 at 13 px,
+  the hint a `small` in `--muted` under it, then the control. Text fields and text areas: 15 px,
+  9 px 12 px padding, `--surface` fill, 1 px `--line-strong` border, `--r-inner`, no case change.
+  Hover turns the border `--muted`; focus draws the 2 px `--accent` ring with a 1 px offset and
+  turns the border `--accent`. A `select` is the shared pill control, at least 16 rem wide (the
+  whole row on a phone). A text area resizes vertically. Disabled and read-only fields are not
+  used.
+- **Filters** (`form.contact.filters`, `/studies`): a `GET` form in a hairline frame, the two
+  selects side by side under mono labels and a plain "filter" pill at the end of the row.
+- **Error text** (`p.field-error[role="alert"]`): `--emergency` at 13 px under the field it names
+  (6.96:1 on `--bg`), or above the submit button for an error of the request. The markup sets no
+  `aria-invalid` and no `aria-describedby`. See [Known gaps](#known-gaps).
+- **File input**: the field's frame, with the browser's button drawn as a `--raised` pill.
+- **Checkbox** (the "rights" field): 18 px, `accent-color: var(--accent)`, then the sentence and
+  two links.
+- **Honeypot** (the contact and report forms): a text input with `hidden`, `tabindex="-1"`,
+  `aria-hidden="true"` and `autocomplete="off"`. It is never visible.
+- **Pager** (`/studies`): one plain pill, "Mais antigos" or "Older", under the list. It carries
+  `before`, `area` and `topic` in its query. There is no numbered pager and no link back.
+- **404** (`.p-404`): the numeral "404" in Fjalla, 96 to 176 px, in `--line-strong`, drawn by CSS
+  behind the title "not found" and its sentence with the two ways out.
+- **Message page** (a refusal or a failure from the server): the eyebrow "marola", the title, and
+  one sentence as the lede.
+- **Footer on a content page**: the same `.footer` as a plain block. The privacy sentence, then
+  three links, "submit", "privacy", "takedown", with a literal `·` between them, then the credit
+  line (`p.credit`) as on the map page, its "crew" link going to the members page in the page's
+  language. Links are `--accent` on `--surface` (10.35:1).
 
 ## Copy
 
@@ -509,21 +568,23 @@ decision.
   The control is also told by its fill, its text and its icon.
 - **The accent on the light map**: `--accent` on the map's water is 1.34:1, so nothing cyan sits
   on the map without an ink or white edge (the "you" marker has both).
-- **The reading pages are half redrawn**: they inherit the ink tokens, the pill controls and the
-  footer, but their titles are still Inter, and their header still renders the old strip and
-  header markup until `Layout.hs` mirrors `header.top`. `body > .sitenav` in `style.css` exists
-  for that markup only.
+- **Two layouts**: `back/pages/src/Marola/Pages/Layout.hs` and `back/server/src/Marola/Layout.hs`
+  are two copies of the same chrome, and `front/src/View/Nav.elm` is a third. A change to the top
+  bar or the credit line is made three times.
+- **A page title has one tone**: piabrota.art's titles are two-tone (a first clause in `--ink`,
+  the rest in `--muted`). A title here is one line of Markdown or one study title, with no markup
+  to split it, so it is all `--ink` and the muted lede under it carries the second tone.
+- **The news page is every post in full**, each in its card, newest first. There is no index of
+  posts and no page per post.
 - **The logo tile is a CSS background**, not inline SVG: `favicon.svg` weighs 110 kB. It is
   decoration beside the word "marola", and it does not show if images are blocked.
 - **The marker's number** for `--c40` has a `dark` class that no CSS rule uses, and the selected
   badge prints its number in Inter, not Fjalla.
 - **The player covers the top of the layer rail** while it is open on a desktop.
-- **No rule** for these classes, which the markup emits: `field-error`, `trail-card` and
-  `trail-note`. They render with the styles they inherit.
+- **No rule** for these classes, which the markup emits: `trail-card` and `trail-note`. They
+  render with the styles they inherit.
 - **No `aria-invalid`** and no `aria-describedby` on a field with an error.
 - **Two `·` per line** in the footer links and in the study row, against the copy rule above.
-- **Long unbroken text** (an API key of 56 characters, a SHA-256 of 64) in `code` has no wrap rule
-  and may overflow a 390 px column.
 
 ## Not yet
 
