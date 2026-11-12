@@ -774,6 +774,10 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   const patreonLinks = SUPPORT.match(/href="https:\/\/www\.patreon\.com\/[^"]*"/g) || [];
   ok(!!patreon && patreonLinks.every(h => h === 'href="https://www.patreon.com/' + patreon + '"'),
     "the support page's Patreon links are FUNDING.yml's account (" + patreon + ')');
+  const oc = (/^open_collective:\s*(\S+)/m.exec(FUNDING) || [])[1];
+  const ocLinks = SUPPORT.match(/href="https:\/\/opencollective\.com\/[^"]*"/g) || [];
+  ok(!!oc && ocLinks.length === 2 && ocLinks.every(h => h === 'href="https://opencollective.com/' + oc + '"'),
+    "the support page links FUNDING.yml's Open Collective (" + oc + ') in both languages');
   ok((SUPPORT.match(/<span aria-disabled="true">Buy Me a Coffee <i>[^<]+<\/i><\/span>/g) || []).length === 2
     && !/buymeacoffee\.com/.test(SUPPORT) && !/^buy_me_a_coffee:/m.test(FUNDING),
     'Buy Me a Coffee is "soon" in both languages, with no link on the page or in FUNDING.yml');
