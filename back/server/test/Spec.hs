@@ -12,6 +12,7 @@ import SessionSpec qualified
 import StudyApiSpec qualified
 import StudyStoreSpec qualified
 import Test.Hspec
+import TileSpec qualified
 import WebSpec qualified
 
 main :: IO ()
@@ -19,6 +20,7 @@ main = hspec $ do
   HeaderSpec.spec
   LimitSpec.spec
   FileSpec.spec
+  TileSpec.spec
   ContactSpec.spec
   SessionSpec.spec
   LoginSpec.spec

@@ -176,6 +176,8 @@ Some colours are not in `:root`, because a CSS variable does not reach them:
 - The selected trail line and the Niño 3.4 box use `#1d2733` in `front/js/maplibre_ffi.mjs`.
 - The score colours and the flow ramps appear again as hex in `front/src/Config.elm`, where
   MapLibre and the WebGL layer need them as values.
+- The base map's colours are values in `scripts/basemap_style.mjs`, which writes them into
+  `front/public/map/style.json`; MapLibre reads a style, not CSS ("The base map" below).
 - piabrota's eye keeps its own four fills (`#BC2318`, `#F7F3EA`, `#2E9E4F`, `#0B0D12`) as SVG
   attributes in `front/src/View/Nav.elm`.
 - The logo is `front/public/favicon.svg`, drawn as a CSS background on a white tile.
@@ -183,6 +185,34 @@ Some colours are not in `:root`, because a CSS variable does not reach them:
 
 Shadows use `rgb(0 0 0 / alpha)`. The header's glow is `color-mix` of `--sea`. They are not hex and
 the check does not read them.
+
+### The base map
+
+The map is light under the ink chrome, and quiet, so that the beach dots, the flow ramps and the
+satellite keys carry the colour. Its style is generated (`node scripts/basemap_style.mjs`) from
+Protomaps' light flavor with the values below; change them there, never in `style.json`.
+
+| Part | Value | Job |
+|---|---|---|
+| water, background | `#cfe6f1` | the sea, lakes and the ground behind every tile: `--map-sea`, so a tile that is still loading reads as water |
+| earth | `#f4f2ec` | land |
+| beach | `#f1dc98` | sand of a beach, the strongest fill on the map after the roads: this is a beach map |
+| sand | `#f1e4b4` | dunes and other sand |
+| park, wood, scrub | `#dcead3` to `#c3dfb9` | green, in two steps by zoom |
+| buildings | `#e4e0d8` | building footprints, from zoom 14 |
+| roads | `#ffffff` on a `#d6d0c3` or `#dcd7cc` casing | every road but a motorway |
+| motorway | `#fbe7b0` on `#dfc98c` | the one coloured road |
+| boundaries | `#9aa3ad` | country and state lines |
+| city label | `#1d2733` with an earth halo | 13.5:1 on earth; the same ink as the marker rim |
+| neighbourhood label | `#5b6672` with an earth halo | 5.2:1 on earth |
+| road label | `#59626e`, `#6b7480` with a white halo | 6.2:1 and 4.7:1 on white |
+| state, country label | `#7d8792`, `#59626e` | large upper-case text; the state name is 3.3:1 on earth |
+| sea label | `#4d7a9c` italic | 3.5:1 on water; large, spaced text |
+| beach label | `#7a5c12` italic with a white halo | a beach's name, from zoom 12; 5.6:1 on earth |
+
+The labels are Noto Sans (Regular, Medium, Italic), drawn by MapLibre from glyph files, not Inter:
+a map label is the map's voice, not the page's. A name is shown in Portuguese when the data has
+one. The style has no icon: no POI, no road shield, no town dot.
 
 ## Contrast
 
@@ -367,11 +397,12 @@ Fjalla name or numeral is what the eye lands on, Inter explains it, mono dates a
   `--bg` rim and a white (`--on-fill`) stroke, so a sampling point never reads as a beach. On the water layer
   the beach dots drop to 40% opacity.
 - **"You" marker** (`.here`): a 14 px `--accent` dot with a 2 px white ring and a 1.5 px ink rim.
-- **Map**: MapLibre GL JS 6.17.0, self-hosted under `vendor/maplibre/`, on OpenFreeMap's `liberty`
-  style (`Config.styleUrl`), which stays light. Zoom buttons at the top left (the layer rail takes
+- **Map**: MapLibre GL JS 6.17.0, self-hosted under `vendor/maplibre/`, on the site's own style
+  (`Config.styleUrl`, `/map/style.json`), which stays light: see "The base map" under Colour. Zoom buttons at the top left (the layer rail takes
   the right), in ink glass; MapLibre draws their icons as dark images, so the CSS inverts them.
-  The attribution is 11 px, bottom right, in ink glass. The `--map-sea` colour shows until the
-  tiles load.
+  The attribution is 11 px, bottom right, in ink glass: "© OpenStreetMap" and "Protomaps", each a
+  link. The `--map-sea` colour shows until the tiles load, and it is the style's water, so the
+  page's ground and the sea are one colour.
 - **Popups** (`.maplibregl-popup`): the panel shape in ink glass, 13 px, no arrow, no pointer
   events. The beach popup (`.aspects`) has its head in Fjalla 17 px over a two-column grid of
   readings, up to 22 rem wide. In the beach card the same grid shows without its head.

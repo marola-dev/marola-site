@@ -67,11 +67,11 @@ Each beach gets a number in one of the five bands on the map legend: **≥70** g
 
 ## Where the data comes from
 
-Beaches come from [OpenStreetMap](https://www.openstreetmap.org/copyright), sea and weather from [Open-Meteo](https://open-meteo.com/), and water quality from the official bulletins of IMA/SC, INEA (RJ) and INEMA (BA). They are public, free sources. The base map is [OpenFreeMap](https://openfreemap.org/)'s, drawn with MapLibre from OpenStreetMap data. For now only the beaches and water-quality layers are on; wind, waves and NASA's satellite imagery ([GIBS](https://www.earthdata.nasa.gov/gibs)) are coming soon.
+Beaches come from [OpenStreetMap](https://www.openstreetmap.org/copyright), sea and weather from [Open-Meteo](https://open-meteo.com/), and water quality from the official bulletins of IMA/SC, INEA (RJ) and INEMA (BA). They are public, free sources. The base map is marola's own: its tiles are cut from OpenStreetMap data with [Protomaps](https://protomaps.com/), kept on our server and drawn with MapLibre. For now only the beaches and water-quality layers are on; wind, waves and NASA's satellite imagery ([GIBS](https://www.earthdata.nasa.gov/gibs)) are coming soon.
 
 ## Privacy
 
-marola sets no cookies and does no tracking of its own. The base map is the exception: to draw it, your browser fetches the style, map tiles and fonts from [OpenFreeMap](https://openfreemap.org/)'s servers, which see your IP address. No key is needed and no identifier is kept in your browser for it. When you pick a satellite layer, its images come from NASA's servers, which also see your IP address. The "near me" sort uses your location only inside your own browser; it is never sent anywhere.
+marola sets no cookies and does no tracking of its own. The base map comes from marola's own server: its style, tiles and fonts are files of this site, so drawing the map tells no one else that you were here. Two things reach a third party, and only when you open them: a satellite layer, whose images come from NASA's servers, and the Spotify player, which loads from Spotify. Each of them then sees your IP address. The "near me" sort uses your location only inside your own browser; it is never sent anywhere.
 
 ## Who builds it
 

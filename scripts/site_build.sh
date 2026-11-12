@@ -9,7 +9,7 @@ set -euo pipefail
 
 usage() {
   echo "usage: scripts/site_build.sh [--fixtures] [--no-install]" >&2
-  echo "  --fixtures    add data/<area>/latest.json and a fixture board per area (offline preview)" >&2
+  echo "  --fixtures    add data/<area>/latest.json, a fixture board per area and the fixture base map (offline preview)" >&2
   echo "  --no-install  skip 'npm ci'; reuse front/node_modules" >&2
 }
 
@@ -52,6 +52,9 @@ cp site/board.schema.json "$dist/"
 node scripts/site_fixtures.mjs areas "$dist"
 if [ "$fixtures" -eq 1 ]; then
   node scripts/site_fixtures.mjs boards "$dist"
+  # The base map is host data (MAROLA_TILES, docs/5-hosting.md); the server falls back to this copy.
+  mkdir -p "$dist/tiles"
+  cp site/fixtures/basemap.pmtiles "$dist/tiles/marola.pmtiles"
 fi
 
 echo "site_build: $dist ready (run it with: just server-run)" >&2

@@ -24,7 +24,7 @@ helps most. Do not send a real person's data: use your own test account.
 - The legacy page in `site/static/` is plain JavaScript and has no server of its own. A flaw in a vendored library
   goes to that library; tell us too if marola ships the affected version.
 - The host, its nginx, its backups and the Cloudflare account: a person runs them, not this repository.
-- Mapbox, OpenFreeMap, GitHub, Cloudflare and other services. Report to them.
+- Mapbox, NASA GIBS, Spotify, GitHub, Cloudflare and other services. Report to them.
 - Denial of service by volume, social engineering, and physical access.
 - A wrong claim in a study. Studies are labelled "not reviewed"; use the report form or the takedown page.
 - Findings from a scanner with no working proof.

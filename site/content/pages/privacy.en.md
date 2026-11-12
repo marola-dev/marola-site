@@ -35,7 +35,7 @@ To show who published a study, to keep a public record of what was published and
 
 ## Who can see it
 
-Everyone sees a public study with your GitHub login and the dates. Everyone sees a tombstone (id, hash, date, reason). The people of the board see the rest on the server: the reports and the contact messages. GitHub knows that you logged in to marola. The base map on the map page is OpenFreeMap's.
+Everyone sees a public study with your GitHub login and the dates. Everyone sees a tombstone (id, hash, date, reason). The people of the board see the rest on the server: the reports and the contact messages. GitHub knows that you logged in to marola. The base map on the map page comes from marola's own server, so no map provider sees your address. A satellite layer, when you turn one on, loads its images from NASA, and the Spotify player, when you open it, loads from Spotify.
 
 ## What you can do
 

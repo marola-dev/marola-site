@@ -83,6 +83,7 @@ contentType file = case map toLower (takeExtension file) of
   ".woff2" -> "font/woff2"
   ".woff" -> "font/woff"
   ".mp3" -> "audio/mpeg"
+  ".pbf" -> "application/x-protobuf"
   _ -> "application/octet-stream"
 
 -- | @name.<8 or more hex digits>.ext@: the file name carries its content hash, so it never changes.
@@ -98,7 +99,7 @@ hashed name = case reverse (splitOn '.' name) of
 cacheControl :: FilePath -> ByteString
 cacheControl file
   | hashed name = "public, max-age=31536000, immutable"
-  | map toLower (takeExtension name) `elem` [".woff2", ".woff", ".png", ".jpg", ".jpeg", ".webp", ".ico", ".svg"] = "public, max-age=86400"
+  | map toLower (takeExtension name) `elem` [".woff2", ".woff", ".png", ".jpg", ".jpeg", ".webp", ".ico", ".svg", ".pbf"] = "public, max-age=86400"
   | otherwise = "no-cache"
   where
     name = takeFileName file

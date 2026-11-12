@@ -21,6 +21,9 @@ data Config = Config
     -- | The PDFs, as @<sha256>.pdf@. Outside 'static', never served as a file tree.
     studies :: FilePath,
     studiesQuota :: Int64,
+    -- | The folder of the base map's PMTiles file: @/tiles/<name>.pmtiles@ is looked up here first,
+    -- then under 'static'. Host data, like 'dataDir': never part of the build.
+    tiles :: FilePath,
     -- | @MAROLA_DEV=1@: cookies without @Secure@ and the @__Host-@ prefix, and the GitHub URLs may be
     -- overridden. For the smoke script on plain HTTP and a fake GitHub; never set in production.
     dev :: Bool,
@@ -60,6 +63,7 @@ fromEnv get = do
       da <- pathOf "MAROLA_DATA" "data"
       d <- pathOf "MAROLA_DB" "data/marola.db"
       su <- pathOf "MAROLA_STUDIES" "data/studies"
+      ti <- pathOf "MAROLA_TILES" "data/tiles"
       secret <- traverse absolute (nonEmpty "MAROLA_GITHUB_CLIENT_SECRET_FILE")
       pure . Right $
         Config
@@ -69,6 +73,7 @@ fromEnv get = do
             db = d,
             studies = su,
             studiesQuota = q,
+            tiles = ti,
             dev = dev,
             githubClientId = T.pack <$> nonEmpty "MAROLA_GITHUB_CLIENT_ID",
             githubSecretFile = secret,
@@ -85,6 +90,7 @@ fromProcessEnv = do
           "MAROLA_DATA",
           "MAROLA_DB",
           "MAROLA_STUDIES",
+          "MAROLA_TILES",
           "MAROLA_DEV",
           "MAROLA_GITHUB_CLIENT_ID",
           "MAROLA_GITHUB_CLIENT_SECRET_FILE",

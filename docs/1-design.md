@@ -103,7 +103,7 @@ droplet, so it never looks like a beach. The client writes all markers as one JS
 `maplibre_ffi.mjs` builds the DOM nodes from that JSON with `createElement` and `createTextNode`.
 A beach name that holds `<` stays text.
 
-The Mapbox `composite` water layer (the thin coastline) does not exist in the OpenFreeMap style.
+The Mapbox `composite` water layer (the thin coastline) does not exist in the new page's style.
 The new page does not draw it.
 
 ### CSP
@@ -114,18 +114,36 @@ writes it to `dist/csp.txt` (`marola-server csp`), and `front/index.html` carrie
 `<meta>` tag without `frame-ancestors`, which a meta tag cannot set. `scripts/front_check.js` checks
 that the two agree.
 
-The policy has `'self'` for scripts, styles, fonts and workers, and two third-party hosts:
-`tiles.openfreemap.org` (the base map) and `gibs.earthdata.nasa.gov` (the satellite layers), plus
+The policy has `'self'` for scripts, styles, fonts and workers, and one third-party host,
+`gibs.earthdata.nasa.gov` (the satellite layers), in `img-src` and `connect-src`. The base map needs
+none: its style, glyphs and tiles are the site's own files, fetched under `connect-src 'self'`
+([ADR 0006](adr/0006-self-hosted-basemap.md)). There is
 one frame source, `frame-src https://open.spotify.com`: the playlist player, an iframe the page adds
 only after the visitor presses the Spotify button. It also has `object-src 'none'`, `base-uri 'self'` and `frame-ancestors 'none'`. It has no
 `unsafe-inline`, no `unsafe-eval`, and no bare `https:` or `*`.
 
-`img-src` has `data:` and `blob:` because MapLibre decodes its sprite sheet through an image made
-from a blob. `worker-src` has no `blob:`: MapLibre starts its worker from the same-origin file
+`img-src` has `data:` and `blob:` because MapLibre decodes a raster tile (a satellite layer) through
+an image made from a blob. `worker-src` has no `blob:`: MapLibre starts its worker from the same-origin file
 `vendor/maplibre/maplibre-gl-worker.mjs`. It uses a blob worker only for a cross-origin worker URL.
 The form action of the contact page is not part of this policy.
 
-The base map style, `https://tiles.openfreemap.org/styles/liberty`, is one constant in `front/src/Config.elm`.
-Nobody has loaded this URL yet. Its sprite and glyph hosts are assumed to be `tiles.openfreemap.org`.
-If they are not, the map fails to start and the page shows the beach list. The page keeps the
-OpenStreetMap credit (ODbL) in the attribution control.
+### The base map
+
+The style is `/map/style.json`, one constant in `front/src/Config.elm` (`styleUrl`).
+`scripts/basemap_style.mjs` writes it from `@protomaps/basemaps`' light flavor: recoloured (DESIGN.md,
+"The base map"), labels in Portuguese (`name:pt`, then the local name in Latin script, then
+`name:en`), a layer of beach names, and no sprite, so it has no POI icon and no road shield. Its
+glyphs are Noto Sans in three stacks under `/map/fonts/`, Latin ranges only; a name in another
+script is not drawn, so no other range is requested.
+
+Its one source is `pmtiles:///tiles/marola.pmtiles`. `maplibre_ffi.mjs` registers the `pmtiles`
+library's protocol with MapLibre, and the library reads the file by byte range from the server
+([5-hosting](5-hosting.md#the-base-map)). The file is deep only around each area. The protocol is
+set to fail on a tile the file does not hold, because MapLibre then keeps drawing the nearest
+ancestor tile it has; an empty tile would draw a hole. The page ignores that one error
+(`Tile not found.`). Any other error before the map's `load` (the style, the file's header) fails
+the map: the page shows the beach list and the note `map.failed`.
+
+The WebGL flow layer goes below `trails-line`, a layer the page adds itself, and a satellite layer
+goes below the style's first symbol layer, so neither names a layer of the base style. The page
+keeps the OpenStreetMap credit (ODbL) and Protomaps' in the attribution control.

@@ -35,7 +35,7 @@ The repo holds two builds of the site:
 
 | Part | What it does | Where |
 |---|---|---|
-| Map page | The map, the beach list and card, the layer rail and the footer, in Elm, bundled by Vite. Effects go through ports to a small JavaScript shell. MapLibre GL JS 6.17.0, OpenFreeMap `liberty` base map, trails from OpenStreetMap | [`front/`](front) |
+| Map page | The map, the beach list and card, the layer rail and the footer, in Elm, bundled by Vite. Effects go through ports to a small JavaScript shell. MapLibre GL JS 6.17.0 over the site's own base map (a style, glyphs and one PMTiles file cut from a Protomaps build of OpenStreetMap; [ADR 0006](docs/adr/0006-self-hosted-basemap.md)), trails from OpenStreetMap | [`front/`](front) |
 | Static pages | About, support, contact, news, members, privacy, takedown and 404, in pt-BR (at the root) and English (under `en/`), rendered at build time from Markdown by a Haskell program | [`back/pages`](back/pages), [`site/content`](site/content) |
 | Server | Haskell (warp, SQLite). Serves the files, sends the security headers, takes the contact form, the GitHub login and the study API and pages. Listens on `127.0.0.1` behind nginx | [`back/server`](back/server) |
 | Study submission | Anyone with a GitHub account of 7 days or more publishes a study as a PDF with metadata. It shows the notice "not reviewed, not medical advice". The board can hide a study | [ADR 0004](docs/adr/0004-study-submission.md), [board runbook](docs/6-board.md) |
@@ -44,11 +44,13 @@ The repo holds two builds of the site:
 
 The decisions are in [ADR 0005](docs/adr/0005-elm-and-haskell.md) (Elm and Haskell; it supersedes
 the language choices of ADRs 0001 to 0003, whose MapLibre, hosting and page decisions stand) and
-[ADR 0004](docs/adr/0004-study-submission.md) (study submission).
+[ADR 0004](docs/adr/0004-study-submission.md) (study submission) and
+[ADR 0006](docs/adr/0006-self-hosted-basemap.md) (the base map is the site's own: Protomaps tiles in one
+PMTiles file on the host).
 
 ### Architecture
 
-[![marola-site and the repos around it: marola-corpus and marola-ml feed marola-app, whose board JSON the map client reads; the Elm client and the Haskell static pages make dist, which the Haskell server serves; nix/package.nix packs them, and piabrota/nix-os runs the package on piabrota2 behind nginx for piabrota.art; OpenFreeMap and GIBS give the tiles, GitHub OAuth the login, marola-dev/.github the members page; marola-devkit and the umbrella build docs.marola.dev](docs/img/architecture.png)](docs/img/architecture.png)
+[![marola-site and the repos around it: marola-corpus and marola-ml feed marola-app, whose board JSON the map client reads; the Elm client and the Haskell static pages make dist, which the Haskell server serves; nix/package.nix packs them, and piabrota/nix-os runs the package on piabrota2 behind nginx for piabrota.art; the host holds the base map's tiles and GIBS gives the satellite layers, GitHub OAuth the login, marola-dev/.github the members page; marola-devkit and the umbrella build docs.marola.dev](docs/img/architecture.png)](docs/img/architecture.png)
 
 How to read it: each row is a group of repos or services, and an arrow is what one hands to the
 next. Orange boxes are outside marola. Not shown: the legacy `site/static` build, which
@@ -184,8 +186,8 @@ pin, trail files), [docs/5-hosting.md](docs/5-hosting.md) (hosting), [docs/6-boa
 The emergency button at the top of the map lists Brazil's free emergency numbers (193, 190, 192,
 185, 199), each a tap to call. The idea is from Carlos Toledo's
 [swell-floripa](https://swell-floripa.vercel.app/) ([@carlostoledo1891](https://github.com/carlostoledo1891)).
-The base map is [OpenFreeMap](https://openfreemap.org) with data from OpenStreetMap contributors. The
-satellite layers are NASA GIBS.
+The base map is the site's own: tiles cut with [Protomaps](https://protomaps.com) from the data of OpenStreetMap
+contributors, served by the site's server. The satellite layers are NASA GIBS.
 
 ## Gemini review
 

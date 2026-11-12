@@ -161,7 +161,7 @@ pushed.
 
 ```bash
 just dist-build             # front_build.sh (Vite) and marola-pages into dist/, with the assets and csp.txt
-just dist-build --fixtures  # also writes data/<area>/ boards from site/fixtures/board.json
+just dist-build --fixtures  # also writes data/<area>/ boards from site/fixtures/board.json, and tiles/marola.pmtiles, the fixture base map
 just server-run             # http://127.0.0.1:8080, with the security headers (see below)
 just front-check            # a Node smoke test of the built page in dist
 just pages-parity <dir>     # the pages, byte for byte, against another build's dist
@@ -199,6 +199,22 @@ The server builds its CSP header from `Marola.Csp`, which also writes `dist/csp.
 the server cannot drift. `just server-run` keeps the contact database in `.tmp/marola.db`, which git
 ignores. The smoke script needs `just dist-build --fixtures` first. How it runs on a host, with the
 variables and the nginx and systemd settings, is in [the hosting page](5-hosting.md).
+
+**The base map in a preview.** `just dist-build --fixtures` puts the fixture tiles in `dist/tiles/`: the world
+to zoom 1 and the centre of Florianópolis to zoom 11, enough for the tests and for a map that is coarse
+everywhere else. For the real map, cut the host's file once and point the server at its folder:
+
+```bash
+nix shell nixpkgs#pmtiles nixpkgs#tippecanoe   # the two tools the dev shell lacks
+just basemap-extract .tmp/tiles/marola.pmtiles   # 216 MB, about a minute; .tmp/ is git-ignored
+MAROLA_TILES=.tmp/tiles just server-run
+```
+
+The style and the glyphs are committed under `front/public/map/`. To change a colour or a layer, edit
+`scripts/basemap_style.mjs` and run `just basemap-style`; `just basemap-style --check` fails on a stale
+`style.json`. It fetches `@protomaps/basemaps` and the glyph repository into `.tmp/basemap-tools/` on its first
+run, so it is not part of `just quality`; `scripts/front_check.js` checks the committed style offline (one local
+source, local glyphs, no sprite, no host). [4-reference](4-reference.md#base-map-pin) has the pin and the files.
 
 To try the login by hand, start the fake GitHub and the server in dev mode. The fake GitHub signs in a made-up
 user (`smoke-sci`); `MAROLA_DEV=1` lets the server take its URL from the environment and drop `Secure` and the

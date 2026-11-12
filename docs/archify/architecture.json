@@ -124,8 +124,8 @@
       "lane": "host",
       "col": 1,
       "type": "external",
-      "label": "OpenFreeMap, GIBS",
-      "sublabel": "base map, satellite",
+      "label": "NASA GIBS",
+      "sublabel": "satellite layers",
       "width": 136
     },
     {

@@ -68,11 +68,11 @@ cada praia cai numa das cinco faixas da legenda do mapa: **≥70** bom, **40–6
 
 ## de onde vêm os dados
 
-as praias vêm do [OpenStreetMap](https://www.openstreetmap.org/copyright), a previsão do mar e do tempo vem do [Open-Meteo](https://open-meteo.com/), e a balneabilidade, dos boletins oficiais do IMA/SC, do INEA (RJ) e do INEMA (BA). são fontes públicas e gratuitas. o mapa de fundo é do [OpenFreeMap](https://openfreemap.org/), desenhado com o MapLibre a partir dos dados do OpenStreetMap. por enquanto, só as camadas de praias e de balneabilidade estão ligadas. vento, ondas e as imagens de satélite da NASA ([GIBS](https://www.earthdata.nasa.gov/gibs)) chegam em breve.
+as praias vêm do [OpenStreetMap](https://www.openstreetmap.org/copyright), a previsão do mar e do tempo vem do [Open-Meteo](https://open-meteo.com/), e a balneabilidade, dos boletins oficiais do IMA/SC, do INEA (RJ) e do INEMA (BA). são fontes públicas e gratuitas. o mapa de fundo é do próprio marola: os pedaços do mapa são recortados dos dados do OpenStreetMap com o [Protomaps](https://protomaps.com/), ficam no nosso servidor e são desenhados com o MapLibre. por enquanto, só as camadas de praias e de balneabilidade estão ligadas. vento, ondas e as imagens de satélite da NASA ([GIBS](https://www.earthdata.nasa.gov/gibs)) chegam em breve.
 
 ## privacidade
 
-o marola não usa cookies nem rastreamento próprio. o mapa de fundo é a exceção. para desenhar o mapa, o seu navegador busca o estilo, os pedaços do mapa e as fontes nos servidores do [OpenFreeMap](https://openfreemap.org/). esses servidores recebem o seu endereço IP. o mapa não precisa de chave, e nada fica guardado no seu navegador para ele. quando você escolhe uma camada de satélite, as imagens vêm dos servidores da NASA, que também veem o seu endereço IP. a opção "perto de mim" usa a sua localização só dentro do navegador, e ela nunca sai dali.
+o marola não usa cookies nem rastreamento próprio. o mapa de fundo vem do servidor do próprio marola: o estilo, os pedaços do mapa e as fontes são arquivos deste site. por isso, desenhar o mapa não avisa mais ninguém de que você passou por aqui. duas coisas chegam a terceiros, e só quando você abre: uma camada de satélite, com imagens que vêm dos servidores da NASA, e o player do Spotify, que carrega do Spotify. nesses dois casos, eles veem o seu endereço IP. a opção "perto de mim" usa a sua localização só dentro do navegador, e ela nunca sai dali.
 
 ## quem faz
 

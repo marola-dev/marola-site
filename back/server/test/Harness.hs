@@ -18,6 +18,7 @@ module Harness
     goodForm,
     bulk,
     secret,
+    tileBytes,
     fakeClientSecret,
     advance,
     logLines,
@@ -155,6 +156,11 @@ start tweak extra = do
   write (static </> "data" </> "rio" </> "latest.json") "{\"from\":\"static\"}"
   write (static </> "data" </> "floripa" </> "latest.json") "{\"from\":\"static\"}"
   write (dataDir </> "floripa" </> "latest.json") "{\"from\":\"data\"}"
+  -- 1000 bytes that name their own offset, so a range is checked by its content.
+  write (root </> "tiles" </> "marola.pmtiles") tileBytes
+  write (root </> "tiles" </> "secret.txt") secret
+  write (static </> "tiles" </> "marola.pmtiles") "the build's copy"
+  write (static </> "tiles" </> "fixture.pmtiles") "the build's fixture"
   let config =
         tweak
           Config
@@ -164,6 +170,7 @@ start tweak extra = do
               db = root </> "db" </> "marola.db",
               studies = root </> "studies",
               studiesQuota = 1000000,
+              tiles = root </> "tiles",
               dev = False,
               githubClientId = Just "test-client-id",
               githubSecretFile = Just (root </> "github-secret"),
@@ -302,6 +309,10 @@ submission =
       aiProcess = ""
     }
 
+-- | @0000000100020003...@: byte @4n@ starts the number @n@ in four digits.
+tileBytes :: Text
+tileBytes = T.concat [T.justifyRight 4 '0' (T.pack (show n)) | n <- [0 .. 249 :: Int]]
+
 hashOf :: Char -> Text
 hashOf c = T.replicate 64 (T.singleton c)
 
@@ -314,6 +325,7 @@ bareConfig db =
       db = db,
       studies = "",
       studiesQuota = 0,
+      tiles = "",
       dev = False,
       githubClientId = Nothing,
       githubSecretFile = Nothing,

@@ -65,6 +65,9 @@ pipeline writes; the server reads `/data/<x>` there first and then under `dist/d
 which the package already holds). An empty or missing `MAROLA_DATA` is valid: the boards answer 404 until the
 pipeline writes them.
 
+The package does not hold the base map's tiles either. `MAROLA_TILES` is their folder, and the file must be there
+before this version runs ([The base map](#the-base-map)).
+
 **What piabrota/nix-os needs.**
 
 1. An input for the source. With `flake = false` it takes no second lockfile (the devkit input of `flake.nix`
@@ -73,7 +76,7 @@ pipeline writes them.
    That nixpkgs must have `haskell.packages.ghc96`, `elmPackages.elm` and `fetchElmDeps`, `fetchNpmDeps`,
    `npmHooks` and `nodejs`.
 2. The unit, with these variables: `MAROLA_PORT`, `MAROLA_STATIC=<package>/share/marola/dist`, `MAROLA_DATA`,
-   `MAROLA_DB`, `MAROLA_STUDIES`, `MAROLA_GITHUB_CLIENT_ID` (see [Variables](#variables)). Never set `MAROLA_DEV`.
+   `MAROLA_DB`, `MAROLA_STUDIES`, `MAROLA_TILES`, `MAROLA_GITHUB_CLIENT_ID` (see [Variables](#variables)). Never set `MAROLA_DEV`.
 3. A state directory (`StateDirectory=marola`) for the database, `csrf.key` and the studies. The package is
    read-only in the store; only the state directory is writable.
 4. A secret file for the GitHub client secret, passed with `LoadCredential=` and named by
@@ -84,6 +87,8 @@ pipeline writes them.
 6. `MemoryMax=256M`. The server's resident set was 20 MB after the start (`scripts/server_smoke.sh`,
    2026-11-12). Nobody measured it under load or during a 20 MB upload; read `MemoryPeak` after the first weeks.
 7. A backup of `marola.db`, `csrf.key` and `MAROLA_STUDIES` together ([The studies and their backup](#the-studies-and-their-backup)).
+8. `marola.pmtiles` in `MAROLA_TILES`, readable by the unit, before the first start of a version with the
+   self-hosted base map ([The base map](#the-base-map)). It needs no backup: the script cuts it again.
 
 ## Variables
 
@@ -94,6 +99,7 @@ pipeline writes them.
 | `MAROLA_DATA` | `data` | The board data. `/data/<x>` is read here first, then under `MAROLA_STATIC`. Read-only. |
 | `MAROLA_DB` | `data/marola.db` | The SQLite file: the contact messages, and the accounts, API keys, studies and reports of [ADR 0004](adr/0004-study-submission.md). The server creates it and its folder at start, and moves its tables to the current version (`PRAGMA user_version`). |
 | `MAROLA_STUDIES` | `data/studies` | The PDFs of the studies, as `<sha256>.pdf`, mode 0640, in a folder of mode 0750 with a `.incoming` folder for uploads in progress. Outside `MAROLA_STATIC` and never served as a file tree. |
+| `MAROLA_TILES` | `data/tiles` | The folder of the base map's file, `marola.pmtiles`. `/tiles/<name>.pmtiles` is read here first, then under `MAROLA_STATIC/tiles` (the fixture of an offline build). Read-only. Without the file the map page shows its list and the note "the map did not load". |
 | `MAROLA_STUDIES_QUOTA` | `2147483648` (2 GiB) | The most bytes the stored PDFs may take. Past it, a new file gets 507. A wrong number stops the start with exit code 2. |
 | `MAROLA_GITHUB_CLIENT_ID` | unset | The client id of the GitHub OAuth app. Public. |
 | `MAROLA_GITHUB_CLIENT_SECRET_FILE` | unset | A path to the file that holds the client secret. The secret is read from that file at each login, never from an environment variable, and never logged. Without the id and the file, `/auth/github/login` answers 503 "login is not configured" and the rest of the site works. |
@@ -104,6 +110,8 @@ A wrong `MAROLA_PORT` or `MAROLA_STUDIES_QUOTA` stops the start with exit code 2
 
 ## What the server does
 
+- Answers `GET /tiles/<name>.pmtiles` from `MAROLA_TILES` with byte ranges ([The base map](#the-base-map)); the
+  name is 1 to 64 of `a-z`, `0-9` and `-`, and anything else under `/tiles/` gets 404. No other file answers a range.
 - Serves files from the two roots only. A hidden file, a folder, a `..`, a backslash, an encoded
   slash, a NUL byte or an empty segment (`//`) gets 404. `/contact` finds `contact.html` when the
   page has one.
@@ -142,6 +150,71 @@ the file and the old database row. After a restore, the file is back on disk and
 purged, so a hidden study stays unserved but the file exists again. The board records every purge (the line that
 the command prints: date, id, hash). After any restore, read that record and purge those studies again. Keep
 backups only as long as you need them: a deleted file lives in every backup that is older than its purge.
+
+## The base map
+
+The map page draws the site's own tiles ([ADR 0006](adr/0006-self-hosted-basemap.md)): one PMTiles file,
+`marola.pmtiles`, which the browser reads a few kilobytes at a time with HTTP `Range` requests to
+`/tiles/marola.pmtiles`. The style and the glyphs are in the package (`dist/map/`); the tiles file is host data,
+like the boards. It is 216 MB (215,993,204 bytes for the build of 2026-11-12) and it is never in git or in the Nix
+package.
+
+**Put the file on the host before you deploy this version.** A page of this version with no tiles file starts no
+map: it shows the beach list and the note. The order is: cut the file, copy it, check it, then switch the package.
+
+```bash
+# on any machine with network (about 220 MB of download from build.protomaps.com, a minute or two)
+nix shell nixpkgs#pmtiles nixpkgs#tippecanoe nixpkgs#nodejs nixpkgs#curl
+scripts/basemap_extract.sh /tmp/marola.pmtiles     # prints the size and the sha256
+# to the host: write beside the live file, then rename, so a reader never sees half a file
+scp /tmp/marola.pmtiles piabrota2:/var/lib/marola/tiles/marola.pmtiles.new
+ssh piabrota2 'chmod 0644 /var/lib/marola/tiles/marola.pmtiles.new && mv /var/lib/marola/tiles/marola.pmtiles.new /var/lib/marola/tiles/marola.pmtiles'
+# after the deploy
+curl -s -o /dev/null -w '%{http_code} %{size_download}\n' -H 'Range: bytes=0-16383' https://marola.piabrota.art/tiles/marola.pmtiles   # 206 16384
+```
+
+`scripts/basemap_extract.sh` reads the pin in `site/basemap.version` (a Protomaps daily build and its b3sum) and
+the areas in `site/areas.json`, and writes a sparse pyramid: the world to zoom 6, Brazil to zoom 9, and zoom 10 to
+15 in a box around each area (its `radius_km` plus 50 km). Outside a box the page draws the coarser tile it has,
+so the map gets vague, never empty. `--dry-run` prints the plan with no network.
+
+**To update it** (new OpenStreetMap data, or a new area in `site/areas.json`): Protomaps keeps a daily build for
+about a week (its list held the last seven on 2026-11-12), so move `site/basemap.version` to a build that
+[builds.json](https://build-metadata.protomaps.dev/builds.json) lists today (its `key` and `b3sum`), run the script,
+and replace the file with the same rename. The server needs no restart: the file's ETag is its size and
+modification time, the browser's PMTiles reader sees it change and reads the new file, and a cached range lives a
+day at most (`Cache-Control: public, max-age=86400`). A new area needs its tiles on the host before the page that
+lists it.
+
+**Who serves it.** Two ways, and the first is the default:
+
+1. **The server** (recommended to start with): `GET /tiles/marola.pmtiles` goes through the `location /` below like
+   every other request. It answers one range per request with 206, `Content-Range` and `Accept-Ranges`, a bad range
+   with 416, and sends the security headers. No nginx change, the same on every host, and tested
+   (`TileSpec`, `scripts/server_smoke.sh`). The tiles have their own rate limit (6000 requests a minute per client),
+   apart from the page's 300.
+2. **nginx**, when the tiles become most of the traffic: nginx sends the file with `sendfile` and the request never
+   reaches the server. It must repeat the headers the server would send, and the unit's files must be readable by
+   nginx:
+
+   ```nginx
+   location = /tiles/marola.pmtiles {
+       alias /var/lib/marola/tiles/marola.pmtiles;
+       types { }
+       default_type application/octet-stream;
+       gzip off;
+       add_header Cache-Control "public, max-age=86400" always;
+       add_header Strict-Transport-Security "max-age=63072000; includeSubDomains" always;
+       add_header X-Content-Type-Options "nosniff" always;
+       add_header Cross-Origin-Resource-Policy "same-origin" always;
+   }
+   ```
+
+   With `DynamicUser=yes` the state folder is private to the unit, so for this way the file lives outside it
+   (`/srv/marola/tiles/`, say) and `MAROLA_TILES` is not needed. Nobody has run this configuration yet.
+
+Do not put a cache or a CDN that drops `Range` or rewrites `ETag` in front of the file: the reader would get the
+whole file for every tile.
 
 ## nginx
 
@@ -230,6 +303,7 @@ Environment=MAROLA_DATA=/opt/marola/data
 Environment=MAROLA_DB=/var/lib/marola/marola.db
 Environment=MAROLA_STUDIES=/var/lib/marola/studies
 Environment=MAROLA_STUDIES_QUOTA=2147483648
+Environment=MAROLA_TILES=/var/lib/marola/tiles
 Environment=MAROLA_GITHUB_CLIENT_ID=<the public client id>
 Environment=MAROLA_GITHUB_CLIENT_SECRET_FILE=%d/github-client-secret
 LoadCredential=github-client-secret:/etc/marola/github-client-secret
@@ -291,6 +365,9 @@ vulnerability report of the packages are in [7-quality](7-quality.md). The API i
 - A response that Warp writes before the application runs (a malformed request line) has no security
   headers. HSTS comes from nginx for these.
 - The rate limit is in memory and resets on a restart.
+- Each tile is a request and a line in the log: a visitor who drags the map writes some hundreds of lines. Nobody
+  has measured the log's growth on the host; serving the file from nginx ([The base map](#the-base-map)) ends it.
+- A `Range` with a list of ranges gets 416, not a multipart answer. The PMTiles reader never sends one.
 - There is no limit on the size of the message table. Look at `inbox` from time to time.
 - The rate limit of a key is in memory too. The limits of an account (one study in 10 minutes, 10 in a day) are
   counted from the studies table and survive a restart.
