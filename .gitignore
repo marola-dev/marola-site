@@ -28,3 +28,6 @@ __pycache__/
 /dist-newstyle/
 cabal.project.local
 cabal.project.local~
+
+# scripts/site_build.sh output: the Elm page, the pages and the assets the server serves
+/dist/

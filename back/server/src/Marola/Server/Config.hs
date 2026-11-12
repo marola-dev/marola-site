@@ -6,7 +6,7 @@ import Data.Char (isSpace)
 import Data.Int (Int64)
 import Data.Text (Text)
 import Data.Text qualified as T
-import System.Directory (doesDirectoryExist, makeAbsolute)
+import System.Directory (makeAbsolute)
 import System.Environment (lookupEnv)
 import System.FilePath (normalise)
 import Text.Read (readMaybe)
@@ -14,7 +14,7 @@ import Text.Read (readMaybe)
 data Config = Config
   { port :: Int
   , static :: FilePath
-  -- ^ The built page (@app/dist@): served at @/@.
+  -- ^ The built page (@dist@, scripts/site_build.sh): served at @/@.
   , dataDir :: FilePath
   -- ^ The board data folder: @/data/<x>@ is looked up here first, then under 'static'.
   , db :: FilePath
@@ -56,9 +56,7 @@ fromEnv get = do
   case (,) <$> port <*> quota of
     Left e -> pure (Left e)
     Right (p, q) -> do
-      -- The F# build wrote the page to app/dist; the Elm and Haskell builds write it to dist.
-      appDist <- doesDirectoryExist "app/dist"
-      st <- pathOf "MAROLA_STATIC" (if appDist then "app/dist" else "dist")
+      st <- pathOf "MAROLA_STATIC" "dist"
       da <- pathOf "MAROLA_DATA" "data"
       d <- pathOf "MAROLA_DB" "data/marola.db"
       su <- pathOf "MAROLA_STUDIES" "data/studies"

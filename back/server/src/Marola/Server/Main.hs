@@ -5,6 +5,7 @@ import Data.Text (Text)
 import Data.Text qualified as T
 import Data.Text.IO qualified as TIO
 import Data.Time (getCurrentTime)
+import Marola.Csp qualified as Csp
 import Marola.Server.App qualified as App
 import Marola.Server.Board qualified as Board
 import Marola.Server.Config (Config (..))
@@ -20,7 +21,7 @@ import System.IO (stderr, stdout)
 
 usage :: Text
 usage =
-  "usage: marola-server            serve on 127.0.0.1:$MAROLA_PORT\n       marola-server inbox [--delete <id>]\n       marola-server studies ...   marola-server reports ...   (the board: see docs/6-board.md)\n       marola-server dev-account --login <name> --age-days <n>   (MAROLA_DEV=1, tests only)"
+  "usage: marola-server            serve on 127.0.0.1:$MAROLA_PORT\n       marola-server csp        print the Content-Security-Policy\n       marola-server inbox [--delete <id>]\n       marola-server studies ...   marola-server reports ...   (the board: see docs/6-board.md)\n       marola-server dev-account --login <name> --age-days <n>   (MAROLA_DEV=1, tests only)"
 
 exit :: Int -> IO ()
 exit 0 = pure ()
@@ -28,8 +29,16 @@ exit n = exitWith (ExitFailure n)
 
 main :: IO ()
 main = do
-  config <- Config.fromProcessEnv
   args <- map T.pack <$> getArgs
+  case args of
+    -- scripts/site_build.sh writes this to dist/csp.txt, so the page's <meta> and the smoke tests
+    -- compare against the header the server sends; it needs no configuration.
+    ["csp"] -> TIO.putStr Csp.policy
+    _ -> run args
+
+run :: [Text] -> IO ()
+run args = do
+  config <- Config.fromProcessEnv
   let out = TIO.hPutStrLn stdout
       err = TIO.hPutStrLn stderr
   case config of

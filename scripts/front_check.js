@@ -1,11 +1,11 @@
 #!/usr/bin/env node
-/** front_check: smoke test of the BUILT Elm page in front/dist (run `scripts/front_build.sh --fixtures` first).
- * scripts/client_check.js ported from the F# build: the same scenarios and assertions, with a DOM that has only the
- * members Elm's virtual-dom, ports.js and the two FFI files touch, a MapLibre stub that records every call, and a fetch
- * that serves front/dist. Each scenario runs in a child node process because the bundle keeps state.
+/** front_check: smoke test of the BUILT Elm page in dist (run `scripts/site_build.sh --fixtures` first).
+ * No browser, no network, no dependencies: a DOM that has only the members Elm's virtual-dom, ports.js and the two FFI
+ * files touch, a MapLibre stub that records every call, and a fetch that serves dist. Each scenario runs in a child
+ * node process because the bundle keeps state.
  *
- * Not checked here, as in client_check.js:
- *  - the board JSON-Schema validator and the frozen schema-1 board (the F# decoder tests and board-schema.sh own that)
+ * Not checked here:
+ *  - the board JSON-Schema validator and the frozen schema-1 board (the Elm decoder tests and board-schema.sh own that)
  *  - the wind/wave flow layer (flow.js) and its particles: the compiled client ships them disabled, WebGL has no stub here
  *  - the AudioContext wave sound (the page plays an Audio loop; the sound-blocked scenario covers its url, loop and refusal)
  *  - the aspect-by-aspect tooltip numbers (MIP-0009 section 3), note codes, sea lore and score-note folds, SOS numbers
@@ -21,10 +21,10 @@ const { pathToFileURL } = require('url');
 
 const ROOT = path.resolve(__dirname, '..');
 // FRONT_CHECK_DIST points the test at another build, e.g. a patched copy.
-const DIST = process.env.FRONT_CHECK_DIST || path.join(ROOT, 'front/dist');
+const DIST = process.env.FRONT_CHECK_DIST || path.join(ROOT, 'dist');
 const distJson = (rel) => JSON.parse(fs.readFileSync(path.join(DIST, rel), 'utf8'));
 const read = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8');
-const NOT_PORTED = ['board schema validation', 'flow layer (wind/waves/particles)', 'wave sound', 'tooltip aspect numbers, note codes, folds, SOS',
+const NOT_CHECKED = ['board schema validation', 'flow layer (wind/waves/particles)', 'wave sound', 'tooltip aspect numbers, note codes, folds, SOS',
   'data-i18n attributes and the pseudo-locale', 'Mapbox token and composite coastline', 'static pages (nav, donate, members, contact, heads)'];
 
 let fails = 0, total = 0;
@@ -55,12 +55,9 @@ function staticChecks() {
   const meta = /http-equiv="Content-Security-Policy" content="([^"]*)"/.exec(html);
   const csp = meta ? meta[1] : '';
   ok(/(^|; )script-src 'self'(;|$)/.test(csp) && /(^|; )default-src 'self'(;|$)/.test(csp), "the CSP meta has default-src and script-src 'self'", csp);
-  // While the F# page is still in the tree, the Elm page must ask for exactly the same policy.
-  const fsIndex = path.join(ROOT, 'app/Client/public/index.html');
-  if (fs.existsSync(fsIndex)) {
-    const fsMeta = /http-equiv="Content-Security-Policy" content="([^"]*)"/.exec(fs.readFileSync(fsIndex, 'utf8'));
-    ok(fsMeta && fsMeta[1] === csp, 'the CSP meta equals the F# page\'s');
-  }
+  // csp.txt is the server's header (marola-server csp); a <meta> cannot carry frame-ancestors.
+  const header = fs.readFileSync(path.join(DIST, 'csp.txt'), 'utf8').trim();
+  ok(csp === header.replace("; frame-ancestors 'none'", ''), 'the CSP meta equals csp.txt minus frame-ancestors', header);
   ok(!/unsafe-inline|unsafe-eval/.test(csp), "the CSP has no 'unsafe-inline' or 'unsafe-eval'");
   const tokens = csp.split(/[\s;]+/);
   ok(!tokens.includes('https:') && !tokens.includes('*'), 'the CSP has no bare https: or *');
@@ -532,7 +529,7 @@ function parent() {
     if (r.status !== 0) { ok(false, name + ' child exited cleanly', (r.stderr || 'status ' + r.status).trim().split('\n').slice(-3).join(' | ')); }
   }
   console.log(`front_check: ${total} assertions, ${fails} failed`);
-  console.log('not ported: ' + NOT_PORTED.join('; '));
+  console.log('not checked: ' + NOT_CHECKED.join('; '));
   process.exit(fails ? 1 : 0);
 }
 

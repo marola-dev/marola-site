@@ -28,6 +28,7 @@ MAROLA_SERVER_BIN="$(cabal list-bin marola-server)" SMOKE_STATIC=<built page> sc
 ```bash
 marola-server                        # serves on 127.0.0.1:${MAROLA_PORT:-8080}
 marola-server inbox [--delete <id>]  # the contact messages
+marola-server csp                    # the Content-Security-Policy header, as scripts/site_build.sh writes it to csp.txt
 marola-server studies list|hide|unhide …, marola-server reports [close <id> --note …]
 MAROLA_DEV=1 marola-server dev-account --login <name> --age-days <n>
 ```
@@ -35,7 +36,7 @@ MAROLA_DEV=1 marola-server dev-account --login <name> --age-days <n>
 | Variable | Meaning |
 |---|---|
 | `MAROLA_PORT` | the loopback port (8080) |
-| `MAROLA_STATIC` | the built page (`app/dist`, else `dist`) |
+| `MAROLA_STATIC` | the built page (`dist`, written by `scripts/site_build.sh`) |
 | `MAROLA_DATA` | the board data, served under `/data/` before the page's own |
 | `MAROLA_DB` | the SQLite file |
 | `MAROLA_STUDIES`, `MAROLA_STUDIES_QUOTA` | where the PDFs go, and their total size |

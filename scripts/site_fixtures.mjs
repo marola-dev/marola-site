@@ -1,7 +1,7 @@
-// Writes the JSON files app_build.sh cannot make with shell alone: the page reads
+// Writes the JSON files site_build.sh cannot make with shell alone: the page reads
 // data/areas.json as {"areas": [...]} while site/areas.json is a bare list, and with
 // "boards" each area gets latest.json plus the fixture board it names (offline preview).
-// Usage: node scripts/app_fixtures.mjs <areas|boards> <dist-dir>
+// Usage: node scripts/site_fixtures.mjs <areas|boards> <dist-dir>
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -9,7 +9,7 @@ import { fileURLToPath } from "node:url";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const [mode, dist] = process.argv.slice(2);
 if (!["areas", "boards"].includes(mode) || !dist) {
-  console.error("usage: app_fixtures.mjs <areas|boards> <dist-dir>");
+  console.error("usage: site_fixtures.mjs <areas|boards> <dist-dir>");
   process.exit(2);
 }
 const readJson = (p) => JSON.parse(readFileSync(join(root, p), "utf8"));
