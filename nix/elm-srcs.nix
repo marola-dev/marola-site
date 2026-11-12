@@ -1,7 +1,8 @@
 # The Elm packages front/elm.json names (direct and indirect, not the test ones), for
 # elmPackages.fetchElmDeps in nix/package.nix: the format `elm2nix convert` writes. Each sha256 is the
 # hash of https://github.com/<name>/archive/<version>.tar.gz, taken from nixpkgs' own elm-srcs.nix
-# files. Rewrite this file after a change to front/elm.json.
+# files and confirmed by `nix build`. Rewrite this file (`elm2nix convert` in front/) and registry.dat
+# (`elm2nix snapshot`) after a change to front/elm.json.
 {
   "elm/browser" = { sha256 = "0nagb9ajacxbbg985r4k9h0jadqpp0gp84nm94kcgbr5sf8i9x13"; version = "1.0.2"; };
   "elm/core" = { sha256 = "19w0iisdd66ywjayyga4kv2p1v9rxzqjaxhckp8ni6n8i0fb2dvf"; version = "1.0.5"; };

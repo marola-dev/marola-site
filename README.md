@@ -69,7 +69,7 @@ just dist-build --fixtures     # build the Elm page, render the pages and write 
 just server-run                # http://127.0.0.1:8080, state in .tmp/marola.db
 ```
 
-The first `nix develop` writes a `flake.lock`. The repo does not commit it.
+`flake.lock` is committed, so `nix develop` and `nix build` use the same nixpkgs as everyone else.
 
 ## Test it
 

@@ -57,8 +57,7 @@ app image (`marola-image`); this repo never builds the app.
   `site/members.version` (`just members-check`); the build refuses a copy that drifted.
 - `nix/package.nix`, `nix/elm-srcs.nix`, `nix/registry.dat`: the whole site (Haskell server and pages, Elm page)
   as one Nix package that builds with no network, for piabrota/nix-os (`just nix-build`, `just package-smoke`;
-  [docs/5-hosting.md](docs/5-hosting.md#build-with-nix)). `flake.nix` exposes it as `packages.default`. It has not
-  been built yet: its npm and Elm hashes are `lib.fakeHash` placeholders.
+  [docs/5-hosting.md](docs/5-hosting.md#build-with-nix)). `flake.nix` exposes it as `packages.default`.
 - `site/areas.json`: the areas the boards are built for. `site/fixtures/board.json`: the board the
   harness renders. `site/board.schema.json`: the board contract, vendored from the pinned image.
 - `front/`: the Elm map page. `src/` holds the domain types, the board decoder, the model, `update` (which returns
@@ -181,7 +180,8 @@ with the version in a comment.
 | `site/static/i18n.js` | `python3 scripts/i18n_bundle.py` after editing `site/i18n/*.json` |
 | the block in `site/static/news.html` | `python3 scripts/news_build.py` after editing `site/content/news/` |
 | the block in `site/static/members.html`, `humans.txt`, `img/members/` | `just members` (see `site/members.version`) |
-| `npmDeps`'s hash in `nix/package.nix`, `nix/elm-srcs.nix` | after a change to `front/package-lock.json` or `front/elm.json`: the next `nix build` prints the hash it wants (needs the network) |
+| `npmDeps`'s hash in `nix/package.nix` | after a change to `front/package-lock.json`: the next `nix build` prints the hash it wants (needs the network) |
+| `nix/elm-srcs.nix`, `nix/registry.dat` | after a change to the application's packages in `front/elm.json`: `elm2nix convert` and `elm2nix snapshot` in `front/` (the build drops the test packages, so none belongs in `elm-srcs.nix`) |
 | `cabal.project.freeze` | `cabal freeze` at the root after a change of bounds |
 | `site/members/MEMBERS.md` and the blob id in `site/members.version` | copy the file over, then `git hash-object site/members/MEMBERS.md` (docs/3-development.md) |
 | `dist/`, `front/dist/`, `dist-newstyle/` | `just dist-build`; they are not in git |
@@ -192,9 +192,10 @@ with the version in a comment.
 - A git hook exports `GIT_DIR` (and sometimes `GIT_WORK_TREE`, `GIT_INDEX_FILE`), which beats `git -C`.
   A script that runs git must first `for v in $(git rev-parse --local-env-vars); do unset "$v"; done`,
   as `scripts/mip-trailer-check.sh` does; otherwise it reads or writes the wrong repository.
-- `nix develop` writes a `flake.lock`, and the repo does not commit one: the versions are what
-  `nixos-unstable` has at that time. Do not commit it. If it shows as untracked, delete it; if it
-  was staged, `git rm -q --cached --ignore-unmatch flake.lock`.
+- `flake.lock` is committed: it pins the nixpkgs the Nix package and the dev shell build with. Move it
+  on purpose (`nix flake update`, or `nix flake lock --update-input <name>`) and commit it with the change that
+  needs it; a plain `nix develop` must leave it unchanged. The Nix package was last built with the pinned
+  nixpkgs `177d0540942f`.
 - `just prepush` (the push hook) runs `just quality` in full, with the Elm and Haskell tests, whose first
   run downloads npm, Elm and Hackage packages. It fails in a shell that did not come from `nix develop`;
   `just quality` names the missing tool.

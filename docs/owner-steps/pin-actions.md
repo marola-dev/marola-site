@@ -49,8 +49,8 @@ Result: 22 of 22 lines resolved; 0 not resolved.
 - `ci.yml`, `gemini.yml` and `pr.yml` also pass `devkit-ref: v0.20.4` to the devkit, and `ci.yml` runs
   `git clone -b v0.20.4` on the devkit. `git clone -b` takes a tag or a branch, not a SHA, so those stay a tag
   unless the devkit's workflows accept a SHA. [OPEN: owners. The devkit's workflows were not read for this draft.]
-  `flake.nix` holds the same tag as a flake input; `flake.lock` is not committed (see AGENTS.md), so that input is
-  resolved at the time of use.
+  `flake.nix` holds the same tag as a flake input; `flake.lock` is committed (see AGENTS.md), so a tag bump
+  also changes the locked rev there (`nix flake lock --update-input marola-devkit`).
 - `ci.yml` says to bump the tag, the `devkit-ref` inputs and `flake.nix` together. With SHAs that is one more
   place to change, so a bump becomes: tag, SHA, `devkit-ref`, `flake.nix`.
 - `.github/actionlint.yaml` is read by `actionlint` in `just quality`; apply the change, then run `just quality`.

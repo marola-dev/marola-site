@@ -32,12 +32,21 @@ just nix-build        # nix build .#default: result/bin/marola-server, result/sh
 just package-smoke    # starts result/bin/marola-server on a free port, checks / /about.html /en/studies /api/v1/skill.md
 ```
 
-**Not built yet.** The package was rewritten for Elm and Haskell where Nix could not fetch its inputs.
-The npm hash (`npmDeps`) and the Elm hashes (`nix/elm-srcs.nix`) are `lib.fakeHash` placeholders: the
-first `nix build` with network fails on each and prints the real hash to copy in. nixpkgs' versions of
-the Haskell packages may fall outside the bounds of the `.cabal` files, which `cabal.project.freeze`
-does not control there; a failure names the package, and `haskell.lib.doJailbreak` or an override is
-the fix. Nobody has run `just package-smoke` on this package.
+**State of the build.** On 2026-11-12 `nix build` built it with nixpkgs `177d0540942f` (the rev `flake.lock`
+pins) and `scripts/package_smoke.sh` passed on the result: `/`, `/about.html`, `/en/studies` and
+`/api/v1/skill.md` answered 200 with the CSP header. Three things in `nix/package.nix` are there for a reason:
+
+- `front/elm.json` names Elm 0.19.1, the official release that `ci.yml` uses and the last one there is. nixpkgs
+  ships only a 0.19.2 build of an unreleased commit, which refuses that `elm.json`, so `postPatch` renames the
+  version in the build's copy.
+- `elm make` verifies `test-dependencies` as well. `postPatch` also empties them in that copy
+  (the build never compiles `front/tests/`), so `nix/elm-srcs.nix` lists only the application's packages.
+- `nix/registry.dat` is what `elm2nix snapshot` writes in `front/`; `nix/elm-srcs.nix` has the hashes of
+  each package's GitHub archive.
+
+After a change to `front/package-lock.json` the `npmDeps` hash is stale: the next `nix build` fails and prints
+the one to copy in. The Haskell packages come from nixpkgs' Hackage set with two overrides (`direct-sqlite`
+with the system SQLite, `http-types` 0.12.6); a nixpkgs update may need others, and the failure names the package.
 
 The package holds:
 

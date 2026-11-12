@@ -137,9 +137,9 @@ Versions are pinned three ways: `front/package-lock.json` (npm: Vite, vite-plugi
 `index-state`). To change a Haskell bound, edit the `.cabal` file, run `cabal freeze` at the root and
 commit the new freeze file. The first build downloads from npm, package.elm-lang.org and Hackage.
 
-`flake.nix` gives the dev shell node, elm 0.19.1, GHC 9.6, cabal-install and SQLite from the flake's
-own `nixpkgs`. The repo does not commit a `flake.lock`, so the versions are the ones that
-`nixos-unstable` has when `nix develop` first writes one. The freeze file names GHC 9.6.6's `base`;
+`flake.nix` gives the dev shell node, elm, GHC 9.6, cabal-install and SQLite from the flake's
+own `nixpkgs`, pinned by the committed `flake.lock`. That elm is 0.19.2 and refuses `front/elm.json`
+(0.19.1, the official release CI uses); `just front-test` needs the official 0.19.1 binary on `PATH`. The freeze file names GHC 9.6.6's `base`;
 with another GHC 9.6 minor, run `cabal freeze` again.
 
 ## News posts

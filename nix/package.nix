@@ -2,9 +2,8 @@
 # and the Elm map page (front/). A function of pkgs' parts, for `pkgs.callPackage`, so
 # piabrota/nix-os builds it with its own nixpkgs. The build has no network: the Haskell packages come
 # from nixpkgs' Hackage set, the npm packages from front/package-lock.json (fetchNpmDeps), the Elm
-# packages from nix/elm-srcs.nix and nix/registry.dat (Elm's own package registry, copied
-# from an ELM_HOME that built front/), and MEMBERS.md from site/members/ (pinned by
-# blob id in site/members.version).
+# packages from nix/elm-srcs.nix and nix/registry.dat (`elm2nix snapshot` in front/), and
+# MEMBERS.md from site/members/ (pinned by blob id in site/members.version).
 {
   lib,
   stdenv,
@@ -72,7 +71,7 @@ stdenv.mkDerivation {
   npmDeps = fetchNpmDeps {
     name = "marola-site-npm-deps";
     src = "${src}/front";
-    hash = "sha256-4b+12HgaFt0pKOMNoJ09cQx8ZfAqRMPLsQZDl/aFim8=";
+    hash = "sha256-w1usWi2q30ak6rTl95N+nu1yVqS3hr4VkKgukMdKtJ4=";
   };
 
   nativeBuildInputs = [
@@ -89,10 +88,18 @@ stdenv.mkDerivation {
     registryDat = ./registry.dat;
   };
 
-  # nixpkgs ships Elm 0.19.2 only; it refuses an elm.json that names 0.19.1.
+  # nixpkgs ships Elm 0.19.2 only and refuses an elm.json that names 0.19.1 (the official release,
+  # which CI uses), so the build's copy names 0.19.2. elm make also verifies test-dependencies and the
+  # build never compiles front/tests/: drop them, so nix/elm-srcs.nix needs no elm-explorations/test.
   postPatch = ''
-    substituteInPlace front/elm.json --replace-fail '"elm-version": "0.19.1"' '"elm-version": "0.19.2"'
     patchShebangs scripts
+    node -e '
+      const fs = require("fs");
+      const j = JSON.parse(fs.readFileSync("front/elm.json", "utf8"));
+      j["elm-version"] = "0.19.2";
+      j["test-dependencies"] = { direct: {}, indirect: {} };
+      fs.writeFileSync("front/elm.json", JSON.stringify(j, null, 4) + "\n");
+    '
   '';
 
   # npmConfigHook has installed front/node_modules; site_build.sh skips `npm ci` and cabal.
