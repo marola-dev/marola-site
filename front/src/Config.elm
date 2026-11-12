@@ -16,12 +16,13 @@ styleUrl =
     "/map/style.json"
 
 
-{-| The credit the ODbL asks for, and the project the tiles and the style come from.
+{-| The credit the ODbL asks for, the project the tiles and the style come from, and the library that draws them.
 -}
 attributions : List String
 attributions =
     [ "<a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\" rel=\"noopener\">© OpenStreetMap</a>"
     , "<a href=\"https://protomaps.com\" target=\"_blank\" rel=\"noopener\">Protomaps</a>"
+    , "<a href=\"https://maplibre.org\" target=\"_blank\" rel=\"noopener\">MapLibre</a>"
     ]
 
 

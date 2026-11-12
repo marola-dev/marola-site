@@ -44,7 +44,7 @@ new moving part. This starts and ends in this repo, so it is an ADR, not a MIP.
    `front/package-lock.json` does not change.
 7. **The CSP loses `tiles.openfreemap.org`.** Its only third-party host is NASA GIBS, and its only
    frame Spotify's player, each loaded when the visitor asks for it.
-8. **The credit** on the map is "© OpenStreetMap" (the ODbL asks for it) and "Protomaps", with links.
+8. **The credit** on the map is "© OpenStreetMap" (the ODbL asks for it), "Protomaps" and "MapLibre", with links.
 
 ## What was measured
 

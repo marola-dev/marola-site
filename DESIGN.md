@@ -400,7 +400,7 @@ Fjalla name or numeral is what the eye lands on, Inter explains it, mono dates a
 - **Map**: MapLibre GL JS 6.17.0, self-hosted under `vendor/maplibre/`, on the site's own style
   (`Config.styleUrl`, `/map/style.json`), which stays light: see "The base map" under Colour. Zoom buttons at the top left (the layer rail takes
   the right), in ink glass; MapLibre draws their icons as dark images, so the CSS inverts them.
-  The attribution is 11 px, bottom right, in ink glass: "© OpenStreetMap" and "Protomaps", each a
+  The attribution is 11 px, bottom right, in ink glass: "© OpenStreetMap", "Protomaps" and "MapLibre", each a
   link. The `--map-sea` colour shows until the tiles load, and it is the style's water, so the
   page's ground and the sea are one colour.
 - **Popups** (`.maplibregl-popup`): the panel shape in ink glass, 13 px, no arrow, no pointer

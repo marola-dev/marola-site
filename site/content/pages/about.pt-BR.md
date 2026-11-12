@@ -68,7 +68,7 @@ cada praia cai numa das cinco faixas da legenda do mapa: **≥70** bom, **40–6
 
 ## de onde vêm os dados
 
-as praias vêm do [OpenStreetMap](https://www.openstreetmap.org/copyright), a previsão do mar e do tempo vem do [Open-Meteo](https://open-meteo.com/), e a balneabilidade, dos boletins oficiais do IMA/SC, do INEA (RJ) e do INEMA (BA). são fontes públicas e gratuitas. o mapa de fundo é do próprio marola: os pedaços do mapa são recortados dos dados do OpenStreetMap com o [Protomaps](https://protomaps.com/), ficam no nosso servidor e são desenhados com o MapLibre. por enquanto, só as camadas de praias e de balneabilidade estão ligadas. vento, ondas e as imagens de satélite da NASA ([GIBS](https://www.earthdata.nasa.gov/gibs)) chegam em breve.
+as praias vêm do [OpenStreetMap](https://www.openstreetmap.org/copyright), a previsão do mar e do tempo vem do [Open-Meteo](https://open-meteo.com/), e a balneabilidade, dos boletins oficiais do IMA/SC, do INEA (RJ) e do INEMA (BA). são fontes públicas e gratuitas. o mapa de fundo é do próprio marola: os pedaços do mapa são recortados dos dados do OpenStreetMap com o [Protomaps](https://protomaps.com/), ficam no nosso servidor e são desenhados com o [MapLibre](https://maplibre.org/), uma biblioteca de mapas de código aberto. por enquanto, só as camadas de praias e de balneabilidade estão ligadas. vento, ondas e as imagens de satélite da NASA ([GIBS](https://www.earthdata.nasa.gov/gibs)) chegam em breve.
 
 ## privacidade
 
