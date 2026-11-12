@@ -396,7 +396,7 @@ Fjalla name or numeral is what the eye lands on, Inter explains it, mono dates a
   turns into a minus. They are closed by default. Open, a control takes the pressed look and the
   map keeps its height. A third control, "artistas locais", is a placeholder: muted,
   `aria-disabled`, titled "em breve". The footer ends with the credit line (`p.credit`), mono
-  11 px: who makes marola, with links to h0ffmann on GitHub, the members page and piabrota.art,
+  11 px: who makes marola, marola-dev, linked to the members page, and piabrota, linked to piabrota.art,
   the last one with the eye at 13 px. From 840 px the status and the credit sit at the left and
   the controls at the right. Narrower, the controls take their own row between the two lines.
 - **Icons**: Lucide line icons (ISC, `vendor/icons/LICENSE.lucide`) through `Icons.icon` in

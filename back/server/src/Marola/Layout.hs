@@ -320,8 +320,6 @@ credit loc =
     "p"
     [cls "credit"]
     [ text (t loc "credit.made" <> " "),
-      el "a" (attr "href" "https://github.com/h0ffmann" : outside) [text "h0ffmann"],
-      text (" " <> t loc "credit.and" <> " "),
       el "a" [attr "href" (path loc.language "members")] [text (t loc "credit.crew")],
       text (" · " <> t loc "credit.project" <> " "),
       el "a" ([cls "pia", attr "href" piabrota] <> outside) [eye, text "piabrota"]

@@ -65,7 +65,7 @@ spec env = describe "pages" $ do
     html `shouldSatisfy` has ("<div class=\"bar pagebar\"><div class=\"controls\"><a href=\"" <> Layout.mapPath l <> "\">")
     html `shouldSatisfy` has ("<main class=\"main about p-" <> s <> "\">")
     html `shouldSatisfy` has "<meta name=\"theme-color\" content=\"#0B0D12\">"
-    html `shouldSatisfy` has "<a href=\"https://github.com/h0ffmann\" target=\"_blank\" rel=\"noopener\">h0ffmann</a>"
+    html `shouldSatisfy` (not . has "<a href=\"https://github.com/h0ffmann\" target=")
     html `shouldSatisfy` has ("<a href=\"" <> Layout.path l "members" <> "\">")
     html `shouldSatisfy` has "piabrota</a></p></footer></body>"
     count "<h1" html `shouldBe` 1

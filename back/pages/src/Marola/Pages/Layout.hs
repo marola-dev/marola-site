@@ -324,8 +324,6 @@ credit loc =
     "p"
     [H.cls "credit"]
     [ H.text (I18n.t loc "credit.made" <> " "),
-      H.el "a" (H.attr "href" "https://github.com/h0ffmann" : outside) [H.text "h0ffmann"],
-      H.text (" " <> I18n.t loc "credit.and" <> " "),
       H.el "a" [H.attr "href" (path (language loc) "members")] [H.text (I18n.t loc "credit.crew")],
       H.text (" · " <> I18n.t loc "credit.project" <> " "),
       H.el "a" ([H.cls "pia", H.attr "href" piabrota] <> outside) [eye, H.text "piabrota"]

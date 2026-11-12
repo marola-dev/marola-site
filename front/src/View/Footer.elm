@@ -175,8 +175,6 @@ credit model =
     in
     Html.p [ cls "credit" ]
         [ Html.text (Words.t model "credit.made" ++ " ")
-        , Html.a (out "https://github.com/h0ffmann") [ Html.text "h0ffmann" ]
-        , Html.text (" " ++ Words.t model "credit.and" ++ " ")
         , Html.a [ attr "href" "members.html" ] [ Html.text (Words.t model "credit.crew") ]
         , Html.text " · "
         , Html.text (Words.t model "credit.project" ++ " ")
