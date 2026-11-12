@@ -2,15 +2,9 @@
 # and the Elm map page (front/). A function of pkgs' parts, for `pkgs.callPackage`, so
 # piabrota/nix-os builds it with its own nixpkgs. The build has no network: the Haskell packages come
 # from nixpkgs' Hackage set, the npm packages from front/package-lock.json (fetchNpmDeps), the Elm
-# packages from nix/elm-srcs.nix and nix/registry.dat (elm 0.19.1's own package registry, copied
+# packages from nix/elm-srcs.nix and nix/registry.dat (Elm's own package registry, copied
 # from an ELM_HOME that built front/), and MEMBERS.md from site/members/ (pinned by
 # blob id in site/members.version).
-#
-# Unverified: this file was written where Nix could not fetch its inputs. npmDepsHash and the
-# hashes in nix/elm-srcs.nix are lib.fakeHash placeholders; the first `nix build .#default` with
-# network reports each real hash. Whether nixpkgs' versions of the Haskell dependencies fall inside
-# the bounds of the two .cabal files is not checked either (cabal.project.freeze pins the versions
-# `just back-test` uses; callCabal2nix does not read it).
 {
   lib,
   stdenv,
@@ -18,6 +12,7 @@
   sqlite,
   elmPackages,
   fetchNpmDeps,
+  fetchurl,
   npmHooks,
   nodejs,
 }:
@@ -47,6 +42,18 @@ let
         (haskell.lib.compose.enableCabalFlag "systemlib")
         (haskell.lib.compose.addExtraLibrary sqlite)
       ];
+      # Files.hs imports hIfNoneMatch from Network.HTTP.Types, which exports everything only from
+      # http-types 0.12.5 (nixpkgs has 0.12.4); cabal.project.freeze pins 0.12.6.
+      http-types = lib.pipe super.http-types [
+        (haskell.lib.compose.overrideSrc {
+          version = "0.12.6";
+          src = fetchurl {
+            url = "https://hackage.haskell.org/package/http-types-0.12.6/http-types-0.12.6.tar.gz";
+            hash = "sha256-togEKstOU/H17+0mBWzx/cOuXca4XPvjIe3/wwecEGw=";
+          };
+        })
+        haskell.lib.compose.dontCheck
+      ];
       # The tests read the repo's site/ tree, which the package's own source does not hold:
       # `just back-test` runs them.
       marola-pages = haskell.lib.compose.dontCheck (self.callCabal2nix "marola-pages" (lib.cleanSource ../back/pages) { });
@@ -65,7 +72,7 @@ stdenv.mkDerivation {
   npmDeps = fetchNpmDeps {
     name = "marola-site-npm-deps";
     src = "${src}/front";
-    hash = lib.fakeHash;
+    hash = "sha256-4b+12HgaFt0pKOMNoJ09cQx8ZfAqRMPLsQZDl/aFim8=";
   };
 
   nativeBuildInputs = [
@@ -78,9 +85,15 @@ stdenv.mkDerivation {
   # ELM_HOME and fills it, so elm never asks package.elm-lang.org.
   postConfigure = elmPackages.fetchElmDeps {
     elmPackages = import ./elm-srcs.nix;
-    elmVersion = "0.19.1";
+    elmVersion = "0.19.2";
     registryDat = ./registry.dat;
   };
+
+  # nixpkgs ships Elm 0.19.2 only; it refuses an elm.json that names 0.19.1.
+  postPatch = ''
+    substituteInPlace front/elm.json --replace-fail '"elm-version": "0.19.1"' '"elm-version": "0.19.2"'
+    patchShebangs scripts
+  '';
 
   # npmConfigHook has installed front/node_modules; site_build.sh skips `npm ci` and cabal.
   buildPhase = ''
