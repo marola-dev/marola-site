@@ -41,7 +41,7 @@ marola needs compute and cloud: room to store data and graphics cards to train a
 marola is a set of code repositories, each with one job:
 
 - **marola-app** brings together the sea forecast, the beaches and the water quality, and works out the score.
-- **marola-site** is the map you are using.
+- **marola-front** is the map you are using.
 - **marola-corpus** keeps notes about the sea, each with its source.
 - **marola-ml** trains and tests the AI before it reaches marola-app.
 - **marola-oods** is an open archive of the beaches' and the water's history.

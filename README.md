@@ -1,4 +1,4 @@
-# marola-site
+# marola-front
 
 The map at [marola.dev](https://marola.dev): every beach in an area ranked hour by hour for sea,
 wind, waves, water quality and tide, with the trails near the coast and a place for studies about the

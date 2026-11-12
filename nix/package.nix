@@ -23,7 +23,7 @@ let
     && builtins.match "(app/dist|site/dist)(/.*)?" rel == null;
 in
 buildDotnetModule {
-  pname = "marola-site";
+  pname = "marola-front";
   version = "0.1.0";
 
   src = lib.cleanSourceWith {

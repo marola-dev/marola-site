@@ -223,7 +223,7 @@ def render_humans(members):
         "/* SITE */",
         f"Members: {FILE}",
         f"Cite: {ZENODO}",
-        "Code: https://github.com/marola-dev/marola-site",
+        "Code: https://github.com/marola-dev/marola-front",
         "Language: Português (Brasil), English",
         "Standards: HTML, CSS, JavaScript; no framework, no build step",
         "Components: Mapbox GL JS, Inter",

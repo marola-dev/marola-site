@@ -42,7 +42,7 @@ o marola precisa de computação em nuvem: espaço para guardar os dados e placa
 o marola é um conjunto de repositórios de código, cada um com uma tarefa:
 
 - **marola-app** junta a previsão do mar, as praias e a balneabilidade, e calcula a nota.
-- **marola-site** é o mapa que você está usando.
+- **marola-front** é o mapa que você está usando.
 - **marola-corpus** guarda as anotações sobre o mar, cada uma com a sua fonte.
 - **marola-ml** treina e testa a IA antes de ela ir para o marola-app.
 - **marola-oods** é um arquivo aberto com o histórico das praias e da água.

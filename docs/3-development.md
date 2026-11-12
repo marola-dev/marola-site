@@ -2,7 +2,7 @@
 
 ## Updating the app image
 
-Put the new jvm tag and its digest in [`marola-image`](https://github.com/marola-dev/marola-site/blob/main/marola-image) (the tag is
+Put the new jvm tag and its digest in [`marola-image`](https://github.com/marola-dev/marola-front/blob/main/marola-image) (the tag is
 `jvm-<short sha>` from the app's `docker.yml`; `docker buildx imagetools inspect <ref>` prints the
 digest), then run `just board-schema --update` and commit both files together. `board-schema.yml`
 fails a PR whose vendored schema differs from the image's, and `site.yml` checks the page against
@@ -53,7 +53,7 @@ runner, fails the run before the build job reaches the self-hosted one. Register
 from the devkit:
 
 ```bash
-MAROLA_RUNNER_REPO=marola-dev/marola-site MAROLA_RUNNER_PREFIX=marola-site \
+MAROLA_RUNNER_REPO=marola-dev/marola-front MAROLA_RUNNER_PREFIX=marola-front \
   MAROLA_RUNNER_LABELS=marola-br just runners 1
 ```
 

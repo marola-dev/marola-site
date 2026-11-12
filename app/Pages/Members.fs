@@ -326,7 +326,7 @@ module Members =
               yield "/* SITE */"
               yield "Members: " + file
               yield "Cite: " + zenodo
-              yield "Code: https://github.com/marola-dev/marola-site"
+              yield "Code: https://github.com/marola-dev/marola-front"
               yield "Language: Português (Brasil), English"
               yield "Standards: HTML, CSS, F# compiled to JavaScript; no framework"
               yield "Components: MapLibre GL JS, Inter" ]

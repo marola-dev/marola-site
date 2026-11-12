@@ -117,7 +117,7 @@ module GithubLogin =
                 new HttpRequestMessage(HttpMethod.Post, config.GithubBase + "/login/oauth/access_token")
 
             tokenRequest.Headers.Accept.Add(MediaTypeWithQualityHeaderValue "application/json")
-            tokenRequest.Headers.UserAgent.ParseAdd "marola-site"
+            tokenRequest.Headers.UserAgent.ParseAdd "marola-front"
 
             tokenRequest.Content <-
                 new FormUrlEncodedContent(
@@ -137,7 +137,7 @@ module GithubLogin =
 
                 userRequest.Headers.Authorization <- AuthenticationHeaderValue("Bearer", token)
                 userRequest.Headers.Accept.Add(MediaTypeWithQualityHeaderValue "application/vnd.github+json")
-                userRequest.Headers.UserAgent.ParseAdd "marola-site"
+                userRequest.Headers.UserAgent.ParseAdd "marola-front"
                 use! userResponse = http.SendAsync userRequest
                 let! user = json userResponse
 

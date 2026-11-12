@@ -22,7 +22,7 @@ Two ways to work on marola with Claude. Same Claude, two different workshops.
 | | **Claude Project** | **Claude Code CLI** |
 |---|---|---|
 | Where it runs | On claude.ai, in a cloud machine started for each thread | On your own computer, in a terminal, inside the repository you cloned |
-| How you start | Open the project on claude.ai and write in a thread | `cd marola-site`, then `claude` |
+| How you start | Open the project on claude.ai and write in a thread | `cd marola-front`, then `claude` |
 | What it can see | Only the repositories the project lists | The folder you are in, and everything your machine can reach |
 | What loads from the repository | `CLAUDE.md`, `AGENTS.md`, the skills in `.claude/skills/`, the subagents | All of that, and also the **plugins** in `.claude/settings.json` (marola-devkit, Ponytail) and the git hooks |
 | Tools | The cloud machine's (§2): `nix develop` is blocked there, so a setup script installs `just` and the linters | Yours: `nix develop` gives every tool the repository pins |
@@ -49,7 +49,7 @@ umbrella's current configuration (§9), its §2 to §4.
 
 The project needs three repositories:
 
-- https://github.com/marola-dev/marola-site, where the work happens.
+- https://github.com/marola-dev/marola-front, where the work happens.
 - https://github.com/marola-dev/marola, for the MIPs, `docs/PHASES.md` and the org rules in
   `AGENTS.md`.
 - https://github.com/marola-dev/marola-devkit, for `docs_lint.py`, `agents-check.sh` and
@@ -64,7 +64,7 @@ Branch naming (Hoffmann, 2026-10-05): never push to a branch with a random or se
 
 MIP work (Hoffmann, 2026-10-08): when the change writes or implements a MIP, name the branch after the MIP instead of the issue, following the umbrella's convention `docs/mip-NNNN-<short-kebab-slug>` (for example `docs/mip-0081-external-llm-evaluation`), using the same branch name in every repo the MIP touches. Branches named `claude/project-thread-*` are rejected by the devkit's PR branch check.
 
-Site work: read marola-site's AGENTS.md first and follow it. Start anything a visitor sees with the site-frontend skill, which names the other skills. A commit that touches site/static/ carries a `MIP: MIP-NNNN` or `MIP: none — <reason>` trailer. A PR that changes what a visitor sees shows before and after screenshots, desktop 1280 × 800 and phone 390 × 844, pushed to the orphan pr-screenshots branch; when the thread cannot reach Mapbox, say under the table that the map is a stand-in. A PR that changes more than 500 lines of JavaScript shows several sections (at least the map with its list or card, and every page it touches), in both languages (pt-BR and en), on desktop and phone. JavaScript is written the Ponytail way, the laziest code that works (Ponytail, Dietrich Gebert, MIT: https://github.com/DietrichGebert/ponytail, v5.2.0: https://github.com/DietrichGebert/ponytail/releases/tag/v5.2.0). Its plugin does not load in a Project thread, so read https://github.com/DietrichGebert/ponytail/blob/v5.2.0/skills/ponytail/SKILL.md and apply it by hand; the full Ponytail pass runs in the Claude Code CLI. Never deploy: no `just site-deploy`, no dispatch of site.yml.
+Site work: read marola-front's AGENTS.md first and follow it. Start anything a visitor sees with the site-frontend skill, which names the other skills. A commit that touches site/static/ carries a `MIP: MIP-NNNN` or `MIP: none — <reason>` trailer. A PR that changes what a visitor sees shows before and after screenshots, desktop 1280 × 800 and phone 390 × 844, pushed to the orphan pr-screenshots branch; when the thread cannot reach Mapbox, say under the table that the map is a stand-in. A PR that changes more than 500 lines of JavaScript shows several sections (at least the map with its list or card, and every page it touches), in both languages (pt-BR and en), on desktop and phone. JavaScript is written the Ponytail way, the laziest code that works (Ponytail, Dietrich Gebert, MIT: https://github.com/DietrichGebert/ponytail, v5.2.0: https://github.com/DietrichGebert/ponytail/releases/tag/v5.2.0). Its plugin does not load in a Project thread, so read https://github.com/DietrichGebert/ponytail/blob/v5.2.0/skills/ponytail/SKILL.md and apply it by hand; the full Ponytail pass runs in the Claude Code CLI. Never deploy: no `just site-deploy`, no dispatch of site.yml.
 
 Language: reply in the language Hoffmann writes in (usually Portuguese). Write code, comments, commits, PR titles and bodies, and docs in English, as the repositories are. The site's visitor copy is pt-BR and English in site/i18n/, and the Portuguese goes through the ptbr-humanizer skill.
 ```
@@ -99,14 +99,14 @@ uv tool install 'graphifyy==0.9.66' >&2
 The `nix profile` line installed these tools in a Marola Agent thread on 2026-10-11. The
 `uv tool install` line has not run yet. `agents-check` and `docs-lint` come from the devkit, so
 in a thread they run as `bash ../marola-devkit/scripts/agents-check.sh --block ../marola-devkit/agents/invariants.md` and
-`python3 ../marola-devkit/scripts/docs_lint.py .` from the marola-site checkout.
+`python3 ../marola-devkit/scripts/docs_lint.py .` from the marola-front checkout.
 
 ### Proposed addition to the project instructions
 
 Once the setup script installs graphify, paste this block after §1's instructions:
 
 ```text
-Finding code (Hoffmann, 2026-10-11): for a known keyword, use `git grep`. For "where is X" in a repo you have not read, run from that repo's directory `bash ../marola-devkit/scripts/graph.sh build` once per thread, then `bash ../marola-devkit/scripts/graph.sh query "<question>"`; `path <a> <b>` and `explain <name>` work too. In marola-site, ask by the site's own file or function names, because vendored Mapbox GL JS fills most of the graph. Treat the answer as where to start reading, then read the files. Never use graphify's output in a gate or a commit. If `graphify` is not on PATH, say so and fall back to git grep.
+Finding code (Hoffmann, 2026-10-11): for a known keyword, use `git grep`. For "where is X" in a repo you have not read, run from that repo's directory `bash ../marola-devkit/scripts/graph.sh build` once per thread, then `bash ../marola-devkit/scripts/graph.sh query "<question>"`; `path <a> <b>` and `explain <name>` work too. In marola-front, ask by the site's own file or function names, because vendored Mapbox GL JS fills most of the graph. Treat the answer as where to start reading, then read the files. Never use graphify's output in a gate or a commit. If `graphify` is not on PATH, say so and fall back to git grep.
 ```
 
 ### What a thread cannot do
@@ -120,7 +120,7 @@ Finding code (Hoffmann, 2026-10-11): for a known keyword, use `git grep`. For "w
 
 ## 3. Plugins, skills and connectors
 
-- **Skills.** marola-site's `.claude/skills/` load in a thread: 18 of the 19 were in a Marola
+- **Skills.** marola-front's `.claude/skills/` load in a thread: 18 of the 19 were in a Marola
   Agent thread's skill list on 2026-10-14, and `review-animations` is user-invoked only
   (`disable-model-invocation`). `site-frontend` is the entry point and orders the rest:
   `ptbr-humanizer`, `citizen-science-site`, `news-post`, the vendored design, testing and
@@ -132,7 +132,7 @@ Finding code (Hoffmann, 2026-10-11): for a known keyword, use `git grep`. For "w
   repo's `.claude/settings.json` declares, does not load in a Project thread.
 - **The Ponytail case.** marola imported Ponytail ([DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail),
   MIT) as skills, `ponytail`, `ponytail-review` and `ponytail-audit`, vendored inside the
-  marola-devkit plugin (the umbrella's MIP-0080 §2). marola-site never had a copy in its own
+  marola-devkit plugin (the umbrella's MIP-0080 §2). marola-front never had a copy in its own
   `.claude/skills/`: here Ponytail arrives only through plugins, marola-devkit and, since #139,
   `ponytail@ponytail` itself at `v5.2.0`. So a Project thread cannot run `/ponytail`; it follows
   the rules by reading [`skills/ponytail/SKILL.md`](https://github.com/DietrichGebert/ponytail/blob/v5.2.0/skills/ponytail/SKILL.md),
@@ -150,13 +150,13 @@ inbox belongs to one project at a time.
 
 ## 5. Joining as a new member
 
-The project is private, so no one else can join it. A new member works in marola-site with the
+The project is private, so no one else can join it. A new member works in marola-front with the
 Claude Code CLI under its `AGENTS.md`, or builds a project of their own from this file:
 
 1. Connect GitHub to claude.ai. A thread reaches only the repositories its project lists, and it
-   can push only where its owner's GitHub account can. Only the collaborators marola-site's
+   can push only where its owner's GitHub account can. Only the collaborators marola-front's
    settings list with write, maintain or admin can push to it (three on 2026-10-11). Anyone else
-   forks marola-site, attaches the fork to the project, installs the Claude GitHub App on it, and
+   forks marola-front, attaches the fork to the project, installs the Claude GitHub App on it, and
    opens the PRs from the fork. A fork PR's Actions wait for a maintainer's approval, and Gemini
    reviews a fork PR without pushing fixes to it.
 
@@ -165,14 +165,14 @@ Claude Code CLI under its `AGENTS.md`, or builds a project of their own from thi
    repository its project does not list:
 
    ```text
-   https://github.com/<your-user>/marola-site
+   https://github.com/<your-user>/marola-front
    ```
 
    Before each task, sync the fork with marola-dev, with GitHub's "Sync fork" button or
-   `git pull https://github.com/marola-dev/marola-site main`. A thread opening a PR from a fork to
+   `git pull https://github.com/marola-dev/marola-front main`. A thread opening a PR from a fork to
    marola-dev has not been tried yet.
 2. Create the cloud environment with §2's setup script.
-3. For CLI work, run `nix develop` in marola-site and accept the plugin its
+3. For CLI work, run `nix develop` in marola-front and accept the plugin its
    `.claude/settings.json` declares.
 
 ## 6. Creating the project

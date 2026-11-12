@@ -102,7 +102,7 @@ module Meta =
                 "- [docs.marola.dev](https://docs.marola.dev/): the project's documentation, every repo"
                 "- [docs.marola.dev/llms.txt](https://docs.marola.dev/llms.txt): the same for the docs and"
                 + " the code"
-                "- [Code](https://github.com/marola-dev/marola-site): this site; the rest is under"
+                "- [Code](https://github.com/marola-dev/marola-front): this site; the rest is under"
                 + " https://github.com/marola-dev"
                 "- [How to cite](" + Members.zenodo + "): the marola record on Zenodo"
                 ""
@@ -156,7 +156,7 @@ module Meta =
         let expires = today.AddDays expiresDays
 
         "# How to report a vulnerability in marola: privately, on GitHub. There is no security e-mail.\n"
-        + "Contact: https://github.com/marola-dev/marola-site/security/advisories/new\n"
+        + "Contact: https://github.com/marola-dev/marola-front/security/advisories/new\n"
         + "Expires: "
         + expires.ToString("yyyy-MM-dd")
         + "T00:00:00Z\n"

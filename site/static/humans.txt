@@ -45,7 +45,7 @@ ORCID: https://orcid.org/0009-0004-3742-2861
 /* SITE */
 Members: https://github.com/marola-dev/.github/blob/main/MEMBERS.md
 Cite: https://doi.org/10.5281/zenodo.23224155
-Code: https://github.com/marola-dev/marola-site
+Code: https://github.com/marola-dev/marola-front
 Language: Português (Brasil), English
 Standards: HTML, CSS, JavaScript; no framework, no build step
 Components: Mapbox GL JS, Inter
