@@ -13,6 +13,7 @@ import Data.Text qualified as T
 openfreemap, gibs, spotify :: Text
 openfreemap = "tiles.openfreemap.org"
 gibs = "gibs.earthdata.nasa.gov"
+
 -- | The playlist player, an iframe the map page loads only when the visitor opens it.
 spotify = "open.spotify.com"
 
