@@ -48,16 +48,17 @@ overrides live here, not in their files.
    The satellite layers (satélite, temperatura do mar, anomalias, El Niño) load NASA GIBS's
    public, keyless tiles, and only once a visitor picks one. Nothing else is fetched from another
    origin: no CDN, no other map or font provider.
-2. **Inter is the font.** Taste discourages it by default but allows it for public-information,
-   accessibility-first sites, which marola is. No serif.
+2. **Three self-hosted families, each with one job** (DESIGN.md, Type): Fjalla One for names and
+   numerals, Inter for body and controls, JetBrains Mono for hours, units and sources. Taste's
+   warning against Inter does not apply. No serif, no fourth family, no CDN font.
 3. **Lucide is the icon set**, chosen on purpose (the maintainer asked for an established set).
    The one custom shape (the jellyfish) is drawn on Lucide's grid.
 4. **The score colours are data**, not an accent. "One accent" means `--accent`; green, yellow,
    orange and red never decorate.
-5. **The map is light, like the chrome.** The base map is Mapbox's `outdoors-v12` (or the Studio
-   style in `MAPBOX_STYLE`): the audience is beachgoers, and a dark Windy-like map read as too heavy
-   for them. The rail, keys and popups are white glass. A dark theme is still DESIGN.md "Not yet",
-   whatever taste says.
+5. **Ink chrome, light map.** The bars, the panels and everything that floats over the map sit on
+   the ink tokens (the rail, keys and popups are ink glass); the base map stays light, because a
+   dark map read as too heavy for beachgoers. The look follows the owner's piabrota.art (DESIGN.md
+   names the borrowed rules). A light theme is DESIGN.md "Not yet", whatever taste says.
 6. **Landing-page rules do not apply to the map**: hero, CTA, bento, testimonials, eyebrows.
    The map page has no hero; the about/support pages are reading columns.
 7. **Lowercase house style stays**, with the exemptions `site_check.js` asserts.
@@ -113,6 +114,6 @@ link; translate them into DESIGN.md tokens rather than pasting values.
 ## Red flags
 
 A hex code in a rule · a second accent or a tinted band · a serif · a pill-shaped card or a
-square button (radius scale broken) · a shadow on something that does not float · an emoji ·
+square-cornered button (controls are pills, panels 12 px) · a shadow on something that does not float · an emoji ·
 an em dash in copy · a font or icon from a CDN · a control styled on its own · restyling without
 opening the page · a Mapbox token in a committed file · a flow colour that could pass for a score.

@@ -1,4 +1,4 @@
-module View.Bar exposing (header, hourIndex, hourLabel, hourbar)
+module View.Bar exposing (hourIndex, hourLabel, tools)
 
 import Area exposing (Area)
 import Beach exposing (Selection(..))
@@ -13,38 +13,8 @@ import Json.Decode as D
 import Json.Encode
 import Model exposing (DayEntry, Model, Panel(..))
 import Msg exposing (Msg(..))
-import Svg
 import Ui exposing (attr, cls, idAttr)
 import Words
-
-
-brand : Model -> Html Msg
-brand model =
-    Html.div [ cls "brand" ]
-        [ Html.h1 [] [ Words.icon "brand", Html.text "marola", piabrota model ]
-        , Html.p [ cls "tagline" ] [ Html.text (Words.t model "header.tagline") ]
-        ]
-
-
-{-| The mark is room.piabrota.art's favicon (`/favicon.svg`), drawn inline: the page holds no `<img>`.
--}
-piabrota : Model -> Html Msg
-piabrota model =
-    Html.a
-        [ cls "piabrota"
-        , attr "href" Config.piabrota
-        , attr "target" "_blank"
-        , attr "rel" "noopener"
-        , attr "title" (Words.t model "brand.piabrota")
-        , attr "aria-label" (Words.t model "brand.piabrota")
-        ]
-        [ Svg.svg [ attr "viewBox" "0 0 100 100", attr "aria-hidden" "true", attr "focusable" "false" ]
-            [ Svg.node "rect" [ attr "width" "100", attr "height" "100", attr "rx" "22", attr "fill" "#BC2318" ] []
-            , Svg.node "path" [ attr "d" "M12 50 Q50 18 88 50 Q50 82 12 50Z", attr "fill" "#F7F3EA" ] []
-            , Svg.node "circle" [ attr "cx" "50", attr "cy" "50", attr "r" "14", attr "fill" "#2E9E4F" ] []
-            , Svg.node "circle" [ attr "cx" "50", attr "cy" "50", attr "r" "6", attr "fill" "#0B0D12" ] []
-            ]
-        ]
 
 
 {-| The iframe exists only while the player is open, so Spotify is not contacted before a click.
@@ -181,37 +151,6 @@ control model id iconName label title extra message =
         [ Words.icon iconName, Html.span [] [ Html.text label ] ]
 
 
-header : Model -> Html Msg
-header model =
-    let
-        picked =
-            Maybe.map .id model.area |> Maybe.withDefault ""
-    in
-    Html.header [ cls "bar" ]
-        [ brand model
-        , Html.div [ cls "controls" ]
-            [ Html.Keyed.node "select"
-                [ idAttr "area"
-                , attr "aria-label" (Words.t model "controls.area")
-                , Html.Events.on "change" (D.map AreaPicked Html.Events.targetValue)
-                ]
-                (List.map (\a -> areaOption (a.id == picked) a) model.areas)
-            , insta model
-            , days model
-            , control model "near" "locate" (Words.t model "controls.near") "controls.near_title" [ Words.pressed (model.here /= Nothing) ] NearPressed
-            , control model "playlist" "music" (Words.t model "controls.playlist") "controls.playlist_title" [ Words.pressed model.playlistOpen, attr "aria-controls" "player" ] PlaylistPressed
-            , control model
-                "toggle-list"
-                "list"
-                (Words.t model "controls.list")
-                ""
-                [ attr "aria-controls" "list", Words.expanded (model.panel == BeachList) ]
-                ListToggled
-            ]
-        , player model
-        ]
-
-
 {-| The slider's index: -1 is each beach at its own best hour.
 -}
 hourIndex : Model -> Int
@@ -258,7 +197,6 @@ legend : Model -> Html Msg
 legend model =
     Html.span [ cls "legend", attr "aria-hidden" "true" ]
         [ Html.b [] [ Html.text (Words.t model "legend.score") ]
-        , Html.text " "
         , chip "c70" [ Html.text "≥70" ]
         , chip "c40" [ Html.text "40–69" ]
         , chip "c1" [ Html.text "1–39" ]
@@ -294,4 +232,38 @@ hourbar model =
             ]
             []
         , legend model
+        ]
+
+
+{-| The tool row under the top bar: the controls, the hour slider with its legend, the tagline.
+-}
+tools : Model -> Html Msg
+tools model =
+    let
+        picked =
+            Maybe.map .id model.area |> Maybe.withDefault ""
+    in
+    Html.div [ cls "bar" ]
+        [ Html.div [ cls "controls" ]
+            [ Html.Keyed.node "select"
+                [ idAttr "area"
+                , attr "aria-label" (Words.t model "controls.area")
+                , Html.Events.on "change" (D.map AreaPicked Html.Events.targetValue)
+                ]
+                (List.map (\a -> areaOption (a.id == picked) a) model.areas)
+            , insta model
+            , days model
+            , control model "near" "locate" (Words.t model "controls.near") "controls.near_title" [ Words.pressed (model.here /= Nothing) ] NearPressed
+            , control model "playlist" "music" (Words.t model "controls.playlist") "controls.playlist_title" [ Words.pressed model.playlistOpen, attr "aria-controls" "player" ] PlaylistPressed
+            , control model
+                "toggle-list"
+                "list"
+                (Words.t model "controls.list")
+                ""
+                [ attr "aria-controls" "list", Words.expanded (model.panel == BeachList) ]
+                ListToggled
+            ]
+        , hourbar model
+        , Html.p [ cls "tagline" ] [ Html.text (Words.t model "header.tagline") ]
+        , player model
         ]

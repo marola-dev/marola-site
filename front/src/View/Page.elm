@@ -94,5 +94,5 @@ view model =
             [ Html.p [ cls "nojs" ] [ Html.text "…" ] ]
 
          else
-            [ View.Nav.view model, View.Bar.header model, View.Bar.hourbar model, stage model, View.Footer.view model ]
+            [ View.Nav.view model, View.Bar.tools model, stage model, View.Footer.view model ]
         )

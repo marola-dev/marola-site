@@ -1,6 +1,6 @@
--- | The frame of every static page: head, nav, header, footer and the language switch. The same
--- chrome as the map page, with plain links where the map page has buttons, and no script, with the parts
--- of the map page's nav and icons it draws.
+-- | The frame of every static page: head, top bar, footer and the language switch. The same chrome
+-- as the map page (front/src/View/Nav.elm, Footer.elm), class for class, with plain links where the
+-- map page has buttons, and no script.
 module Marola.Pages.Layout
   ( PageHead (..),
     origin,
@@ -12,7 +12,9 @@ module Marola.Pages.Layout
   )
 where
 
+import Data.Char (isAsciiLower, isDigit)
 import Data.Text (Text)
+import Data.Text qualified as T
 import Marola.Pages.Html (Attr, Node)
 import Marola.Pages.Html qualified as H
 import Marola.Pages.I18n (Locale (..))
@@ -76,7 +78,7 @@ headNodes l p =
     meta [("name", "viewport"), ("content", "width=device-width, initial-scale=1")],
     H.el "title" [] [H.text (title p)],
     meta [("name", "description"), ("content", description p)],
-    meta [("name", "theme-color"), ("content", "#ffffff")]
+    meta [("name", "theme-color"), ("content", "#0B0D12")]
   ]
     <> [meta [("name", "robots"), ("content", "noindex")] | noIndex p]
     <> ( if canonical p
@@ -187,18 +189,44 @@ github loc =
         ]
     ]
 
--- | Icons.icon "brand".
-brand :: Node
-brand =
-  H.svg
-    "svg"
-    [ H.cls "ic ic-brand",
-      H.attr "viewBox" "0 0 24 24",
-      H.attr "aria-hidden" "true",
-      H.attr "focusable" "false"
+-- | piabrota's eye, as Nav.elm draws it.
+eye :: Node
+eye =
+  decorative
+    [H.attr "viewBox" "0 0 100 100"]
+    [ svgEl "rect" [("width", "100"), ("height", "100"), ("rx", "22"), ("fill", "#BC2318")],
+      svgEl "path" [("d", "M12 50 Q50 18 88 50 Q50 82 12 50Z"), ("fill", "#F7F3EA")],
+      svgEl "circle" [("cx", "50"), ("cy", "50"), ("r", "14"), ("fill", "#2E9E4F")],
+      svgEl "circle" [("cx", "50"), ("cy", "50"), ("r", "6"), ("fill", "#0B0D12")]
     ]
-    [ svgEl "path" [("d", "M2 9c2.5 0 2.5-2.5 5-2.5S9.5 9 12 9s2.5-2.5 5-2.5S19.5 9 22 9")],
-      svgEl "path" [("d", "M2 16c2.5 0 2.5-2.5 5-2.5s2.5 2.5 5 2.5 2.5-2.5 5-2.5 2.5 2.5 5 2.5")]
+
+piabrota :: Text
+piabrota = "https://piabrota.art"
+
+outside :: [Attr]
+outside = [H.attr "target" "_blank", H.attr "rel" "noopener"]
+
+-- | The logo tile and the wordmark, a link to the map, then the eye.
+brand :: Locale -> Node
+brand loc =
+  H.el
+    "div"
+    [H.cls "brand"]
+    [ H.el
+        "h1"
+        []
+        [ H.el
+            "a"
+            [H.attr "href" (mapPath (language loc))]
+            [H.el "span" [H.cls "logo", H.attr "aria-hidden" "true"] [], H.text "marola"]
+        ],
+      H.el
+        "a"
+        ( [H.cls "piabrota", H.attr "href" piabrota]
+            <> outside
+            <> [H.attr "title" (I18n.t loc "brand.piabrota"), H.attr "aria-label" (I18n.t loc "brand.piabrota")]
+        )
+        [eye]
     ]
 
 -- | The slugs the nav links to, in the order of the map page's nav.
@@ -238,27 +266,67 @@ nav loc p =
       external loc "https://github.com/marola-dev/marola-research/blob/main/README.md" "nav.research",
       external loc "https://github.com/marola-dev/marola-research/blob/main/chamada/chamada.pdf" "nav.contribute",
       navLink loc p "members" "nav.members",
-      navLink loc p "support" "nav.donate",
-      languageSwitch loc p,
-      linkedin loc,
-      github loc
+      navLink loc p "support" "nav.donate"
     ]
 
-header :: Locale -> Node
-header loc =
+top :: Locale -> PageHead -> Node
+top loc p =
   H.el
     "header"
-    [H.cls "bar"]
+    [H.cls "top"]
+    [ brand loc,
+      nav loc p,
+      H.el "div" [H.cls "navtools"] [languageSwitch loc p, linkedin loc, github loc]
+    ]
+
+-- | Where the map page has its tool row: the way back to the map and what the site is.
+pageBar :: Locale -> Node
+pageBar loc =
+  H.el
+    "div"
+    [H.cls "bar pagebar"]
     [ H.el
         "div"
-        [H.cls "brand"]
-        [ H.el "h1" [] [brand, H.text "marola"],
-          H.el "p" [H.cls "tagline"] [H.text (I18n.t loc "header.tagline")]
-        ],
-      H.el
-        "div"
         [H.cls "controls"]
-        [H.el "a" [H.attr "href" (mapPath (language loc))] [H.text (I18n.t loc "about.back")]]
+        [H.el "a" [H.attr "href" (mapPath (language loc))] [H.text (I18n.t loc "about.back")]],
+      H.el "p" [H.cls "tagline"] [H.text (I18n.t loc "header.tagline")]
+    ]
+
+-- | The nav key of the section a page belongs to, shown as the eyebrow above its title.
+sectionKey :: Text -> Maybe Text
+sectionKey s =
+  lookup
+    s
+    [ ("news", "nav.news"),
+      ("studies", "nav.studies"),
+      ("about", "nav.about"),
+      ("contact", "nav.contact"),
+      ("members", "nav.members"),
+      ("support", "nav.donate"),
+      ("privacy", "footer.privacy_page"),
+      ("takedown", "footer.takedown")
+    ]
+
+-- | @p-about@, @p-404@: what the style sheet tells one page from another by. A study's address
+-- carries its id, so it has none.
+pageClass :: PageHead -> Text
+pageClass p = if T.all (\c -> isAsciiLower c || isDigit c || c == '-') (slug p) then " p-" <> slug p else ""
+
+eyebrow :: Locale -> PageHead -> [Node]
+eyebrow loc p =
+  [ H.el "p" [H.cls "eyebrow"] [H.text ("marola · " <> I18n.t loc key)]
+  | Just key <- [current p >>= sectionKey]
+  ]
+
+credit :: Locale -> Node
+credit loc =
+  H.el
+    "p"
+    [H.cls "credit"]
+    [ H.text (I18n.t loc "credit.made" <> " "),
+      H.el "a" [H.attr "href" (path (language loc) "members")] [H.text (I18n.t loc "credit.crew")],
+      H.text (" · " <> I18n.t loc "credit.project" <> " "),
+      H.el "a" ([H.cls "pia", H.attr "href" piabrota] <> outside) [eye, H.text "piabrota"]
     ]
 
 -- | The whole document for the children of @<main class="main about">@.
@@ -275,9 +343,9 @@ page loc p main' =
           H.el
             "body"
             []
-            [ nav loc p,
-              header loc,
-              H.el "main" [H.cls "main about"] main',
+            [ top loc p,
+              pageBar loc,
+              H.el "main" [H.cls ("main about" <> pageClass p)] (eyebrow loc p <> main'),
               H.el
                 "footer"
                 [H.cls "footer"]
@@ -290,7 +358,8 @@ page loc p main' =
                       H.el "a" [H.attr "href" (path l "privacy")] [H.text (I18n.t loc "footer.privacy_page")],
                       H.text " · ",
                       H.el "a" [H.attr "href" (path l "takedown")] [H.text (I18n.t loc "footer.takedown")]
-                    ]
+                    ],
+                  credit loc
                 ]
             ]
         ]

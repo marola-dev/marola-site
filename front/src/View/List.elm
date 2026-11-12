@@ -49,10 +49,10 @@ row model ( beach, km ) =
 
         waterSpan =
             if beach.water.unfit then
-                [ Html.text " ", Html.span [ cls "water unfit" ] [ Html.text summary ] ]
+                [ Html.span [ cls "water unfit" ] [ Html.text summary ] ]
 
             else if not (List.isEmpty beach.water.points) then
-                [ Html.text " ", Html.span [ cls "water" ] [ Html.text summary ] ]
+                [ Html.span [ cls "water" ] [ Html.text summary ] ]
 
             else
                 []
@@ -60,7 +60,7 @@ row model ( beach, km ) =
         distance =
             case km of
                 Just d ->
-                    [ Html.text " ", Html.span [ cls "dist" ] [ Html.text (Fmt.num model.loc d 1 ++ " km") ] ]
+                    [ Html.span [ cls "dist" ] [ Html.text (Fmt.num model.loc d 1 ++ " km") ] ]
 
                 Nothing ->
                     []
@@ -71,13 +71,10 @@ row model ( beach, km ) =
     ( beach.name
     , Html.li
         [ attr "data-name" beach.name, attr "tabindex" "0", attr "role" "button", Ui.onClick pick, Ui.onActivate pick ]
-        ([ Html.span [ cls ("score " ++ Band.cssClass (Band.ofScore score beach.water.unfit)) ] [ Html.text chip ]
-         , Html.text (beach.name ++ " ")
-         , Html.span [ cls "dist" ] [ Html.text hour ]
-         ]
-            ++ distance
-            ++ waterSpan
-        )
+        [ Html.span [ cls "name" ] [ Html.text beach.name ]
+        , Html.span [ cls "meta" ] (Html.span [ cls "dist" ] [ Html.text hour ] :: distance ++ waterSpan)
+        , Html.span [ cls ("score " ++ Band.cssClass (Band.ofScore score beach.water.unfit)) ] [ Html.text chip ]
+        ]
     )
 
 

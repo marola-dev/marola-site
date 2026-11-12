@@ -290,6 +290,40 @@ row model key content =
     [ Html.dt [] [ Html.text (Words.t model key) ], Html.dd [] content ]
 
 
+metric : Model -> String -> List (Html Msg) -> String -> String -> Html Msg
+metric model key lead number unit =
+    Html.div [ cls "metric" ]
+        [ Html.b [] (lead ++ [ Html.text number, Html.small [] [ Html.text unit ] ])
+        , Html.span [] [ Html.text (Words.t model key) ]
+        ]
+
+
+{-| The hour on show at a glance: the score and three readings of that hour, each a numeral over
+its label. A beach dark at that hour shows dashes.
+-}
+metrics : Model -> Beach -> Maybe Shown -> Html Msg
+metrics model b shown =
+    let
+        entry =
+            Beach.hourEntry b shown
+
+        score =
+            Maybe.map .score shown
+
+        reading pick digits =
+            entry |> Maybe.andThen pick |> Maybe.map (\v -> Fmt.num model.loc v digits) |> Maybe.withDefault "–"
+
+        dot =
+            Html.i [ cls (Band.cssClass (Band.ofScore score b.water.unfit)) ] []
+    in
+    Html.div [ cls "metrics" ]
+        [ metric model "metric.score" [ dot ] (Maybe.map String.fromInt score |> Maybe.withDefault "–") "/100"
+        , metric model "metric.wind" [] (reading .windKmh 0) "km/h"
+        , metric model "metric.waves" [] (reading .waveM 1) "m"
+        , metric model "metric.water" [] (reading .seaTempC 1) "°C"
+        ]
+
+
 body : Model -> Beach -> Html Msg
 body model b =
     let
@@ -302,8 +336,9 @@ body model b =
     Html.section [ idAttr "card", cls "card", attr "aria-live" "polite" ]
         [ Html.button [ cls "close", attr "type" "button", attr "aria-label" (Words.t model "card.close"), Ui.onClick CardClosed ] [ Html.text "×" ]
         , Html.h2 [] [ Html.text b.name ]
-        , Html.div [ cls "aspects" ] (List.map Tree.toHtml (AspectsView.children tip))
         , headline model b shown
+        , metrics model b shown
+        , Html.div [ cls "aspects" ] (List.map Tree.toHtml (AspectsView.children tip))
         , Html.dl []
             (List.concat
                 [ row model "card.why" [ why model shown ]

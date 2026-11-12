@@ -209,5 +209,12 @@
   "controls.playlist": "spotify",
   "controls.playlist_title": "open GREAT RESET, the Spotify playlist of room.piabrota.art",
   "player.label": "GREAT RESET, a playlist on Spotify",
-  "player.open": "open in Spotify"
+  "player.open": "open in Spotify",
+  "credit.made": "made in rio de janeiro by",
+  "credit.crew": "marola-dev",
+  "credit.project": "a project by",
+  "metric.score": "score",
+  "metric.wind": "wind",
+  "metric.waves": "waves",
+  "metric.water": "water"
 }

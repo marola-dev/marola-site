@@ -209,5 +209,12 @@
   "controls.playlist": "button that shows or hides the Spotify player of the playlist; Spotify is a product name",
   "controls.playlist_title": "tooltip of controls.playlist; GREAT RESET is the playlist's title and room.piabrota.art a site name, both kept as written",
   "player.label": "title of the embedded Spotify player, read by screen readers",
-  "player.open": "link under the player that opens the playlist on Spotify's site or app"
+  "player.open": "link under the player that opens the playlist on Spotify's site or app",
+  "credit.made": "footer credit line, first words; followed by credit.crew",
+  "credit.crew": "footer credit line: the organisation's name, a link to the members page; a name, not translated",
+  "credit.project": "footer credit line, after a middle dot; followed by the link 'piabrota' (piabrota.art) with its eye mark",
+  "metric.score": "beach card metric row: label under the score numeral (out of 100)",
+  "metric.wind": "beach card metric row: label under the wind speed in km/h",
+  "metric.waves": "beach card metric row: label under the wave height in metres",
+  "metric.water": "beach card metric row: label under the sea water temperature in °C"
 }
