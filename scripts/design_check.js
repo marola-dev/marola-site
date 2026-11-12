@@ -22,14 +22,10 @@ const path = require("path");
 
 const ROOT = path.join(__dirname, "..");
 
-// Hex colours that may stay outside `:root`. Each one is a debt: a token would be better, but the
-// rule would change how the page looks. The check also fails when an entry no longer occurs, so
-// this list can only shrink.
-const ALLOW = {
-  "#fff": "text on a filled accent, on a score colour and on a pressed layer button; white by definition, not the page background",
-  "#b4bec9": "hover border of a control, one step darker than --line-strong; no token yet",
-  "#137a5c": "the 'proper' water status in the beach card; --c70 is too light for text; no token yet",
-};
+// Hex colours that may stay outside `:root`, each with its reason. The check also fails when an
+// entry no longer occurs, so this list can only shrink. It is empty since the ink redraw: white on a
+// fill is `--on-fill`, the "proper" water text is `--ok`, and a control's hover border is `--accent`.
+const ALLOW = {};
 
 function stripComments(css) {
   return css.replace(/\/\*[\s\S]*?\*\//g, "");

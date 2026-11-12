@@ -48,7 +48,7 @@ async function mount(config) {
     attributionControl: false, renderWorldCopies: false,
   });
   map.addControl(new lib.AttributionControl({ compact: true, customAttribution: config.attributions }));
-  map.addControl(new lib.NavigationControl());
+  map.addControl(new lib.NavigationControl(), 'top-left');
   map.on("error", (e) => fail((e.error && e.error.message) || "map error"));
   map.on("click", onMapClick);
   map.on("load", () => { loaded = true; emitFn("ready", ""); flush(); });

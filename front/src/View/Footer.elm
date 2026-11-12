@@ -13,6 +13,7 @@ import Lore exposing (Lore)
 import Model exposing (Model, Status(..))
 import Msg exposing (Fold(..), Msg(..))
 import Ui exposing (attr, cls, idAttr)
+import View.Nav
 import Words
 
 
@@ -164,6 +165,25 @@ blurbPanel model =
         ]
 
 
+{-| Who makes marola: the last line of every page's footer.
+-}
+credit : Model -> Html Msg
+credit model =
+    let
+        out href =
+            [ attr "href" href, attr "target" "_blank", attr "rel" "noopener" ]
+    in
+    Html.p [ cls "credit" ]
+        [ Html.text (Words.t model "credit.made" ++ " ")
+        , Html.a (out "https://github.com/h0ffmann") [ Html.text "h0ffmann" ]
+        , Html.text (" " ++ Words.t model "credit.and" ++ " ")
+        , Html.a [ attr "href" "members.html" ] [ Html.text (Words.t model "credit.crew") ]
+        , Html.text " · "
+        , Html.text (Words.t model "credit.project" ++ " ")
+        , Html.a (cls "pia" :: out Config.piabrota) [ View.Nav.eye, Html.text "piabrota" ]
+        ]
+
+
 view : Model -> Html Msg
 view model =
     let
@@ -210,4 +230,5 @@ view model =
             , Html.div [ cls "folds" ] folds
             ]
             :: panels
+            ++ [ credit model ]
         )

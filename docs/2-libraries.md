@@ -10,7 +10,9 @@ CDN, so the CSP in [design.md](1-design.md#csp-and-the-no-third-party-rule) can 
 | Library | Version | Why vendored | Licence |
 |---|---|---|---|
 | Mapbox GL JS | 3.32.0 (the CSP build, `vendor/mapbox-gl-csp.js` + `vendor/mapbox-gl-csp-worker.js`) | The base map; its custom-layer API backs `flow.js`'s WebGL wind/wave particles. Needs a Mapbox account and `pk.` token at runtime regardless of vendoring ([tile policy](4-reference.md#tile-policy)) | Mapbox TOS (`vendor/LICENSE.mapbox-gl`): usable only with a Mapbox account in good standing, not a permissive open-source licence |
-| Inter (variable weight) | self-hosted woff2 (`vendor/fonts/inter-latin-wght-normal.woff2`) | A public-information, accessibility-first page; never pulled from a font CDN (no third-party font origin) | SIL OFL 1.1 (`vendor/fonts/LICENSE.inter`) |
+| Inter (variable weight) | self-hosted woff2 (`vendor/fonts/inter-latin-wght-normal.woff2`) | Body text and controls; never pulled from a font CDN (no third-party font origin) | SIL OFL 1.1 (`vendor/fonts/LICENSE.inter`) |
+| Fjalla One 400 | self-hosted woff2 (`vendor/fonts/fjalla-one-latin-400-normal.woff2`), from `@fontsource/fjalla-one` 5.3.0 | Names and numerals: the wordmark, titles, beach names, scores (DESIGN.md, Type) | SIL OFL 1.1 (`vendor/fonts/LICENSE.fjalla-one`) |
+| JetBrains Mono (variable weight) | self-hosted woff2 (`vendor/fonts/jetbrains-mono-latin-wght-normal.woff2`), from `@fontsource-variable/jetbrains-mono` 5.3.0 | Hours, dates, distances, units, sources, section links | SIL OFL 1.1 (`vendor/fonts/LICENSE.jetbrains-mono`) |
 | Lucide icons | inlined per-icon through `icon(name)` in `app.js` | Line icons, 16 px, matching [`DESIGN.md`](../DESIGN.md)'s one-icon-style rule | ISC, plus MIT for the icons descended from Feather (`vendor/icons/LICENSE.lucide` lists which) |
 | "Oceanwavescrushing" (waves.mp3) | re-encoded to 48 kbit/s mono | The `#sound` toggle's ambient loop | CC BY 3.0, via Luftrum → Blanket → marola's re-encode (`vendor/sounds/LICENSE.waves`) |
 
