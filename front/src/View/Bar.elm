@@ -13,6 +13,7 @@ import Json.Decode as D
 import Json.Encode
 import Model exposing (DayEntry, Model, Panel(..))
 import Msg exposing (Msg(..))
+import Svg
 import Ui exposing (attr, cls, idAttr)
 import Words
 
@@ -26,7 +27,7 @@ brand model =
         ]
 
 
-{-| The mark is room.piabrota.art's favicon (`/favicon.svg`), copied as `piabrota-eye.svg`.
+{-| The mark is room.piabrota.art's favicon (`/favicon.svg`), drawn inline: the page holds no `<img>`.
 -}
 piabrota : Model -> Html Msg
 piabrota model =
@@ -38,7 +39,13 @@ piabrota model =
         , attr "title" (Words.t model "brand.piabrota")
         , attr "aria-label" (Words.t model "brand.piabrota")
         ]
-        [ Html.img [ attr "src" "piabrota-eye.svg", attr "alt" "", attr "width" "20", attr "height" "20" ] [] ]
+        [ Svg.svg [ attr "viewBox" "0 0 100 100", attr "aria-hidden" "true", attr "focusable" "false" ]
+            [ Svg.node "rect" [ attr "width" "100", attr "height" "100", attr "rx" "22", attr "fill" "#BC2318" ] []
+            , Svg.node "path" [ attr "d" "M12 50 Q50 18 88 50 Q50 82 12 50Z", attr "fill" "#F7F3EA" ] []
+            , Svg.node "circle" [ attr "cx" "50", attr "cy" "50", attr "r" "14", attr "fill" "#2E9E4F" ] []
+            , Svg.node "circle" [ attr "cx" "50", attr "cy" "50", attr "r" "6", attr "fill" "#0B0D12" ] []
+            ]
+        ]
 
 
 {-| The iframe exists only while the player is open, so Spotify is not contacted before a click.

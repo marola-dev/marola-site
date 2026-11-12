@@ -118,7 +118,7 @@ small { font-size: var(--fs-13); letter-spacing: var(--tr-13); }
 /* piabrota's eye: the mark of room.piabrota.art, small, after the tagline */
 .piabrota { display: inline-flex; align-self: center; flex: none; border-radius: 5px; opacity: .85; }
 .piabrota:hover, .piabrota:focus-visible { opacity: 1; }
-.piabrota img { display: block; width: 20px; height: 20px; }
+.piabrota svg { display: block; width: 20px; height: 20px; }
 /* the playlist's player opens under the bar, on the right, above the map */
 .player {
   position: fixed; z-index: 1002; top: 64px; right: 16px; width: min(340px, calc(100vw - 32px));

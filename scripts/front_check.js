@@ -482,7 +482,7 @@ async function playlist() {
   await click($('#playlist'));
   ok(!$('#player iframe'), 'pressing it again removes the iframe');
   const eye = $('a.piabrota');
-  ok(eye && eye.getAttribute('href') === 'https://piabrota.art' && eye.querySelector('img').getAttribute('src') === 'piabrota-eye.svg', 'the piabrota eye links to piabrota.art');
+  ok(eye && eye.getAttribute('href') === 'https://piabrota.art' && $('a.piabrota svg'), 'the piabrota eye is an inline svg linking to piabrota.art');
 }
 
 const SCENARIOS = {
