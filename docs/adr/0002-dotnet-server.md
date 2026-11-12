@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Status** | Proposed |
+| **Status** | Superseded in part by [ADR-0005](0005-elm-and-haskell.md) (2026-11-12): the server is Haskell, not .NET. Its contract (routes, variables, headers, CSP, limits, loopback behind nginx) stands |
 | **Date** | 2026-11-11 |
 
 ## Context

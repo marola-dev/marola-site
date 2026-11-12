@@ -7,7 +7,7 @@ of this repository it names the file; where it is a belief about GitHub it says 
 ## 1. Private vulnerability reporting
 
 Settings, Code security, "Private vulnerability reporting": on. [SECURITY.md](../../SECURITY.md) and
-`/.well-known/security.txt` (`app/Pages/Meta.fs`) already tell people to report at
+`/.well-known/security.txt` (`back/pages/src/Marola/Pages/Meta.hs`) already tell people to report at
 `https://github.com/marola-dev/marola-site/security/advisories/new`. While the setting is off, that link does not
 let a visitor report. This is the one setting the repository's own text depends on.
 
@@ -15,7 +15,7 @@ let a visitor report. This is the one setting the repository's own text depends 
 
 Settings, Code security: "Secret scanning" and "Push protection": on. Push protection blocks a push that holds a
 known token shape. The repository's rule is that no key is in code (AGENTS.md, "Org invariants"). The check that a
-key never reaches a log is a test (`just server-test`, `scripts/server_smoke.sh`); nothing in this repository checks
+key never reaches a log is a test (`just back-test`, `scripts/server_smoke.sh`); nothing in this repository checks
 the git history for secrets. Both settings are free on a public repository [INFERENCE: not checked for this one].
 
 ## 3. Branch protection on the default branch
@@ -32,11 +32,11 @@ Settings, Branches, a rule for the default branch (`main` in `ci.yml`):
 - Optional: "Require review from Code Owners", once [CODEOWNERS.draft](CODEOWNERS.draft) has real names.
 - Optional: apply the rule to administrators too. Cost: an owner cannot push a fix straight to `main`.
 
-What a rule does not do: `ci.yml` does not run the F# tests, `just fp-audit` or `just design-check`. The F# gate
+What a rule does not do: `ci.yml` does not run the Elm or Haskell tests or `just design-check`. Their gate
 is `just quality`, which `just prepush` runs on a developer's machine. A required check named `ci-ok` therefore
-does not prove the F# code passes. To make it a required check, a job that runs
+does not prove the Elm and Haskell code passes. To make it a required check, a job that runs
 `nix develop path:. -c just quality` has to be added to `ci.yml` and to the `needs` of `ci-ok`. [OPEN: owners.
-`quality` downloads NuGet packages and needs a runner with Nix and the network; a cost decision.]
+`quality` downloads npm, Elm and Hackage packages and needs a runner with Nix and the network; a cost decision.]
 
 ## 4. Signed commits
 
@@ -84,8 +84,8 @@ contents: read`. `ci.yml` sets `permissions: {}` on `ci-ok`. Pinning every actio
 
 | File | Becomes | One line |
 |---|---|---|
-| [dependabot.yml](dependabot.yml) | `.github/dependabot.yml` | weekly pull requests for NuGet (every project with a lock file) and for Actions |
-| [codeql.yml](codeql.yml) | `.github/workflows/codeql.yml` | CodeQL on the JavaScript; F# is not supported by CodeQL |
+| [dependabot.yml](dependabot.yml) | `.github/dependabot.yml` | weekly pull requests for npm (front/) and for Actions |
+| [codeql.yml](codeql.yml) | `.github/workflows/codeql.yml` | CodeQL on the JavaScript; Elm and Haskell are not supported by CodeQL |
 | [scorecard.yml](scorecard.yml) | `.github/workflows/scorecard.yml` | OpenSSF Scorecard on the repository's practices |
 | [pin-actions.md](pin-actions.md) | edits to `.github/workflows/*.yml` | every `uses:` line and its SHA |
 | [CODEOWNERS.draft](CODEOWNERS.draft) | `.github/CODEOWNERS` | owners for the paths that need one; names are `OPEN: owners` |

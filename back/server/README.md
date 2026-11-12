@@ -1,9 +1,9 @@
 # marola-server
 
-The Haskell port of the F# server in `app/Server`: warp and wai, SQLite through sqlite-simple. It
-keeps the F# contract: the same routes, environment variables, headers and CSP, rate limits,
-SQLite schema (`PRAGMA user_version`), PDF intake and board commands. A database written by one
-server is read by the other.
+The site's server: warp and wai, SQLite through sqlite-simple. It serves `dist/` and the board data,
+sends the security headers and CSP, takes the contact form, the GitHub login and the study API and
+pages, and runs the board's commands ([ADR 0005](../../docs/adr/0005-elm-and-haskell.md),
+[docs/5-hosting.md](../../docs/5-hosting.md)).
 
 ## Build and test
 
@@ -43,12 +43,12 @@ MAROLA_DEV=1 marola-server dev-account --login <name> --age-days <n>
 | `MAROLA_GITHUB_CLIENT_ID`, `MAROLA_GITHUB_CLIENT_SECRET_FILE` | the GitHub login; without them `/auth/github/*` answers 503 |
 | `MAROLA_DEV` | `1` on a developer's machine only: plain-HTTP cookies, GitHub URLs from `MAROLA_GITHUB_BASE` and `MAROLA_GITHUB_API_BASE`, and `dev-account` |
 
-## Where it differs from the F# server
+## Behaviour worth knowing
 
-- The rate-limit windows start at a client's first request. .NET's fixed windows start on a timer.
-- A log line has no `State` object, and the server writes no startup line.
-- Warp strips the body of a HEAD response, not the app, and the request time is measured until the
-  response is ready, not until it is sent.
-- The gzip bytes differ from .NET's; brotli and the choice between the two are the same.
+- A rate-limit window starts at a client's first request, not on a timer.
+- A log line is one JSON object: method, path, status, time. The server writes no startup line.
+- Warp strips the body of a HEAD response, and the request time is measured until the response is
+  ready, not until it is sent.
 - A repeated query key takes its first value. The multipart reader and the route matcher are
-  written for this server, and they follow what ASP.NET does only on the requests the tests send.
+  written for this server and tested on the requests `cabal test marola-server` and
+  `scripts/server_smoke.sh` send.

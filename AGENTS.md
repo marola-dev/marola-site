@@ -21,9 +21,10 @@ Non-negotiable in every marola repo; a repo may make these stricter, never loose
 
 The map at [marola.dev](https://marola.dev), in two builds that live side by side:
 
-- **The new site** (`app/`): an F# server (ASP.NET Core, .NET 10) that serves the map page, the static
-  pages and the study API. The map page is an F# client compiled to JavaScript by Fable, over MapLibre
-  GL JS and OpenFreeMap (no Mapbox token). Anyone with a GitHub account can submit a study (a PDF
+- **The new site** (`front/`, `back/`; [ADR 0005](docs/adr/0005-elm-and-haskell.md)): a Haskell server
+  (`back/server`) that serves the map page, the static pages and the study API. The map page is Elm
+  (`front/`), bundled by Vite, over MapLibre GL JS and OpenFreeMap (no Mapbox token); the static pages
+  are rendered by a Haskell program (`back/pages`). Anyone with a GitHub account can submit a study (a PDF
   with metadata), shown with the notice "not reviewed" (ADR 0004). The server needs a host that runs
   it; static hosting is not enough.
 - **The legacy site** (`site/static/`): plain JavaScript over Mapbox GL JS, built and published by
@@ -40,8 +41,9 @@ app image (`marola-image`); this repo never builds the app.
   `mapbox-config.js`, the chat widget, vendored Mapbox GL JS (its CSP build), Inter and the wave
   loop under `vendor/`, the about page's repo diagram under `img/`) and `404.html`, which forwards
   the old `marola.dev/docs/*` links to `docs.marola.dev`. The new site does not read these files
-  (it has its own `app/Client/public/style.css`), except that `scripts/golden.js` runs the old pure
-  functions to write `app/Tests/golden.json`.
+  (it has its own `front/public/style.css`), except that `scripts/golden.js` runs the old pure
+  functions to write `front/tests/golden.json`, and `scripts/site_build.sh` copies `img/umbrella*.svg`
+  and `img/members/`.
 - `site/i18n/`: the pt-BR and English catalogs (MIP-0054). `scripts/i18n_bundle.py` checks them
   and writes `site/static/i18n.js`; edit the catalogs, never `i18n.js`.
 - `site/content/news/`: the news posts, one Markdown file per post and language.
@@ -53,40 +55,40 @@ app image (`marola-image`); this repo never builds the app.
   the page. Never edit the block.
 - `site/members/MEMBERS.md`: the copy of that file the build reads, with its git blob id on the second line of
   `site/members.version` (`just members-check`); the build refuses a copy that drifted.
-- `nix/package.nix`, `nix/deps.json`: the whole site (server, pages, Fable client) as one Nix package that builds
-  with no network, for piabrota/nix-os (`just nix-build`, `just package-smoke`, `just nix-deps` after a change to an
-  `fsproj`; [docs/5-hosting.md](docs/5-hosting.md#build-with-nix)). `flake.nix` exposes it as `packages.default`.
+- `nix/package.nix`, `nix/elm-srcs.nix`, `nix/registry.dat`: the whole site (Haskell server and pages, Elm page)
+  as one Nix package that builds with no network, for piabrota/nix-os (`just nix-build`, `just package-smoke`;
+  [docs/5-hosting.md](docs/5-hosting.md#build-with-nix)). `flake.nix` exposes it as `packages.default`. It has not
+  been built yet: its npm and Elm hashes are `lib.fakeHash` placeholders.
 - `site/areas.json`: the areas the boards are built for. `site/fixtures/board.json`: the board the
   harness renders. `site/board.schema.json`: the board contract, vendored from the pinned image.
-- `app/`: the F# rewrite, compiled to JavaScript by Fable. `app/Shared` has the domain types, the board
-  decoder and the pure functions, with no .NET-only API. `app/Tests` (Expecto, .NET) and
-  `app/Tests.Fable` (the same tests under Fable, on Node) check them (`just app-test`, `just app-fmt`);
-  each project's `packages.lock.json` locks the NuGet packages. `app/Tests/golden.json` holds what the
-  old `ui.js`, `app.js` and `flow.js` return, written by `scripts/golden.js` (`just golden`); the tests
-  must match it on both runtimes. `app/Client` is the map page: `Core` (pure: the model, `update` that returns
-  commands as data, the views as a virtual DOM, `Vdom.diff`; tested on both runtimes), `App` (Fable only:
-  `Dom.fs` patches the real DOM, `Effects.fs` carries out each command, `Ffi.fs` binds the two files of `ffi/`,
-  `Program.fs` is the Elmish loop; it has no .NET test, `scripts/client_check.js` runs it in a fake DOM) and the
-  static files (`public/`). `just app-build` compiles `App` into `app/Client/out` and assembles `app/dist/`;
-  `just client-check` tests it. `app/Server` (ASP.NET Core, .NET 10, F#, minimal APIs) serves `app/dist` and the
-  board data folder and takes `POST /contact` into SQLite; it listens on `127.0.0.1` behind nginx
-  (`just server-run`, `just server-test`, `just server-build`, `scripts/server_smoke.sh`;
-  [docs/5-hosting.md](docs/5-hosting.md), [ADR 0002](docs/adr/0002-dotnet-server.md)). `app/Server.Tests`
-  runs its pipeline in memory (Expecto and TestHost). Every response header comes from `Security.fs`.
-  `app/Pages` (pure F#, .NET only) renders every static page (about, support, contact, contact-sent, 404, news,
-  members) and the metadata files (`robots.txt`, `sitemap.xml`, `llms.txt`, `humans.txt`, `.well-known/security.txt`):
-  `Markdown.fs` reads `site/content/pages/<page>.<lang>.md`, `News.fs` the posts of `site/content/news/`, `Members.fs`
-  MEMBERS.md (the vendored `site/members/MEMBERS.md`, which must hash to the blob id on line 2 of `site/members.version`; or the file in `MEMBERS_SOURCE`), `Meta.fs` the metadata files,
-  `Layout.fs` is the shared head, nav and footer, and
-  `app/Pages.Build` writes pt-BR at the root of `app/dist` and English under `en/` (`just pages-build`,
-  `just pages-test`; [ADR 0003](docs/adr/0003-pages-in-fsharp.md)). Edit the Markdown and the posts, never the HTML;
-  the pages carry no script and no inline style. The Python builders and the old `site/static` files stay until the cutover.
-- `scripts/`, the new site: `app_build.sh` (Fable build and `app/dist`), `app_fixtures.mjs` (a board per
-  area for an offline preview), `client_check.js` (the compiled client in a fake DOM and a MapLibre
-  stub), `server_smoke.sh` with `server_smoke*.mjs` (the built server on a free port; `fake_github.mjs`
-  stands in for GitHub), `package_smoke.sh` (the Nix package's server), `golden.js` (writes and
-  checks `app/Tests/golden.json`), `design_check.js` (DESIGN.md against `style.css`; `just
-  design-check`), `nav_measure.sh` (the phone nav strip in a real browser; needs a Chromium, not in
+- `front/`: the Elm map page. `src/` holds the domain types, the board decoder, the model, `update` (which returns
+  effects as data) and the views, all pure; `ports.js` starts the page and carries out each effect; `js/` holds
+  the MapLibre and WebGL glue (`maplibre_ffi.mjs`, `flow_layer_ffi.mjs`); `public/` the static files Vite copies
+  (`style.css`, `favicon.svg`, `vendor/`, `data/trails/`); `tests/` the elm-test suites and `golden.json`, what the
+  old `ui.js`, `app.js` and `flow.js` return (`scripts/golden.js`, `just golden`). `just front-build` builds
+  `front/dist/`, `just front-test` runs elm-test, `just front-check` runs `scripts/front_check.js` on `dist/`.
+  `package-lock.json` pins the npm build tools; `elm.json` the Elm packages.
+- `back/`: one cabal project (`cabal.project` and `cabal.project.freeze` at the root; `just back-build`,
+  `just back-test`). `back/server` (warp, wai, SQLite through sqlite-simple) serves `dist/` and the board data
+  folder, takes `POST /contact`, the GitHub login, the study API and pages, and runs the board's commands; it
+  listens on `127.0.0.1` behind nginx (`just server-run`, `scripts/server_smoke.sh`, `marola-server csp`;
+  [docs/5-hosting.md](docs/5-hosting.md), [back/server/README.md](back/server/README.md)). Every response header
+  comes from `Marola.Server.Security`, the CSP from `Marola.Csp`. Its hspec suite runs the pipeline in memory.
+  `back/pages` (`marola-pages site <out>`) renders every static page (about, support, contact, contact-sent, 404,
+  news, members) and the metadata files (`robots.txt`, `sitemap.xml`, `llms.txt`, `humans.txt`,
+  `.well-known/security.txt`): `Loader` reads `site/content/pages/<page>.<lang>.md`, the posts of
+  `site/content/news/`, the catalogs and MEMBERS.md (the vendored `site/members/MEMBERS.md`, which must hash to
+  the blob id on line 2 of `site/members.version`; or the file in `MEMBERS_SOURCE`); `Layout` is the shared head,
+  nav and footer. pt-BR goes at the root of the output and English under `en/`. Edit the Markdown and the posts,
+  never the HTML; the pages carry no script and no inline style. The Python builders and the old `site/static`
+  files stay until the cutover.
+- `dist/` (not in git): what the server serves, assembled by `scripts/site_build.sh` (`just dist-build`).
+- `scripts/`, the new site: `site_build.sh` (assembles `dist/`), `front_build.sh` (Vite into `front/dist`),
+  `site_fixtures.mjs` (`data/areas.json` and a board per area for an offline preview), `front_check.js` (the
+  built page in a fake DOM and a MapLibre stub), `server_smoke.sh` with `server_smoke*.mjs` (the built server on
+  a free port; `fake_github.mjs` stands in for GitHub), `pages_parity.sh` (the pages against another build's,
+  byte for byte), `package_smoke.sh` (the Nix package's server), `golden.js` (writes and checks
+  `front/tests/golden.json`), `design_check.js` (DESIGN.md against `style.css`; `just design-check`), `nav_measure.sh` (the phone nav strip in a real browser; needs a Chromium, not in
   `just quality`), `members_vendor_check.sh`.
 - `scripts/`, the legacy site and shared: `site_check.js` (app.js and flow.js in a stub DOM and Mapbox GL),
   `site_meta.py` (`llms.txt`, `sitemap.xml` and `.well-known/security.txt`, written into `site/dist` at
@@ -99,8 +101,8 @@ app image (`marola-image`); this repo never builds the app.
   INEMA answer only Brazilian addresses, and only by hand for now
   ([`docs/3-development.md`](docs/3-development.md#the-self-hosted-runner-in-brazil)).
 - `DESIGN.md`: the visual system (tokens, type, components, contrast, known gaps) of the new site.
-  `just design-check` fails when it and `app/Client/public/style.css` drift. Inter is self-hosted in
-  `app/Client/public/vendor/fonts/`.
+  `just design-check` fails when it and `front/public/style.css` drift. Inter is self-hosted in
+  `front/public/vendor/fonts/`.
 - `.claude/skills/site-frontend/`: the entry point for anything a visitor sees; it orders the other
   frontend skills and settles their conflicts. `ptbr-humanizer/` keeps the Portuguese natural,
   `citizen-science-site/` keeps sources, freshness, limits and the way to contribute on the page,
@@ -131,14 +133,14 @@ See [README's Contracts](README.md#contracts). No workflow here builds the app o
 ## Commands
 
 ```bash
-nix develop path:.        # node, python, dotnet, fable, fantomas, the lint tools and the devkit's tools; links .devkit
+nix develop path:.        # node, elm, ghc, cabal, python, the lint tools and the devkit's tools; links .devkit
 just quality              # every gate CI runs that needs no docker or network (also what the push hook runs)
-just app-build --fixtures # Fable compiles the client; the pages and a fixture board per area go into app/dist
-just server-run           # http://127.0.0.1:8080 over app/dist (state in .tmp/marola.db)
-just server-test          # the server's tests; `just pages-test`, `just app-test`, `just client-check` for the rest
+just dist-build --fixtures # the Elm page, the static pages and a fixture board per area into dist
+just server-run           # http://127.0.0.1:8080 over dist (state in .tmp/marola.db)
+just back-test            # the pages' and the server's tests; `just front-test`, `just front-check` for the page
+just server-smoke         # the built server on a free port, end to end
 just design-check         # DESIGN.md against style.css
-just fp-audit             # effectful constructs per F# project against docs/fp-baseline.json (a count that goes up fails)
-just audit                # NuGet vulnerabilities of every project (by hand, needs network; not in `just quality`)
+just audit                # npm vulnerabilities of front/ (by hand, needs network; not in `just quality`)
 just nix-build            # nix build .#default: the whole site as one package
 just site-build floripa   # the legacy build: boards from the pinned image into site/dist (docker, network)
 just site-serve           # the legacy build at http://localhost:8000
@@ -157,29 +159,26 @@ Nix (MIP-0084); a known keyword is `git grep`.
 ## For agents
 
 **The shortest path to a green check.** Inside `nix develop path:.`, run the recipe of the part you
-changed, then `just quality` once. F# in `app/Shared` or `app/Client/Core`: `just app-fmt` (fix) then
-`just app-test`. The server: `just server-test`. The pages: `just pages-test`. The client's build:
-`just app-build --fixtures` then `node scripts/client_check.js`. The server end to end:
-`scripts/server_smoke.sh` (after `app-build --fixtures`). CSS or DESIGN.md: `just design-check`. Run
-`just app-fmt` without `--check` to fix formatting; `just quality` only checks it. A new `/api/v1` route needs
-an entry in `app/Server/OpenApi.fs`, or `OpenApiTests` fails. A new `mutable`, `null`, `raise`, `.Result`, `unbox`
-or ref cell raises a count in `just fp-audit`; prefer the pure form, and put an unavoidable effect in `Server` or
-`Client/App`.
+changed, then `just quality` once. Elm in `front/src`: `just front-test`. Haskell in `back/`: `just back-test`.
+The page's build: `just dist-build --fixtures` then `just front-check`. The server end to end:
+`just server-smoke` (after `dist-build --fixtures`). The pages: `just back-test`, and `just pages-parity <dir>`
+against a `dist/` built before the change when the output must not move. CSS or DESIGN.md: `just design-check`.
+A new `/api/v1` route needs an entry in `Marola.Server.OpenApi`, or `OpenApiSpec` fails. A new Haskell
+dependency needs a bound in its `.cabal` file and `cabal freeze` at the root.
 
 **Never edit by hand** (each is generated; the check or the build fails on a stale copy):
 
 | File | Regenerate with |
 |---|---|
-| `app/Tests/golden.json` | `just golden` (runs the old JavaScript; `--check` is in `just quality`) |
+| `front/tests/golden.json` | `just golden` (runs the old JavaScript; `--check` is in `just quality`) |
 | `site/static/i18n.js` | `python3 scripts/i18n_bundle.py` after editing `site/i18n/*.json` |
 | the block in `site/static/news.html` | `python3 scripts/news_build.py` after editing `site/content/news/` |
 | the block in `site/static/members.html`, `humans.txt`, `img/members/` | `just members` (see `site/members.version`) |
-| `nix/deps.json` | `just nix-deps` after a change to an `fsproj` or a lock file (needs the network) |
-| `app/**/packages.lock.json` | `dotnet restore` in that project folder, without `RestoreLockedMode`; every recipe restores in locked mode and fails on a stale lock |
+| `npmDeps`'s hash in `nix/package.nix`, `nix/elm-srcs.nix` | after a change to `front/package-lock.json` or `front/elm.json`: the next `nix build` prints the hash it wants (needs the network) |
+| `cabal.project.freeze` | `cabal freeze` at the root after a change of bounds |
 | `site/members/MEMBERS.md` and the blob id in `site/members.version` | copy the file over, then `git hash-object site/members/MEMBERS.md` (docs/3-development.md) |
-| `app/dist/`, `app/Client/out/`, `app/Server/out/` | `just app-build`; they are not in git |
-| the pages' HTML | edit `site/content/pages/*.md`, `site/content/news/`, `site/i18n/`; `just pages-build` renders them |
-| `docs/fp-baseline.json` | `just fp-audit --update`; it only lowers a count. To accept a higher one, edit the JSON by hand and say why in the PR |
+| `dist/`, `front/dist/`, `dist-newstyle/` | `just dist-build`; they are not in git |
+| the pages' HTML | edit `site/content/pages/*.md`, `site/content/news/`, `site/i18n/`; `just dist-build` renders them |
 
 **Traps already met.**
 
@@ -189,26 +188,29 @@ or ref cell raises a count in `just fp-audit`; prefer the pure form, and put an 
 - `nix develop` writes a `flake.lock`, and the repo does not commit one: the versions are what
   `nixos-unstable` has at that time. Do not commit it. If it shows as untracked, delete it; if it
   was staged, `git rm -q --cached --ignore-unmatch flake.lock`.
-- `just prepush` (the push hook) runs `just quality` in full, with the .NET and Fable tests and the
-  NuGet restore, which needs the network. It fails in a shell that did not come from `nix develop`;
+- `just prepush` (the push hook) runs `just quality` in full, with the Elm and Haskell tests, whose first
+  run downloads npm, Elm and Hackage packages. It fails in a shell that did not come from `nix develop`;
   `just quality` names the missing tool.
-- A `.tmp/` folder and `app/dist/` are git-ignored; do not look for output elsewhere.
+- `.tmp/`, `dist/`, `front/dist/` and `dist-newstyle/` are git-ignored; do not look for output elsewhere.
+- `just site-build` is the legacy build (docker, `site/dist`); the new site's is `just dist-build`. The
+  legacy page's i18n strings quote `site-build`, so that name stays.
 - The `site/static` files are the legacy site's. A change there needs a `MIP:` trailer and the legacy
-  checks (`node scripts/site_check.js`); a change in `app/` does not touch them.
+  checks (`node scripts/site_check.js`); a change in `front/` or `back/` does not touch them.
 
 ## Docs
 
 `README.md` is the landing: what the repo is, how to run it, the repo map, its contracts, and
 links. There is no `docs/index.md`. `docs/` holds numbered pages, not directories (MIP-0074 §5.2):
 `1-design` (the legacy page: files, the board → markers mapping, CSP), `1-design_chat-widget`,
-`2-libraries` (vendored libraries and the F# client's packages), `3-development` (the build and
-deploy, the F# app, image bumps), `4-reference` (`areas.json`, the board schema pin, trail files),
-`5-hosting` (the .NET server behind nginx: variables, nginx and systemd settings, the Nix build,
+`2-libraries` (vendored libraries, the Elm page's and the Haskell packages), `3-development` (the build and
+deploy, the Elm and Haskell site, image bumps), `4-reference` (`areas.json`, the board schema pin, trail files),
+`5-hosting` (the Haskell server behind nginx: variables, nginx and systemd settings, the Nix build,
 backup, rollback), `6-board` (the runbook of the people who hide studies), `7-quality` (the scorecard: what is
 checked, how, and what is not; the owner steps and `docs/owner-steps/`, drafts for `.github/` and the repository
 settings that an agent never applies). The H1 is the nav label.
-The decisions are ADRs at `docs/adr/NNNN-<slug>.md`: 0001 F#, Fable and MapLibre, 0002 the .NET
-server, 0003 the pages in F#, 0004 study submission. `DESIGN.md` at the root is the visual system.
+The decisions are ADRs at `docs/adr/NNNN-<slug>.md`: 0001 MapLibre and dynamic hosting, 0002 the
+server's contract, 0003 the pages rendered at build time, 0004 study submission, 0005 Elm and Haskell
+(it supersedes the language choices of 0001 to 0003). `DESIGN.md` at the root is the visual system.
 A decision that starts and ends here is an ADR; anything crossing a repo boundary is an umbrella MIP.
 
 - **Links**: relative inside the repo, written to work on GitHub (`../AGENTS.md`, `../DESIGN.md`
@@ -228,7 +230,7 @@ same files to the Cloudflare Worker `marola` (free static assets), which serves 
 trigger a deploy by hand (`just site-deploy` is denied in `.claude/settings.json`).
 
 The new site has no map bill: MapLibre and OpenFreeMap need no account and no token. Its base map
-and its hosts are the CSP's `https://tiles.openfreemap.org` and NASA GIBS (`app/Shared/Csp.fs`). The
+and its hosts are the CSP's `https://tiles.openfreemap.org` and NASA GIBS (`back/server/src/Marola/Csp.hs`). The
 host that runs the server, its nginx and its backups are a human's. The legacy page's base map is
 Mapbox's, billed per map load above its free tier: the account, the token and any billing setting are
 a human's. So is the self-hosted runner and the machine it runs on. The Mapbox token is a public
@@ -269,20 +271,18 @@ The phase list is the umbrella's `docs/PHASES.md`. Site work serves the current 
 
 ## Code style
 
-The new site is F# in `app/` ([ADR 0001](docs/adr/0001-fsharp-fable-maplibre-dynamic-hosting.md)),
-which replaced the rule "plain JavaScript, no framework, no build step" for new code. `app/Shared`
-compiles with both .NET and Fable, `app/Client` compiles to JavaScript with Fable (a build step) and
-`app/Server` runs on .NET. The page keeps a strict CSP: scripts and styles from `'self'` only, no
-inline script, no inline style, no `eval`; MapLibre is an ES module served from `'self'`. The base map
-is OpenFreeMap's `liberty` style (`app/Client/Core/Config.fs`, the one place to change the URL), and
-NASA GIBS serves the satellite layers. The legacy page in `site/static/` stays plain JavaScript with
-no build step, on Mapbox, until the owners cut over.
+The new site is Elm in `front/` and Haskell in `back/` ([ADR 0005](docs/adr/0005-elm-and-haskell.md)),
+which replaced the rule "plain JavaScript, no framework, no build step" for new code. The page keeps a
+strict CSP: scripts and styles from `'self'` only, no inline script, no inline style, no `eval`; MapLibre
+is an ES module served from `'self'`. The base map is OpenFreeMap's `liberty` style (`front/src/Config.elm`,
+the one place to change the URL), and NASA GIBS serves the satellite layers. The legacy page in
+`site/static/` stays plain JavaScript with no build step, on Mapbox, until the owners cut over.
 
-F#: `fantomas` (`just app-fmt`), tests on both runtimes with `just app-test`; no `null` and no
-exception for a data error (a `Result` or an `option`); a closed set is a union with an `Unknown of
-string` case where the board may carry a new value. Tools come from Nix, never `dotnet tool install`.
-A hand-written JavaScript file goes in `app/Client/ffi/` with its reason at the top. A visible change
+Elm and Haskell: no exception and no partial function for a data error (a `Result` or a `Maybe`); a closed
+set is a custom type with an `Unknown String` case where the board may carry a new value. Tools come from
+Nix (GHC 9.6, cabal, elm 0.19.1), never a global `npm install -g` or `cabal install`. A hand-written
+JavaScript file goes in `front/js/` (or `front/ports.js`) with its reason at the top. A visible change
 goes through the `site-frontend` skill (which names the others), `just design-check`,
-`node scripts/client_check.js` (the map page) or the pages' tests, and before/after screenshots. Shell:
+`just front-check` (the map page) or the pages' tests, and before/after screenshots. Shell:
 `set -euo pipefail`, shellcheck-clean. Python: ruff. Comments only for why, a trap, or a pointer, as
 the umbrella's AGENTS.md spells out.

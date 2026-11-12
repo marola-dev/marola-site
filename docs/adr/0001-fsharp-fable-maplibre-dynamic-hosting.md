@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Status** | Proposed |
+| **Status** | Superseded in part by [ADR-0005](0005-elm-and-haskell.md) (2026-11-12): the language. MapLibre, OpenFreeMap and the dynamic host stand |
 | **Date** | 2026-11-11 |
 
 ## Context

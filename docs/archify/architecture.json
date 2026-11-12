@@ -89,7 +89,7 @@
       "col": 1,
       "type": "frontend",
       "label": "map client",
-      "sublabel": "F# Fable, Elmish, MapLibre",
+      "sublabel": "Elm, Vite, MapLibre",
       "width": 136
     },
     {
@@ -98,7 +98,7 @@
       "col": 2,
       "type": "frontend",
       "label": "static pages",
-      "sublabel": "F# from Markdown, pt-BR/en",
+      "sublabel": "Haskell, Markdown, pt-BR/en",
       "width": 136
     },
     {
@@ -106,7 +106,7 @@
       "lane": "front",
       "col": 3,
       "type": "backend",
-      "label": ".NET server",
+      "label": "Haskell server",
       "sublabel": "GitHub login, studies, API",
       "width": 136
     },
@@ -207,7 +207,7 @@
       "id": "e5",
       "from": "client",
       "to": "pages",
-      "label": "app/dist"
+      "label": "dist"
     },
     {
       "id": "e6",

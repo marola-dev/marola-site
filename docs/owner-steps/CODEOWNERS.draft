@@ -7,7 +7,7 @@
 #
 # The paths are the ones where a mistake is a security or a supply-chain mistake. Later lines win in CODEOWNERS.
 
-/app/Server/        OPEN: owners
+/back/server/       OPEN: owners
 /docs/adr/          OPEN: owners
 /nix/               OPEN: owners
 /SECURITY.md        OPEN: owners

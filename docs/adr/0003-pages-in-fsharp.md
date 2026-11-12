@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Status** | Proposed |
+| **Status** | Superseded in part by [ADR-0005](0005-elm-and-haskell.md) (2026-11-12): the renderer is Haskell (`back/pages`), not F#. Pages from Markdown at build time, with no script, stand |
 | **Date** | 2026-11-11 |
 
 ## Context

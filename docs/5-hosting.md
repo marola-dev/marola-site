@@ -1,45 +1,51 @@
 # Hosting
 
-The .NET server (`app/Server`, [ADR 0002](adr/0002-dotnet-server.md)) runs on piabrota2 (KVM 4)
-behind nginx at `marola.piabrota.art`. Kestrel listens on `127.0.0.1` only. nginx ends TLS and sends
+The Haskell server (`back/server`, [ADR 0005](adr/0005-elm-and-haskell.md)) runs on piabrota2 (KVM 4)
+behind nginx at `marola.piabrota.art`. It listens on `127.0.0.1` only. nginx ends TLS and sends
 the requests on.
 
 ## Run it
 
 ```bash
-just app-build --fixtures      # the page into app/dist (a deploy has its own data folder)
+just dist-build --fixtures     # the page into dist (a deploy has its own data folder)
 just server-run                # development: http://127.0.0.1:8080
-just server-build              # publish into app/Server/out (framework-dependent, Release)
-dotnet app/Server/out/marola-server.dll          # what a host runs
-dotnet app/Server/out/marola-server.dll inbox    # the contact messages
+cabal list-bin marola-server   # the built binary, after `just back-build`
+marola-server                  # what a host runs
+marola-server inbox            # the contact messages
 ```
 
-The host needs the ASP.NET Core 10 runtime. The published folder holds the native SQLite library
-under `runtimes/linux-x64/native/`, from the NuGet package.
+The binary links the system SQLite (direct-sqlite with `+systemlib`), so the host needs `libsqlite3`;
+the Nix package carries it in its closure.
 
 ## Build with Nix
 
-`nix/package.nix` builds the whole site as one package: the server, the static pages and the Fable
-client. The build has no network. The NuGet packages come from `nix/deps.json` (a fixed hash for each),
-Fable and Node from nixpkgs, and MEMBERS.md from `site/members/` (pinned by blob id, see
+`nix/package.nix` builds the whole site as one package: the server, the static pages and the Elm page.
+The build has no network. The Haskell packages come from nixpkgs' Hackage set
+(`haskell.packages.ghc96`, built with `callCabal2nix`), the npm packages from `front/package-lock.json`
+(`fetchNpmDeps`, a fixed hash), the Elm packages from `nix/elm-srcs.nix` and `nix/registry.dat`
+(`elmPackages.fetchElmDeps`), and MEMBERS.md from `site/members/` (pinned by blob id, see
 [the development guide](3-development.md)). `flake.nix` exposes it as `packages.default` and as
 `checks.package`.
 
 ```bash
 just nix-build        # nix build .#default: result/bin/marola-server, result/share/marola/dist
 just package-smoke    # starts result/bin/marola-server on a free port, checks / /about.html /en/studies /api/v1/skill.md
-just nix-deps         # rewrites nix/deps.json after a change to any fsproj (needs the network)
 ```
+
+**Not built yet.** The package was rewritten for Elm and Haskell where Nix could not fetch its inputs.
+The npm hash (`npmDeps`) and the Elm hashes (`nix/elm-srcs.nix`) are `lib.fakeHash` placeholders: the
+first `nix build` with network fails on each and prints the real hash to copy in. nixpkgs' versions of
+the Haskell packages may fall outside the bounds of the `.cabal` files, which `cabal.project.freeze`
+does not control there; a failure names the package, and `haskell.lib.doJailbreak` or an override is
+the fix. Nobody has run `just package-smoke` on this package.
 
 The package holds:
 
-- `bin/marola-server`: a wrapper that sets `DOTNET_ROOT`, the ICU library path and the runtime's `PATH`. It sets no
-  secret and no `MAROLA_*` variable. The unit needs no `dotnet` of its own. The same binary runs the commands
-  (`inbox`, `studies`, `reports`).
-- `share/marola/dist`: the static site, the same tree as `just app-build` writes into `app/dist` (without
-  `app/fable_modules/project_cracked.json`, Fable's cache, which holds the random name of the build's temp folder).
+- `bin/marola-server`: the server, a native executable (`justStaticExecutables`: Haskell libraries
+  linked in, SQLite and the C libraries dynamic). It sets no secret and no `MAROLA_*` variable. The same
+  binary runs the commands (`inbox`, `studies`, `reports`, `csp`).
+- `share/marola/dist`: the static site, the same tree as `just dist-build` writes into `dist`.
   `MAROLA_STATIC` points here.
-- `lib/marola-site`: the published server (Release, framework-dependent, with `libe_sqlite3.so`).
 
 There is no `data-seed`. `MAROLA_DATA` is the board data folder, `<area>/latest.json` and the boards, which the board
 pipeline writes; the server reads `/data/<x>` there first and then under `dist/data` (`areas.json` and `trails/`,
@@ -51,9 +57,8 @@ pipeline writes them.
 1. An input for the source. With `flake = false` it takes no second lockfile (the devkit input of `flake.nix`
    stays out): `marola-site = { url = "github:marola-dev/marola-site/<commit>"; flake = false; };`. Then
    `pkgs.callPackage "${inputs.marola-site}/nix/package.nix" { }` gives the package, built with the nix-os nixpkgs.
-   That nixpkgs must have `buildDotnetModule`, `dotnetCorePackages.sdk_10_0` and `aspnetcore_10_0`, `fable` and
-   `nodejs`. The package built with nixpkgs `f4a03c00` (Fable 5.26.0, .NET SDK 10.0.403) and with the nix-os pin
-   `02c087f3` of 2026-11-11 (Fable 5.20.0, .NET SDK 10.0.401); only the first one ran `just package-smoke`.
+   That nixpkgs must have `haskell.packages.ghc96`, `elmPackages.elm` and `fetchElmDeps`, `fetchNpmDeps`,
+   `npmHooks` and `nodejs`.
 2. The unit, with these variables: `MAROLA_PORT`, `MAROLA_STATIC=<package>/share/marola/dist`, `MAROLA_DATA`,
    `MAROLA_DB`, `MAROLA_STUDIES`, `MAROLA_GITHUB_CLIENT_ID` (see [Variables](#variables)). Never set `MAROLA_DEV`.
 3. A state directory (`StateDirectory=marola`) for the database, `csrf.key` and the studies. The package is
@@ -63,26 +68,16 @@ pipeline writes them.
    stays out of the Nix store and out of the environment.
 5. nginx that **replaces** `X-Forwarded-For` (`$remote_addr`, not `$proxy_add_x_forwarded_for`) and sends
    `Host $host` ([nginx](#nginx)).
-6. `MemoryMax=256M`. The resident set of the package's server was 91 MB after the start and four requests
-   (`just package-smoke`, 2026-11-11), so the limit is 2.8 times that. Nobody measured it under load or
-   during a 20 MB upload; read `MemoryPeak` after the first weeks.
+6. `MemoryMax=256M`. The server's resident set was 20 MB after the start (`scripts/server_smoke.sh`,
+   2026-11-12). Nobody measured it under load or during a 20 MB upload; read `MemoryPeak` after the first weeks.
 7. A backup of `marola.db`, `csrf.key` and `MAROLA_STUDIES` together ([The studies and their backup](#the-studies-and-their-backup)).
-
-Size: the package is 11 MB; its closure is 214 MiB, of which the ASP.NET Core runtime is 202 MiB (ICU 87 MiB).
-
-**What the build checks, and what it does not.** `nix build` runs with the sandbox on, so it cannot reach the
-network. It does not check `packages.lock.json`: the nixpkgs restore passes `--runtime` (a locked restore fails with
-NU1004), and Nix repacks each package without its signature (NU1403). `just app-test` and `just quality` check the lock
-files. A package that is missing from `nix/deps.json` fails the build. Two builds on the same day give the same
-bytes (`nix build --rebuild` finds no difference). `security.txt` holds the build day in its `Expires` line (the day
-plus 364 days), so builds on two days differ in that one file.
 
 ## Variables
 
 | Variable | Default | What |
 |---|---|---|
 | `MAROLA_PORT` | `8080` | The port on `127.0.0.1`. The server never listens on another address. |
-| `MAROLA_STATIC` | `app/dist` | The built page. Served at `/`. Read-only. |
+| `MAROLA_STATIC` | `dist` | The built page. Served at `/`. Read-only. |
 | `MAROLA_DATA` | `data` | The board data. `/data/<x>` is read here first, then under `MAROLA_STATIC`. Read-only. |
 | `MAROLA_DB` | `data/marola.db` | The SQLite file: the contact messages, and the accounts, API keys, studies and reports of [ADR 0004](adr/0004-study-submission.md). The server creates it and its folder at start, and moves its tables to the current version (`PRAGMA user_version`). |
 | `MAROLA_STUDIES` | `data/studies` | The PDFs of the studies, as `<sha256>.pdf`, mode 0640, in a folder of mode 0750 with a `.incoming` folder for uploads in progress. Outside `MAROLA_STATIC` and never served as a file tree. |
@@ -99,7 +94,7 @@ A wrong `MAROLA_PORT` or `MAROLA_STUDIES_QUOTA` stops the start with exit code 2
 - Serves files from the two roots only. A hidden file, a folder, a `..`, a backslash, an encoded
   slash, a NUL byte or an empty segment (`//`) gets 404. `/contact` finds `contact.html` when the
   page has one.
-- Sends the security headers of [ADR 0002](adr/0002-dotnet-server.md) on every response that
+- Sends the security headers ([ADR 0005](adr/0005-elm-and-haskell.md) keeps them) on every response that
   reaches the middleware, an error or a 429 included.
 - Answers an exception with a plain 500 page.
 - Refuses a body over 1 MB (413), except on `POST /api/v1/studies`, whose limit is 21 MB, and a client over its rate limit (429, with `Retry-After`): 300
@@ -215,7 +210,7 @@ Recommended settings for the unit. The server needs no write access except to it
 
 ```ini
 [Service]
-ExecStart=/usr/bin/dotnet /opt/marola/server/marola-server.dll
+ExecStart=/opt/marola/server/bin/marola-server
 Environment=MAROLA_PORT=8080
 Environment=MAROLA_STATIC=/opt/marola/dist
 Environment=MAROLA_DATA=/opt/marola/data
@@ -238,7 +233,7 @@ Restart=on-failure
 `ProtectSystem=strict` makes the whole file system read-only for the server except
 `StateDirectory`, so the page and the data are read-only by construction. The deploy writes
 `/opt/marola/dist` and `/opt/marola/data` as another user. The target of `MemoryMax=256M` comes
-from a measured start at 75 MB resident (`scripts/server_smoke.sh` fails above 100 MB). Nobody
+from a measured start at 20 MB resident (`scripts/server_smoke.sh` fails above 100 MB). Nobody
 measured the server under load yet; watch `MemoryPeak` after the first weeks.
 
 A dry run and a real upload both write the upload to a file while it is read (decision 20 of [ADR 0004](adr/0004-study-submission.md)): the real one under
@@ -250,8 +245,8 @@ host where `/tmp` is a memory file system, a 20 MB dry run counts against `Memor
 Read the messages as root, with the unit's variables:
 
 ```bash
-sudo env MAROLA_DB=/var/lib/marola/marola.db dotnet /opt/marola/server/marola-server.dll inbox
-sudo env MAROLA_DB=/var/lib/marola/marola.db dotnet /opt/marola/server/marola-server.dll inbox --delete 12
+sudo env MAROLA_DB=/var/lib/marola/marola.db /opt/marola/server/bin/marola-server inbox
+sudo env MAROLA_DB=/var/lib/marola/marola.db /opt/marola/server/bin/marola-server inbox --delete 12
 ```
 
 Each message is personal data (an email and a text). Delete a message when the reply is sent and
@@ -278,10 +273,10 @@ delete `MAROLA_STUDIES` on a rollback: the rows name those files. The page (`dis
 
 The measured state of the server's checks, the owner steps for `.github/` and the repository settings, and the
 vulnerability report of the packages are in [7-quality](7-quality.md). The API is described at
-`/api/v1/openapi.json` (`app/Server/OpenApi.fs`); the reporting policy is [SECURITY.md](../SECURITY.md).
+`/api/v1/openapi.json` (`back/server/src/Marola/Server/OpenApi.hs`); the reporting policy is [SECURITY.md](../SECURITY.md).
 
-- A response that Kestrel writes before the middleware runs (a malformed request line, a NUL byte in
-  the path) has no security headers. HSTS comes from nginx for these.
+- A response that Warp writes before the application runs (a malformed request line) has no security
+  headers. HSTS comes from nginx for these.
 - The rate limit is in memory and resets on a restart.
 - There is no limit on the size of the message table. Look at `inbox` from time to time.
 - The rate limit of a key is in memory too. The limits of an account (one study in 10 minutes, 10 in a day) are

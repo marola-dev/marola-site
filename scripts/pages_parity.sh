@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Renders the static pages with back/pages into a temporary folder and compares every file it
 # writes with the same file in a reference folder, byte for byte: a build of an earlier commit,
-# or of the F# renderer this one replaced (23 of 23 identical at efaaea3, with b8cb19e's rename).
+# or of the renderer this one replaced (23 of 23 identical at efaaea3, with b8cb19e's rename).
 # Usage: scripts/pages_parity.sh <reference-dir>, e.g. a dist/ from another checkout.
 # MAROLA_PAGES_BIN names a built binary; without it the script builds one with cabal.
 # security.txt's Expires follows the build date, so the date is taken from the reference's own

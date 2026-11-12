@@ -7,8 +7,8 @@ history before the split is marola's, filtered to these files.
 
 The repo holds two builds of the site:
 
-- **The new site** (`app/`): an F# server, the static pages it serves, the map page compiled by
-  Fable, and the study submission feature. It is built and tested, and it is not what marola.dev
+- **The new site** (`front/`, `back/`): the map page in Elm, the static pages and the server in
+  Haskell, and the study submission feature. It is built and tested, and it is not what marola.dev
   serves yet.
 - **The legacy site** (`site/static/`): plain JavaScript over Mapbox GL JS. `.github/workflows/site.yml`
   still builds and publishes it, every three hours, to the Cloudflare Worker behind marola.dev. The
@@ -18,22 +18,20 @@ The repo holds two builds of the site:
 
 | Part | What it does | Where |
 |---|---|---|
-| Domain code | The types, the board decoder and the pure functions. .NET and Fable both compile it | [`app/Shared`](app/Shared) |
-| Map page | The map, the beach list and card, the layer rail and the footer, compiled by Fable into JavaScript. Elmish loop, MapLibre GL JS 6.17.0, OpenFreeMap `liberty` base map, trails from OpenStreetMap | [`app/Client`](app/Client) |
-| Static pages | About, support, contact, news, members, privacy, takedown and 404, in pt-BR (at the root) and English (under `en/`), rendered at build time from Markdown | [`app/Pages`](app/Pages), [`site/content`](site/content), [`app/Pages.Build`](app/Pages.Build) |
-| Server | ASP.NET Core on .NET 10. Serves the files, sends the security headers, takes the contact form, the GitHub login and the study API and pages. Listens on `127.0.0.1` behind nginx | [`app/Server`](app/Server) |
+| Map page | The map, the beach list and card, the layer rail and the footer, in Elm, bundled by Vite. Effects go through ports to a small JavaScript shell. MapLibre GL JS 6.17.0, OpenFreeMap `liberty` base map, trails from OpenStreetMap | [`front/`](front) |
+| Static pages | About, support, contact, news, members, privacy, takedown and 404, in pt-BR (at the root) and English (under `en/`), rendered at build time from Markdown by a Haskell program | [`back/pages`](back/pages), [`site/content`](site/content) |
+| Server | Haskell (warp, SQLite). Serves the files, sends the security headers, takes the contact form, the GitHub login and the study API and pages. Listens on `127.0.0.1` behind nginx | [`back/server`](back/server) |
 | Study submission | Anyone with a GitHub account of 7 days or more publishes a study as a PDF with metadata. It shows the notice "not reviewed, not medical advice". The board can hide a study | [ADR 0004](docs/adr/0004-study-submission.md), [board runbook](docs/6-board.md) |
-| Visual system | Tokens, type, components and contrast. `just design-check` compares it with the stylesheet | [`DESIGN.md`](DESIGN.md), [`app/Client/public/style.css`](app/Client/public/style.css) |
-| Nix package | The server, the pages and the client as one package that builds with no network | [`nix/package.nix`](nix/package.nix), [`flake.nix`](flake.nix) |
+| Visual system | Tokens, type, components and contrast. `just design-check` compares it with the stylesheet | [`DESIGN.md`](DESIGN.md), [`front/public/style.css`](front/public/style.css) |
+| Nix package | The server, the pages and the map page as one package that builds with no network | [`nix/package.nix`](nix/package.nix), [`flake.nix`](flake.nix) |
 
-The decisions are in [ADR 0001](docs/adr/0001-fsharp-fable-maplibre-dynamic-hosting.md) (F#, Fable and
-MapLibre), [ADR 0002](docs/adr/0002-dotnet-server.md) (the .NET server),
-[ADR 0003](docs/adr/0003-pages-in-fsharp.md) (the pages in F#) and
+The decisions are in [ADR 0005](docs/adr/0005-elm-and-haskell.md) (Elm and Haskell; it supersedes
+the language choices of ADRs 0001 to 0003, whose MapLibre, hosting and page decisions stand) and
 [ADR 0004](docs/adr/0004-study-submission.md) (study submission).
 
 ### Architecture
 
-[![marola-site and the repos around it: marola-corpus and marola-ml feed marola-app, whose board JSON the map client reads; the client and the static pages make app/dist, which the .NET server serves; nix/package.nix packs them, and piabrota/nix-os runs the package on piabrota2 behind nginx for piabrota.art; OpenFreeMap and GIBS give the tiles, GitHub OAuth the login, marola-dev/.github the members page; marola-devkit and the umbrella build docs.marola.dev](docs/img/architecture.png)](docs/img/architecture.png)
+[![marola-site and the repos around it: marola-corpus and marola-ml feed marola-app, whose board JSON the map client reads; the Elm client and the Haskell static pages make dist, which the Haskell server serves; nix/package.nix packs them, and piabrota/nix-os runs the package on piabrota2 behind nginx for piabrota.art; OpenFreeMap and GIBS give the tiles, GitHub OAuth the login, marola-dev/.github the members page; marola-devkit and the umbrella build docs.marola.dev](docs/img/architecture.png)](docs/img/architecture.png)
 
 How to read it: each row is a group of repos or services, and an arrow is what one hands to the
 next. Orange boxes are outside marola. Not shown: the legacy `site/static` build, which
@@ -46,18 +44,18 @@ drawn with the umbrella's Archify pin and `scripts/figure.sh` (in a marola check
 - **Boards.** The app image pinned in [`marola-image`](marola-image) writes each area's board (the
   ranked beaches, hour by hour). This repo never builds the app. The legacy build runs the image
   and puts the boards in `site/dist/data/`. The server reads `MAROLA_DATA` (default `data/`), then
-  `app/dist/data/`. `just app-build --fixtures` writes one board per area from
+  `dist/data/`. `just dist-build --fixtures` writes one board per area from
   [`site/fixtures/board.json`](site/fixtures/board.json) for an offline preview.
-- **Trails.** `app/Client/public/data/trails/<area>.json` holds the hiking routes, from OpenStreetMap
+- **Trails.** `front/public/data/trails/<area>.json` holds the hiking routes, from OpenStreetMap
   (ODbL). The map page fetches the file of the area on show. See [the reference](docs/4-reference.md#trail-files).
 - **Studies.** The server keeps the accounts, the API keys, the study rows and the reports in SQLite
   (`MAROLA_DB`) and the PDFs in a folder (`MAROLA_STUDIES`). The study pages and the Atom feed are
   rendered by the server from those rows.
-- **Pages.** `app/Pages.Build` renders the static pages into `app/dist/` at build time.
+- **Pages.** `marola-pages` (`back/pages`) renders the static pages into `dist/` at build time.
 
 ### Static and dynamic
 
-Static, in `app/dist/`: the map page and its JavaScript, `style.css`, the vendored libraries and
+Static, in `dist/`: the map page and its JavaScript, `style.css`, the vendored libraries and
 fonts, the board and trail JSON, and the pages from Markdown. Dynamic, in the server: `POST /contact`,
 `/submit`, `/studies`, `/studies/<id>`, `/studies.atom`, `/account`, `/report/<id>`, `/auth/github/*`
 and `/api/v1/*`. Every page is served with a Content-Security-Policy that allows scripts and styles
@@ -66,8 +64,8 @@ from the site itself only, so a content page has no inline script and no inline 
 ## Run it
 
 ```bash
-nix develop path:.             # the dev shell: dotnet, fable, fantomas, node, python3 and the lint tools
-just app-build --fixtures      # compile the client, render the pages and write fixture boards into app/dist
+nix develop path:.             # the dev shell: node, elm, ghc, cabal, python3 and the lint tools
+just dist-build --fixtures     # build the Elm page, render the pages and write fixture boards into dist
 just server-run                # http://127.0.0.1:8080, state in .tmp/marola.db
 ```
 
@@ -76,12 +74,13 @@ The first `nix develop` writes a `flake.lock`. The repo does not commit it.
 ## Test it
 
 ```bash
-just quality    # every check CI runs that needs no docker: format, the .NET and Fable tests, the server and pages tests, design-check, the legacy checks, docs-lint
+just quality    # every check CI runs that needs no docker: the Elm and Haskell tests, design-check, the legacy checks, docs-lint
 ```
 
-The parts have their own recipes: `just app-test`, `just server-test`, `just pages-test`,
-`just client-check` (the compiled client in a fake DOM, no browser), `just design-check`, and
-`scripts/server_smoke.sh` (the built server on a free port). `just --list` shows all of them.
+The parts have their own recipes: `just front-test` (elm-test), `just back-test` (the pages' and the
+server's hspec suites), `just front-check` (the built page in a fake DOM, no browser),
+`just server-smoke` (the built server on a free port), `just pages-parity <dir>` (the pages against
+another build) and `just design-check`. `just --list` shows all of them.
 `scripts/nav_measure.sh` measures the phone nav in a real browser. It needs a Chromium and is not in
 `just quality`.
 
@@ -91,6 +90,9 @@ The parts have their own recipes: `just app-test`, `just server-test`, `just pag
 nix build .#default     # result/bin/marola-server and result/share/marola/dist
 just package-smoke      # starts that server and checks four URLs
 ```
+
+The package has not been built since the move to Elm and Haskell: its npm and Elm hashes are
+placeholders until a first build with network ([docs/5-hosting.md](docs/5-hosting.md#build-with-nix)).
 
 ## Deploy it
 
@@ -102,7 +104,7 @@ What the repository checks about its code, its security and its agent tooling, a
 
 ## The legacy site
 
-`site/static/` is the page that marola.dev serves today. It does not use `app/`.
+`site/static/` is the page that marola.dev serves today. It does not use `front/` or `back/`.
 
 ```bash
 just site-build floripa   # one area's boards from the pinned image, plus the page, into site/dist (docker, network)
@@ -124,7 +126,7 @@ a fallback. `404.html` forwards `marola.dev/docs/*` to [docs.marola.dev](https:/
 
 | Piece | Where |
 |---|---|
-| The new site | [`app/`](app) |
+| The new site | [`front/`](front) (Elm), [`back/`](back) (Haskell), [`cabal.project`](cabal.project) |
 | The pages' text | [`site/content/`](site/content), the chrome words in [`site/i18n/`](site/i18n) |
 | The legacy page | [`site/static/`](site/static) |
 | The areas | [`site/areas.json`](site/areas.json) |
@@ -153,8 +155,8 @@ a fallback. `404.html` forwards `marola.dev/docs/*` to [docs.marola.dev](https:/
 
 More: [docs/1-design.md](docs/1-design.md) (the legacy page: files, the board → markers mapping, CSP),
 its sibling [docs/1-design_chat-widget.md](docs/1-design_chat-widget.md) (the chat widget),
-[docs/2-libraries.md](docs/2-libraries.md) (vendored libraries and the F# client's packages),
-[docs/3-development.md](docs/3-development.md) (the build and deploy, the F# app, the `site-data`
+[docs/2-libraries.md](docs/2-libraries.md) (vendored libraries and the Elm page's and the Haskell packages),
+[docs/3-development.md](docs/3-development.md) (the build and deploy, the Elm and Haskell site, the `site-data`
 layout, health checks, i18n, bumping the app image, the `MIP:` trailer),
 [docs/4-reference.md](docs/4-reference.md) (`areas.json` fields, the tile policy, the board schema
 pin, trail files), [docs/5-hosting.md](docs/5-hosting.md) (hosting), [docs/6-board.md](docs/6-board.md)

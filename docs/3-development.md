@@ -114,42 +114,32 @@ in the ICU subset `ui.js` implements and names the same arguments as `pt-BR`'s, 
 note in `context.json`. Edit the catalogs, never `i18n.js`; `--check` fails a stale committed
 bundle.
 
-## The F# app (`app/`)
+## The new site: Elm and Haskell
 
-The rewrite of the page is in F#, compiled to JavaScript by Fable ([ADR 0001](adr/0001-fsharp-fable-maplibre-dynamic-hosting.md)).
-`app/Shared` holds the domain types, the board decoder and the pure functions. It uses no .NET-only
-API, so .NET and Fable both compile it. `app/Client` is the map page (not written yet; its static
-files and its two JavaScript files are there). `app/Server` (.NET) comes later.
-
-`app/Tests` holds the tests with Expecto. `app/Tests.Fable` compiles the same test files with Fable and
-runs them on Node, so a function has to give the same answer on both runtimes. A `#if FABLE_COMPILER`
-in the test files picks Fable.Mocha in place of Expecto and the JSON reader of the runtime. `app/marola.sln` does not
-exist: each recipe names its project.
+The map page is Elm in `front/`, bundled by Vite; the static pages and the server are Haskell in
+`back/pages` and `back/server`, one cabal project at the root ([ADR 0005](adr/0005-elm-and-haskell.md)).
 
 | Recipe | What it does |
 |---|---|
-| `just app-test` | `dotnet test`, then `fable` on `Tests.Fable`, then `node Tests.Fable/run.mjs`. NuGet restores in locked mode |
-| `just app-fmt` | Fantomas over `app/` (`--check` only reports, as CI does) |
-| `just golden` | Writes `app/Tests/golden.json` |
-| `just quality` | Runs all three |
+| `just front-test` | elm-test over `front/tests` (`npm ci` first when `front/node_modules` is missing) |
+| `just back-test` | `cabal test all`: the pages' and the server's hspec suites |
+| `just golden` | Writes `front/tests/golden.json` |
+| `just quality` | Runs all three, with the legacy checks |
 
 The golden file is the parity contract with the old page. `scripts/golden.js` runs the pure functions of
-`ui.js`, `app.js` and `flow.js` over a table of inputs and writes what they return. The F# tests
-read the file and must give the same answers on .NET and on Node. Change the old code or the table,
+`ui.js`, `app.js` and `flow.js` over a table of inputs and writes what they return. The Elm tests
+(`GoldenTests.elm`) read the file and must give the same answers. Change the old code or the table,
 run `just golden`, commit the new file; `just golden --check` fails a stale one.
 
-NuGet packages are pinned by `packages.lock.json` in each project (`RestorePackagesWithLockFile`).
-`just app-test` sets `RestoreLockedMode=true`, so a stale lock fails the run. To add or update a
-package, edit the `fsproj`, run `dotnet restore` in that project folder (without the variable) and
-commit the new lock. The restore downloads from nuget.org: it is the only download, and there is no
-`npm`. The dev shell sets `DOTNET_CLI_TELEMETRY_OPTOUT`, `DOTNET_NOLOGO`, `DOTNET_CLI_HOME` and
-`NUGET_PACKAGES`; the last two point into the shell's temporary folder, so each new shell downloads
-the packages again.
+Versions are pinned three ways: `front/package-lock.json` (npm: Vite, vite-plugin-elm, elm-test),
+`front/elm.json` (the Elm packages) and `cabal.project.freeze` (every Haskell package, with
+`index-state`). To change a Haskell bound, edit the `.cabal` file, run `cabal freeze` at the root and
+commit the new freeze file. The first build downloads from npm, package.elm-lang.org and Hackage.
 
-`flake.nix` gives the dev shell `dotnet-sdk_10`, `fable` and `fantomas` from the flake's own `nixpkgs`.
-The repo does not commit a `flake.lock`, so the versions are the ones that `nixos-unstable` has when
-`nix develop` first writes one. On 2026-11-07 that was Fable 5.26.0, .NET SDK 10.0.403 and Fantomas
-7.0.3. Never run `dotnet tool install`: the tools come from Nix.
+`flake.nix` gives the dev shell node, elm 0.19.1, GHC 9.6, cabal-install and SQLite from the flake's
+own `nixpkgs`. The repo does not commit a `flake.lock`, so the versions are the ones that
+`nixos-unstable` has when `nix develop` first writes one. The freeze file names GHC 9.6.6's `base`;
+with another GHC 9.6 minor, run `cabal freeze` again.
 
 ## News posts
 
@@ -169,53 +159,44 @@ pushed.
 ### Build and serve the client
 
 ```bash
-just app-build            # Fable compiles app/Client/App, then app/dist/ is assembled
-just app-build --fixtures # also writes data/<area>/ boards from site/fixtures/board.json
-just server-run           # http://127.0.0.1:8080, with the security headers (see below)
-just client-check         # a Node smoke test of the compiled client
-just pages-test           # the static pages: renderer, Markdown subset, every page in both languages
-just pages-build          # write the pages into app/dist alone (app-build does it too)
+just dist-build             # front_build.sh (Vite) and marola-pages into dist/, with the assets and csp.txt
+just dist-build --fixtures  # also writes data/<area>/ boards from site/fixtures/board.json
+just server-run             # http://127.0.0.1:8080, with the security headers (see below)
+just front-check            # a Node smoke test of the built page in dist
+just pages-parity <dir>     # the pages, byte for byte, against another build's dist
 ```
 
-`scripts/app_build.sh` runs `fable app/Client/App --outDir app/Client/out` with a locked NuGet
-restore, then builds `app/dist/`: `index.html`, `style.css`, `vendor/` and `data/trails/` from
-`app/Client/public/`, Fable's output in `app/dist/app/` (with its `fable_modules/`), the two files of
-`app/Client/ffi/` in `app/dist/ffi/`, and the catalogs of `site/i18n/`. It writes `csp.txt` from
-`Csp.fs`. There is no `boot.mjs`: `index.html` loads `app/Program.js`, whose last line calls `main`.
-The build also renders every static page (about, support, contact, contact-sent, 404, news, members) and the
-metadata files (`robots.txt`, `sitemap.xml`, `llms.txt`, `humans.txt`, `.well-known/security.txt`) into
-`app/dist/` and `app/dist/en/` ([ADR 0003](adr/0003-pages-in-fsharp.md)). Edit the Markdown in
+`scripts/site_build.sh` runs `scripts/front_build.sh` (`npm ci`, then `vite build` into `front/dist`:
+the Elm bundle under `assets/` and `front/public/` copied as it is), copies it to `dist/`, runs
+`marola-pages site dist`, and adds the catalogs of `site/i18n/`, the images and the board schema. It
+writes `csp.txt` with `marola-server csp`. The pages are every static page (about, support, contact,
+contact-sent, 404, news, members) and the metadata files (`robots.txt`, `sitemap.xml`, `llms.txt`,
+`humans.txt`, `.well-known/security.txt`), in `dist/` and `dist/en/`. Edit the Markdown in
 `site/content/pages/` and the posts in `site/content/news/`, and the chrome words in `site/i18n/`,
 never the HTML. The members page reads `site/members/MEMBERS.md`, a copy of marola-dev/.github's file.
 `site/members.version` has two lines: the commit the copy came from, and `blob <sha>`, the git blob id
 of the copy. The build refuses a copy that does not hash to that id, so a build needs no network.
-`just members-check` (in `just quality`) and a test in `app/Pages.Tests` check the same. To move the
+`just members-check` (in `just quality`) and a test in `back/pages` check the same. To move the
 pin, copy MEMBERS.md at the new commit over the file and write both lines of `site/members.version`
 (`git hash-object site/members/MEMBERS.md` prints the blob id). `MEMBERS_SOURCE=<file>` reads another
-file instead. With no `site/members/MEMBERS.md`, the build fetches the commit. `--no-fable` reuses
-`app/Client/out`.
-`app/dist/` and `app/Client/out/` are not in git.
+file instead. With no `site/members/MEMBERS.md`, the build fetches the commit. `--no-install` reuses
+`front/node_modules`. `dist/`, `front/dist/` and `dist-newstyle/` are not in git.
 
-Fable writes each FFI import as the path from its output file to the `.mjs` in the source tree. That
-is why the build compiles into `app/Client/out`, next to `app/Client/ffi`, and `app/dist/app` and
-`app/dist/ffi` keep the same relation. `app/dist/app/package.json` says `"type": "module"` because Node
-(the check) needs it for Fable's `.js` files; a browser does not read it.
-
-`just client-check` runs the compiled client in Node with a small DOM and a MapLibre stub. It
-does not start a browser, so it does not prove that the real MapLibre draws the map.
+`just front-check` runs the built page in Node with a small DOM and a MapLibre stub. It does not start
+a browser, so it does not prove that the real MapLibre draws the map.
 
 ### Run and test the server
 
 ```bash
-just server-run           # http://127.0.0.1:8080 over app/dist and data/, with every security header
-just server-test          # the server's tests: the real pipeline in memory (Expecto and TestHost)
-just server-build         # publish the server into app/Server/out
+just server-run           # http://127.0.0.1:8080 over dist and data/, with every security header
+just back-test            # the pages' and the server's tests (the server's pipeline in memory)
+just back-build           # build both Haskell packages; `cabal list-bin marola-server` prints the binary
 scripts/server_smoke.sh   # start the built server on a free port, check it, stop it
 ```
 
-`app/Server` replaces `scripts/serve.mjs`. It builds the CSP header from `Csp.fs`, so the page and the
-server cannot drift. `just server-run` keeps the contact database in `.tmp/marola.db`, which git
-ignores. The smoke script needs `just app-build --fixtures` first. How it runs on a host, with the
+The server builds its CSP header from `Marola.Csp`, which also writes `dist/csp.txt`, so the page and
+the server cannot drift. `just server-run` keeps the contact database in `.tmp/marola.db`, which git
+ignores. The smoke script needs `just dist-build --fixtures` first. How it runs on a host, with the
 variables and the nginx and systemd settings, is in [the hosting page](5-hosting.md).
 
 To try the login by hand, start the fake GitHub and the server in dev mode. The fake GitHub signs in a made-up

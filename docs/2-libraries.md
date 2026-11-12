@@ -22,36 +22,35 @@ the Windy-style layer rail; nothing under `site/static/vendor/` is Leaflet any m
 `site/areas.json`'s `tiles`/`tiles_attribution` fields are vestigial for this repo
 ([reference](4-reference.md#area-fields)).
 
-## The F# client's libraries
+## The Elm page's libraries
 
-`app/Client` has no bundler and no npm. The browser libraries that it loads are vendored under
-`app/Client/public/vendor/`. The .NET packages come from NuGet. Each `packages.lock.json` pins every
-package and its hash, and `just app-test` restores in locked mode.
+`front/` is built by Vite. The npm packages are build tools only (`front/package-lock.json` pins them
+and their hashes): Vite 7.3.7, vite-plugin-elm 3.0.1 and elm-test. The browser libraries the page loads
+are vendored under `front/public/vendor/` and copied as they are; no npm package reaches the browser.
+The Elm packages are in `front/elm.json`.
 
 | Library | Version | Why | Licence |
 |---|---|---|---|
 | MapLibre GL JS | 6.17.0 (`vendor/maplibre/`: `maplibre-gl.mjs`, `maplibre-gl-worker.mjs`, `maplibre-gl-shared.mjs`, `maplibre-gl.css`) | The base map. It replaces Mapbox GL JS and needs no account or token. The files are the upstream `dist/` files, not edited. `INTEGRITY.txt` holds the npm sha512 of the tarball | BSD-3-Clause (`vendor/maplibre/LICENSE.maplibre-gl`) |
-| Thoth.Json.Core | 0.10.1 (NuGet) | The board and trail decoders in `app/Shared`. One decoder runs on .NET and on Fable | MIT |
-| Thoth.Json.Newtonsoft | 0.5.0 (NuGet) | Reads JSON on .NET, for the .NET test run only | MIT |
-| Thoth.Json.JavaScript | 0.6.0 (NuGet) | Reads JSON on Node, for the Fable test run only | MIT |
-| Expecto | 10.2.3 (NuGet) | The test framework on .NET. `Microsoft.NET.Test.Sdk` 17.14.1 and `YoloDev.Expecto.TestSdk` 0.15.5 let `dotnet test` find the tests | Apache-2.0 (Expecto), MIT (the two others) |
-| Fable.Mocha | 2.17.0 (NuGet) | The test framework under Fable. It has the Expecto API, so both runs compile the same test files | The nuspec links the licence file in its repository; nobody read it here |
+| elm/core, elm/browser, elm/html, elm/json, elm/svg | 1.0.5, 1.0.2, 1.0.0, 1.1.3, 1.0.1 | The language's own packages: the page, its views, its JSON decoders | BSD-3-Clause |
+| elm-explorations/test | 2.2.1 | The tests (`just front-test`) | BSD-3-Clause |
 
 `maplibre-gl-shared.mjs` is empty in 6.17.0 and nothing imports it. It stays so that the folder is
 the upstream one. `maplibre_ffi.mjs` loads `maplibre-gl.mjs` with a dynamic `import()` of an
 absolute path and sets the worker with `setWorkerUrl`.
 
-## The server's packages
+## The Haskell packages
 
-`app/Server` uses the ASP.NET Core shared framework (Kestrel, the rate limiter, response compression,
-the logging console): no package for those. The NuGet packages are these, and
-[ADR 0002](adr/0002-dotnet-server.md) says why the list is short.
+`back/pages` and `back/server` are one cabal project (`cabal.project`), and `cabal.project.freeze` pins
+every package's version. The main ones:
 
-| Package | Version | Why | Licence |
-|---|---|---|---|
-| Microsoft.Data.Sqlite | 10.0.15 | The contact messages, in one SQLite file. It is the smallest way to a transactional store with no server process | MIT |
-| SQLitePCLRaw.lib.e_sqlite3 | 2.1.14 | The native SQLite library. Microsoft.Data.Sqlite pulls 2.1.11, which carries SQLite before 3.50.2 (CVE-2025-6965) and fails the NuGet audit (NU1903). 2.1.14 carries SQLite 3.54.0 | Apache-2.0 (the wrapper), public domain (SQLite) |
-| Microsoft.AspNetCore.TestHost | 10.0.0 | `app/Server.Tests` only: runs the real pipeline in memory, with a peer address the test chooses | MIT |
-
-`app/Server.Tests` also uses Expecto, `Microsoft.NET.Test.Sdk` and `YoloDev.Expecto.TestSdk`, as in the
-table above. Its `packages.lock.json` and the server's pin every package and its hash.
+| Package | Version | Why |
+|---|---|---|
+| warp, wai | 3.4.21, 3.2.5 | The HTTP server and its interface |
+| sqlite-simple, direct-sqlite | 0.4.19.0, 2.3.29 | The contact messages, accounts and studies, in one SQLite file. direct-sqlite links the system SQLite (`+systemlib`), so a fix of SQLite is a system update |
+| aeson | 2.2.5.1 | Reads the catalogs (both packages) and GitHub's answers |
+| crypton | 1.0.6 | SHA-256 of a PDF and of keys, the CSRF HMAC, random tokens |
+| brotli, zlib | 0.0.0.3, 0.7.1.1 | Response compression |
+| http-client, http-client-tls | 0.7.19, 0.3.6.4 | The GitHub login |
+| cryptohash-sha1 | 0.11.101.0 | The git blob id of MEMBERS.md (`back/pages`) |
+| hspec | 2.11.18 | The tests (`just back-test`) |

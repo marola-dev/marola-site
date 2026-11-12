@@ -13,8 +13,8 @@ helps most. Do not send a real person's data: use your own test account.
 
 ## In scope
 
-- The server in `app/Server`: routes, headers (`Security.fs`), sessions, CSRF, rate limits, the contact form.
-- The pages in `app/Pages` and the pages of the server (`Views.fs`), including escaping of study text.
+- The server in `back/server`: routes, headers (`Security.hs`), sessions, CSRF, rate limits, the contact form.
+- The pages in `back/pages` and the pages of the server (`Views.hs`), including escaping of study text.
 - The study submission and the PDF intake: the upload, the name scan, the store, the PDF route.
 - The API under `/api/v1`, including the API keys.
 - The Nix package in `nix/`, as far as it changes what the server runs.

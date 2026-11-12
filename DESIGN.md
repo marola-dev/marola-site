@@ -4,19 +4,19 @@ The map is a data product. The score colours, the numbers and the sources carry 
 chrome around them stays quiet, neutral and consistent, so a visitor reads it in five seconds on a
 phone.
 
-This file is the one source for tokens and components. `app/Client/public/style.css` is the one
+This file is the one source for tokens and components. `front/public/style.css` is the one
 stylesheet: the map page, the static pages and the server pages all load it. Its `:root` block
 holds every token, and the tables below list them with their values. `just design-check` fails
 when the two differ (see [How a change is checked](#how-a-change-is-checked)).
 
 Three parts of the code draw what a visitor sees:
 
-- The map page is the Fable client: `app/Client/Core` (the views, as a virtual DOM) and
-  `app/Client/ffi` (the MapLibre and WebGL glue).
+- The map page is the Elm page: `front/src` (the views) and `front/js` (the MapLibre and WebGL
+  glue, reached through `front/ports.js`).
 - The static pages (about, support, contact, news, members, privacy, takedown, 404) are rendered
-  by `app/Pages` from Markdown. `app/Pages/Layout.fs` is their head, nav, header and footer.
+  by `back/pages` from Markdown. `back/pages/src/Marola/Pages/Layout.hs` is their head, nav, header and footer.
 - The study pages (`/submit`, `/studies`, `/studies/<id>`, `/account`, `/report/<id>`) are
-  rendered by `app/Server/Views.fs` inside the same layout.
+  rendered by `back/server/src/Marola/Server/Views.hs` inside the same layout.
 
 The page chrome and the map controls follow the rules below. A rule says what the CSS does now.
 Where the code and a wish differ, the section [Known gaps](#known-gaps) says so.
@@ -149,9 +149,9 @@ number.
 
 Four colours are not in `:root`, because a CSS variable does not reach them:
 
-- The beach dot rim `#1d2733` and its white ring are SVG attributes in `app/Client/Core/MapView.fs`.
-- The selected trail line and the Niño 3.4 box use `#1d2733` in `app/Client/ffi/maplibre_ffi.mjs`.
-- The score colours and the flow ramps appear again as hex in `app/Client/Core/Config.fs`, where
+- The beach dot rim `#1d2733` and its white ring are SVG attributes in `front/src/MapView.elm`.
+- The selected trail line and the Niño 3.4 box use `#1d2733` in `front/js/maplibre_ffi.mjs`.
+- The score colours and the flow ramps appear again as hex in `front/src/Config.elm`, where
   MapLibre and the WebGL layer need them as values.
 - The page's `theme-color` meta is `#ffffff`.
 
@@ -314,7 +314,7 @@ with 72 px above them (56 px on phones), and figures and quotes that take the fu
   A third control, "artistas locais", is a placeholder: muted, `aria-disabled`, titled "em breve".
   From 840 px the controls sit at the right of the status line. Narrower, they take their own row.
 - **Icons**: Lucide line icons (ISC, `vendor/icons/LICENSE.lucide`) through `Icons.icon` in
-  `app/Client/Core/Icons.fs`. 16 px, 1.75 stroke, `--accent`, `aria-hidden`, with the word next to
+  `front/src/Icons.elm`. 16 px, 1.75 stroke, `--accent`, `aria-hidden`, with the word next to
   it. Never emoji.
 
 ## Components: pages and forms
@@ -395,7 +395,7 @@ they are drawn once as still streaks.
 ## No inline style, no script on content pages
 
 A content page has no `<script>` and no `style=` attribute. The server sends a Content-Security-
-Policy with `script-src 'self'` and `style-src 'self'` (the header is built in `app/Server/Security.fs`
+Policy with `script-src 'self'` and `style-src 'self'` (the header is built in `back/server/src/Marola/Server/Security.hs`
 and the map page repeats it in a meta tag). An inline script or an inline style is blocked by the
 browser, so the markup must not rely on one. A colour that depends on data, such as a band, is a
 class (`c70`, `f-c70`), never a `style` value. The only scripts are the module of the map page and
@@ -404,7 +404,7 @@ MapLibre's worker, both from `'self'`. A page that needs behaviour is a form tha
 ## How a change is checked
 
 `just design-check` runs `scripts/design_check.js` (Node, no packages) after its own self-test. It
-reads this file and `app/Client/public/style.css` and fails when:
+reads this file and `front/public/style.css` and fails when:
 
 1. a custom property in `:root` is not in a token table here;
 2. a token row here is not in `:root`, or has a different value;

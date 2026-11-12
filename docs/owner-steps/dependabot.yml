@@ -1,32 +1,20 @@
 # DRAFT for .github/dependabot.yml. Not active: this branch may not edit .github/ (docs/7-quality.md, owner step 1).
 #
-# What it does: opens a weekly pull request for each NuGet project folder that has a packages.lock.json, and for
-# the GitHub Actions that .github/workflows/ uses. A person reads and merges; Dependabot never merges.
+# What it does: opens a weekly pull request for the npm packages of front/ (package-lock.json) and for the
+# GitHub Actions that .github/workflows/ uses. A person reads and merges; Dependabot never merges.
 #
-# After a NuGet bump, three more things are a person's job, because Dependabot does not know this repo:
-#   1. `nix/deps.json` (the packages the offline Nix build uses) needs `just nix-deps`, which needs the network.
-#      Without it `just nix-build` fails on the missing package.
-#   2. A `packages.lock.json` must match the new versions. Every recipe restores in locked mode and fails on a stale
-#      lock. Regenerate with `dotnet restore` in that project folder without RestoreLockedMode (AGENTS.md).
-#      [OPEN: whether Dependabot rewrites these lock files itself. Read its first pull request before you rely on it.]
-#   3. `just quality` must pass. The commit trailers the repo asks for (`Tested:`, Co-Authored-By) are not on a
+# Dependabot has no ecosystem for cabal or Elm: cabal.project.freeze and front/elm.json move by hand
+# (`cabal freeze` after a change of bounds; docs/3-development.md).
+#
+# After an npm bump, two more things are a person's job, because Dependabot does not know this repo:
+#   1. `npmDepsHash` in nix/package.nix must match the new package-lock.json. Without it `just nix-build` fails
+#      and prints the hash it found.
+#   2. `just quality` must pass. The commit trailers the repo asks for (`Tested:`, Co-Authored-By) are not on a
 #      Dependabot commit. [OPEN: owners. Does the trailer rule apply to Dependabot?]
-#
-# The list of folders is every folder under app/ with a packages.lock.json on 2026-11-11. A new project needs a line here.
 version: 2
 updates:
-  - package-ecosystem: "nuget"
-    directories:
-      - "/app/Shared"
-      - "/app/Client/Core"
-      - "/app/Client/App"
-      - "/app/Pages"
-      - "/app/Pages.Build"
-      - "/app/Pages.Tests"
-      - "/app/Server"
-      - "/app/Server.Tests"
-      - "/app/Tests"
-      - "/app/Tests.Fable"
+  - package-ecosystem: "npm"
+    directory: "/front"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5

@@ -7,7 +7,7 @@ followed at 2 a.m.
 Every command below runs as root on the host, with the variables of the unit. Write them once:
 
 ```bash
-M='sudo env MAROLA_DB=/var/lib/marola/marola.db MAROLA_STUDIES=/var/lib/marola/studies dotnet /opt/marola/server/marola-server.dll'
+M='sudo env MAROLA_DB=/var/lib/marola/marola.db MAROLA_STUDIES=/var/lib/marola/studies /opt/marola/server/bin/marola-server'
 ```
 
 Then `$M reports --open` is the first command. The commands print plain lines. Text that a visitor wrote is

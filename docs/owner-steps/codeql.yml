@@ -1,12 +1,9 @@
 # DRAFT for .github/workflows/codeql.yml. Not active: this branch may not edit .github/ (docs/7-quality.md, owner step 3).
 #
-# CodeQL does not support F#. Its C# analysis reads C# source, and every server, page and client file in this
-# repository is F#. So CodeQL cannot analyse the code that carries the security claims (`app/`). What it can read
-# here is the JavaScript: the legacy page in site/static/, the hand-written files in app/Client/ffi/ and the
+# CodeQL does not support Elm or Haskell, the languages of the page (front/src) and of the server and pages
+# (back/). So CodeQL cannot analyse the code that carries the security claims. What it can read here is the
+# JavaScript: the legacy page in site/static/, front/ports.js and the hand-written files in front/js/, and the
 # scripts. That is the only language this draft enables.
-#
-# The decision was a C# analysis. `find . -name '*.cs'` finds 0 files, so a `csharp` job would fail with "no source
-# code seen". If a C# file is ever added, add `csharp` to the matrix (build-mode `none` reads source with no build).
 # [OPEN: owners. Keep this JavaScript-only job, or drop the file.]
 #
 # Actions are pinned by the SHAs Hermes resolved on 2026-11-11 (docs/owner-steps/pin-actions.md). `permissions: {}`

@@ -75,27 +75,28 @@ the page reach Mapbox's tile/style/event endpoints and, when set, the chat widge
 (`chatbot-config.js`). No other third-party script, font or analytics origin is loaded — Inter is
 self-hosted (`vendor/fonts/`), not pulled from a font CDN.
 
-## The F# map page (`app/`)
+## The Elm map page (`front/`)
 
-The new map page is F# compiled to JavaScript by Fable ([ADR 0001](adr/0001-fsharp-fable-maplibre-dynamic-hosting.md)).
-It replaces `site/static/` in a later step. Until then both exist and `site/static/` is the live page.
-The page is Elmish: `app/Client/Core` is its pure part and `app/Client/App` its browser part.
+The new map page is Elm, bundled by Vite ([ADR 0005](adr/0005-elm-and-haskell.md)). It replaces
+`site/static/` in a later step. Until then both exist and `site/static/` is the live page. Elm owns
+the model, `update` and the views; every effect goes out through a port to `front/ports.js`.
 
 | Path | What it holds |
 |---|---|
-| `app/Shared/` | The domain types, the board decoder and the pure functions. Pure F#, for both .NET and Fable |
-| `app/Client/Core/` | The model, the messages, `update` (which returns commands as data), the views as a virtual DOM and `Vdom.diff`. Pure F#, tested on .NET and on Fable |
-| `app/Client/App/` | Fable only. `Dom.fs` applies the diff to the DOM with `createElement` and `setAttribute`, never a markup string. `Effects.fs` carries out the commands, `Ffi.fs` binds `ffi/`, `Program.fs` starts the Elmish loop |
-| `app/Client/public/` | `index.html`, `style.css`, `vendor/` and `data/trails/` |
-| `app/Client/ffi/` | The only hand-written JavaScript. `maplibre_ffi.mjs` holds the MapLibre calls, `flow_layer_ffi.mjs` the WebGL wind and wave layer |
-| `app/Tests/`, `app/Tests.Fable/` | The same tests, run by Expecto on .NET and by Fable on Node |
+| `front/src/` | The domain types, the board decoder, the model, the messages, `update` (which returns effects as data) and the views. Pure Elm |
+| `front/ports.js` | Starts the page and carries out each effect `Main.elm` sends: fetch, MapLibre, the flow layer, history, storage, audio, focus |
+| `front/js/` | The other hand-written JavaScript. `maplibre_ffi.mjs` holds the MapLibre calls, `flow_layer_ffi.mjs` the WebGL wind and wave layer |
+| `front/public/` | `style.css`, `favicon.svg`, `vendor/` and `data/trails/`, copied as they are |
+| `front/index.html` | The page's head, its CSP `<meta>` and the module script |
+| `front/tests/` | elm-test suites, and `golden.json`, what the old page's functions return |
 
-`scripts/app_build.sh` compiles `app/Client/App` into `app/Client/out` and assembles `app/dist/`. The
-[build section of the development guide](3-development.md#build-and-serve-the-client) has the steps.
+`scripts/front_build.sh` builds `front/dist/`; `scripts/site_build.sh` puts it into `dist/` with the
+static pages. The [build section of the development guide](3-development.md#build-and-serve-the-client)
+has the steps.
 
 ### The board, beach by beach, and markers
 
-The mapping is the same as the old page's. `Band.ofScore` in `app/Shared` gives a beach one of five bands, and the
+The mapping is the same as the old page's. `Band.ofScore` in `front/src/Band.elm` gives a beach one of five bands, and the
 band is a CSS class, never an inline `style=`. Each beach is one DOM marker: a 16 px dot with a
 white ring. The picked beach grows to 32 px and shows its score. A water sampling point is a
 droplet, so it never looks like a beach. The client writes all markers as one JSON text.
@@ -107,10 +108,11 @@ The new page does not draw it.
 
 ### CSP
 
-`Csp.policy ()` in `app/Shared` is the one value of the policy. `app/Server` sends it as a header
-(with `form-action 'self'` added; see [the hosting page](5-hosting.md)), `scripts/app_build.sh` writes
-it to `app/dist/csp.txt`, and `index.html` carries the same text in a `<meta>` tag without
-`frame-ancestors`, which a meta tag cannot set. `scripts/client_check.js` checks that the two agree.
+`policy` in `back/server/src/Marola/Csp.hs` is the one value of the policy. The server sends it as a
+header (with `form-action 'self'` added; see [the hosting page](5-hosting.md)), `scripts/site_build.sh`
+writes it to `dist/csp.txt` (`marola-server csp`), and `front/index.html` carries the same text in a
+`<meta>` tag without `frame-ancestors`, which a meta tag cannot set. `scripts/front_check.js` checks
+that the two agree.
 
 The policy has `'self'` for scripts, styles, fonts and workers, and two third-party hosts:
 `tiles.openfreemap.org` (the base map) and `gibs.earthdata.nasa.gov` (the satellite layers). It
@@ -122,7 +124,7 @@ from a blob. `worker-src` has no `blob:`: MapLibre starts its worker from the sa
 `vendor/maplibre/maplibre-gl-worker.mjs`. It uses a blob worker only for a cross-origin worker URL.
 The form action of the contact page is not part of this policy.
 
-The base map style, `https://tiles.openfreemap.org/styles/liberty`, is one constant in the client (not written yet).
+The base map style, `https://tiles.openfreemap.org/styles/liberty`, is one constant in `front/src/Config.elm`.
 Nobody has loaded this URL yet. Its sprite and glyph hosts are assumed to be `tiles.openfreemap.org`.
 If they are not, the map fails to start and the page shows the beach list. The page keeps the
 OpenStreetMap credit (ODbL) in the attribution control.
