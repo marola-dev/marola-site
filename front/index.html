@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>marola: condições do mar em cada praia</title>
+  <meta name="description" content="Todas as praias da região ordenadas pelas condições de hoje e de amanhã: mar, vento, ondas, maré, qualidade da água e águas-vivas. Dados abertos e sem cookies.">
+  <meta name="theme-color" content="#ffffff">
+  <!-- The same policy the server sends as a header (marola/csp), without frame-ancestors, which a meta tag cannot set.
+       scripts/front_check.js checks that it allows no inline script or style. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob: https://tiles.openfreemap.org https://gibs.earthdata.nasa.gov; connect-src 'self' https://tiles.openfreemap.org https://gibs.earthdata.nasa.gov; font-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'">
+  <!-- impact.com's site-ownership check reads this tag verbatim, non-standard `value` attribute included. -->
+  <meta name='impact-site-verification' value='01172e56-c6f9-4720-ac79-04d3a5b40fef'>
+  <link rel="canonical" href="https://marola.dev/">
+  <link rel="alternate" hreflang="pt-BR" href="https://marola.dev/">
+  <link rel="alternate" hreflang="en" href="https://marola.dev/?lang=en">
+  <link rel="alternate" hreflang="x-default" href="https://marola.dev/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="marola">
+  <meta property="og:title" content="marola: condições do mar em cada praia">
+  <meta property="og:description" content="Todas as praias da região ordenadas pelas condições de hoje e de amanhã: mar, vento, ondas, maré, qualidade da água e águas-vivas. Dados abertos e sem cookies.">
+  <meta property="og:url" content="https://marola.dev/">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:locale:alternate" content="en_US">
+  <meta name="twitter:card" content="summary">
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","name":"marola","url":"https://marola.dev/","inLanguage":["pt-BR","en"]},{"@type":"Organization","name":"marola","url":"https://marola.dev/","logo":"https://marola.dev/favicon.svg","sameAs":["https://github.com/marola-dev","https://www.linkedin.com/company/marola-dev/"]}]}</script>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" vite-ignore>
+  <link rel="stylesheet" href="vendor/maplibre/maplibre-gl.css" vite-ignore>
+  <link rel="stylesheet" href="style.css" vite-ignore>
+</head>
+<body>
+  <!-- Elm (src/Main.elm) draws the nav, header, map, list, card and footer here. -->
+  <div id="app"></div>
+  <noscript><p class="nojs">esta página precisa de javascript para mostrar os dados. os arquivos brutos estão em <a href="data/">data/</a>. / this page needs javascript to show the data. the raw files are in <a href="data/">data/</a>.</p></noscript>
+  <!-- Vite bundles ports.js, the Elm page and the two FFI files into one local module under assets/. -->
+  <script type="module" src="./ports.js"></script>
+</body>
+</html>
