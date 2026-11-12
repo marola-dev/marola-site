@@ -135,7 +135,7 @@ fetchProfile env clientId clientSecret code = do
       GithubRequest
         { method = "POST"
         , url = cfg.githubBase <> "/login/oauth/access_token"
-        , headers = [(hAccept, "application/json"), (hUserAgent, "marola-front"), (hContentType, "application/x-www-form-urlencoded")]
+        , headers = [(hAccept, "application/json"), (hUserAgent, "marola-site"), (hContentType, "application/x-www-form-urlencoded")]
         , body = form
         }
   case jsonObject tokenAnswer >>= (`str` "access_token") of
@@ -146,7 +146,7 @@ fetchProfile env clientId clientSecret code = do
           GithubRequest
             { method = "GET"
             , url = cfg.githubApiBase <> "/user"
-            , headers = [(hAuthorization, "Bearer " <> TE.encodeUtf8 token), (hAccept, "application/vnd.github+json"), (hUserAgent, "marola-front")]
+            , headers = [(hAuthorization, "Bearer " <> TE.encodeUtf8 token), (hAccept, "application/vnd.github+json"), (hUserAgent, "marola-site")]
             , body = ""
             }
       pure $ do

@@ -330,7 +330,7 @@ humans members =
         <> [ "/* SITE */"
            , "Members: " <> file
            , "Cite: " <> zenodo
-           , "Code: https://github.com/marola-dev/marola-front"
+           , "Code: https://github.com/marola-dev/marola-site"
            , "Language: Português (Brasil), English"
            , "Standards: HTML, CSS, F# compiled to JavaScript; no framework"
            , "Components: MapLibre GL JS, Inter"
