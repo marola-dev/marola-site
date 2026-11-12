@@ -73,7 +73,7 @@ type alias Model =
     , loreOpen : Bool
     , blurbOpen : Bool
     , sosOpen : Bool
-    , soundOn : Bool
+    , playlistOpen : Bool
     , map : MapState
     , status : Status
     , zoomedOut : Bool
@@ -121,7 +121,7 @@ initial loc path query reducedMotion =
     , loreOpen = False
     , blurbOpen = False
     , sosOpen = False
-    , soundOn = False
+    , playlistOpen = False
     , map = MapNone
     , status = Idle
     , zoomedOut = False

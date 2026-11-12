@@ -13,6 +13,7 @@ import Json.Decode as D
 import Json.Encode
 import Model exposing (DayEntry, Model, Panel(..))
 import Msg exposing (Msg(..))
+import Svg
 import Ui exposing (attr, cls, idAttr)
 import Words
 
@@ -20,9 +21,50 @@ import Words
 brand : Model -> Html Msg
 brand model =
     Html.div [ cls "brand" ]
-        [ Html.h1 [] [ Words.icon "brand", Html.text "marola" ]
+        [ Html.h1 [] [ Words.icon "brand", Html.text "marola", piabrota model ]
         , Html.p [ cls "tagline" ] [ Html.text (Words.t model "header.tagline") ]
         ]
+
+
+{-| The mark is room.piabrota.art's favicon (`/favicon.svg`), drawn inline: the page holds no `<img>`.
+-}
+piabrota : Model -> Html Msg
+piabrota model =
+    Html.a
+        [ cls "piabrota"
+        , attr "href" Config.piabrota
+        , attr "target" "_blank"
+        , attr "rel" "noopener"
+        , attr "title" (Words.t model "brand.piabrota")
+        , attr "aria-label" (Words.t model "brand.piabrota")
+        ]
+        [ Svg.svg [ attr "viewBox" "0 0 100 100", attr "aria-hidden" "true", attr "focusable" "false" ]
+            [ Svg.node "rect" [ attr "width" "100", attr "height" "100", attr "rx" "22", attr "fill" "#BC2318" ] []
+            , Svg.node "path" [ attr "d" "M12 50 Q50 18 88 50 Q50 82 12 50Z", attr "fill" "#F7F3EA" ] []
+            , Svg.node "circle" [ attr "cx" "50", attr "cy" "50", attr "r" "14", attr "fill" "#2E9E4F" ] []
+            , Svg.node "circle" [ attr "cx" "50", attr "cy" "50", attr "r" "6", attr "fill" "#0B0D12" ] []
+            ]
+        ]
+
+
+{-| The iframe exists only while the player is open, so Spotify is not contacted before a click.
+-}
+player : Model -> Html Msg
+player model =
+    if model.playlistOpen then
+        Html.section [ idAttr "player", cls "player", attr "aria-label" (Words.t model "player.label") ]
+            [ Html.iframe
+                [ attr "src" Config.playlistEmbed
+                , attr "title" (Words.t model "player.label")
+                , attr "allow" "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                , attr "loading" "lazy"
+                ]
+                []
+            , Html.a [ attr "href" Config.playlist, attr "target" "_blank", attr "rel" "noopener" ] [ Html.text (Words.t model "player.open") ]
+            ]
+
+    else
+        Html.section ([ idAttr "player", cls "player" ] ++ Ui.hidden True) []
 
 
 areaOption : Bool -> Area -> ( String, Html Msg )
@@ -157,7 +199,7 @@ header model =
             , insta model
             , days model
             , control model "near" "locate" (Words.t model "controls.near") "controls.near_title" [ Words.pressed (model.here /= Nothing) ] NearPressed
-            , control model "sound" "sound" (Words.t model "controls.sound") "controls.sound_title" [ Words.pressed model.soundOn ] SoundPressed
+            , control model "playlist" "music" (Words.t model "controls.playlist") "controls.playlist_title" [ Words.pressed model.playlistOpen, attr "aria-controls" "player" ] PlaylistPressed
             , control model
                 "toggle-list"
                 "list"
@@ -166,6 +208,7 @@ header model =
                 [ attr "aria-controls" "list", Words.expanded (model.panel == BeachList) ]
                 ListToggled
             ]
+        , player model
         ]
 
 

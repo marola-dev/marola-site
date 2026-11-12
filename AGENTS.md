@@ -238,7 +238,7 @@ same files to the Cloudflare Worker `marola` (free static assets), which serves 
 trigger a deploy by hand (`just site-deploy` is denied in `.claude/settings.json`).
 
 The new site has no map bill: MapLibre and OpenFreeMap need no account and no token. Its base map
-and its hosts are the CSP's `https://tiles.openfreemap.org` and NASA GIBS (`back/server/src/Marola/Csp.hs`). The
+and its hosts are the CSP's `https://tiles.openfreemap.org` and NASA GIBS, and its one frame Spotify's player (`back/server/src/Marola/Csp.hs`). The
 host that runs the server, its nginx and its backups are a human's. The legacy page's base map is
 Mapbox's, billed per map load above its free tier: the account, the token and any billing setting are
 a human's. So is the self-hosted runner and the machine it runs on. The Mapbox token is a public

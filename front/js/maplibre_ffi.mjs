@@ -11,7 +11,7 @@ let lib = null, map = null, loaded = false, emitFn = () => {};
 const pending = new Map();
 const parts = {}; // per part: last JSON text and live markers
 const trails = { data: null, visible: true, selected: -1 };
-let trailPopup = null, flow = null, audio = null;
+let trailPopup = null, flow = null;
 
 const queue = (kind, fn) => (loaded ? fn() : pending.set(kind, fn));
 const fail = (m) => { if (!loaded) emitFn("error", String(m)); };
@@ -225,12 +225,6 @@ export function locate(onOk, onErr) {
     (e) => onErr(String(e.message || e.code)),
     { timeout: 10000, maximumAge: 60000 },
   );
-}
-
-export function playSound(on, url, onFail) {
-  if (!on) { if (audio) audio.pause(); return; }
-  if (!audio) { audio = new Audio(url); audio.loop = true; }
-  audio.play().catch(() => onFail());
 }
 
 export const storeLanguage = (tag) => { try { localStorage.setItem("marola.lang", tag); } catch (_) { /* private mode */ } };

@@ -105,9 +105,9 @@ small { font-size: var(--fs-13); letter-spacing: var(--tr-13); }
 /* header: wordmark and what the page does at left, the controls at right */
 .bar {
   display: flex; align-items: center; gap: 12px 24px; flex-wrap: wrap;
-  padding: 12px 24px; background: var(--bg);
+  padding: 12px 24px; background: var(--bg); position: relative;
 }
-.brand { display: flex; align-items: baseline; gap: 4px 16px; flex-wrap: wrap; min-width: 0; }
+.brand { display: flex; align-items: baseline; gap: 4px 16px; flex-wrap: wrap; min-width: 0; flex: 1 1 320px; }
 .bar h1 {
   display: flex; align-items: center; gap: 8px; margin: 0;
   font-size: var(--fs-22); font-weight: 650; line-height: 1.2; letter-spacing: var(--tr-22); white-space: nowrap;
@@ -115,6 +115,18 @@ small { font-size: var(--fs-13); letter-spacing: var(--tr-13); }
 .bar h1 svg { width: 22px; height: 22px; color: var(--accent); flex: none; align-self: center; }
 .tagline { margin: 0; font-size: var(--fs-14); letter-spacing: var(--tr-14); line-height: 1.4; color: var(--muted); max-width: 60ch; }
 .controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-left: auto; }
+/* piabrota's eye: the mark of room.piabrota.art, small, after the wordmark */
+.piabrota { display: inline-flex; align-self: center; flex: none; margin-left: 2px; border-radius: 5px; opacity: .85; }
+.piabrota:hover, .piabrota:focus-visible { opacity: 1; }
+.bar .piabrota svg { display: block; width: 20px; height: 20px; }
+/* the playlist's player hangs under the bar, on the right, above the map, clear of the buttons */
+.player {
+  position: absolute; z-index: 1002; top: calc(100% + 8px); right: 16px; width: min(340px, calc(100vw - 32px));
+  display: flex; flex-direction: column; gap: 6px; padding: 8px;
+  background: var(--bg); border: 1px solid var(--line); border-radius: var(--r-panel); box-shadow: var(--shadow-float);
+}
+.player iframe { display: block; width: 100%; height: 152px; border: 0; border-radius: var(--r-control); }
+.player a { align-self: flex-end; font-size: var(--fs-12); letter-spacing: var(--tr-12); color: var(--accent); }
 .controls:empty { display: none; }
 
 /* One control everywhere: 36 px, 8 px radius, a 1px border. Selected toggles take the soft
