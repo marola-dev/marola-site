@@ -102,8 +102,8 @@ selfLink ok prefix cell = do
 
 orcidOk :: Text -> Bool
 orcidOk s = case T.splitOn "-" s of
-  [a, b, c, d] ->
-    all (\p -> T.length p == 4 && T.all isDigit p) [a, b, c]
+  [p1, p2, p3, d] ->
+    all (\p -> T.length p == 4 && T.all isDigit p) [p1, p2, p3]
       && T.length d == 4
       && T.all isDigit (T.take 3 d)
       && (let l = T.last d in isDigit l || l == 'X')
