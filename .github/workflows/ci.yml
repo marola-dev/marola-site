@@ -126,7 +126,7 @@ jobs:
           restore-keys: |
             cabal-${{ runner.os }}-ghc9.6.6-${{ hashFiles('cabal.project.freeze') }}-
       - run: cd front && npm ci --no-audit --no-fund
-      - run: cd front && ./node_modules/.bin/elm-format --validate --elm-version=0.19 src tests
+      - run: cd front && git ls-files -z '*.elm' | xargs -0 ./node_modules/.bin/elm-format --validate --elm-version=0.19
       - run: cd front && npm test
       - run: scripts/site_build.sh --fixtures --no-install
       - run: node scripts/front_check.js
