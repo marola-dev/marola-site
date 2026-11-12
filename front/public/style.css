@@ -54,10 +54,10 @@
   /* type scale; each size's tracking follows Inter's dynamic metrics,
    * -0.0223 + 0.185 * e^(-0.1745 * px) em. letter-spacing inherits as a length, so a rule that sets
    * a size sets its tracking too. Fjalla and the mono face take their own two trackings. */
-  --fs-11: 11px; --fs-12: 12px; --fs-13: 13px; --fs-14: 14px; --fs-15: 15px; --fs-17: 17px; --fs-18: 18px;
+  --fs-11: 11px; --fs-12: 12px; --fs-13: 13px; --fs-14: 14px; --fs-15: 15px; --fs-16: 16px; --fs-17: 17px; --fs-18: 18px;
   --fs-19: 19px; --fs-20: 20px; --fs-21: 21px; --fs-22: 22px; --fs-24: 24px; --fs-28: 28px;
   --fs-display: clamp(36px, 5vw + 12px, 56px);
-  --tr-11: .005em; --tr-12: 0em; --tr-13: -.003em; --tr-14: -.006em; --tr-15: -.009em; --tr-17: -.013em;
+  --tr-11: .005em; --tr-12: 0em; --tr-13: -.003em; --tr-14: -.006em; --tr-15: -.009em; --tr-16: -.011em; --tr-17: -.013em;
   --tr-18: -.014em; --tr-19: -.016em; --tr-20: -.017em; --tr-21: -.018em; --tr-22: -.018em; --tr-24: -.02em;
   --tr-28: -.021em; --tr-display: -.022em;
   --tr-fjalla: .01em; --tr-mono: 0em; --tr-eyebrow: .16em;
@@ -68,7 +68,7 @@ html, body { margin: 0; height: 100%; }
 body {
   font: 400 var(--fs-15)/1.5 var(--sans); letter-spacing: var(--tr-15); font-kerning: normal;
   color: var(--ink); background: var(--bg);
-  display: flex; flex-direction: column; min-height: 100vh;
+  display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh;
   -webkit-text-size-adjust: 100%; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
 }
 #app { display: contents; }
@@ -148,9 +148,9 @@ small { font-size: var(--fs-13); letter-spacing: var(--tr-13); }
 .bar:has(> .hourbar:not([hidden])) > .controls { grid-area: controls; }
 .bar > .tagline { grid-area: tag; justify-self: end; text-align: right; }
 .bar:has(> .hourbar[hidden]) > .tagline { margin-left: auto; }
-/* the playlist's player hangs under the row, on the right, above the map, clear of the buttons */
+/* the playlist's player hangs under the row, on the right, above the map, clear of the layer rail */
 .player {
-  position: absolute; z-index: 1002; top: calc(100% + 8px); right: 16px; width: min(340px, calc(100vw - 32px));
+  position: absolute; z-index: 1002; top: calc(100% + 8px); right: 60px; width: min(340px, calc(100vw - 76px));
   display: flex; flex-direction: column; gap: 6px; padding: 8px;
   background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-panel); box-shadow: var(--shadow-float);
 }
@@ -168,9 +168,15 @@ select, button, .pill, .controls > a {
 }
 select { display: inline-block; padding: 0 8px 0 14px; }
 #area { text-transform: none; font-family: var(--mono); font-weight: 500; letter-spacing: .04em; }
-select:hover, button:hover, .pill:hover, .controls > a:hover { border-color: var(--accent); color: var(--ink); transform: translateY(-1px); }
+/* hover only where a pointer hovers: on a touch screen it sticks after a tap and reads as pressed */
+@media (hover: hover) {
+  select:hover, button:hover, .pill:hover, .controls > a:hover { border-color: var(--accent); color: var(--ink); transform: translateY(-1px); }
+  button:hover > .ic, .controls > a:hover > .ic { color: var(--accent); }
+}
 button:active { transform: none; }
-button:hover > .ic, .controls > a:hover > .ic { color: var(--accent); }
+@media (hover: none) {
+  button:active, .pill:active, .controls > a:active, .list ol li:active, .sos-panel a:active { background: var(--raised); }
+}
 button[aria-pressed="true"], button[aria-expanded="true"] {
   background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
 button[aria-pressed="true"] > .ic, button[aria-expanded="true"] > .ic { color: inherit; }
@@ -183,7 +189,9 @@ button[aria-pressed="true"] > .ic, button[aria-expanded="true"] > .ic { color: i
   border-radius: var(--r-control); color: var(--muted); }
 .lang button, .lang a { display: inline-flex; align-items: center; min-height: 22px; padding: 0 8px; text-decoration: none;
   font: 500 var(--fs-11)/1 var(--mono); letter-spacing: var(--tr-mono); }
-.segmented button:hover, .lang button:hover, .lang a:hover { background: var(--raised); border-color: transparent; color: var(--ink); transform: none; }
+@media (hover: hover) {
+  .segmented button:hover, .lang button:hover, .lang a:hover { background: var(--raised); border-color: transparent; color: var(--ink); transform: none; }
+}
 .segmented button.on, .lang button[aria-pressed="true"], .lang a[aria-current="true"] {
   background: var(--raised); border-color: var(--line-strong); color: var(--ink); }
 .segmented button small { font: 400 var(--fs-11)/1 var(--mono); letter-spacing: var(--tr-mono); color: var(--muted); }
@@ -205,7 +213,8 @@ button[aria-pressed="true"] > .ic, button[aria-expanded="true"] > .ic { color: i
 @media (min-width: 1400px) { .legend .wave-key { display: inline-flex; } }
 
 /* the map fills what is left */
-.main { position: relative; flex: 1 1 auto; min-height: 60vh; }
+/* svh, not dvh: the map must not change height while a phone's URL bar slides away */
+.main { position: relative; flex: 1 1 auto; min-height: 60vh; min-height: 60svh; }
 #map { position: absolute; inset: 0; background: var(--map-sea); }
 @media (min-width: 641px) {
   /* the open card would cover the layer rail, and the open list the zoom buttons and the key */
@@ -216,7 +225,7 @@ button[aria-pressed="true"] > .ic, button[aria-expanded="true"] > .ic { color: i
 
 /* the layer rail, Windy-style: top right of the map; it scrolls if the map is too short for it.
  * The padding keeps the buttons' shadows inside the scroll box. */
-.flow { position: absolute; z-index: 900; top: 12px; right: 12px; max-height: calc(100% - 24px); overflow-y: auto; scrollbar-width: none; padding: 2px 6px 8px; margin: -2px -6px 0 0; display: flex; flex-direction: column; align-items: flex-end;
+.flow { position: absolute; z-index: 900; top: 12px; right: 12px; max-height: calc(100% - 24px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; padding: 2px 6px 8px; margin: -2px -6px 0 0; display: flex; flex-direction: column; align-items: flex-end;
   gap: 8px; font-size: var(--fs-12); letter-spacing: var(--tr-12); color: var(--glass-muted); }
 .flow .layers { display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .flow .layers .sep { width: 20px; height: 2px; margin: 2px 0; border-radius: 1px; background: var(--glass); }
@@ -226,7 +235,7 @@ button[aria-pressed="true"] > .ic, button[aria-expanded="true"] > .ic { color: i
 .flow .layers button .ic { width: 18px; height: 18px; color: inherit; }
 /* icons only; the word stays for screen readers and as the title */
 .flow .layers button > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.flow .layers button:hover { border-color: var(--accent); color: var(--accent); transform: none; }
+@media (hover: hover) { .flow .layers button:hover { border-color: var(--accent); color: var(--accent); transform: none; } }
 .flow .layers button.soon { opacity: .5; cursor: not-allowed; }
 .flow .layers button.soon:hover { border-color: var(--glass-line); color: var(--glass-ink); }
 .flow .layers button[aria-pressed="true"], .flow .layers button[aria-expanded="true"] { background: var(--bg); border-color: var(--accent); color: var(--accent); box-shadow: var(--shadow-float), inset 0 0 0 1px var(--accent); }
@@ -265,7 +274,7 @@ button[aria-pressed="true"] > .ic, button[aria-expanded="true"] > .ic { color: i
 .list ol li:first-child { border-top: 0; }
 .list ol li::before { content: counter(rank, decimal-leading-zero); counter-increment: rank; grid-row: 1 / span 2;
   font: 400 var(--fs-11)/1 var(--mono); letter-spacing: var(--tr-mono); color: var(--muted); }
-.list ol li:hover { background: var(--raised); }
+@media (hover: hover) { .list ol li:hover { background: var(--raised); } }
 .list .name { grid-column: 2; font: 400 var(--fs-19)/1.15 var(--display); letter-spacing: var(--tr-fjalla); overflow-wrap: anywhere; }
 .list .meta { grid-column: 2; display: flex; flex-wrap: wrap; gap: 0 10px;
   font: 400 var(--fs-11)/1.5 var(--mono); letter-spacing: var(--tr-mono); color: var(--muted); }
@@ -283,7 +292,7 @@ button[aria-pressed="true"] > .ic, button[aria-expanded="true"] > .ic { color: i
 .trail-group ul { margin: 0; padding: 0 0 6px; list-style: none; }
 .trail { display: flex; justify-content: flex-start; gap: 10px; width: 100%; min-height: 36px; padding: 4px 16px;
   border: 0; border-radius: 0; background: none; white-space: normal; text-align: left; text-transform: none; font-weight: 400; }
-.trail:hover { background: var(--raised); transform: none; }
+@media (hover: hover) { .trail:hover { background: var(--raised); transform: none; } }
 .trail[aria-current="true"] { background: var(--accent-soft); color: var(--accent); }
 .trail .score { flex: none; padding: 2px 8px; border-radius: 999px; color: var(--bg); text-transform: lowercase;
   font: 600 var(--fs-11)/1.4 var(--sans); letter-spacing: var(--tr-11); }
@@ -634,7 +643,7 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
 
 /* Emergency numbers (#76): a map control in ink glass, top centre, clear of the zoom buttons
  * and the layer rail; only its icon is red, so it never reads as a score. */
-.sos, .sos-panel { position: absolute; z-index: 1001; left: 0; right: 0; margin: 0 auto; }
+.sos, .sos-panel { position: absolute; z-index: 1003; left: 0; right: 0; margin: 0 auto; }
 .sos { top: 12px; width: fit-content; min-height: 32px; padding: 0 12px; gap: 6px; font-size: var(--fs-13); letter-spacing: var(--tr-13);
   background: var(--glass); border-color: var(--glass-line); color: var(--glass-ink); box-shadow: var(--shadow-float);
   backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
@@ -691,19 +700,57 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   .gh .gh-owner, .li .li-name { display: none; }
 }
 @media (max-width: 900px) {
+  /* under the emergency button, which stays in reach */
+  .player { top: calc(100% + 48px); }
+  .main:has(.list:not([hidden])) .maplibregl-ctrl-top-left { top: 40px; }
+  /* the list and the card together leave no map to zoom */
+  .main:has(.list:not([hidden])):has(.card:not([hidden])) .maplibregl-ctrl-top-left { display: none; }
   .bar > .tagline { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .bar:has(> .hourbar:not([hidden])) { grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "controls controls" "label slider" "legend legend"; }
   .legend { justify-self: start; max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+}
+/* Targets under a finger, on a phone upright or on its side (DESIGN.md, "Focus, target size and
+ * motion"): a control keeps its drawn size and takes a bigger hit area from a pseudo-element, so the
+ * chrome does not grow over the map. */
+@media (max-width: 640px), (pointer: coarse) {
+  .piabrota, .controls > button, .controls > .insta, .lang button, .lang a, .sos-panel header button { position: relative; }
+  .piabrota::after, .controls > button::after, .controls > .insta::after, .lang button::after, .lang a::after,
+  .sos::after, .card .close::after, .sos-panel header button::after { content: ""; position: absolute; }
+  .piabrota::after { inset: -7px; }
+  .controls > button::after, .controls > .insta::after { inset: -5px -3px; }
+  .lang button::after, .lang a::after { inset: -10px -1px -8px; }
+  .sos::after, .card .close::after, .sos-panel header button::after { inset: -7px; }
+  .navtools .gh, .navtools .li { justify-content: center; min-width: 32px; min-height: 32px; }
+  .maplibregl-ctrl-group button { width: 36px; height: 36px; }
+  .trail { min-height: 44px; }
+  /* the slider: a 24 px thumb, and a touch strip taller than the track's row */
+  .hourbar input[type=range] { -webkit-appearance: none; appearance: none; height: 36px; margin: -6px 0; background: transparent; touch-action: pan-y; }
+  .hourbar input[type=range]::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: var(--line-strong); }
+  .hourbar input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 24px; height: 24px; margin-top: -9px;
+    border: 2px solid var(--bg); border-radius: 50%; background: var(--accent); }
+  .hourbar input[type=range]::-moz-range-track { height: 6px; border-radius: 3px; background: var(--line-strong); }
+  .hourbar input[type=range]::-moz-range-thumb { width: 20px; height: 20px; border: 2px solid var(--bg); border-radius: 50%; background: var(--accent); }
+  /* 16 px in a field: under it, iOS zooms the page when the field takes focus */
+  #area, .contact input, .contact textarea, .contact select, #chat-input { font-size: var(--fs-16); letter-spacing: var(--tr-16); }
+  #area { letter-spacing: .02em; }
 }
 @media (max-width: 640px) {
   /* one row of sections on a phone, never two: it scrolls sideways on the narrowest screens, and the
    * pt-BR strip (the longest) fits 375 px and up without scrolling: scripts/nav_measure.sh measures
    * it in a real browser (not part of just quality). */
-  .top { padding: 8px 16px 2px; gap: 2px 12px; }
+  .top { padding: 8px 16px 0; gap: 2px 12px; }
+  .lang button::after, .lang a::after { inset: -10px -1px -3px; }
+  .lang { min-height: 32px; }
+  .lang button, .lang a { min-height: 26px; min-width: 40px; justify-content: center; font-size: var(--fs-12); }
+  /* the two outside links as 32 px boxes; the last icon still ends on the gutter */
+  .navtools .gh, .navtools .li { justify-content: center; width: 32px; height: 32px; }
+  .navtools { margin-right: -7px; }
   .brand h1 { font-size: var(--fs-22); }
   .logo { width: 28px; height: 28px; }
-  .sitenav { gap: 4px 16px; }
-  .navtools { gap: 12px; }
+  /* the links' padding is their hit area, 37 px high; a pseudo-element would be cut by the strip's scroll box */
+  .sitenav { gap: 0; margin: -3px -8px 0; }
+  .sitenav > a { padding: 9px 8px 11px; }
+  .navtools { gap: 2px; }
   /* sections with no page yet would take room on a phone for nothing to tap */
   .sitenav > span { display: none; }
   /* members, studies, research and contribute are reached from about.html ("quem faz") on a phone */
@@ -724,7 +771,11 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   .controls > button, .controls > .insta { flex: none; width: 36px; padding: 0; }
   .controls > button .ic, .controls > .insta .ic { width: 17px; height: 17px; }
   .controls > button > span, .controls > .insta > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-  .hourbar label { min-width: 0; }
+  /* The slider takes the full row under its label: beside the label it was 74 px wide at 320 px, and
+   * it changed width under the finger when the label changed. */
+  .bar:has(> .hourbar:not([hidden])) { grid-template-columns: minmax(0, 1fr); grid-template-areas: "controls" "label" "slider" "legend"; row-gap: 4px; }
+  .hourbar label { min-width: 0; line-height: 1.3; }
+  .hourbar input[type=range] { height: 44px; margin: -10px 0; }
   .legend b { display: none; }
   .legend { gap: 4px; }
   .legend > span { gap: 5px; padding: 3px 7px; }
@@ -732,12 +783,20 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   .flow .layers { gap: 4px; }
   .flow .layers button { width: 32px; min-height: 32px; }
   .flow .layers button .ic { width: 16px; height: 16px; }
-  .flowkeys { left: 8px; bottom: 36px; }
+  /* MapLibre opens the attribution on load, two or three lines high on a phone: the key sits above it */
+  .flowkeys { left: 8px; bottom: 72px; }
+  .player { left: 8px; right: 48px; width: auto; }
   .flowkey { width: 7.5rem; padding: 6px 8px; font-size: var(--fs-11); letter-spacing: var(--tr-11); }
-  .flowkey > span:last-child { display: none; } /* the caption; the about page explains the field */
+  /* the caption under a ramp hides (the about page explains the field); a key that is only its caption keeps it */
+  .flowkey > .ends ~ span:last-child { display: none; }
+  .flowkey:not(:has(.ramp)) { width: auto; max-width: 12rem; }
   .list { top: auto; left: 8px; right: 8px; bottom: 8px; width: auto; max-height: 55%; }
   .card { left: 8px; right: 8px; bottom: 8px; width: auto; max-height: 62%; padding: 16px 16px 12px; }
-  .card h2 { font-size: var(--fs-24); }
+  .card h2 { margin-right: 0; font-size: var(--fs-24); }
+  /* the card scrolls inside its sheet: the close button stays at its top right */
+  .card .close { position: sticky; z-index: 1; top: 0; float: right; margin: -6px -6px 0 8px; background: var(--surface); }
+  /* what a person reads in a sheet or in the footer is 12 px on a phone, not 11 */
+  .list .meta, .card dt, .trail .dist, .trail-foot, .footer #status, .footer .credit, .member-role, .member-links { font-size: var(--fs-12); }
   .metrics { padding: 12px 0 10px; }
   .metric b { font-size: var(--fs-24); }
   .card dl { grid-template-columns: 5.5rem 1fr; }
@@ -754,7 +813,11 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   .footer .fold.soon .pm { background: var(--muted); }
   .footer .credit { margin-top: 10px; }
   .about { padding: 36px 16px 72px; }
-  .about-body { font-size: var(--fs-15); letter-spacing: var(--tr-15); }
+  .about-body { font-size: var(--fs-16); letter-spacing: var(--tr-16); }
+  .pagebar .controls > a, .about-body .pill, .about-body button, .contact select, .contact.filters button[type="submit"],
+  .contact input:not([type="checkbox"], [type="file"]) { min-height: 44px; }
+  .member-links { gap: 0 16px; }
+  .member-links a, .about ~ .footer > p:not(.credit) > a { display: inline-block; padding: 5px 0; }
   .about-body h2 { margin-top: 48px; font-size: var(--fs-24); }
   .about-body .lede { font-size: var(--fs-18); letter-spacing: var(--tr-18); }
   .about-body dl { grid-template-columns: 1fr; gap: 2px 0; }
@@ -766,7 +829,30 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
 }
 /* the smallest phones: "tomorrow" still has to fit beside "today" */
 @media (max-width: 359px) {
+  /* the brand and the tools share one row at 320 px */
+  .top { column-gap: 8px; }
+  .brand, .brand h1 { gap: 8px; }
+  .brand h1 { font-size: var(--fs-20); }
+  .logo { width: 26px; height: 26px; }
+  .lang button, .lang a { min-width: 34px; padding: 0 6px; }
+  .navtools .gh, .navtools .li { width: 28px; }
+  .navtools { margin-right: -5px; }
+  .legend { gap: 3px; }
+  .legend > span { gap: 4px; padding: 3px 5px; }
   .controls { gap: 4px; }
   .controls > button { width: 32px; }
   .controls .segmented button { padding: 0 2px; font-size: var(--fs-12); letter-spacing: var(--tr-12); }
+}
+/* a phone on its side: the chrome gives the height back to the map. The sections join the brand's row
+ * and the legend joins the slider's. */
+@media (min-width: 641px) and (max-width: 1100px) and (max-height: 500px) {
+  .top { flex-wrap: nowrap; min-height: 44px; padding: 4px 24px; }
+  .top > .sitenav { order: 0; flex-basis: auto; }
+  .bar { padding: 6px 24px; }
+  .bar:has(> .hourbar:not([hidden])) { grid-template-columns: auto minmax(6rem, 1fr) auto; grid-template-areas: "controls controls controls" "label slider legend"; }
+  .hourbar label { min-width: 0; }
+  .legend b { display: none; }
+  /* the strip scrolls sideways here: its end fades, so it reads as cut and not as complete */
+  .sitenav { -webkit-mask-image: linear-gradient(90deg, black calc(100% - 28px), transparent); mask-image: linear-gradient(90deg, black calc(100% - 28px), transparent); }
+  .main { min-height: 66vh; min-height: 66svh; }
 }
