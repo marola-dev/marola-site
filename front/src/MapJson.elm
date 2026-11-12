@@ -20,6 +20,7 @@ mapConfig lon lat =
         , ( "attributions", E.list E.string Config.attributions )
         , ( "module", E.string Config.maplibreModule )
         , ( "worker", E.string Config.maplibreWorker )
+        , ( "pmtiles", E.string Config.pmtilesModule )
         ]
         |> E.encode 0
 

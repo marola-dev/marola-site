@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Status** | Superseded in part by [ADR-0005](0005-elm-and-haskell.md) (2026-11-12): the language. MapLibre, OpenFreeMap and the dynamic host stand |
+| **Status** | Superseded in part by [ADR-0005](0005-elm-and-haskell.md) (2026-11-12): the language. MapLibre and the dynamic host stand. Superseded in part by [ADR-0006](0006-self-hosted-basemap.md) (2026-11-12): OpenFreeMap as the base map's host |
 | **Date** | 2026-11-11 |
 
 ## Context

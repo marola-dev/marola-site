@@ -18,3 +18,7 @@ cabal.project.local~
 
 # scripts/site_build.sh output: the Elm page, the pages and the assets the server serves
 /dist/
+
+# The base map's tiles are host data (docs/5-hosting.md, MAROLA_TILES); only the small fixture is committed
+*.pmtiles
+!/site/fixtures/basemap.pmtiles

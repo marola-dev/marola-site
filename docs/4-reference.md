@@ -30,11 +30,33 @@ this is the cost and provenance side:
   ([`AGENTS.md`](../AGENTS.md)'s Cost & deployment safety section). Without a token the page shows
   no base map rather than failing silently; `site.yml`'s deploy sets `MAPBOX_REQUIRE_TOKEN=1` so a
   missing token fails the build instead of shipping a map-less live site.
+- **The new site's base map**: no provider and no bill. The tiles are one PMTiles file on the site's own
+  host, cut by `scripts/basemap_extract.sh` from a Protomaps daily build of OpenStreetMap data (ODbL: the
+  page credits "© OpenStreetMap"); the style and the glyphs ship with the page
+  ([Base map pin](#base-map-pin), [5-hosting](5-hosting.md#the-base-map)).
 - **NASA GIBS** (the four satellite raster layers): free, keyless, public tiles, fetched only when
   a visitor turns one of those layers on. No account and no cost.
 - **Spotify** (the new site's playlist player): the embed of GREAT RESET, the playlist
   room.piabrota.art plays (`Config.playlist`), loaded in an iframe only when a visitor presses the
   Spotify button. No account and no cost for marola; playing in full needs the visitor's own login.
+
+## Base map pin
+
+`site/basemap.version` pins the Protomaps build the tiles file is cut from. Line 1 is the build's key
+(`<yyyymmdd>.pmtiles`, a file of about 139 GB at `https://build.protomaps.com/`), line 2 `b3sum` and the
+checksum [builds.json](https://build-metadata.protomaps.dev/builds.json) lists for it.
+`scripts/basemap_extract.sh` refuses to run when the key is no longer listed or its checksum differs. It
+does not hash the build itself, which it never downloads whole.
+
+| File | What | Written by |
+|---|---|---|
+| `site/basemap.version` | the pinned build | by hand, when the tiles are cut again |
+| `marola.pmtiles` on the host (`MAROLA_TILES`) | world to zoom 6, Brazil (`-74.5,-34.5,-28,6`) zoom 7 to 9, each area's box zoom 10 to 15; 216 MB | `scripts/basemap_extract.sh <out>`; never in git |
+| `site/fixtures/basemap.pmtiles` | world to zoom 1 and 3 km around the first area to zoom 11; 684 kB. `site_build.sh --fixtures` copies it to `dist/tiles/marola.pmtiles` for tests and an offline preview | `scripts/basemap_extract.sh --fixture site/fixtures/basemap.pmtiles` |
+| `front/public/map/style.json`, `front/public/map/fonts/` | the style and its glyphs | `node scripts/basemap_style.mjs` (`--check` compares) |
+
+An area's box is its centre plus and minus `radius_km + 50` km. A new area in `site/areas.json` needs the
+file cut again.
 
 ## Board schema pin
 

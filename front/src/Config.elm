@@ -1,4 +1,4 @@
-module Config exposing (areaCode, areaMinZoom, areaZoom, attributions, bandColour, enabledLayers, gibsAttribution, gibsTiles, instagram, maplibreModule, maplibreWorker, maxZoom, piabrota, playlist, playlistEmbed, repo, sourceLink, styleUrl, waveRamp, windRamp)
+module Config exposing (areaCode, areaMinZoom, areaZoom, attributions, bandColour, enabledLayers, gibsAttribution, gibsTiles, instagram, maplibreModule, maplibreWorker, maxZoom, piabrota, playlist, playlistEmbed, pmtilesModule, repo, sourceLink, styleUrl, waveRamp, windRamp)
 
 {-| The constants of the page: where the map comes from, which layers are live, and the colours
 MapLibre needs as values. Every colour here is a token of `style.css`.
@@ -7,20 +7,21 @@ MapLibre needs as values. Every colour here is a token of `style.css`.
 import Band exposing (Band)
 
 
-{-| OpenFreeMap's `liberty`. Its sprite, glyph and tile hosts are `tiles.openfreemap.org`, the only
-map host the CSP lets the page reach.
+{-| The site's own style (`scripts/basemap_style.mjs` writes it): its glyphs are under `/map/fonts/`
+and its tiles are the one PMTiles file the server answers at `/tiles/marola.pmtiles`. No map host
+but the page's own.
 -}
 styleUrl : String
 styleUrl =
-    "https://tiles.openfreemap.org/styles/liberty"
+    "/map/style.json"
 
 
-{-| The credit the ODbL asks for, and the map's host.
+{-| The credit the ODbL asks for, and the project the tiles and the style come from.
 -}
 attributions : List String
 attributions =
-    [ "<a href=\"https://openfreemap.org\" target=\"_blank\" rel=\"noopener\">OpenFreeMap</a>"
-    , "<a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\" rel=\"noopener\">© OpenStreetMap contributors</a>"
+    [ "<a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\" rel=\"noopener\">© OpenStreetMap</a>"
+    , "<a href=\"https://protomaps.com\" target=\"_blank\" rel=\"noopener\">Protomaps</a>"
     ]
 
 
@@ -32,6 +33,13 @@ maplibreModule =
 maplibreWorker : String
 maplibreWorker =
     "/vendor/maplibre/maplibre-gl-worker.mjs"
+
+
+{-| MapLibre reads `pmtiles://` through this library's protocol.
+-}
+pmtilesModule : String
+pmtilesModule =
+    "/vendor/pmtiles/pmtiles.mjs"
 
 
 gibsTiles : String

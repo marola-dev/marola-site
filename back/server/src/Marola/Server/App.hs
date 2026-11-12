@@ -48,6 +48,7 @@ import Marola.Server.Store (utc)
 import Marola.Server.Store qualified as Store
 import Marola.Server.StudyApi qualified as StudyApi
 import Marola.Server.StudyStore qualified as StudyStore
+import Marola.Server.Tiles qualified as Tiles
 import Marola.Server.Web qualified as Web
 import Network.HTTP.Types
 import Network.Wai
@@ -94,10 +95,12 @@ newEnv config clock github logger = do
   cat <- either (\e -> fail ("the page catalogs are missing under MAROLA_STATIC/i18n: " <> e)) pure catalog
   keyRates <- RateLimit.newWindow StudyApi.perKeyUnits StudyApi.keyWindow
   general <- RateLimit.newWindow generalPermits 60
+  tiles <- RateLimit.newWindow Tiles.permits 60
   strict <- RateLimit.newWindow strictPermits 600
-  pure Env {config = config, clock = clock, github = github, logger = logger, csrfKey = key, catalog = cat, keyRates = keyRates, general = general, strict = strict}
+  pure Env {config = config, clock = clock, github = github, logger = logger, csrfKey = key, catalog = cat, keyRates = keyRates, general = general, tiles = tiles, strict = strict}
 
--- | Every endpoint; a request that matches none goes to the static files.
+-- | Every endpoint; a request that matches none goes to the base map's tiles ('Tiles.prefix') or
+-- to the static files.
 routes :: [Route]
 routes =
   [ Route "POST" "/contact" True (\env req _ -> Contact.handle env req),
@@ -114,9 +117,9 @@ routes =
   where
     lookupParam = Map.lookup
 
--- | The text types that are compressed.
+-- | The text types that are compressed, and the map's glyphs, which shrink by a third.
 textTypes :: [ByteString]
-textTypes = ["text/html", "text/css", "text/plain", "text/javascript", "application/json", "application/xml", "image/svg+xml"]
+textTypes = ["text/html", "text/css", "text/plain", "text/javascript", "application/json", "application/xml", "image/svg+xml", "application/x-protobuf"]
 
 data Coding = Br | Gzip deriving (Eq)
 
@@ -216,7 +219,7 @@ bodyGuard req = do
     throwBody = throwIO BodyTooLarge
 
 -- | A file as a plain stream: Warp would add @Accept-Ranges@ and answer ranges, which the site
--- never offered.
+-- offers for one file only ('Tiles.handle', which streams its own answer).
 streamFile :: Response -> IO Response
 streamFile res = case res of
   ResponseFile st hs path Nothing -> do
@@ -267,7 +270,8 @@ applicationWith extra env req respond = do
       now <- env.clock
       let key = Security.requestKey rq
           matched = find (\r -> r.method == requestMethod rq && isJust (matchRoute r.pattern path)) (extra <> routes)
-      general <- RateLimit.take env.general key 1 now
+          isTiles = Tiles.prefix `T.isPrefixOf` path
+      general <- RateLimit.take (if isTiles then env.tiles else env.general) key 1 now
       case general of
         Left _ -> k (tooMany 60)
         Right () -> do
@@ -282,4 +286,5 @@ applicationWith extra env req respond = do
                 Left res -> k res
                 Right rq' -> case matched of
                   Just r | Just params <- matchRoute r.pattern path -> r.run env rq' params >>= k
+                  _ | isTiles -> Tiles.handle env.config rq' >>= k
                   _ -> Files.handle env.config rq' >>= k

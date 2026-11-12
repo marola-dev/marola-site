@@ -38,6 +38,7 @@ MAROLA_DEV=1 marola-server dev-account --login <name> --age-days <n>
 | `MAROLA_PORT` | the loopback port (8080) |
 | `MAROLA_STATIC` | the built page (`dist`, written by `scripts/site_build.sh`) |
 | `MAROLA_DATA` | the board data, served under `/data/` before the page's own |
+| `MAROLA_TILES` | the folder of the base map's `marola.pmtiles`, answered by byte range under `/tiles/` before the page's own `tiles/` |
 | `MAROLA_DB` | the SQLite file |
 | `MAROLA_STUDIES`, `MAROLA_STUDIES_QUOTA` | where the PDFs go, and their total size |
 | `MAROLA_GITHUB_CLIENT_ID`, `MAROLA_GITHUB_CLIENT_SECRET_FILE` | the GitHub login; without them `/auth/github/*` answers 503 |
@@ -45,6 +46,8 @@ MAROLA_DEV=1 marola-server dev-account --login <name> --age-days <n>
 
 ## Behaviour worth knowing
 
+- `/tiles/<name>.pmtiles` is the one path that answers a `Range` (one range, 206 or 416), and it
+  has a rate-limit window of its own (`Marola.Server.Tiles`).
 - A rate-limit window starts at a client's first request, not on a timer.
 - A log line is one JSON object: method, path, status, time. The server writes no startup line.
 - Warp strips the body of a HEAD response, and the request time is measured until the response is

@@ -7,7 +7,7 @@
 import { createFlowLayer } from "./flow_layer_ffi.mjs";
 
 const PACIFIC = [[-170, -5], [-120, 5]];
-let lib = null, map = null, loaded = false, emitFn = () => {};
+let lib = null, map = null, loaded = false, dead = false, emitFn = () => {};
 const pending = new Map();
 const parts = {}; // per part: last JSON text and live markers
 const trails = { data: null, visible: true, selected: -1 };
@@ -40,8 +40,13 @@ async function mount(config) {
     await new Promise((r) => requestAnimationFrame(r));
   }
   if (!el) return fail("map container missing");
-  lib = await import(config.module);
+  const [maplibre, pmtiles] = await Promise.all([import(config.module), import(config.pmtiles)]);
+  lib = maplibre;
   lib.setWorkerUrl(config.worker);
+  // The tiles file is deep only around each area (scripts/basemap_extract.sh). A missing tile must be
+  // an error, not an empty tile: MapLibre then keeps drawing the nearest ancestor it has.
+  lib.addProtocol("pmtiles", new pmtiles.Protocol({ errorOnMissingTile: true }).tile);
+  const expected = (e) => e.tile && e.error && e.error.message === "Tile not found.";
   map = new lib.Map({
     container: el, style: config.style, center: [config.lon, config.lat],
     zoom: config.zoom, minZoom: config.minZoom, maxZoom: config.maxZoom,
@@ -49,9 +54,10 @@ async function mount(config) {
   });
   map.addControl(new lib.AttributionControl({ compact: true, customAttribution: config.attributions }));
   map.addControl(new lib.NavigationControl(), 'top-left');
-  map.on("error", (e) => fail((e.error && e.error.message) || "map error"));
+  // A source that failed as a whole (no tiles file) still lets MapLibre fire "load": the map stays failed.
+  map.on("error", (e) => { if (expected(e)) return; dead = dead || (!!e.sourceId && !e.tile); fail((e.error && e.error.message) || "map error"); });
   map.on("click", onMapClick);
-  map.on("load", () => { loaded = true; emitFn("ready", ""); flush(); });
+  map.on("load", () => { if (dead) return; loaded = true; emitFn("ready", ""); flush(); });
 }
 
 export function initMap(configJson, emit) {

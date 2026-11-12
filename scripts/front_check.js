@@ -10,7 +10,7 @@
  *  - Spotify's player inside its iframe (the playlist scenario covers the iframe's url, the toggle and the CSP's frame-src)
  *  - the aspect-by-aspect tooltip numbers (MIP-0009 section 3), note codes, sea lore and score-note folds, SOS numbers
  *  - data-i18n attributes, the pseudo-locale gate, the lowercase house style
- *  - Mapbox token handling and the composite coastline layer (the client uses OpenFreeMap, no token)
+ *  - Mapbox token handling and the composite coastline layer (the client draws the site's own tiles, no token)
  *  - the static pages: section nav, donations, members, contact, favicon, page heads/JSON-LD
  */
 'use strict';
@@ -61,6 +61,25 @@ function staticChecks() {
   ok(!/unsafe-inline|unsafe-eval/.test(csp), "the CSP has no 'unsafe-inline' or 'unsafe-eval'");
   const tokens = csp.split(/[\s;]+/);
   ok(!tokens.includes('https:') && !tokens.includes('*'), 'the CSP has no bare https: or *');
+  const directive = (name) => (csp.split('; ').find((d) => d.startsWith(name + ' ')) || '').slice(name.length + 1);
+  ok(directive('connect-src') === "'self' https://gibs.earthdata.nasa.gov", 'connect-src is the origin and NASA GIBS, no map host', directive('connect-src'));
+  ok(directive('img-src') === "'self' data: blob: https://gibs.earthdata.nasa.gov", 'img-src is the origin, data:, blob: and NASA GIBS', directive('img-src'));
+  const origins = [...new Set(csp.match(/https:\/\/[^\s;]+/g) || [])].sort();
+  ok(origins.join() === 'https://gibs.earthdata.nasa.gov,https://open.spotify.com', 'the CSP names two origins: NASA GIBS and the Spotify player', origins.join());
+
+  // The base map is the site's own: one style, its glyphs and one PMTiles file, all under the origin.
+  const styleText = fs.readFileSync(path.join(DIST, 'map/style.json'), 'utf8');
+  const style = JSON.parse(styleText);
+  ok(!/https?:/.test(styleText), 'the map style names no host');
+  ok(Object.keys(style.sources).length === 1 && style.sources.basemap.url === 'pmtiles:///tiles/marola.pmtiles', 'its one source is the PMTiles file under /tiles/', JSON.stringify(style.sources));
+  ok(style.glyphs === '/map/fonts/{fontstack}/{range}.pbf' && !('sprite' in style) && !styleText.includes('icon-image'), 'its glyphs are local and it needs no sprite');
+  const stacks = new Set();
+  JSON.stringify(style.layers, (k, v) => { if (typeof v === 'string' && /^noto-/.test(v)) stacks.add(v); return v; });
+  ok(stacks.size >= 2 && [...stacks].every((f) => ['0-255', '256-511'].every((r) => fs.existsSync(path.join(DIST, 'map/fonts', f, r + '.pbf')))), 'every font stack the style names has its Latin glyphs in dist', [...stacks].join());
+  ok(style.layers.every((l) => l.type === 'background' || l.source === 'basemap'), 'every layer reads that source');
+  ok(style.layers.some((l) => l.type === 'symbol') && style.layers.findIndex((l) => l.type === 'symbol') > style.layers.findIndex((l) => l.id === 'water'), 'the labels come after the fills, where the satellite layer is inserted');
+  ok(style.layers.some((l) => l.id === 'landuse_beach') && style.layers.some((l) => l.id === 'pois_beach'), 'the style draws the sand and names the beaches');
+  ok(fs.existsSync(path.join(DIST, 'vendor/pmtiles/pmtiles.mjs')) && fs.existsSync(path.join(DIST, 'vendor/pmtiles/LICENSE.pmtiles')), 'the PMTiles library is vendored with its licence');
 
   const words = [['innerHTML', /innerHTML/], ['outerHTML', /outerHTML/], ['setHTML', /setHTML/], ['insertAdjacentHTML', /insertAdjacentHTML/],
     ['document.write', /document\.write/], ['eval(', /\beval\(/], ['new Function', /new Function/]];
@@ -191,7 +210,7 @@ async function until(pred, label) {
 const click = async (el) => { fire(el, 'click'); await sleep(40); };
 
 // ---- the MapLibre stub: every call recorded; the data: module below re-exports it ------------------------------
-const ml = { maps: [], markers: [], popups: [], controls: [], workerUrl: null, mode: 'load' };
+const ml = { maps: [], markers: [], popups: [], controls: [], workerUrl: null, mode: 'load', protocols: {}, protocolOpts: null };
 class Emitter {
   constructor() { this.handlers = []; }
   on(ev, a, b) { this.handlers.push({ ev, layer: b ? a : null, fn: b || a }); return this; }
@@ -205,7 +224,13 @@ class MapStub extends Emitter {
     Object.assign(this, { opts, calls: [], sources: {}, layers: [], loaded: false, hits: [] });
     ml.maps.push(this);
     // The FFI wires its handlers right after the constructor, so events go out on the next tick, as MapLibre's do.
-    setTimeout(() => (ml.mode === 'load' ? (this.loaded = true, this.emit('load')) : this.emit('error', { error: new Error('style failed') })), 0);
+    // A tile the sparse file does not hold is an error MapLibre reports and the page must ignore, before load too.
+    // 'error' is the tiles file missing: MapLibre reports the source and then fires load all the same.
+    setTimeout(() => {
+      this.emit('error', { error: new Error('Tile not found.'), tile: {}, sourceId: 'basemap' });
+      if (ml.mode === 'error') this.emit('error', { error: new Error('Bad response code: 404'), sourceId: 'basemap' });
+      this.loaded = true; this.emit('load');
+    }, 0);
   }
   rec(name, ...args) { this.calls.push({ name, args }); }
   addControl(c) { this.rec('addControl', c); }
@@ -244,10 +269,13 @@ class PopupStub {
 globalThis.__ml = { Map: MapStub, Marker: MarkerStub, Popup: PopupStub,
   AttributionControl: class { constructor(o) { this.kind = 'attribution'; this.opts = o; ml.controls.push(this); } },
   NavigationControl: class { constructor(o) { this.kind = 'navigation'; this.opts = o; ml.controls.push(this); } },
-  setWorkerUrl: (u) => { ml.workerUrl = u; } };
+  setWorkerUrl: (u) => { ml.workerUrl = u; }, addProtocol: (name, fn) => { ml.protocols[name] = fn; },
+  Protocol: class { constructor(o) { ml.protocolOpts = o; this.tile = () => {}; } } };
 // The loader hook runs on its own thread, so the module it serves only re-exports what this thread built.
-const STUB_MODULE = 'const m = globalThis.__ml; export const { Map, Marker, Popup, AttributionControl, NavigationControl, setWorkerUrl } = m;';
-const HOOK = `export async function resolve(s, c, next) { if (s === '/vendor/maplibre/maplibre-gl.mjs') return { url: 'data:text/javascript,' + ${JSON.stringify(encodeURIComponent(STUB_MODULE))}, shortCircuit: true }; return next(s, c); }`;
+const STUB_MODULE = 'const m = globalThis.__ml; export const { Map, Marker, Popup, AttributionControl, NavigationControl, setWorkerUrl, addProtocol } = m;';
+const PMTILES_MODULE = 'export const Protocol = globalThis.__ml.Protocol;';
+const stubUrl = (code) => JSON.stringify('data:text/javascript,' + encodeURIComponent(code));
+const HOOK = `export async function resolve(s, c, next) { if (s === '/vendor/maplibre/maplibre-gl.mjs') return { url: ${stubUrl(STUB_MODULE)}, shortCircuit: true }; if (s === '/vendor/pmtiles/pmtiles.mjs') return { url: ${stubUrl(PMTILES_MODULE)}, shortCircuit: true }; return next(s, c); }`;
 
 // ---- browser globals per scenario ----------------------------------------------------------------------------
 const BASE = 'http://127.0.0.1:8000/';
@@ -293,9 +321,12 @@ async function openTrailPanel() { await click($('button[data-panel=trails]')); }
 async function floripa() {
   const board = distJson(dayFile('floripa')), map = ml.maps[0];
   const byScore = [...board.beaches].sort((a, b) => b.best.score - a.best.score);
-  ok(ml.maps.length === 1 && map.opts.style === 'https://tiles.openfreemap.org/styles/liberty', 'the map starts on the OpenFreeMap liberty style');
+  ok(ml.maps.length === 1 && map.opts.style === '/map/style.json', "the map starts on the site's own style", map.opts.style);
+  ok(typeof ml.protocols.pmtiles === 'function' && ml.protocolOpts && ml.protocolOpts.errorOnMissingTile === true, 'pmtiles:// is registered, and a missing tile is an error (so its ancestor is drawn)');
   const attribution = ml.controls.find((c) => c.kind === 'attribution');
-  ok(attribution && attribution.opts.customAttribution.some((a) => a.includes('OpenStreetMap')), 'the attribution credits OpenStreetMap');
+  const credits = attribution ? attribution.opts.customAttribution : [];
+  ok(credits.some((a) => a.includes('© OpenStreetMap') && a.includes('https://www.openstreetmap.org/copyright')), 'the attribution credits OpenStreetMap with its copyright link');
+  ok(credits.some((a) => a.includes('Protomaps') && a.includes('https://protomaps.com')) && credits.length === 2, 'and Protomaps, and nobody else', credits.join());
   ok(ml.controls.some((c) => c.kind === 'navigation') && map.opts.attributionControl === false, 'navigation control added, default attribution off');
   ok(ml.workerUrl === '/vendor/maplibre/maplibre-gl-worker.mjs', 'the worker is the vendored one', ml.workerUrl);
   ok(map.calls.some((c) => c.name === 'fitBounds'), 'the first board fits the map to the beaches');
@@ -350,7 +381,7 @@ async function floripa() {
   ok($$('[data-trail]').length === routesOf(file).length && $('.trail-foot').textContent.includes(String(file.ibge_municipality)), 'floripa panel lists its routes and the IBGE code');
 
   const hosts = new Set(fetched.map((u) => u.host));
-  ok([...hosts].every((h) => h === '127.0.0.1:8000' || h.endsWith('tiles.openfreemap.org') || h.endsWith('gibs.earthdata.nasa.gov')), 'every request stays on the origin or the CSP hosts', [...hosts].join());
+  ok([...hosts].every((h) => h === '127.0.0.1:8000' || h === 'gibs.earthdata.nasa.gov'), 'every request stays on the origin or NASA GIBS', [...hosts].join());
   const paths = fetched.map((u) => u.pathname);
   ok(['/data/areas.json', '/i18n/en.json', '/i18n/pt-BR.json', '/data/floripa/latest.json', '/data/trails/floripa.json'].every((p) => paths.includes(p)), 'the page fetched catalogs, areas, latest and trails');
   ok(!JSON.stringify({ ...map.opts, container: null }).includes('pk.'), 'no token in the map options');
@@ -442,7 +473,8 @@ async function boardTrails() {
 }
 
 async function styleFail() {
-  ok(shown($('#map-note')) && $('#map-note').textContent === distJson('i18n/pt-BR.json')['map.failed'], 'a failed style shows #map-note with the pt-BR map.failed text');
+  await sleep(60);
+  ok(shown($('#map-note')) && $('#map-note').textContent === distJson('i18n/pt-BR.json')['map.failed'], 'a missing tiles file shows #map-note with the pt-BR map.failed text, and the load that follows does not undo it');
   ok(!$('#flow') && $$('button[data-layer]').length === 0, 'the layer rail is not rendered');
   ok(shown($('aside#list')) && rows().length === 2, 'the beach list opens by itself');
   ok(ml.markers.length === 0 && !ml.maps[0].calls.some((c) => c.name === 'addSource'), 'nothing is drawn on the failed map');

@@ -70,6 +70,7 @@ data Env = Env
     catalog :: Catalog,
     keyRates :: Window Text,
     general :: Window String,
+    tiles :: Window String,
     strict :: Window String
   }
 

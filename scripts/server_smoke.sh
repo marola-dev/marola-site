@@ -36,7 +36,11 @@ mkdir -p "$tmp/data/floripa"
 printf '{"smoke":true}\n' > "$tmp/data/floripa/latest.json"
 
 port="$(node -e 'const s = require("net").createServer().listen(0, "127.0.0.1", () => { console.log(s.address().port); s.close(); });')"
-export MAROLA_PORT="$port" MAROLA_STATIC="$static" MAROLA_DATA="$tmp/data" MAROLA_DB="$tmp/marola.db" MAROLA_STUDIES="$tmp/studies"
+# A file only MAROLA_TILES holds; the base map itself, tiles/marola.pmtiles, is the fixture in dist.
+mkdir -p "$tmp/tiles"
+printf 'smoke tiles\n' > "$tmp/tiles/smoke.pmtiles"
+[ -f "$static/tiles/marola.pmtiles" ] || { echo "server_smoke: $static/tiles/marola.pmtiles is missing; run 'just dist-build --fixtures'" >&2; exit 1; }
+export MAROLA_PORT="$port" MAROLA_STATIC="$static" MAROLA_DATA="$tmp/data" MAROLA_DB="$tmp/marola.db" MAROLA_STUDIES="$tmp/studies" MAROLA_TILES="$tmp/tiles"
 
 # The GitHub login runs against a fake GitHub (scripts/fake_github.mjs). MAROLA_DEV=1 lets the server take its
 # URLs from the environment and drop `Secure` and the `__Host-` prefix, which plain HTTP cannot carry.

@@ -23,7 +23,8 @@ The map at [marola.dev](https://marola.dev), in two builds that live side by sid
 
 - **The new site** (`front/`, `back/`; [ADR 0005](docs/adr/0005-elm-and-haskell.md)): a Haskell server
   (`back/server`) that serves the map page, the static pages and the study API. The map page is Elm
-  (`front/`), bundled by Vite, over MapLibre GL JS and OpenFreeMap (no Mapbox token); the static pages
+  (`front/`), bundled by Vite, over MapLibre GL JS and the site's own base map (no map provider, no token;
+  [ADR 0006](docs/adr/0006-self-hosted-basemap.md)); the static pages
   are rendered by a Haskell program (`back/pages`). Anyone with a GitHub account can submit a study (a PDF
   with metadata), shown with the notice "not reviewed" (ADR 0004). The server needs a host that runs
   it; static hosting is not enough.
@@ -88,7 +89,9 @@ app image (`marola-image`); this repo never builds the app.
   a free port; `fake_github.mjs` stands in for GitHub), `pages_parity.sh` (the pages against another build's,
   byte for byte), `package_smoke.sh` (the Nix package's server), `golden.js` (writes and checks
   `front/tests/golden.json`), `design_check.js` (DESIGN.md against `style.css`; `just design-check`), `nav_measure.sh` (the phone nav strip in a real browser; needs a Chromium, not in
-  `just quality`), `members_vendor_check.sh`.
+  `just quality`), `members_vendor_check.sh`, `basemap_extract.sh` (cuts the host's PMTiles file, and the fixture
+  `site/fixtures/basemap.pmtiles`, from the Protomaps build pinned in `site/basemap.version`; network, by hand) and
+  `basemap_style.mjs` (writes `front/public/map/`: the style and its glyphs).
 - `scripts/`, the legacy site and shared: `site_check.js` (app.js and flow.js in a stub DOM and Mapbox GL),
   `site_meta.py` (`llms.txt`, `sitemap.xml` and `.well-known/security.txt`, written into `site/dist` at
   build), `mapbox_config.sh` (the public Mapbox token into `mapbox-config.js` at deploy),
@@ -177,6 +180,9 @@ with the version in a comment.
 | File | Regenerate with |
 |---|---|
 | `front/tests/golden.json` | `just golden` (runs the old JavaScript; `--check` is in `just quality`) |
+| `front/public/map/style.json`, `front/public/map/fonts/` | `just basemap-style` (`node scripts/basemap_style.mjs`; the colours and the layer choices are in that script; needs the network once) |
+| `site/fixtures/basemap.pmtiles` | `just basemap-extract --fixture site/fixtures/basemap.pmtiles` (pmtiles, tile-join, network) |
+| `front/public/vendor/pmtiles/pmtiles.mjs` | the command in its `INTEGRITY.txt` |
 | `site/static/i18n.js` | `python3 scripts/i18n_bundle.py` after editing `site/i18n/*.json` |
 | the block in `site/static/news.html` | `python3 scripts/news_build.py` after editing `site/content/news/` |
 | the block in `site/static/members.html`, `humans.txt`, `img/members/` | `just members` (see `site/members.version`) |
@@ -212,13 +218,14 @@ links. There is no `docs/index.md`. `docs/` holds numbered pages, not directorie
 `1-design` (the legacy page: files, the board → markers mapping, CSP), `1-design_chat-widget`,
 `2-libraries` (vendored libraries, the Elm page's and the Haskell packages), `3-development` (the build and
 deploy, the Elm and Haskell site, image bumps), `4-reference` (`areas.json`, the board schema pin, trail files),
-`5-hosting` (the Haskell server behind nginx: variables, nginx and systemd settings, the Nix build,
+`5-hosting` (the Haskell server behind nginx: variables, the base map's tiles file, nginx and systemd settings, the Nix build,
 backup, rollback), `6-board` (the runbook of the people who hide studies), `7-quality` (the scorecard: what is
 checked, how, and what is not; the owner steps and `docs/owner-steps/`, drafts for `.github/` and the repository
 settings that an agent never applies). The H1 is the nav label.
 The decisions are ADRs at `docs/adr/NNNN-<slug>.md`: 0001 MapLibre and dynamic hosting, 0002 the
 server's contract, 0003 the pages rendered at build time, 0004 study submission, 0005 Elm and Haskell
-(it supersedes the language choices of 0001 to 0003). `DESIGN.md` at the root is the visual system.
+(it supersedes the language choices of 0001 to 0003), 0006 the self-hosted base map (it supersedes 0001's
+map host). `DESIGN.md` at the root is the visual system.
 A decision that starts and ends here is an ADR; anything crossing a repo boundary is an umbrella MIP.
 
 - **Links**: relative inside the repo, written to work on GitHub (`../AGENTS.md`, `../DESIGN.md`
@@ -237,8 +244,11 @@ same files to the Cloudflare Worker `marola` (free static assets), which serves 
 (MIP-0078); an agent does not
 trigger a deploy by hand (`just site-deploy` is denied in `.claude/settings.json`).
 
-The new site has no map bill: MapLibre and OpenFreeMap need no account and no token. Its base map
-and its hosts are the CSP's `https://tiles.openfreemap.org` and NASA GIBS, and its one frame Spotify's player (`back/server/src/Marola/Csp.hs`). The
+The new site has no map bill and no map provider: MapLibre draws a style, glyphs and one PMTiles file that the
+site's own server sends (`/map/`, `/tiles/`). The tiles file is host data (`MAROLA_TILES`, about 216 MB, cut by
+`scripts/basemap_extract.sh`): it is never committed, and putting it on the host is a human's act. The CSP's one
+third-party host is NASA GIBS, and its one frame Spotify's player (`back/server/src/Marola/Csp.hs`); an agent adds
+no map host to it. The
 host that runs the server, its nginx and its backups are a human's. The legacy page's base map is
 Mapbox's, billed per map load above its free tier: the account, the token and any billing setting are
 a human's. So is the self-hosted runner and the machine it runs on. The Mapbox token is a public
@@ -265,7 +275,7 @@ before and after, desktop (1280 × 800) and phone (390 × 844), of every page th
 Push the PNGs to the orphan `pr-screenshots` branch under `<pr-number>/` and embed them by their
 `https://raw.githubusercontent.com/marola-dev/marola-site/pr-screenshots/<pr-number>/<file>.png`
 URL, in a Before | After table. Images never go on `main`. A screenshot taken on a stand-in map
-style (the sandbox can't reach OpenFreeMap or Mapbox) says so under the table. No screenshots in the body, the
+style or on the fixture tiles (the sandbox has no host tiles file, or can't reach Mapbox) says so under the table. No screenshots in the body, the
 PR is not ready for review.
 
 **Large JavaScript changes** (Hoffmann, 2026-10-14). A PR that changes more than 500 lines of
@@ -282,8 +292,8 @@ The phase list is the umbrella's `docs/PHASES.md`. Site work serves the current 
 The new site is Elm in `front/` and Haskell in `back/` ([ADR 0005](docs/adr/0005-elm-and-haskell.md)),
 which replaced the rule "plain JavaScript, no framework, no build step" for new code. The page keeps a
 strict CSP: scripts and styles from `'self'` only, no inline script, no inline style, no `eval`; MapLibre
-is an ES module served from `'self'`. The base map is OpenFreeMap's `liberty` style (`front/src/Config.elm`,
-the one place to change the URL), and NASA GIBS serves the satellite layers. The legacy page in
+is an ES module served from `'self'`. The base map is the site's own style, `/map/style.json` (`front/src/Config.elm`,
+the one place that names it), over the PMTiles file at `/tiles/marola.pmtiles`, and NASA GIBS serves the satellite layers. The legacy page in
 `site/static/` stays plain JavaScript with no build step, on Mapbox, until the owners cut over.
 
 Elm and Haskell: no exception and no partial function for a data error (a `Result` or a `Maybe`); a closed

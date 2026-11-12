@@ -64,6 +64,38 @@ ok(data.status === 200 && /application\/json/.test(data.headers["content-type"])
 ok(data.body.toString().includes("smoke"), "/data/ is read from MAROLA_DATA first");
 checkHeaders("/data/floripa/latest.json", data);
 
+// The base map: the mapStyle and a glyph range as plain files, and the one file that answers byte ranges.
+const mapStyle = await get("/map/style.json", { "Accept-Encoding": "br" });
+ok(mapStyle.status === 200 && /application\/json/.test(mapStyle.headers["content-type"]) && mapStyle.headers["content-encoding"] === "br", "GET /map/style.json is JSON, compressed", String(mapStyle.status));
+const mapGlyphs = await get("/map/fonts/noto-sans-regular/0-255.pbf", { "Accept-Encoding": "br" });
+ok(mapGlyphs.status === 200 && mapGlyphs.headers["content-type"] === "application/x-protobuf" && mapGlyphs.headers["content-encoding"] === "br", "a glyph range is protobuf, compressed", `${mapGlyphs.status} ${mapGlyphs.headers["content-type"]}`);
+ok(mapGlyphs.headers["cache-control"] === "public, max-age=86400", "a glyph range is cached for a day");
+const tilesPath = "/tiles/marola.pmtiles";
+const tileHead = await get(tilesPath, { Range: "bytes=0-16383", "Accept-Encoding": "br, gzip" });
+const tilesSize = Number((/\/(\d+)$/.exec(tileHead.headers["content-range"] ?? "") || [])[1]);
+ok(tileHead.status === 206 && tileHead.body.length === 16384 && tileHead.headers["content-length"] === "16384", "a range of the tiles file is a 206 with exactly its bytes", `${tileHead.status} ${tileHead.body.length}`);
+ok(tileHead.headers["content-range"] === `bytes 0-16383/${tilesSize}` && tilesSize > 16384 && tileHead.headers["accept-ranges"] === "bytes", "with Content-Range and Accept-Ranges", String(tileHead.headers["content-range"]));
+ok(tileHead.body.subarray(0, 7).toString() === "PMTiles" && tileHead.body[7] === 3, "and they are the header of a PMTiles v3 archive");
+ok(tileHead.headers["content-encoding"] === undefined && tileHead.headers["content-type"] === "application/octet-stream", "the tiles file is never compressed");
+ok(/^public, max-age=\d+$/.test(tileHead.headers["cache-control"] ?? "") && /^"[0-9a-f]+-[0-9a-f]+"$/.test(tileHead.headers["etag"] ?? ""), "it is cached, under an ETag of size and mtime", `${tileHead.headers["cache-control"]} ${tileHead.headers["etag"]}`);
+checkHeaders(tilesPath, tileHead);
+const tileTail = await get(tilesPath, { Range: `bytes=${tilesSize - 10}-` });
+ok(tileTail.status === 206 && tileTail.body.length === 10 && tileTail.headers["content-range"] === `bytes ${tilesSize - 10}-${tilesSize - 1}/${tilesSize}`, "an open range ends at the last byte", String(tileTail.headers["content-range"]));
+const tileBeyond = await get(tilesPath, { Range: `bytes=${tilesSize}-` });
+ok(tileBeyond.status === 416 && tileBeyond.headers["content-range"] === `bytes */${tilesSize}`, "a range past the end is a 416 that names the size", String(tileBeyond.status));
+checkHeaders("416", tileBeyond);
+const tileSame = await get(tilesPath, { "If-None-Match": tileHead.headers["etag"] });
+ok(tileSame.status === 304 && tileSame.body.length === 0, "the same ETag gets a 304", String(tileSame.status));
+const hostTiles = await get("/tiles/smoke.pmtiles", { Range: "bytes=0-4" });
+ok(hostTiles.status === 206 && hostTiles.body.toString() === "smoke", "/tiles/ is read from MAROLA_TILES first", String(hostTiles.status));
+for (const path of ["/tiles/../index.html", "/tiles/%2e%2e/index.html", "/tiles/..%2fmarola.db", "/tiles/smoke.pmtiles/", "/tiles/SMOKE.pmtiles", "/tiles/x/smoke.pmtiles", "/tiles/", "/tiles/nope.pmtiles"]) {
+  const res = await get(path, { Range: "bytes=0-4" });
+  ok(res.status === 404 && res.headers["accept-ranges"] === undefined, `GET ${path} is a 404`, String(res.status));
+}
+const pageRange = await get(script, { Range: "bytes=0-9" });
+ok(pageRange.status === 200 && pageRange.headers["accept-ranges"] === undefined && pageRange.headers["content-range"] === undefined, "no other file answers a range", String(pageRange.status));
+ok(!/openfreemap|mapbox|maptiler/i.test(page.headers["content-security-policy"]), "the CSP names no map host");
+
 const missing = await get("/nope");
 ok(missing.status === 404, "GET /nope is 404", String(missing.status));
 ok(/text\/html/.test(missing.headers["content-type"]) && missing.body.toString().includes("<html lang=\"pt-BR\">"), "/nope is the pt-BR 404 page");

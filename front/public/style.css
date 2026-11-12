@@ -1,6 +1,6 @@
 /* marola map (MIP-0005), styled per DESIGN.md: ink chrome around a light map. Plain CSS, mobile
  * first, no framework; Fjalla One, Inter and JetBrains Mono are self-hosted under vendor/fonts.
- * Third-party origins: OpenFreeMap (base map) and NASA GIBS (satellite layers). The five score
+ * Third-party origin: NASA GIBS (satellite layers); the base map is the site's own (/map/, /tiles/). The five score
  * tokens and the flow, sst and anomaly ramps are data and stay. */
 @font-face { font-family: "Inter"; font-style: normal; font-weight: 100 900; font-display: swap;
   src: url(vendor/fonts/inter-latin-wght-normal.woff2) format("woff2"); }

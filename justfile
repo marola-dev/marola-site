@@ -89,6 +89,7 @@ quality:
     python3 scripts/site_meta.py --self-test
     scripts/site-data-push.sh --self-test
     scripts/board-schema.sh --self-test
+    scripts/basemap_extract.sh --self-test
     scripts/mapbox_config.sh --self-test
     scripts/mip-trailer-check.sh --self-test
     agents-check
@@ -104,6 +105,14 @@ precommit:
 prepush:
     scripts/mip-trailer-check.sh
     just quality
+
+# Cut the base map's PMTiles file from the Protomaps build pinned in site/basemap.version (pmtiles, tile-join, network): `just basemap-extract <out.pmtiles>`, `--fixture`, `--dry-run`.
+basemap-extract *args:
+    scripts/basemap_extract.sh {{ args }}
+
+# Write front/public/map/ (the base map's style and glyphs) from @protomaps/basemaps; `--check` compares. Fetches its tools into .tmp/ once.
+basemap-style *args:
+    node scripts/basemap_style.mjs {{ args }}
 
 # Build the Elm map page with Vite into front/dist (the bundle and front/public). dist-build puts it into dist.
 front-build *args:
@@ -163,7 +172,7 @@ dist-build *args:
 pages-parity ref:
     scripts/pages_parity.sh {{ ref }}
 
-# Run the Haskell server at http://127.0.0.1:8080 over dist and data/ (run dist-build first). MAROLA_PORT, MAROLA_STATIC, MAROLA_DATA and MAROLA_DB change the defaults.
+# Run the Haskell server at http://127.0.0.1:8080 over dist and data/ (run dist-build first). MAROLA_PORT, MAROLA_STATIC, MAROLA_DATA, MAROLA_TILES and MAROLA_DB change the defaults.
 server-run:
     cabal build -v0 exe:marola-server
     MAROLA_DB="${MAROLA_DB:-.tmp/marola.db}" "$(cabal list-bin marola-server)"
