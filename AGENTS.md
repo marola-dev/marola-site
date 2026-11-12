@@ -138,6 +138,7 @@ just quality              # every gate CI runs that needs no docker or network (
 just dist-build --fixtures # the Elm page, the static pages and a fixture board per area into dist
 just server-run           # http://127.0.0.1:8080 over dist (state in .tmp/marola.db)
 just back-test            # the pages' and the server's tests; `just front-test`, `just front-check` for the page
+just front-fmt            # elm-format --validate (`just front-fmt write` formats); `just back-fmt` is ormolu's check, same argument
 just server-smoke         # the built server on a free port, end to end
 just design-check         # DESIGN.md against style.css
 just audit                # npm vulnerabilities of front/ (by hand, needs network; not in `just quality`)
@@ -159,12 +160,18 @@ Nix (MIP-0084); a known keyword is `git grep`.
 ## For agents
 
 **The shortest path to a green check.** Inside `nix develop path:.`, run the recipe of the part you
-changed, then `just quality` once. Elm in `front/src`: `just front-test`. Haskell in `back/`: `just back-test`.
+changed, then `just quality` once. Elm in `front/src`: `just front-fmt write`, `just front-test`. Haskell in `back/`: `just back-fmt write`, `just back-test`.
 The page's build: `just dist-build --fixtures` then `just front-check`. The server end to end:
 `just server-smoke` (after `dist-build --fixtures`). The pages: `just back-test`, and `just pages-parity <dir>`
 against a `dist/` built before the change when the output must not move. CSS or DESIGN.md: `just design-check`.
 A new `/api/v1` route needs an entry in `Marola.Server.OpenApi`, or `OpenApiSpec` fails. A new Haskell
 dependency needs a bound in its `.cabal` file and `cabal freeze` at the root.
+
+**What CI runs for the new site** (`ci.yml`, all three in `ci-ok`): `back` (ormolu check, `cabal build all`,
+`cabal test all`), `front` (elm-format check, `npm test`, `scripts/site_build.sh --fixtures`,
+`scripts/front_check.js`) and `smoke` (`scripts/server_smoke.sh` over the `dist/` the `front` job built). The
+legacy checks stay in `static` and `python`. A workflow action added to these jobs is pinned to a full commit SHA
+with the version in a comment.
 
 **Never edit by hand** (each is generated; the check or the build fails on a stale copy):
 
@@ -279,9 +286,20 @@ the one place to change the URL), and NASA GIBS serves the satellite layers. The
 `site/static/` stays plain JavaScript with no build step, on Mapbox, until the owners cut over.
 
 Elm and Haskell: no exception and no partial function for a data error (a `Result` or a `Maybe`); a closed
-set is a custom type with an `Unknown String` case where the board may carry a new value. Tools come from
-Nix (GHC 9.6, cabal, elm 0.19.1), never a global `npm install -g` or `cabal install`. A hand-written
-JavaScript file goes in `front/js/` (or `front/ports.js`) with its reason at the top. A visible change
+set is a custom type with an `Unknown String` case where the board may carry a new value.
+
+- **Elm** (0.19.1): formatted by elm-format 0.8.8, pinned in `front/package.json` (`just front-fmt`). Elm owns the
+  model and `update`; every effect leaves as data through a port, and no port exists beyond the ones
+  `front/ports.js` handles. A hand-written JavaScript file goes in `front/js/` (or is `front/ports.js`) with its
+  reason at the top. Tests are elm-test (`just front-test`); a new `update` branch gets a case in `tests/`.
+- **Haskell** (GHC 9.6, `GHC2021`): formatted by ormolu 0.7.7.0 (`just back-fmt`), `-Wall` clean (the `common`
+  stanza of each `.cabal` sets it; a new warning is fixed, not silenced), tested with hspec (`just back-test`).
+  A new dependency needs a bound in its `.cabal` and `cabal freeze` at the root.
+- **CSP**: `script-src 'self'`, no inline script, no inline style, no `eval`, for the Elm page, the Haskell
+  pages and every server response; `Marola.Csp` is the one policy, and `front_check.js` and `server_smoke.sh`
+  compare it with the page's `<meta>` and the header.
+- Tools come from Nix (GHC 9.6, cabal, elm 0.19.1, ormolu), never a global `npm install -g` or `cabal install`
+  (CI downloads them as pinned release binaries with a sha256). A visible change
 goes through the `site-frontend` skill (which names the others), `just design-check`,
 `just front-check` (the map page) or the pages' tests, and before/after screenshots. Shell:
 `set -euo pipefail`, shellcheck-clean. Python: ruff. Comments only for why, a trap, or a pointer, as

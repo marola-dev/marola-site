@@ -123,6 +123,7 @@ The map page is Elm in `front/`, bundled by Vite; the static pages and the serve
 |---|---|
 | `just front-test` | elm-test over `front/tests` (`npm ci` first when `front/node_modules` is missing) |
 | `just back-test` | `cabal test all`: the pages' and the server's hspec suites |
+| `just front-fmt`, `just back-fmt` | elm-format 0.8.8 and ormolu 0.7.7.0 in check mode; `write` as the argument formats |
 | `just golden` | Writes `front/tests/golden.json` |
 | `just quality` | Runs all three, with the legacy checks |
 

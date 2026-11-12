@@ -78,7 +78,7 @@ just quality    # every check CI runs that needs no docker: the Elm and Haskell 
 ```
 
 The parts have their own recipes: `just front-test` (elm-test), `just back-test` (the pages' and the
-server's hspec suites), `just front-check` (the built page in a fake DOM, no browser),
+server's hspec suites), `just front-fmt` and `just back-fmt` (elm-format and ormolu), `just front-check` (the built page in a fake DOM, no browser),
 `just server-smoke` (the built server on a free port), `just pages-parity <dir>` (the pages against
 another build) and `just design-check`. `just --list` shows all of them.
 `scripts/nav_measure.sh` measures the phone nav in a real browser. It needs a Chromium and is not in

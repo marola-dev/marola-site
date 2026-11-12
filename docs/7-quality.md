@@ -53,7 +53,7 @@ through a port to `front/ports.js`; the Haskell pages renderer reads its files i
 | Static analysis of the Elm and Haskell code | none. CodeQL supports neither language | [owner-steps/codeql.yml](owner-steps/codeql.yml) covers the JavaScript only | fail: nothing analyses `front/src` or `back/` for vulnerabilities except the compilers (`-Wall` on both Haskell packages) and the tests. A fuzz test or a penetration test has not been done |
 | Actions are pinned by commit SHA | `grep -hn "uses:" .github/workflows/*.yml \| grep -vc '@[0-9a-f]\{40\}'` | `.github/workflows/` | fail: 22 of 22 `uses:` lines use a tag ([pin-actions.md](owner-steps/pin-actions.md)) |
 | Private vulnerability reporting, secret scanning, push protection and branch protection are on | repository settings; nothing in the repository reads them | GitHub settings | unknown. An owner reads the settings page ([settings.md](owner-steps/settings.md)) |
-| The Elm and Haskell gate runs on every pull request | reading `.github/workflows/ci.yml` | `.github/workflows/ci.yml` | fail: `ci.yml` has no step for `just quality`, `just front-test` or `just back-test`. They run on a developer's machine (`just prepush`). The devkit's `static-ci.yml` was not read |
+| The Elm and Haskell gate runs on every pull request | reading `.github/workflows/ci.yml` | `.github/workflows/ci.yml` | pass since 2026-11-12: `ci.yml` has the jobs `back` (ormolu, `cabal build all`, `cabal test all`), `front` (elm-format, `npm test`, `site_build.sh --fixtures`, `front_check.js`) and `smoke` (`server_smoke.sh`), all in `ci-ok`. Not run in CI: `just quality` as a whole, `design-check`, `golden --check`. The devkit's `static-ci.yml` was not read. Not run on a runner yet ⚠ |
 | A researcher knows how to report a flaw | [SECURITY.md](../SECURITY.md) and `/.well-known/security.txt` | `just back-test` (`MetaSpec`) checks `security.txt`; the policy text is by hand | pass for `security.txt`; unknown for the policy until private reporting is on (above) |
 
 ## Agent harness
@@ -100,8 +100,8 @@ Things this branch cannot do, because `.github/` and the repository settings are
    Elm and Haskell are not supported by CodeQL.
 4. **Scorecard.** Copy `docs/owner-steps/scorecard.yml` to `.github/workflows/scorecard.yml`. Decide first whether
    to publish the result.
-5. **Run the Elm and Haskell gate in CI.** Add a job that runs `nix develop path:. -c just quality` to `.github/workflows/ci.yml`
-   and to the `needs` of `ci-ok`. OPEN: owners. It costs a runner with Nix and the network.
+5. **Run the rest of the gate in CI.** The Elm and Haskell jobs exist (`back`, `front`, `smoke`); `design-check` and
+   `golden --check` do not run there yet. OPEN: owners.
 6. **CODEOWNERS.** Copy `docs/owner-steps/CODEOWNERS.draft` to `.github/CODEOWNERS` and write real names for the
    five paths. OPEN: owners.
 7. **Repository settings.** Private vulnerability reporting on (SECURITY.md and `security.txt` depend on it), secret

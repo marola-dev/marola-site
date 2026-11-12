@@ -44,7 +44,8 @@ no script and no inline style (0003); study submission (0004).
 - The pure code of the page is pure by the language, not by a convention a script counts.
 - The old tool checks go: the .NET and Fable test runs, the formatter, the NuGet lock files and
   audit, and the effect-count ratchet. `just front-test` (elm-test) and `just back-test` (hspec)
-  replace the tests; nothing yet replaces a formatter check or a package audit for Elm and Haskell.
+  replace the tests; elm-format (`just front-fmt`) and ormolu (`just back-fmt`) replace the formatter
+  (added 2026-11-12); nothing yet replaces a package audit for Haskell.
 - `cabal.project.freeze` pins versions, not hashes, and the Nix build takes its Haskell packages from
   nixpkgs, so the two can differ.
 - The Nix package was rewritten without a build: its npm and Elm hashes wait for a first build with
