@@ -1,18 +1,27 @@
 #!/usr/bin/env bash
 # Starts the built server on a free port against app/dist, checks what it answers (headers, hostile
 # paths, the contact form, the study API), and stops it. Run `just app-build --fixtures` first.
+# MAROLA_SERVER_BIN=<path> runs that executable (the Haskell back/server) instead of the F# build;
+# SMOKE_STATIC=<dir> serves another built page than app/dist.
 set -euo pipefail
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$root"
 
-for tool in node dotnet; do
+static="${SMOKE_STATIC:-$root/app/dist}"
+tools=(node)
+[ -n "${MAROLA_SERVER_BIN:-}" ] || tools+=(dotnet)
+for tool in "${tools[@]}"; do
   command -v "$tool" >/dev/null || { echo "server_smoke: $tool is not installed; run inside 'nix develop'" >&2; exit 1; }
 done
-[ -f app/dist/index.html ] || { echo "server_smoke: app/dist is missing; run 'just app-build --fixtures'" >&2; exit 1; }
+[ -f "$static/index.html" ] || { echo "server_smoke: $static is missing; run 'just app-build --fixtures'" >&2; exit 1; }
 
-RestoreLockedMode=true dotnet build app/Server -c Release --nologo -v q >/dev/null
-dll="$root/app/Server/bin/Release/net10.0/marola-server.dll"
+if [ -n "${MAROLA_SERVER_BIN:-}" ]; then
+  server=("$MAROLA_SERVER_BIN")
+else
+  RestoreLockedMode=true dotnet build app/Server -c Release --nologo -v q >/dev/null
+  server=(dotnet "$root/app/Server/bin/Release/net10.0/marola-server.dll")
+fi
 
 tmp="$(mktemp -d)"
 pid=""
@@ -27,7 +36,7 @@ mkdir -p "$tmp/data/floripa"
 printf '{"smoke":true}\n' > "$tmp/data/floripa/latest.json"
 
 port="$(node -e 'const s = require("net").createServer().listen(0, "127.0.0.1", () => { console.log(s.address().port); s.close(); });')"
-export MAROLA_PORT="$port" MAROLA_STATIC="$root/app/dist" MAROLA_DATA="$tmp/data" MAROLA_DB="$tmp/marola.db" MAROLA_STUDIES="$tmp/studies"
+export MAROLA_PORT="$port" MAROLA_STATIC="$static" MAROLA_DATA="$tmp/data" MAROLA_DB="$tmp/marola.db" MAROLA_STUDIES="$tmp/studies"
 
 # The GitHub login runs against a fake GitHub (scripts/fake_github.mjs). MAROLA_DEV=1 lets the server take its
 # URLs from the environment and drop `Secure` and the `__Host-` prefix, which plain HTTP cannot carry.
@@ -40,7 +49,7 @@ gh_port="$(cat "$tmp/github.port")"
 export MAROLA_DEV=1 MAROLA_GITHUB_CLIENT_ID=smoke-client MAROLA_GITHUB_CLIENT_SECRET_FILE="$tmp/github-secret" \
   MAROLA_GITHUB_BASE="http://127.0.0.1:$gh_port" MAROLA_GITHUB_API_BASE="http://127.0.0.1:$gh_port"
 
-dotnet "$dll" > "$tmp/server.log" 2>&1 &
+"${server[@]}" > "$tmp/server.log" 2>&1 &
 pid=$!
 
 ready=0
@@ -59,7 +68,7 @@ rss_kb="$(grep VmRSS "/proc/$pid/status" | tr -dc '0-9')"
 echo "server_smoke: resident set after start: $((rss_kb / 1024)) MB"
 [ "$rss_kb" -lt 102400 ] || { echo "server_smoke: the server uses more than 100 MB at start" >&2; exit 1; }
 
-node scripts/server_smoke.mjs "http://127.0.0.1:$port" dotnet "$dll" inbox
+node scripts/server_smoke.mjs "http://127.0.0.1:$port" "${server[@]}" inbox
 
 
 # Studies: an account and a key from the CLI (MAROLA_DEV=1 for that one command only), a 2 MB PDF built here,
@@ -70,7 +79,7 @@ node scripts/server_smoke.mjs "http://127.0.0.1:$port" dotnet "$dll" inbox
   printf '\n1 0 obj\n<< /Type /Catalog >>\nendobj\ntrailer\n<< /Root 1 0 R >>\nstartxref\n9\n%%%%EOF\n'
 } > "$tmp/study.pdf"
 sha="$(sha256sum "$tmp/study.pdf" | cut -d' ' -f1)"
-key="$(dotnet "$dll" dev-account --login smoke --age-days 30)"
+key="$("${server[@]}" dev-account --login smoke --age-days 30)"
 node scripts/server_smoke_studies.mjs "http://127.0.0.1:$port" "$key" "$tmp/study.pdf" "$sha" "$tmp/studies"
 if grep -q "$key" "$tmp/server.log"; then
   echo "server_smoke: the API key is in the server log" >&2
@@ -83,7 +92,7 @@ node scripts/server_smoke_submit.mjs "http://127.0.0.1:$port" "$tmp/study.pdf" "
 
 # The board's commands on the same database (docs/6-board.md): hide a study, see its tombstone and that its file is
 # not served, purge it, see the file go, and see the exit codes.
-board() { dotnet "$dll" "$@"; }
+board() { "${server[@]}" "$@"; }
 read -r api_id _ < <(board studies list --status public)
 [ -n "$api_id" ] || { echo "server_smoke: the board's list shows no public study" >&2; exit 1; }
 board studies hide "$api_id" --reason "smoke: hidden by the board" > /dev/null

@@ -1,0 +1,138 @@
+cabal-version:      3.0
+name:               marola-server
+version:            0.1.0
+synopsis:           The marola server: static files, the contact form, the GitHub login and the study API
+license:            MIT
+build-type:         Simple
+extra-doc-files:    README.md
+
+common shared
+  default-language: GHC2021
+  default-extensions:
+    LambdaCase
+    OverloadedStrings
+    MultiWayIf
+    RecordWildCards
+    DuplicateRecordFields
+    OverloadedRecordDot
+    NoFieldSelectors
+  ghc-options:      -Wall -Wno-name-shadowing -Wno-unused-do-bind
+
+library
+  import:           shared
+  hs-source-dirs:   src
+  exposed-modules:
+    Marola.Csp
+    Marola.Json
+    Marola.Html
+    Marola.Utf16
+    Marola.Study
+    Marola.Vdom
+    Marola.Layout
+    Marola.Server.Config
+    Marola.Server.Security
+    Marola.Server.RateLimit
+    Marola.Server.Http
+    Marola.Server.Files
+    Marola.Server.Store
+    Marola.Server.StudyStore
+    Marola.Server.Session
+    Marola.Server.Github
+    Marola.Server.Messages
+    Marola.Server.Views
+    Marola.Server.PdfIntake
+    Marola.Server.Multipart
+    Marola.Server.StudyApi
+    Marola.Server.OpenApi
+    Marola.Server.Contact
+    Marola.Server.Web
+    Marola.Server.Inbox
+    Marola.Server.Board
+    Marola.Server.DevAccount
+    Marola.Server.App
+    Marola.Server.Main
+  build-depends:
+    , base                 >=4.18   && <4.19
+    , aeson                >=2.2    && <2.3
+    , brotli               >=0.0.0.1 && <0.1
+    , bytestring           >=0.11   && <0.13
+    , case-insensitive     >=1.2    && <1.3
+    , containers           >=0.6    && <0.8
+    , crypton              >=1.0    && <1.1
+    , direct-sqlite        >=2.3.29 && <2.4
+    , directory            >=1.3    && <1.4
+    , filepath             >=1.4    && <1.6
+    , http-client          >=0.7    && <0.8
+    , http-client-tls      >=0.3.6  && <0.4
+    , http-types           >=0.12   && <0.13
+    , iproute              >=1.7    && <1.8
+    , memory               >=0.18   && <0.19
+    , network              >=3.1    && <3.3
+    , scientific           >=0.3    && <0.4
+    , sqlite-simple        >=0.4.19 && <0.5
+    , text                 >=2.0    && <2.2
+    , time                 >=1.12   && <1.15
+    , unix                 >=2.8    && <2.9
+    , unordered-containers >=0.2    && <0.3
+    , vector               >=0.13   && <0.14
+    , wai                  >=3.2    && <3.3
+    , warp                 >=3.4    && <3.5
+    , zlib                 >=0.7    && <0.8
+
+executable marola-server
+  import:           shared
+  hs-source-dirs:   app
+  main-is:          Main.hs
+  ghc-options:      -threaded -rtsopts "-with-rtsopts=-N2 -A16m"
+  build-depends:
+    , base
+    , marola-server
+
+test-suite marola-server-test
+  import:           shared
+  type:             exitcode-stdio-1.0
+  hs-source-dirs:   test
+  main-is:          Spec.hs
+  other-modules:
+    Harness
+    HeaderSpec
+    LimitSpec
+    FileSpec
+    ContactSpec
+    SessionSpec
+    LoginSpec
+    StudyStoreSpec
+    StudyApiSpec
+    PdfSpec
+    BoardSpec
+    OpenApiSpec
+    WebSpec
+  ghc-options:      -threaded
+  build-depends:
+    , base
+    , marola-server
+    , aeson
+    , brotli
+    , bytestring
+    , case-insensitive
+    , containers
+    , directory
+    , filepath
+    , hspec                >=2.11 && <2.12
+    , http-client
+    , http-types
+    , iproute
+    , network
+    , process              >=1.6  && <1.7
+    , sqlite-simple
+    , text
+    , time
+    , wai
+    , wai-extra            >=3.1  && <3.2
+    , warp
+    , zlib
+    , crypton
+    , memory
+    , scientific
+    , unix
+    , unordered-containers

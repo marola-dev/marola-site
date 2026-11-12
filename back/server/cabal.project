@@ -1,0 +1,8 @@
+packages: .
+
+-- direct-sqlite links the system SQLite, not the copy it bundles, so a security fix of SQLite is a
+-- system update (nixpkgs on piabrota2), not a release of this package.
+package direct-sqlite
+  flags: +systemlib
+
+tests: True
