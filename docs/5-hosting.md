@@ -39,7 +39,7 @@ The package holds:
 - `share/marola/dist`: the static site, the same tree as `just app-build` writes into `app/dist` (without
   `app/fable_modules/project_cracked.json`, Fable's cache, which holds the random name of the build's temp folder).
   `MAROLA_STATIC` points here.
-- `lib/marola-front`: the published server (Release, framework-dependent, with `libe_sqlite3.so`).
+- `lib/marola-site`: the published server (Release, framework-dependent, with `libe_sqlite3.so`).
 
 There is no `data-seed`. `MAROLA_DATA` is the board data folder, `<area>/latest.json` and the boards, which the board
 pipeline writes; the server reads `/data/<x>` there first and then under `dist/data` (`areas.json` and `trails/`,
@@ -49,8 +49,8 @@ pipeline writes them.
 **What piabrota/nix-os needs.**
 
 1. An input for the source. With `flake = false` it takes no second lockfile (the devkit input of `flake.nix`
-   stays out): `marola-front = { url = "github:marola-dev/marola-front/<commit>"; flake = false; };`. Then
-   `pkgs.callPackage "${inputs.marola-front}/nix/package.nix" { }` gives the package, built with the nix-os nixpkgs.
+   stays out): `marola-site = { url = "github:marola-dev/marola-site/<commit>"; flake = false; };`. Then
+   `pkgs.callPackage "${inputs.marola-site}/nix/package.nix" { }` gives the package, built with the nix-os nixpkgs.
    That nixpkgs must have `buildDotnetModule`, `dotnetCorePackages.sdk_10_0` and `aspnetcore_10_0`, `fable` and
    `nodejs`. The package built with nixpkgs `f4a03c00` (Fable 5.26.0, .NET SDK 10.0.403) and with the nix-os pin
    `02c087f3` of 2026-11-11 (Fable 5.20.0, .NET SDK 10.0.401); only the first one ran `just package-smoke`.

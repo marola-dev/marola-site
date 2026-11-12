@@ -9,7 +9,7 @@ Anyone can publish a study on marola, and nobody reads it first. If a study harm
 
 - **For a study:** open the study page and use the report link ("Report this study"). The form asks for a reason and for no email. Write the reason in plain words. You get no reply by this route, because marola does not know who you are.
 - **For anything else** (your name or a private fact in a study, a claim about rights, a request about your own data), or if you want an answer: use the [contact form](/contact.html). It asks for an email address, and only the board reads it. Write the address of the study (`/studies/` and its id) and say what is wrong.
-- **For a security problem in the site:** use the private [security report on GitHub](https://github.com/marola-dev/marola-front/security/advisories/new).
+- **For a security problem in the site:** use the private [security report on GitHub](https://github.com/marola-dev/marola-site/security/advisories/new).
 
 ## What the board does
 

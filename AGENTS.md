@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Instructions for any AI coding agent working in **marola-front**. This is the repo layer
+Instructions for any AI coding agent working in **marola-site**. This is the repo layer
 (MIP-0070 §5.1): the workspace rules live in the umbrella's
 [AGENTS.md](https://github.com/marola-dev/marola/blob/main/AGENTS.md); this file says what this
 repo is and where it differs.
@@ -253,7 +253,7 @@ commits (`origin/main..HEAD` when the hook does not pass the pushed refs on).
 A PR that changes anything a visitor sees shows it in its own body, not only in a chat thread:
 before and after, desktop (1280 × 800) and phone (390 × 844), of every page the change touches.
 Push the PNGs to the orphan `pr-screenshots` branch under `<pr-number>/` and embed them by their
-`https://raw.githubusercontent.com/marola-dev/marola-front/pr-screenshots/<pr-number>/<file>.png`
+`https://raw.githubusercontent.com/marola-dev/marola-site/pr-screenshots/<pr-number>/<file>.png`
 URL, in a Before | After table. Images never go on `main`. A screenshot taken on a stand-in map
 style (the sandbox can't reach OpenFreeMap or Mapbox) says so under the table. No screenshots in the body, the
 PR is not ready for review.

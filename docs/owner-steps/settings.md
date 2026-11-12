@@ -8,7 +8,7 @@ of this repository it names the file; where it is a belief about GitHub it says 
 
 Settings, Code security, "Private vulnerability reporting": on. [SECURITY.md](../../SECURITY.md) and
 `/.well-known/security.txt` (`app/Pages/Meta.fs`) already tell people to report at
-`https://github.com/marola-dev/marola-front/security/advisories/new`. While the setting is off, that link does not
+`https://github.com/marola-dev/marola-site/security/advisories/new`. While the setting is off, that link does not
 let a visitor report. This is the one setting the repository's own text depends on.
 
 ## 2. Secret scanning and push protection

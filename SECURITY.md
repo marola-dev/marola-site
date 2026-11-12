@@ -3,7 +3,7 @@
 ## Report a vulnerability
 
 Report it privately, on GitHub, for this repository:
-<https://github.com/marola-dev/marola-front/security/advisories/new>
+<https://github.com/marola-dev/marola-site/security/advisories/new>
 
 This is the same address as `/.well-known/security.txt`. There is no security e-mail address. Do not open a public
 issue or a pull request for a vulnerability. Write in Portuguese or English.

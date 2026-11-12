@@ -95,7 +95,7 @@ def llms_txt(areas: list[dict]) -> str:
         "- [docs.marola.dev](https://docs.marola.dev/): the project's documentation, every repo",
         "- [docs.marola.dev/llms.txt](https://docs.marola.dev/llms.txt): the same for the docs and"
         " the code",
-        "- [Code](https://github.com/marola-dev/marola-front): this site; the rest is under"
+        "- [Code](https://github.com/marola-dev/marola-site): this site; the rest is under"
         " https://github.com/marola-dev",
         f"- [How to cite]({ZENODO}): the marola record on Zenodo",
         "",
@@ -132,7 +132,7 @@ def security_txt(today: dt.date) -> str:
     return (
         "# How to report a vulnerability in marola: privately, on GitHub. There is no security"
         " e-mail.\n"
-        "Contact: https://github.com/marola-dev/marola-front/security/advisories/new\n"
+        "Contact: https://github.com/marola-dev/marola-site/security/advisories/new\n"
         f"Expires: {expires.strftime('%Y-%m-%dT%H:%M:%SZ')}\n"
         f"Policy: {SECURITY_POLICY}\n"
         "Preferred-Languages: pt-BR, en\n"

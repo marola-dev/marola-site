@@ -9,7 +9,7 @@ Qualquer pessoa pode publicar um estudo no marola, e ninguém o lê antes. Se um
 
 - **Para um estudo:** abra a página do estudo e use o link de denúncia ("Denunciar este estudo"). O formulário pede um motivo e não pede e-mail. Escreva o motivo em palavras simples. Por esse caminho você não recebe resposta, porque o marola não sabe quem você é.
 - **Para qualquer outra coisa** (o seu nome ou um fato privado em um estudo, uma questão de direitos, um pedido sobre os seus dados), ou se você quer uma resposta: use o [formulário de contato](/contact.html). Ele pede um e-mail, e só a equipe o lê. Escreva o endereço do estudo (`/studies/` e o id) e diga o que está errado.
-- **Para um problema de segurança no site:** use o [relato de segurança privado no GitHub](https://github.com/marola-dev/marola-front/security/advisories/new).
+- **Para um problema de segurança no site:** use o [relato de segurança privado no GitHub](https://github.com/marola-dev/marola-site/security/advisories/new).
 
 ## o que a equipe faz
 

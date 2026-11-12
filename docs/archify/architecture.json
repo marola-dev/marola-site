@@ -2,7 +2,7 @@
   "schema_version": 2,
   "diagram_type": "workflow",
   "meta": {
-    "title": "marola-front and the repos around it",
+    "title": "marola-site and the repos around it",
     "locale": "en",
     "quality_profile": "showcase",
     "legend": {
@@ -17,7 +17,7 @@
     },
     {
       "id": "front",
-      "label": "marola-front (this repo)"
+      "label": "marola-site (this repo)"
     },
     {
       "id": "host",

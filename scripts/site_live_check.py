@@ -42,7 +42,7 @@ def fetch(url: str, timeout: int = 30):
 
 def fetch_text(url: str, timeout: int = 30) -> tuple[int, str]:
     """(status, body); an HTTP error is a status, not an exception."""
-    req = urllib.request.Request(url, headers={"User-Agent": "marola-front_live_check"})
+    req = urllib.request.Request(url, headers={"User-Agent": "marola-site_live_check"})
     try:
         with urllib.request.urlopen(req, timeout=timeout) as r:  # noqa: S310 - fixed https base
             return r.status, r.read().decode("utf-8", "replace")
