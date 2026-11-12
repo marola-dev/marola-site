@@ -18,3 +18,5 @@ cabal.project.local~
 
 # scripts/site_build.sh output: the Elm page, the pages and the assets the server serves
 /dist/
+
+/node_modules/
