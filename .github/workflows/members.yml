@@ -34,8 +34,11 @@ jobs:
           permission-pull-requests: write
       - name: Pin .github's main and rebuild the page
         run: |
-          git ls-remote https://github.com/marola-dev/.github refs/heads/main | cut -f1 > site/members.version
-          python3 scripts/members_build.py
+          sha="$(git ls-remote https://github.com/marola-dev/.github refs/heads/main | cut -f1)"
+          curl -fsSL "https://raw.githubusercontent.com/marola-dev/.github/$sha/MEMBERS.md" -o site/members/MEMBERS.md
+          printf '%s\nblob %s\n' "$sha" "$(git hash-object site/members/MEMBERS.md)" > site/members.version
+          bash scripts/members_vendor_check.sh
+          python3 scripts/members_build.py --source site/members/MEMBERS.md
       - name: Open or update the PR
         env:
           GH_TOKEN: ${{ steps.bot.outputs.token }}
@@ -44,7 +47,7 @@ jobs:
           branch=chore/members-sync
           sha="$(cut -c1-7 site/members.version)"
           git switch -C "$branch"
-          git add -A site/members.version site/static/members.html site/static/humans.txt site/static/img/members
+          git add -A site/members.version site/members/MEMBERS.md site/static/members.html site/static/humans.txt site/static/img/members
           git commit -F - <<EOF
           chore(site): members from marola-dev/.github@$sha
 
