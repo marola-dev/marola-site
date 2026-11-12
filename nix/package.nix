@@ -84,19 +84,20 @@ stdenv.mkDerivation {
   # ELM_HOME and fills it, so elm never asks package.elm-lang.org.
   postConfigure = elmPackages.fetchElmDeps {
     elmPackages = import ./elm-srcs.nix;
-    elmVersion = "0.19.2";
+    elmVersion = elmPackages.elm.version;
     registryDat = ./registry.dat;
   };
 
-  # nixpkgs ships Elm 0.19.2 only and refuses an elm.json that names 0.19.1 (the official release,
-  # which CI uses), so the build's copy names 0.19.2. elm make also verifies test-dependencies and the
+  # front/elm.json names 0.19.1, the official release CI uses. nixos-unstable ships a 0.19.2 build,
+  # which refuses that elm.json, and nixos-26.05 (piabrota/nix-os) ships 0.19.1: the build's copy
+  # names the version of the elm it builds with. elm make also verifies test-dependencies and the
   # build never compiles front/tests/: drop them, so nix/elm-srcs.nix needs no elm-explorations/test.
   postPatch = ''
     patchShebangs scripts
     node -e '
       const fs = require("fs");
       const j = JSON.parse(fs.readFileSync("front/elm.json", "utf8"));
-      j["elm-version"] = "0.19.2";
+      j["elm-version"] = "${elmPackages.elm.version}";
       j["test-dependencies"] = { direct: {}, indirect: {} };
       fs.writeFileSync("front/elm.json", JSON.stringify(j, null, 4) + "\n");
     '

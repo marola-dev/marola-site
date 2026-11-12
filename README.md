@@ -14,6 +14,23 @@ The repo holds two builds of the site:
   still builds and publishes it, every three hours, to the Cloudflare Worker behind marola.dev. The
   switch from the legacy site to the new one is a decision of the owners. It is not made here.
 
+> [!IMPORTANT]
+> **Migration notice: marola-dev is moving to pure functional programming.** This repo is the first
+> step. The F# rewrite is gone: the map page is now Elm and the server and the static pages are
+> Haskell ([ADR 0005](docs/adr/0005-elm-and-haskell.md)).
+>
+> What changes for you as a contributor:
+>
+> - New code goes in `front/` (Elm 0.19.1, elm-format) or `back/` (GHC 9.6, ormolu, hspec). Do not
+>   add new JavaScript, except a port or a small FFI file in `front/js/` that says why it exists.
+> - Data errors are values (`Result`, `Maybe`), not exceptions or partial functions. Every effect
+>   leaves Elm as data through a port.
+> - Tools come from `nix develop path:.`. CI runs `cabal test all`, `npm test` (elm-test), the
+>   built-page check and the server smoke test.
+>
+> What is still left: the chat widget is not ported yet. `site/static/` stays the live site until the
+> owners switch over. Then come the other marola-dev repos, each with its own ADR.
+
 ## What the new site is
 
 | Part | What it does | Where |

@@ -26,8 +26,8 @@ form route; it has no page of its own.
    the catalogs of `site/i18n/`. Markdown that the subset does not know is an error, as in
    `scripts/news_build.py`.
 4. Build with a console project, `app/Pages.Build`, and not a subcommand of the server. The
-   server stays free of build code and of the catalog reader, and the build has no port. `just
-   pages-build` and `scripts/app_build.sh` run it.
+   server stays free of build code and of the catalog reader, and the build has no port. The
+   F# era's `pages-build` recipe and `scripts/app_build.sh` ran it (both removed by ADR 0005).
 5. The pages use `app/Client/public/style.css` and the favicon, and carry no script, no `<style>` and
    no `style=` attribute. The CSP does not change.
 6. The contact form posts to `/contact` (pt-BR) or `/en/contact` (English). The server answers 303
@@ -40,7 +40,7 @@ form route; it has no page of its own.
 
 ## Consequences
 
-- The pages are checked by `just pages-test`: language, canonical, alternates, favicon, no script,
+- The pages were checked by the F# era's `pages-test` recipe (removed by ADR 0005; `just back-test` now): language, canonical, alternates, favicon, no script,
   no style, the form, the credits of the about page, and a file for every nav link.
 - The Markdown carries two forms beyond the news subset: `::lede`, `> ` quotes, figures, and
   `{{soon name|label}}` for a channel that is not open yet.
