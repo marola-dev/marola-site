@@ -140,8 +140,8 @@ button label = el "button" [attr "type" "submit"] [text label]
 errorList :: Locale -> [FieldError] -> Text -> [Node]
 errorList loc errors f =
   [ el "p" [cls "field-error", attr "role" "alert"] [text (Messages.text loc.language e)]
-    | e <- errors,
-      e.field == f
+  | e <- errors,
+    e.field == f
   ]
 
 alert :: Text -> Node
@@ -428,7 +428,7 @@ studyPage loc r = case r.status of
         pg = headOf ("studies/" <> r.id) s.title (U.take 160 s.abstract) False
         authorsNodes =
           [ el "li" [] ([text a.name] <> maybe [] (\o -> [text " ", outside ("https://orcid.org/" <> o) ("ORCID " <> o)]) a.orcid)
-            | a <- s.authors
+          | a <- s.authors
           ]
      in render
           loc

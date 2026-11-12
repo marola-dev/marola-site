@@ -315,7 +315,7 @@ pageClass p = if T.all (\c -> isAsciiLower c || isDigit c || c == '-') (slug p) 
 eyebrow :: Locale -> PageHead -> [Node]
 eyebrow loc p =
   [ H.el "p" [H.cls "eyebrow"] [H.text ("marola · " <> I18n.t loc key)]
-    | Just key <- [current p >>= sectionKey]
+  | Just key <- [current p >>= sectionKey]
   ]
 
 credit :: Locale -> Node
