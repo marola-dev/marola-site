@@ -1,0 +1,270 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "marola-front and the repos around it",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "legend": {
+      "mode": "hidden"
+    },
+    "output": "architecture.html"
+  },
+  "lanes": [
+    {
+      "id": "producers",
+      "label": "marola repos it reads"
+    },
+    {
+      "id": "front",
+      "label": "marola-front (this repo)"
+    },
+    {
+      "id": "host",
+      "label": "hosting (piabrota/nix-os)"
+    },
+    {
+      "id": "umbrella",
+      "label": "umbrella and tooling"
+    }
+  ],
+  "mainPath": [
+    "app",
+    "client",
+    "pages",
+    "server",
+    "pkg",
+    "nixos",
+    "visitors"
+  ],
+  "nodes": [
+    {
+      "id": "corpus",
+      "lane": "producers",
+      "col": 0,
+      "type": "database",
+      "label": "marola-corpus",
+      "sublabel": "sourced notes",
+      "width": 136
+    },
+    {
+      "id": "app",
+      "lane": "producers",
+      "col": 1,
+      "type": "backend",
+      "label": "marola-app",
+      "sublabel": "Scala 3: boards, jvm image",
+      "width": 136
+    },
+    {
+      "id": "ml",
+      "lane": "producers",
+      "col": 2,
+      "type": "backend",
+      "label": "marola-ml",
+      "sublabel": "prompts, benchmark",
+      "width": 136
+    },
+    {
+      "id": "oods",
+      "lane": "producers",
+      "col": 3,
+      "type": "database",
+      "label": "marola-oods",
+      "sublabel": "open ocean data",
+      "width": 136
+    },
+    {
+      "id": "members",
+      "lane": "producers",
+      "col": 4,
+      "type": "database",
+      "label": "marola-dev/.github",
+      "sublabel": "MEMBERS.md (pinned)",
+      "width": 136
+    },
+    {
+      "id": "client",
+      "lane": "front",
+      "col": 1,
+      "type": "frontend",
+      "label": "map client",
+      "sublabel": "F# Fable, Elmish, MapLibre",
+      "width": 136
+    },
+    {
+      "id": "pages",
+      "lane": "front",
+      "col": 2,
+      "type": "frontend",
+      "label": "static pages",
+      "sublabel": "F# from Markdown, pt-BR/en",
+      "width": 136
+    },
+    {
+      "id": "server",
+      "lane": "front",
+      "col": 3,
+      "type": "backend",
+      "label": ".NET server",
+      "sublabel": "GitHub login, studies, API",
+      "width": 136
+    },
+    {
+      "id": "pkg",
+      "lane": "front",
+      "col": 4,
+      "type": "backend",
+      "label": "nix/package.nix",
+      "sublabel": "marola-server + dist",
+      "width": 136
+    },
+    {
+      "id": "tiles",
+      "lane": "host",
+      "col": 1,
+      "type": "external",
+      "label": "OpenFreeMap, GIBS",
+      "sublabel": "base map, satellite",
+      "width": 136
+    },
+    {
+      "id": "oauth",
+      "lane": "host",
+      "col": 3,
+      "type": "external",
+      "label": "GitHub OAuth",
+      "sublabel": "/auth/github/callback",
+      "width": 136
+    },
+    {
+      "id": "nixos",
+      "lane": "host",
+      "col": 4,
+      "type": "cloud",
+      "label": "piabrota/nix-os",
+      "sublabel": "piabrota2: systemd, nginx",
+      "width": 136
+    },
+    {
+      "id": "visitors",
+      "lane": "host",
+      "col": 5,
+      "type": "external",
+      "label": "piabrota.art",
+      "sublabel": "marola.dev later",
+      "width": 136
+    },
+    {
+      "id": "devkit",
+      "lane": "umbrella",
+      "col": 0,
+      "type": "backend",
+      "label": "marola-devkit",
+      "sublabel": "hooks, workflows",
+      "width": 136
+    },
+    {
+      "id": "umbrella",
+      "lane": "umbrella",
+      "col": 1,
+      "type": "backend",
+      "label": "marola",
+      "sublabel": "umbrella, MIPs",
+      "width": 136
+    },
+    {
+      "id": "docs",
+      "lane": "umbrella",
+      "col": 3,
+      "type": "external",
+      "label": "docs.marola.dev",
+      "sublabel": "README + docs/",
+      "width": 136
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "corpus",
+      "to": "app",
+      "label": "tarball"
+    },
+    {
+      "id": "e2",
+      "from": "ml",
+      "to": "app",
+      "label": "prompts",
+      "role": "branch"
+    },
+    {
+      "id": "e3",
+      "from": "app",
+      "to": "client",
+      "label": "board JSON"
+    },
+    {
+      "id": "e5",
+      "from": "client",
+      "to": "pages",
+      "label": "app/dist"
+    },
+    {
+      "id": "e6",
+      "from": "pages",
+      "to": "server",
+      "label": "served by"
+    },
+    {
+      "id": "e7",
+      "from": "server",
+      "to": "pkg"
+    },
+    {
+      "id": "e4",
+      "from": "members",
+      "to": "pages",
+      "label": "members page",
+      "role": "branch"
+    },
+    {
+      "id": "e8",
+      "from": "pkg",
+      "to": "nixos",
+      "label": "flake input"
+    },
+    {
+      "id": "e9",
+      "from": "nixos",
+      "to": "visitors",
+      "label": "nginx to :8080"
+    },
+    {
+      "id": "e10",
+      "from": "tiles",
+      "to": "client",
+      "label": "tiles",
+      "role": "branch"
+    },
+    {
+      "id": "e11",
+      "from": "oauth",
+      "to": "server",
+      "label": "login",
+      "role": "branch"
+    },
+    {
+      "id": "e12",
+      "from": "devkit",
+      "to": "umbrella",
+      "label": "tag",
+      "role": "branch"
+    },
+    {
+      "id": "e13",
+      "from": "umbrella",
+      "to": "docs",
+      "label": "mkdocs"
+    }
+  ]
+}

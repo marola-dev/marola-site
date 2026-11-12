@@ -31,6 +31,16 @@ MapLibre), [ADR 0002](docs/adr/0002-dotnet-server.md) (the .NET server),
 [ADR 0003](docs/adr/0003-pages-in-fsharp.md) (the pages in F#) and
 [ADR 0004](docs/adr/0004-study-submission.md) (study submission).
 
+### Architecture
+
+[![marola-front and the repos around it: marola-corpus and marola-ml feed marola-app, whose board JSON the map client reads; the client and the static pages make app/dist, which the .NET server serves; nix/package.nix packs them, and piabrota/nix-os runs the package on piabrota2 behind nginx for piabrota.art; OpenFreeMap and GIBS give the tiles, GitHub OAuth the login, marola-dev/.github the members page; marola-devkit and the umbrella build docs.marola.dev](docs/img/architecture.png)](docs/img/architecture.png)
+
+How to read it: each row is a group of repos or services, and an arrow is what one hands to the
+next. Orange boxes are outside marola. Not shown: the legacy `site/static` build, which
+`site.yml` still deploys to the Cloudflare Worker behind marola.dev, and marola-oods' opt-in
+water cache to marola-app. Source: [`docs/archify/architecture.json`](docs/archify/architecture.json),
+drawn with the umbrella's Archify pin and `scripts/figure.sh` (in a marola checkout).
+
 ### Data flow
 
 - **Boards.** The app image pinned in [`marola-image`](marola-image) writes each area's board (the
