@@ -281,7 +281,7 @@ page loc p main' =
               H.el
                 "footer"
                 [H.cls "footer"]
-                [ H.el "p" [] [H.text (I18n.t loc "footer.privacy")],
+                [ H.el "p" [] [H.text (I18n.t loc "footer.privacy_ofm")],
                   H.el
                     "p"
                     []

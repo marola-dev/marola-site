@@ -282,7 +282,7 @@ page loc hd mainNodes =
                 el
                   "footer"
                   [cls "footer"]
-                  [ el "p" [] [text (t loc "footer.privacy")],
+                  [ el "p" [] [text (t loc "footer.privacy_ofm")],
                     el
                       "p"
                       []

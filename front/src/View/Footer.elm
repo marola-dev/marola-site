@@ -158,7 +158,7 @@ blurbPanel : Model -> Html Msg
 blurbPanel model =
     Html.p
         ([ idAttr "footer-blurb", cls "fold-panel" ] ++ Ui.hidden (not model.blurbOpen))
-        [ Html.text (Words.t model "footer.blurb" ++ " ")
+        [ Html.text (Words.t model "footer.blurb_ofm" ++ " ")
         , Html.a [ attr "href" Config.repo, attr "target" "_blank", attr "rel" "noopener" ] [ Html.text (Words.t model "footer.github") ]
         , Html.text "."
         ]
