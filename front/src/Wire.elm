@@ -1,4 +1,4 @@
-module Wire exposing (Request(..), board, days, decodeBody, encodeRequest, env, requestDecoder, requestUrl)
+module Wire exposing (Request(..), board, days, decodeBody, env, requestUrl)
 
 {-| What the page reads off the wire and off the browser, as values `Update` understands.
 -}
@@ -6,7 +6,6 @@ module Wire exposing (Request(..), board, days, decodeBody, encodeRequest, env, 
 import Board
 import Dec
 import Json.Decode as D exposing (Decoder)
-import Json.Encode as E
 import Language exposing (Language)
 import Model exposing (DayEntry)
 import Msg exposing (FetchError(..), Loaded(..))
@@ -14,7 +13,7 @@ import Params
 import Update exposing (Env)
 
 
-{-| A request the page made; `ports.js` hands it back beside the answer.
+{-| A request the page made; its answer comes back tagged with it.
 -}
 type Request
     = Catalog Language
@@ -43,51 +42,6 @@ requestUrl request =
 
         TrailsFile area ->
             "./data/trails/" ++ area ++ ".json"
-
-
-encodeRequest : Request -> E.Value
-encodeRequest request =
-    case request of
-        Catalog language ->
-            E.list E.string [ "catalog", Language.tag language ]
-
-        Areas ->
-            E.list E.string [ "areas" ]
-
-        Latest area ->
-            E.list E.string [ "latest", area ]
-
-        BoardFile area day file ->
-            E.list E.string [ "board", area, day, file ]
-
-        TrailsFile area ->
-            E.list E.string [ "trails", area ]
-
-
-requestDecoder : Decoder Request
-requestDecoder =
-    D.list D.string
-        |> D.andThen
-            (\parts ->
-                case parts of
-                    [ "catalog", tag ] ->
-                        Language.fromTag tag |> Maybe.map (Catalog >> D.succeed) |> Maybe.withDefault (D.fail tag)
-
-                    [ "areas" ] ->
-                        D.succeed Areas
-
-                    [ "latest", area ] ->
-                        D.succeed (Latest area)
-
-                    [ "board", area, day, file ] ->
-                        D.succeed (BoardFile area day file)
-
-                    [ "trails", area ] ->
-                        D.succeed (TrailsFile area)
-
-                    _ ->
-                        D.fail "unknown request"
-            )
 
 
 {-| `status` is 0 for a body, -1 for a network failure, else the HTTP status.

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /** front_check: smoke test of the BUILT Elm page in dist (run `scripts/site_build.sh --fixtures` first).
  * No browser, no network, no dependencies: a DOM that has only the members Elm's virtual-dom, ports.js and the two FFI
- * files touch, a MapLibre stub that records every call, and a fetch that serves dist. Each scenario runs in a child
+ * files touch, a MapLibre stub that records every call, and an XMLHttpRequest (elm/http's) that serves dist. Each scenario runs in a child
  * node process because the bundle keeps state.
  *
  * Not checked here:
@@ -291,16 +291,31 @@ function installGlobals(search, overrides) {
   def('history', { replaceState: (_s, _t, url) => urls.push(url) });
   def('localStorage', { getItem: (k) => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)) });
   def('matchMedia', () => ({ matches: false }));
-  def('fetch', async (req) => {
-    raw.push(typeof req === 'string' ? req : req.url);
-    const url = new URL(typeof req === 'string' ? req : req.url, BASE);
+  // elm/http's transport: open, send, then one "load" with the status, the headers and the text.
+  const serve = (target) => {
+    raw.push(target);
+    const url = new URL(target, BASE);
     fetched.push(url);
     const rel = decodeURIComponent(url.pathname.slice(1));
     const hit = overrides[rel];
-    if (hit === 404) return new Response('', { status: 404 });
     const file = path.join(DIST, rel);
-    if (hit === undefined && !(file.startsWith(DIST) && fs.existsSync(file) && fs.statSync(file).isFile())) return new Response('', { status: 404 });
-    return new Response(hit === undefined ? fs.readFileSync(file) : JSON.stringify(hit), { status: 200, headers: { 'content-type': 'application/json' } });
+    if (hit === 404 || (hit === undefined && !(file.startsWith(DIST) && fs.existsSync(file) && fs.statSync(file).isFile()))) return { url, status: 404, body: '' };
+    return { url, status: 200, body: hit === undefined ? fs.readFileSync(file, 'utf8') : JSON.stringify(hit) };
+  };
+  def('XMLHttpRequest', class {
+    constructor() { this.on = {}; this.status = 0; this.statusText = ''; this.response = null; this.head = ''; }
+    addEventListener(kind, fn) { this.on[kind] = fn; }
+    open(_method, url) { this.target = url; }
+    setRequestHeader() {}
+    getAllResponseHeaders() { return this.head; }
+    send() {
+      setTimeout(() => {
+        const r = serve(this.target);
+        Object.assign(this, { status: r.status, response: r.body, responseText: r.body, responseURL: String(r.url) });
+        this.head = r.status === 200 ? 'content-type: application/json\r\n' : '';
+        if (this.on.load) this.on.load();
+      }, 0);
+    }
   });
 }
 const lastUrl = () => new URL(urls[urls.length - 1], BASE);
@@ -329,6 +344,11 @@ async function floripa() {
   ok(credits.some((a) => a.includes('Protomaps') && a.includes('https://protomaps.com')), 'and Protomaps', credits.join());
   ok(credits.some((a) => a.includes('MapLibre') && a.includes('https://maplibre.org')) && credits.length === 3, 'and MapLibre, and nobody else', credits.join());
   ok(ml.controls.some((c) => c.kind === 'navigation') && map.opts.attributionControl === false, 'navigation control added, default attribution off');
+  // Closing the emergency panel gives focus back to its button (Browser.Dom.focus, after the next frame).
+  await click($('#sos'));
+  await click($('#sos-close'));
+  await sleep(40);
+  ok(document.activeElement && document.activeElement.getAttribute('id') === 'sos', 'closing the emergency panel focuses its button again', document.activeElement && document.activeElement.getAttribute('id'));
   ok(ml.workerUrl === '/vendor/maplibre/maplibre-gl-worker.mjs', 'the worker is the vendored one', ml.workerUrl);
   ok(map.calls.some((c) => c.name === 'fitBounds'), 'the first board fits the map to the beaches');
   ok(document.documentElement.lang === 'pt-BR' && $('a[href=news.html]').textContent === 'notícias', 'default language is pt-BR');
@@ -547,7 +567,7 @@ async function child(name) {
     await import(pathToFileURL(bundle()[0]).href);
     await sleep(100);
     // Every request starts with "./", so the page works from any path; the stub resolves it against the page.
-    ok(fetched.length > 0 && raw.every((u) => u.startsWith('./')), 'the page reaches fetch, and every URL starts with ./', raw.join());
+    ok(fetched.length > 0 && raw.every((u) => u.startsWith('./')), 'the page makes its requests, and every URL starts with ./', raw.join());
     if (ml.mode === 'error') await until(() => shown($('#map-note')), '#map-note');
     else await until(() => ml.maps[0] && ml.maps[0].loaded && $('li[data-name]'), 'the board and the map');
     await sleep(60);

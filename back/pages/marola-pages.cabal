@@ -27,6 +27,7 @@ library
     Marola.Pages.Meta
     Marola.Pages.Loader
     Marola.Pages.Build
+    Marola.Pages.Fixtures
   build-depends:
     aeson >=2.1,
     bytestring,
@@ -34,7 +35,8 @@ library
     directory,
     filepath,
     process,
-    time
+    time,
+    vector
 
 executable marola-pages
   import:         shared

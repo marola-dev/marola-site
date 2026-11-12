@@ -24,7 +24,7 @@ let
     let
       rel = lib.removePrefix (toString root + "/") (toString path);
     in
-    builtins.match "(front|site|nix)(/.*)?|scripts|scripts/(site_build.sh|front_build.sh|site_fixtures.mjs)" rel != null
+    builtins.match "(front|site|nix)(/.*)?|scripts|scripts/(site_build.sh|front_build.sh)" rel != null
     && builtins.match "front/(node_modules|dist|elm-stuff)(/.*)?" rel == null
     && builtins.match "site/dist(/.*)?" rel == null;
   src = lib.cleanSourceWith {

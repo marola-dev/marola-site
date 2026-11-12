@@ -16,8 +16,8 @@ cabal test marola-server
 cabal list-bin marola-server        # the path of the executable
 ```
 
-The smoke test runs the whole site against a built page, using node and the fake GitHub in
-`scripts/fake_github.mjs`:
+The smoke test runs the whole site against a built page, with the checks and the fake GitHub of
+`marola-tools` (`back/tools`):
 
 ```bash
 MAROLA_SERVER_BIN="$(cabal list-bin marola-server)" SMOKE_STATIC=<built page> scripts/server_smoke.sh
