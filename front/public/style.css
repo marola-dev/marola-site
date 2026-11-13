@@ -97,9 +97,9 @@ small { font-size: var(--fs-13); letter-spacing: var(--tr-13); }
 .brand h1 { display: flex; align-items: center; gap: 10px; margin: 0; color: var(--ink);
   font: 400 var(--fs-24)/1 var(--display); letter-spacing: var(--tr-fjalla); white-space: nowrap; text-transform: lowercase; }
 .brand h1 a { display: inherit; align-items: inherit; gap: inherit; color: inherit; text-decoration: none; }
-/* the logo as an app tile: favicon.svg is a white disc with the mark, so the tile is white too */
-.logo { display: block; flex: none; width: 30px; height: 30px; border-radius: var(--r-inner);
-  background: var(--on-fill) url(favicon.svg) center / 88% no-repeat; }
+/* the logo, logo-v2: favicon.png is its round badge on a transparent ground, so no tile behind it */
+.logo { display: block; flex: none; width: 30px; height: 30px; border-radius: 50%;
+  background: url(favicon.png) center / contain no-repeat; }
 /* piabrota's eye: the mark of piabrota.art, small, after the wordmark and in the credit line */
 .piabrota { display: inline-flex; flex: none; border-radius: 5px; opacity: .9; }
 .piabrota:hover, .piabrota:focus-visible { opacity: 1; }

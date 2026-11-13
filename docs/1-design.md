@@ -86,7 +86,7 @@ the model, `update` and the views; every effect goes out through a port to `fron
 | `front/src/` | The domain types, the board decoder, the model, the messages, `update` (which returns effects as data) and the views. Pure Elm |
 | `front/ports.js` | Starts the page and carries out each effect `Main.elm` sends: fetch, MapLibre, the flow layer, history, storage, audio, focus |
 | `front/js/` | The other hand-written JavaScript. `maplibre_ffi.mjs` holds the MapLibre calls, `flow_layer_ffi.mjs` the WebGL wind and wave layer |
-| `front/public/` | `style.css`, `favicon.svg`, `vendor/` and `data/trails/`, copied as they are |
+| `front/public/` | `style.css`, `favicon.png`, `og.png`, `vendor/` and `data/trails/`, copied as they are |
 | `front/index.html` | The page's head, its CSP `<meta>` and the module script |
 | `front/tests/` | elm-test suites, and `golden.json`, what the old page's functions return |
 

@@ -138,7 +138,7 @@ headNodes lang p =
              meta [("property", "og:image:height"), ("content", "1200")],
              meta [("property", "og:image:alt"), ("content", "marola")],
              meta [("name", "twitter:card"), ("content", "summary")],
-             link [("rel", "icon"), ("href", "/favicon.svg"), ("type", "image/svg+xml")],
+             link [("rel", "icon"), ("href", "/favicon.png"), ("type", "image/png")],
              link [("rel", "stylesheet"), ("href", "/style.css")]
            ]
 

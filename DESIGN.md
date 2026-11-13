@@ -182,7 +182,8 @@ Some colours are not in `:root`, because a CSS variable does not reach them:
   `front/public/map/style.json`; MapLibre reads a style, not CSS ("The base map" below).
 - piabrota's eye keeps its own four fills (`#BC2318`, `#F7F3EA`, `#2E9E4F`, `#0B0D12`) as SVG
   attributes in `front/src/View/Nav.elm`.
-- The logo is `front/public/favicon.svg`, drawn as a CSS background on a white tile.
+- The logo is logo-v2, `front/public/favicon.png` (a 192 px round badge on a transparent ground, cut from
+  `docs/assets/marola-logo-v2.jpg`), drawn as a CSS background with no tile.
 - The page's `theme-color` meta is `#0B0D12`.
 
 Shadows use `rgb(0 0 0 / alpha)`. The header's glow is `color-mix` of `--sea`. They are not hex and
@@ -353,7 +354,7 @@ Fjalla name or numeral is what the eye lands on, Inter explains it, mono dates a
 
 - **Top bar** (`header.top`): one bar, `--bg`, 48 px, with the glow of `--sea` at its top left. In
   order: the brand (`.brand`), the sections (`nav.sitenav`), the tools (`.navtools`). The brand is
-  the logo tile (`span.logo`: `favicon.svg` on a white 30 px tile with an 8 px radius), "marola" in
+  the logo (`span.logo`: `favicon.png`, 30 px, round), "marola" in
   Fjalla inside the `h1`, then piabrota's eye (`a.piabrota`, 18 px). The sections are quiet mono
   links, 12 px, `--muted`, `--ink` on hover, `--accent` for the current page. A section with no
   page yet is dimmer text with "(em breve)". The tools are the language switch, LinkedIn and the
@@ -632,7 +633,7 @@ decision.
   to split it, so it is all `--ink` and the muted lede under it carries the second tone.
 - **The news page is every post in full**, each in its card, newest first. There is no index of
   posts and no page per post.
-- **The logo tile is a CSS background**, not inline SVG: `favicon.svg` weighs 110 kB. It is
+- **The logo is a CSS background**, not an `<img>`: `favicon.png` is a raster badge. It is
   decoration beside the word "marola", and it does not show if images are blocked.
 - **The marker's number** for `--c40` has a `dark` class that no CSS rule uses, and the selected
   badge prints its number in Inter, not Fjalla.

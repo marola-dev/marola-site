@@ -34,7 +34,7 @@ spec :: Env -> Spec
 spec env = describe "pages" $ do
   forEach env "the document has its language, a favicon and the shared style" $ \_ l html -> do
     html `shouldSatisfy` T.isPrefixOf ("<!doctype html>\n<html lang=\"" <> Language.tag l <> "\">")
-    html `shouldSatisfy` has "<link rel=\"icon\" href=\"/favicon.svg\" type=\"image/svg+xml\">"
+    html `shouldSatisfy` has "<link rel=\"icon\" href=\"/favicon.png\" type=\"image/png\">"
     html `shouldSatisfy` has "<link rel=\"stylesheet\" href=\"/style.css\">"
   forEach env "canonical and the three alternates point at the page's own files" $ \s l html ->
     if s == "404"

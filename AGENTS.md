@@ -64,7 +64,7 @@ app image (`marola-image`); this repo never builds the app.
 - `front/`: the Elm map page. `src/` holds the domain types, the board decoder, the model, `update` (which returns
   effects as data) and the views, all pure; `ports.js` starts the page and carries out each effect; `js/` holds
   the MapLibre and WebGL glue (`maplibre_ffi.mjs`, `flow_layer_ffi.mjs`); `public/` the static files Vite copies
-  (`style.css`, `favicon.svg`, `vendor/`, `data/trails/`); `tests/` the elm-test suites and `golden.json`, what the
+  (`style.css`, `favicon.png`, `og.png`, `vendor/`, `data/trails/`); `tests/` the elm-test suites and `golden.json`, what the
   old `ui.js`, `app.js` and `flow.js` return (`scripts/golden.js`, `just golden`). `just front-build` builds
   `front/dist/`, `just front-test` runs elm-test, `just front-check` runs `scripts/front_check.js` on `dist/`.
   `package-lock.json` pins the npm build tools; `elm.json` the Elm packages.
