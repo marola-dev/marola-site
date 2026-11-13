@@ -17,7 +17,8 @@ import Ui exposing (attr, cls, idAttr)
 import Words
 
 
-{-| The iframe exists only while the player is open, so Spotify is not contacted before a click.
+{-| The iframe exists only while the player is open, so Spotify is not contacted before a click. Spotify's
+compact embed carries its own link to the playlist, so the player is the iframe alone.
 -}
 player : Model -> Html Msg
 player model =
@@ -30,7 +31,6 @@ player model =
                 , attr "loading" "lazy"
                 ]
                 []
-            , Html.a [ attr "href" Config.playlist, attr "target" "_blank", attr "rel" "noopener" ] [ Html.text (Words.t model "player.open") ]
             ]
 
     else
