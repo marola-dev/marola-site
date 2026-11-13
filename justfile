@@ -8,7 +8,7 @@ default:
     @just --list
 
 # Build the boards with the pinned app image into site/dist, plus the page (needs docker, network).
-# INEA and INEMA answer only Brazilian addresses: run it from a machine in Brazil, as site.yml does.
+# INEA and INEMA answer only Brazilian addresses: run it from a machine in Brazil, as piabrota2 does.
 site-build area="":
     #!/usr/bin/env bash
     set -euo pipefail
@@ -24,10 +24,6 @@ site-build area="":
 # Serve site/dist at http://localhost:8000.
 site-serve port="8000":
     python3 -m http.server -d site/dist {{ port }}
-
-# Deploy the map (site.yml: the Cloudflare Worker behind marola.dev, GitHub Pages as fallback).
-site-deploy:
-    gh workflow run site.yml && echo "queued site.yml — watch it: gh run list --workflow site.yml"
 
 # Check what marola.dev actually serves (or --base http://localhost:8000).
 site-live-check *args:

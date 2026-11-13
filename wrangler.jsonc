@@ -1,5 +1,5 @@
-// Cloudflare Workers static assets, no script: site.yml deploys site/dist here, and this Worker
-// serves marola.dev; GitHub Pages still gets the same deploy as a fallback (MIP-0078).
+// Cloudflare Workers static assets, no script: piabrota2 deploys site/dist here (piabrota/nix-os's
+// marola-site-publish), and this Worker serves marola.dev (MIP-0078).
 {
   "name": "marola",
   "compatibility_date": "2026-10-07",

@@ -5,7 +5,7 @@
 # site-data branch, and every Florianópolis beach read "no data" while the board still named IMA/SC
 # as its source. Both builds were green.
 #
-# Separate from site.yml on purpose: a red run here means upstream data is missing, not that the
+# Separate from the deploy (on piabrota2) on purpose: a red run here means upstream data is missing, not that the
 # build is broken, so it must not block a deploy.
 name: site health
 

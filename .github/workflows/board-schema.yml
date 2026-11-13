@@ -1,8 +1,8 @@
 name: board schema
 
 # site/board.schema.json must be the pinned image's own (MIP-0070 §5.4). Pulling the image is the
-# slow part, so this runs only when the pin or the vendored copy changes; site.yml re-checks the
-# page against the image's schema on every deploy.
+# slow part, so this runs only when the pin or the vendored copy changes; ci.yml's static job checks
+# the page against the vendored copy.
 
 on:
   push:

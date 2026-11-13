@@ -649,14 +649,10 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok((INDEX.match(/<script src="([^"]+)"/g) || []).every(t => !/\/\//.test(t)) && /<script src="vendor\/mapbox-gl-csp\.js"><\/script>\s*<script src="mapbox-config\.js"><\/script>\s*<script src="flow\.js"><\/script>\s*<script src="app\.js">/.test(INDEX),
     'every script is ours or vendored: Mapbox GL (CSP build), its config, flow.js, then app.js');
   const MBCONF = fs.readFileSync(path.join(ROOT, 'site/static/mapbox-config.js'), 'utf8');
-  ok(/window\.MAROLA_MAPBOX = \{ token: "", style: "" \};/.test(MBCONF), 'mapbox-config.js is committed with an empty token; site.yml fills it at deploy');
+  ok(/window\.MAROLA_MAPBOX = \{ token: "", style: "" \};/.test(MBCONF), 'mapbox-config.js is committed with an empty token; the deploy fills it (scripts/mapbox_config.sh)');
   const leaked = fs.readdirSync(path.join(ROOT, 'site/static')).filter(f => /\.(js|html|css)$/.test(f))
     .filter(f => /\b[ps]k\.eyJ/.test(fs.readFileSync(path.join(ROOT, 'site/static', f), 'utf8')));
   ok(leaked.length === 0, 'no Mapbox token (pk.eyJ…/sk.eyJ…) is committed in site/static', leaked.join(', '));
-  const SITE_YML = fs.readFileSync(path.join(ROOT, '.github/workflows/site.yml'), 'utf8');
-  ok(/MAPBOX_PUBLIC_TOKEN: \$\{\{ secrets\.MAPBOX_PUBLIC_TOKEN \|\| vars\.MAPBOX_PUBLIC_TOKEN \}\}/.test(SITE_YML) && /run: scripts\/mapbox_config\.sh site\/dist/.test(SITE_YML) &&
-    /! -name mapbox-config\.js\b/.test(SITE_YML) && /! -name flow\.js\b/.test(SITE_YML),
-    'site.yml writes mapbox-config.js from MAPBOX_PUBLIC_TOKEN (scripts/mapbox_config.sh refuses an sk. token) and publishes flow.js and it');
 
   // --- section nav ---------------------------------------------------------------------------
   const nav = (/<nav class="sitenav"[\s\S]*?<\/nav>/.exec(INDEX) || [''])[0];
@@ -703,12 +699,6 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
     ok((html.match(/<script\b[^>]*>/gi) || []).every(t => /^<script src="(i18n|ui)\.js">$/.test(t)),
       'the ' + page + ' page loads no script but the language chrome (i18n.js, ui.js)');
   }
-  for (const f of ['favicon.svg', 'news.html', 'members.html', 'contact.html', 'robots.txt', 'sitemap.xml', 'llms.txt', 'humans.txt', 'board.schema.json']) {
-    ok(new RegExp('! -name ' + f.replace('.', '\\.') + '\\b').test(SITE_YML), "site.yml's publish allowlist keeps " + f);
-  }
-  ok(SITE_YML.includes('! -path ./.well-known/security.txt') && /include-hidden-files: true/.test(SITE_YML),
-    "site.yml publishes .well-known/security.txt, on Pages too (its artifact drops dot-directories by default)");
-  ok(SITE_YML.includes('python3 scripts/site_meta.py site/dist'), 'site.yml writes llms.txt, sitemap.xml and security.txt at build time');
 
   // --- page heads (#37, #182): one canonical, Open Graph, hreflang; JSON-LD on the map; noindex where no crawler should land
   const ROBOTS = fs.readFileSync(path.join(ROOT, 'site/static/robots.txt'), 'utf8');
@@ -883,9 +873,8 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   // The umbrella's README diagram (marola-dev/marola docs/img/), copied: one per language (#79).
   ok(['umbrella.pt-BR.svg', 'umbrella.svg'].every(f => fs.existsSync(path.join(ROOT, 'site/static/img', f))) &&
     /<article class="about-body" lang="pt-BR">[\s\S]*?<img src="img\/umbrella\.pt-BR\.svg"[^>]* alt="[^"]+"/.test(ABOUT) &&
-    /<article class="about-body" lang="en">[\s\S]*?<img src="img\/umbrella\.svg"[^>]* alt="[^"]+"/.test(ABOUT) &&
-    /-path \.\/img \\\)/.test(SITE_YML),
-    "about.html shows the repo diagram in each article's language, and site.yml's publish allowlist keeps img/");
+    /<article class="about-body" lang="en">[\s\S]*?<img src="img\/umbrella\.svg"[^>]* alt="[^"]+"/.test(ABOUT),
+    "about.html shows the repo diagram in each article's language");
   const syn = runUi(ABOUT, { catalog: {
     'pt-BR': { n: '{n, plural, one {# praia} other {# praias}}', x: 'ondas {x} m', only: 'só pt', s: '{w, select, yes {sim} other {não}}' },
     en: { n: '{n, plural, one {# beach} other {# beaches}}', x: 'waves {x} m', s: '{w, select, yes {yes} other {no}}' }

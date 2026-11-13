@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Write <dist>/mapbox-config.js from MAPBOX_PUBLIC_TOKEN and MAPBOX_STYLE (site.yml, at deploy).
+# Write <dist>/mapbox-config.js from MAPBOX_PUBLIC_TOKEN and MAPBOX_STYLE (at deploy, on piabrota2).
 #
 #   MAPBOX_PUBLIC_TOKEN=pk.… scripts/mapbox_config.sh site/dist
 #   scripts/mapbox_config.sh --self-test
