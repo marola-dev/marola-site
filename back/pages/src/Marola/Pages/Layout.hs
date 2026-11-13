@@ -104,6 +104,7 @@ headNodes l p =
          meta [("property", "og:image:alt"), ("content", "marola")],
          meta [("name", "twitter:card"), ("content", "summary")],
          link [("rel", "icon"), ("href", "/favicon.png"), ("type", "image/png")],
+         link [("rel", "apple-touch-icon"), ("href", "/apple-touch-icon.png")],
          link [("rel", "stylesheet"), ("href", "/style.css")]
        ]
   where
