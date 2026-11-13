@@ -8,12 +8,12 @@ history before the split is marola's, filtered to these files.
 The repo holds two builds of the site:
 
 - **The new site** (`front/`, `back/`): the map page in Elm, the static pages and the server in
-  Haskell, and the study submission feature. It is built and tested, and it is not what marola.dev
-  serves yet.
-- **The legacy site** (`site/static/`): plain JavaScript over Mapbox GL JS. piabrota2, a VPS in Brazil, builds and publishes it as NixOS units in
-  [piabrota/nix-os](https://github.com/piabrota/nix-os) (`marola-site.nix`), after each
-  of its four daily board builds, to the Cloudflare Worker behind marola.dev. The
-  switch from the legacy site to the new one is a decision of the owners. It is not made here.
+  Haskell, and the study submission feature. It is what marola.dev and marola.piabrota.art serve:
+  piabrota2, a VPS in Brazil, runs it as NixOS units in
+  [piabrota/nix-os](https://github.com/piabrota/nix-os) (`marola-site.nix`) behind nginx, with the
+  boards it builds four times a day. No Cloudflare.
+- **The legacy site** (`site/static/`): plain JavaScript over Mapbox GL JS. Nothing deploys it any
+  more; its files stay until the cutover pull request removes them.
 
 > [!IMPORTANT]
 > **Migration notice: marola-dev is moving to pure functional programming.** This repo is the first
@@ -54,8 +54,7 @@ PMTiles file on the host).
 [![marola-site and the repos around it: marola-corpus and marola-ml feed marola-app, whose board JSON the map client reads; the Elm client and the Haskell static pages make dist, which the Haskell server serves; nix/package.nix packs them, and piabrota/nix-os runs the package on piabrota2 behind nginx for piabrota.art; the host holds the base map's tiles and GIBS gives the satellite layers, GitHub OAuth the login, marola-dev/.github the members page; marola-devkit and the umbrella build docs.marola.dev](docs/img/architecture.png)](docs/img/architecture.png)
 
 How to read it: each row is a group of repos or services, and an arrow is what one hands to the
-next. Orange boxes are outside marola. Not shown: the legacy `site/static` build, which
-piabrota2 still deploys to the Cloudflare Worker behind marola.dev, and marola-oods' opt-in
+next. Orange boxes are outside marola. Not shown: marola-oods' opt-in
 water cache to marola-app. Source: [`docs/archify/architecture.json`](docs/archify/architecture.json),
 drawn with the umbrella's Archify pin and `scripts/figure.sh` (in a marola checkout).
 
@@ -134,11 +133,10 @@ just site-serve           # http://localhost:8000
 Without docker, `node scripts/site_check.js` renders `site/static/app.js` against
 `site/fixtures/board.json` in a stub DOM.
 
-The deploy runs on piabrota2, in Brazil, not on GitHub Actions (piabrota/nix-os's `marola-site.nix`).
-Four times a day the box runs the pinned image's `--site` over every area (the beach lists stay on
-the box, so Overpass is asked only for an area without one), then adds the page and the `coverage/`,
-`smoke/` and `stats/` panels from the `site-data` branch and deploys to the Cloudflare Worker that
-serves `marola.dev` (static assets on the free plan, `wrangler.jsonc`). `404.html` forwards `marola.dev/docs/*` to [docs.marola.dev](https://docs.marola.dev).
+Nothing here deploys. piabrota2, in Brazil, serves the new site at the commit piabrota/nix-os pins
+(`marola-site.nix`), and four times a day runs the pinned image's `--site` over every area into the
+server's board folder (the beach lists stay on the box, so Overpass is asked only for an area without
+one). `404.html` forwards `marola.dev/docs/*` to [docs.marola.dev](https://docs.marola.dev).
 
 ## Repo map
 
