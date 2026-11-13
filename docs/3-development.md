@@ -12,31 +12,21 @@ PRs: the app's first, then this bump.
 
 ## The build and deploy (on piabrota2, not GitHub Actions)
 
-The legacy page's build and deploy run on piabrota2, a VPS in Brazil, as NixOS systemd units in
-[piabrota/nix-os](https://github.com/piabrota/nix-os) (`marola-site.nix`, its `docs/MAROLA-SITE.md`).
-They replaced `site.yml` and its self-hosted runner. Nothing here runs them: a merge in nix-os
-deploys them.
+marola.dev and marola.piabrota.art are served by piabrota2, a VPS in Brazil (`187.41.117.18`), as NixOS
+systemd units in [piabrota/nix-os](https://github.com/piabrota/nix-os) (`marola-site.nix`, its
+`docs/MAROLA-SITE.md`): the new site's server at the commit nix-os pins, behind nginx with Let's
+Encrypt, and no Cloudflare. They replaced `site.yml`, its self-hosted runner and the Cloudflare
+Worker. Nothing here runs them: a merge in nix-os deploys them, and a change here reaches the site
+when nix-os moves its pin (`scripts/pins.py one marola-site` there).
 
-- `marola-boards-build`, four times a day (01, 07, 13, 19 UTC) and on every nix-os deploy that moves
-  the app image: the image this repo pins in `marola-image` (or the one nix-os overrides), `--site`
-  over `site/areas.json` of the commit nix-os pins, with podman. INEA (Rio) and INEMA (Bahia) answer
-  only Brazilian addresses, and the box is in Brazil, so no proxy. Two tries; an area it did not
-  build keeps its old boards. The beach lists stay on the box
-  (`/var/lib/marola-boards-build/site/beaches`).
-- `marola-site-publish`, after every board build and on every nix-os deploy that moves the
-  marola-site pin: `site/static` with those boards → the [crawl files](#crawl-files-and-metadata) →
-  the Mapbox token and style into `mapbox-config.js` (`scripts/mapbox_config.sh`,
-  `MAPBOX_REQUIRE_TOKEN=1`) → cache-bust `index.html`'s script/style tags
-  (`scripts/stamp_site_version.sh`) → the `site-data` branch's panels → a required-files check (a
-  half-built site never reaches the Worker) → the publish allowlist (only the page, its assets and
-  `data/`, `smoke/`, `coverage/`, `stats/` go out) → `wrangler deploy` to the Cloudflare Worker
-  `marola` (static assets only, `wrangler.jsonc`), which serves marola.dev since 2026-10-07. GitHub
-  Pages gets no new copy.
+`marola-boards-build` runs four times a day (01, 07, 13, 19 UTC) and on every nix-os deploy that
+moves the app image: the image this repo pins in `marola-image` (or the one nix-os overrides),
+`--site` over `site/areas.json` of the pinned commit, with podman, into the server's board folder.
+INEA (Rio) and INEMA (Bahia) answer only Brazilian addresses, and the box is in Brazil, so no proxy.
+Two tries; an area it did not build keeps its old boards. nix-os's `marola-boards.yml` fails when a
+board on either name is older than 12 hours.
 
-The Cloudflare token (Edit Cloudflare Workers), the account id and the public Mapbox token are files
-on the box, a person's to write. The repository's `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`
-and `MAPBOX_PUBLIC_TOKEN` secrets and variables are no longer read here. A change to `site/static`
-reaches marola.dev when nix-os moves its marola-site pin (`scripts/pins.py one marola-site` there).
+The legacy page (`site/static`) is no longer deployed anywhere.
 
 ### Beach lists and Overpass
 
@@ -61,28 +51,18 @@ one data link per area in `site/areas.json`, and the docs' own
 `Expires` 364 days after the build) and `board.schema.json`. A site not rebuilt for a year serves
 an expired `security.txt`, and the health check says so.
 
-### Crawlers, AI and visitor counts (Cloudflare)
+### Crawlers and visitor counts
 
-Two things about crawlers are zone settings in Cloudflare's dashboard, not files here, and both
-are a person's call:
-
-- **The managed robots.txt.** Cloudflare prepends its content-signals block (`search`,
-  `ai-input`, `ai-train`) to our `robots.txt`. On 2026-11-10 it carried no `Content-Signal` line,
-  so it neither granted nor refused anything. Whatever it is set to has to agree with `llms.txt`,
-  which invites a model to read the site: `search=yes, ai-input=yes` at least.
-- **AI crawler blocking** ("Block AI bots", AI Crawl Control) answers some crawlers with 403
-  before they reach `robots.txt` or `llms.txt`.
-
-Visitor counts come from Cloudflare's zone analytics (#128): requests seen at the edge, no script
-in the page, no cookie. The page adds no analytics of its own (#176 holds that decision).
+`robots.txt` and `llms.txt` are served as written: no edge rewrites them and no edge blocks a
+crawler. There is no visitor count since the move off Cloudflare (its zone analytics, #128); the page
+adds no analytics of its own (#176 holds that decision).
 
 ## The `site-data` branch layout
 
 An orphan branch, never deployed by the workflows that write it: `coverage/` and `smoke/` (the
 app's CI and `docker-smoke.yml`), `stats/` (the umbrella). Each writer pushes with
 `scripts/site-data-push.sh` (retries on a rejected push, replaying its one commit onto the new
-tip) and then sends `repository_dispatch: site-data-updated`, which nothing listens to any more: the
-panels reach marola.dev with the next publish from the box, at most six hours later. A directory missing from the branch just means no panel for it;
+tip) and then sends `repository_dispatch: site-data-updated`, which nothing listens to any more. A directory missing from the branch just means no panel for it;
 a missing branch means none of the three.
 
 ## Health checks

@@ -28,10 +28,10 @@ The map at [marola.dev](https://marola.dev), in two builds that live side by sid
   are rendered by a Haskell program (`back/pages`). Anyone with a GitHub account can submit a study (a PDF
   with metadata), shown with the notice "not reviewed" (ADR 0004). The server needs a host that runs
   it; static hosting is not enough.
-- **The legacy site** (`site/static/`): plain JavaScript over Mapbox GL JS, built and published to
-  the Cloudflare Worker by piabrota2, a VPS in Brazil, as NixOS units in piabrota/nix-os
-  (`marola-site.nix`); no workflow here deploys it. It is still what marola.dev serves. Whether and
-  when the new site replaces it is a decision of the owners; an agent does not make it.
+- **The legacy site** (`site/static/`): plain JavaScript over Mapbox GL JS. Nothing deploys it any
+  more: since 2026-11-13 marola.dev and marola.piabrota.art serve the new site from piabrota2, a VPS
+  in Brazil, as NixOS units in piabrota/nix-os (`marola-site.nix`), with no Cloudflare. Its files
+  stay until a cutover pull request removes them.
 
 Both show every area's precomputed boards (MIP-0005), with no LLM. The boards come from the pinned
 app image (`marola-image`); this repo never builds the app.
@@ -243,9 +243,8 @@ A decision that starts and ends here is an ADR; anything crossing a repo boundar
 
 ## Cost & deployment safety (hard rule)
 
-As in the umbrella. piabrota2 deploys the legacy page to the Cloudflare Worker `marola` (free static
-assets), which serves marola.dev (MIP-0078), from piabrota/nix-os's units; an agent does not
-trigger a deploy by hand, and the box, its units and its token files are a human's.
+As in the umbrella. piabrota2 serves marola.dev from piabrota/nix-os's units; a merge there deploys,
+an agent does not deploy by hand, and the box, its units and its token files are a human's.
 
 The new site has no map bill and no map provider: MapLibre draws a style, glyphs and one PMTiles file that the
 site's own server sends (`/map/`, `/tiles/`). The tiles file is host data (`MAROLA_TILES`, about 216 MB, cut by

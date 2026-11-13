@@ -8,8 +8,6 @@ __pycache__/
 /site/dist/*
 !/site/dist/.gitkeep
 
-# wrangler's local state
-.wrangler/
 
 # cabal (back/pages, back/server; the project is cabal.project at the root)
 /dist-newstyle/
