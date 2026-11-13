@@ -28,7 +28,7 @@ this is the cost and provenance side:
   a repo variable/secret and written into `mapbox-config.js` only at deploy time
   (`scripts/mapbox_config.sh`); the account, the token and any billing setting are a human's
   ([`AGENTS.md`](../AGENTS.md)'s Cost & deployment safety section). Without a token the page shows
-  no base map rather than failing silently; `site.yml`'s deploy sets `MAPBOX_REQUIRE_TOKEN=1` so a
+  no base map rather than failing silently; the deploy on piabrota2 sets `MAPBOX_REQUIRE_TOKEN=1` so a
   missing token fails the build instead of shipping a map-less live site.
 - **The new site's base map**: no provider and no bill. The tiles are one PMTiles file on the site's own
   host, cut by `scripts/basemap_extract.sh` from a Protomaps daily build of OpenStreetMap data (ODbL: the
@@ -71,8 +71,8 @@ scripts/board-schema.sh --check            # fail when the vendored schema diffe
 scripts/board-schema.sh --update           # rewrite the vendored schema after bumping the pin
 ```
 
-`board-schema.yml` runs `--check` in CI, and `site.yml` checks the page against the image's own
-schema again before every deploy. A board schema change in the app is two PRs: the app's first,
+`board-schema.yml` runs `--check` in CI, and `ci.yml`'s `static` job checks the page against the
+vendored copy. A board schema change in the app is two PRs: the app's first,
 then this repo's `marola-image`/`board-schema.sh --update` pair — see
 [development.md](3-development.md#updating-the-app-image).
 

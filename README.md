@@ -10,8 +10,9 @@ The repo holds two builds of the site:
 - **The new site** (`front/`, `back/`): the map page in Elm, the static pages and the server in
   Haskell, and the study submission feature. It is built and tested, and it is not what marola.dev
   serves yet.
-- **The legacy site** (`site/static/`): plain JavaScript over Mapbox GL JS. `.github/workflows/site.yml`
-  still builds and publishes it, every three hours, to the Cloudflare Worker behind marola.dev. The
+- **The legacy site** (`site/static/`): plain JavaScript over Mapbox GL JS. piabrota2, a VPS in Brazil, builds and publishes it as NixOS units in
+  [piabrota/nix-os](https://github.com/piabrota/nix-os) (`marola-site.nix`), after each
+  of its four daily board builds, to the Cloudflare Worker behind marola.dev. The
   switch from the legacy site to the new one is a decision of the owners. It is not made here.
 
 > [!IMPORTANT]
@@ -54,7 +55,7 @@ PMTiles file on the host).
 
 How to read it: each row is a group of repos or services, and an arrow is what one hands to the
 next. Orange boxes are outside marola. Not shown: the legacy `site/static` build, which
-`site.yml` still deploys to the Cloudflare Worker behind marola.dev, and marola-oods' opt-in
+piabrota2 still deploys to the Cloudflare Worker behind marola.dev, and marola-oods' opt-in
 water cache to marola-app. Source: [`docs/archify/architecture.json`](docs/archify/architecture.json),
 drawn with the umbrella's Archify pin and `scripts/figure.sh` (in a marola checkout).
 
@@ -133,13 +134,11 @@ just site-serve           # http://localhost:8000
 Without docker, `node scripts/site_check.js` renders `site/static/app.js` against
 `site/fixtures/board.json` in a stub DOM.
 
-`site.yml` runs every three hours, on a push to `main` that touches the page or the pin, and when a
-`site-data` writer dispatches `site-data-updated`. It pulls the pinned image, checks the page against
-the image's board schema, builds every area's boards (beach lists come from the Actions cache, so
-Overpass is asked only for an area without one), adds the page and the `coverage/`, `smoke/` and
-`stats/` panels from the `site-data` branch, and deploys to the Cloudflare Worker that serves
-`marola.dev` (static assets on the free plan, `wrangler.jsonc`), with the same files on GitHub Pages as
-a fallback. `404.html` forwards `marola.dev/docs/*` to [docs.marola.dev](https://docs.marola.dev).
+The deploy runs on piabrota2, in Brazil, not on GitHub Actions (piabrota/nix-os's `marola-site.nix`).
+Four times a day the box runs the pinned image's `--site` over every area (the beach lists stay on
+the box, so Overpass is asked only for an area without one), then adds the page and the `coverage/`,
+`smoke/` and `stats/` panels from the `site-data` branch and deploys to the Cloudflare Worker that
+serves `marola.dev` (static assets on the free plan, `wrangler.jsonc`). `404.html` forwards `marola.dev/docs/*` to [docs.marola.dev](https://docs.marola.dev).
 
 ## Repo map
 
@@ -151,8 +150,7 @@ a fallback. `404.html` forwards `marola.dev/docs/*` to [docs.marola.dev](https:/
 | The areas | [`site/areas.json`](site/areas.json) |
 | The board contract | the image's `board.schema.json`, vendored as [`site/board.schema.json`](site/board.schema.json) |
 | The members list | [`site/members/MEMBERS.md`](site/members/MEMBERS.md), pinned by [`site/members.version`](site/members.version) |
-| The deploy workflow (legacy) | [`site.yml`](.github/workflows/site.yml) |
-| The self-hosted runner in Brazil (INEA and INEMA) | [`docs/3-development.md`](docs/3-development.md#the-self-hosted-runner-in-brazil) |
+| The legacy build and deploy (on piabrota2, INEA and INEMA) | [`docs/3-development.md`](docs/3-development.md#the-build-and-deploy-on-piabrota2-not-github-actions) |
 
 ## Contracts
 

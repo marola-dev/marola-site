@@ -120,7 +120,7 @@ def check_meta(base: str, text=fetch_text, now: dt.datetime | None = None) -> li
         if expires is None:
             bad.append("/.well-known/security.txt has no valid Expires")
         elif expires <= now:
-            bad.append(f"/.well-known/security.txt expired on {m.group(1)}: run site.yml")
+            bad.append(f"/.well-known/security.txt expired on {m.group(1)}: publish again")
     return bad
 
 
@@ -312,7 +312,7 @@ def self_test() -> int:
     )
     ok(
         check_meta(base, serve({}), dt.datetime(2027, 12, 1, tzinfo=dt.UTC)),
-        ["/.well-known/security.txt expired on 2027-11-10T00:00:00Z: run site.yml"],
+        ["/.well-known/security.txt expired on 2027-11-10T00:00:00Z: publish again"],
         "security.txt past its Expires fails",
     )
     ok(

@@ -28,10 +28,10 @@ The map at [marola.dev](https://marola.dev), in two builds that live side by sid
   are rendered by a Haskell program (`back/pages`). Anyone with a GitHub account can submit a study (a PDF
   with metadata), shown with the notice "not reviewed" (ADR 0004). The server needs a host that runs
   it; static hosting is not enough.
-- **The legacy site** (`site/static/`): plain JavaScript over Mapbox GL JS, built and published by
-  `.github/workflows/site.yml`. It is still what marola.dev serves. Whether and when the new site
-  replaces it is a decision of the owners; an agent does not make it, and does not touch the
-  workflow.
+- **The legacy site** (`site/static/`): plain JavaScript over Mapbox GL JS, built and published to
+  the Cloudflare Worker by piabrota2, a VPS in Brazil, as NixOS units in piabrota/nix-os
+  (`marola-site.nix`); no workflow here deploys it. It is still what marola.dev serves. Whether and
+  when the new site replaces it is a decision of the owners; an agent does not make it.
 
 Both show every area's precomputed boards (MIP-0005), with no LLM. The boards come from the pinned
 app image (`marola-image`); this repo never builds the app.
@@ -103,9 +103,8 @@ app image (`marola-image`); this repo never builds the app.
   `stamp_site_version.sh`, `site_live_check.py` (what marola.dev actually serves),
   `site-data-push.sh` (the retrying push every `site-data` writer uses), `i18n_bundle.py`,
   `news_build.py`, `members_build.py`, `mip-trailer-check.sh`.
-- `site.yml`'s build runs on a self-hosted runner in Brazil (label `marola-br`), because INEA and
-  INEMA answer only Brazilian addresses, and only by hand for now
-  ([`docs/3-development.md`](docs/3-development.md#the-self-hosted-runner-in-brazil)).
+- The boards and the legacy deploy run on piabrota2, because INEA and INEMA answer only Brazilian
+  addresses ([`docs/3-development.md`](docs/3-development.md#the-build-and-deploy-on-piabrota2-not-github-actions)).
 - `DESIGN.md`: the visual system (tokens, type, components, contrast, known gaps) of the new site.
   `just design-check` fails when it and `front/public/style.css` drift. Inter is self-hosted in
   `front/public/vendor/fonts/`.
@@ -244,10 +243,9 @@ A decision that starts and ends here is an ADR; anything crossing a repo boundar
 
 ## Cost & deployment safety (hard rule)
 
-As in the umbrella. `site.yml` deploys to GitHub Pages (free) when a person runs it, and the
-same files to the Cloudflare Worker `marola` (free static assets), which serves marola.dev
-(MIP-0078); an agent does not
-trigger a deploy by hand (`just site-deploy` is denied in `.claude/settings.json`).
+As in the umbrella. piabrota2 deploys the legacy page to the Cloudflare Worker `marola` (free static
+assets), which serves marola.dev (MIP-0078), from piabrota/nix-os's units; an agent does not
+trigger a deploy by hand, and the box, its units and its token files are a human's.
 
 The new site has no map bill and no map provider: MapLibre draws a style, glyphs and one PMTiles file that the
 site's own server sends (`/map/`, `/tiles/`). The tiles file is host data (`MAROLA_TILES`, about 216 MB, cut by
@@ -256,9 +254,8 @@ third-party host is NASA GIBS, and its one frame Spotify's player (`back/server/
 no map host to it. The
 host that runs the server, its nginx and its backups are a human's. The legacy page's base map is
 Mapbox's, billed per map load above its free tier: the account, the token and any billing setting are
-a human's. So is the self-hosted runner and the machine it runs on. The Mapbox token is a public
-`pk.` token restricted to marola.dev's URLs, kept in the repo variable (or secret)
-`MAPBOX_PUBLIC_TOKEN` and written into `mapbox-config.js` only at deploy; never commit one, and never
+a human's. The Mapbox token is a public `pk.` token restricted to marola.dev's URLs, kept in a file on
+piabrota2 and written into `mapbox-config.js` only at deploy; never commit one, and never
 an `sk.` token anywhere in a page. The GitHub OAuth secret is a file on the host
 (`MAROLA_GITHUB_CLIENT_SECRET_FILE`), never in the repo, an environment variable or a log ([docs/5-hosting.md](docs/5-hosting.md)).
 
