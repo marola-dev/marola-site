@@ -190,7 +190,9 @@ run base inbox = do
       ("/llms.txt", "text/plain"),
       ("/humans.txt", "text/plain"),
       ("/.well-known/security.txt", "text/plain"),
-      ("/favicon.svg", "image/svg+xml"),
+      ("/favicon.png", "image/png"),
+      ("/favicon.ico", "image/x-icon"),
+      ("/apple-touch-icon.png", "image/png"),
       ("/og.png", "image/png"),
       ("/board.schema.json", "application/json")
     ]

@@ -125,6 +125,7 @@
   "lvl.moderate": "jellyfish or whale-sighting likelihood, the middle of three",
   "map.failed": "shown over the map area when Mapbox GL cannot start (no WebGL, an old browser)",
   "map.label": "accessible name of the map",
+  "map.lnt": "alt text of the Leave No Trace Proud Partner logo in the map's watermark, bottom left; the brand names stay in English",
   "map.no_token": "old map page only (the new page has no token to miss): shown over the map area when the deployed copy has no Mapbox access token, so no base map can load",
   "nav.about": "section nav: link to the about page",
   "nav.alerts": "section nav: alerts section, not built yet",

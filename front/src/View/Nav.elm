@@ -122,8 +122,8 @@ piabrota model =
         [ eye ]
 
 
-{-| The logo tile is `favicon.svg` as a CSS background (`.logo` in style.css): its two paths weigh
-110 kB, too much to repeat in the bundle.
+{-| The logo is `favicon.png` as a CSS background (`.logo` in style.css): a raster badge, kept out of
+the bundle.
 -}
 brand : Model -> Html Msg
 brand model =
