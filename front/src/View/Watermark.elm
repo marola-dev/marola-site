@@ -1,8 +1,9 @@
 module View.Watermark exposing (view)
 
-{-| The map's watermark, bottom left: piabrota's eye and "leave no trace", one colour, faint. Plain
-text and marola's own mark only: Leave No Trace's partner logo waits on the partnership's terms
-(marola-dev/marola-site#96).
+{-| The map's watermark, bottom left: Leave No Trace's Proud Partner logo, the PNG Leave No Trace
+supplies, unchanged (`vendor/lnt/`, marola is a partner: the umbrella's PARTNERS.en.md), and
+piabrota's eye in one colour beside it. The logo is the `.lnt` span's CSS background, like `.logo`:
+the page holds no `<img>` (`scripts/front_check.js` asserts it).
 -}
 
 import Html exposing (Html)
@@ -36,4 +37,6 @@ eye =
 view : Model -> Html Msg
 view model =
     Html.p [ idAttr "watermark", cls "watermark" ]
-        [ eye, Html.span [] [ Html.text (Words.t model "map.lnt") ] ]
+        [ Html.span [ cls "lnt", attr "role" "img", attr "aria-label" (Words.t model "map.lnt") ] []
+        , eye
+        ]
