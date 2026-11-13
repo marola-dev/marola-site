@@ -784,7 +784,7 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   .flow .layers button .ic { width: 16px; height: 16px; }
   /* MapLibre opens the attribution on load, two or three lines high on a phone: the key sits above it */
   .flowkeys { left: 8px; bottom: 72px; }
-  .player { right: 48px; width: min(280px, calc(100vw - 112px)); }
+  .player { right: 42px; width: min(300px, calc(100vw - 84px)); }
   .flowkey { width: 7.5rem; padding: 6px 8px; font-size: var(--fs-11); letter-spacing: var(--tr-11); }
   /* the caption under a ramp hides (the about page explains the field); a key that is only its caption keeps it */
   .flowkey > .ends ~ span:last-child { display: none; }
