@@ -352,6 +352,7 @@ async function floripa() {
   ok(ml.workerUrl === '/vendor/maplibre/maplibre-gl-worker.mjs', 'the worker is the vendored one', ml.workerUrl);
   ok(map.calls.some((c) => c.name === 'fitBounds'), 'the first board fits the map to the beaches');
   ok(document.documentElement.lang === 'pt-BR' && $('a[href=news.html]').textContent === 'notícias', 'default language is pt-BR');
+  ok($('#watermark') && $('#watermark span').textContent === 'não deixe rastros' && $('#watermark svg').getAttribute('aria-hidden') === 'true', 'the map carries the watermark, its eye hidden from screen readers');
   ok(beachMarkers().length === 2 && live().length === 2, 'one marker per beach, no water points yet', live().length);
   ok(live().every((m) => cls(m.el).includes('wave')), 'beach marker nodes carry class wave');
   const best = markerOf(byScore[0].name);
@@ -411,6 +412,7 @@ async function floripa() {
 async function english() {
   ok(document.documentElement.lang === 'en', '?lang=en starts in English');
   ok($('a[href=news.html]').textContent === 'news' && $('button[lang=en]').getAttribute('aria-pressed') === 'true', 'English nav text and EN pressed');
+  ok($('#watermark span').textContent === 'leave no trace', 'the watermark in English');
   await click($('button[lang=pt-BR]'));
   ok($('a[href=news.html]').textContent === 'notícias', 'pressing PT-BR flips the nav to notícias');
   ok(store.get('marola.lang') === 'pt-BR', 'the choice is stored in localStorage marola.lang', store.get('marola.lang'));

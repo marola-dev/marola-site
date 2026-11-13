@@ -253,6 +253,12 @@ button[aria-pressed="true"] > .ic, button[aria-expanded="true"] > .ic { color: i
 .flowkey .dots { display: flex; flex-wrap: wrap; gap: 2px 10px; color: var(--glass-ink); }
 .flowkey .dots i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: 1px; }
 .flowkey .dots .wpoint { display: inline-block; width: 12px; height: 12px; background: none; border-radius: 0; margin-right: 5px; vertical-align: -1px; }
+/* the watermark: piabrota's eye and "leave no trace", one colour, faint; under MapLibre's controls
+ * (z-index 2), the key and every panel, and it takes no tap */
+.watermark { position: absolute; z-index: 1; left: 12px; bottom: 10px; display: flex; align-items: center; gap: 6px; margin: 0;
+  color: var(--bg); opacity: .45; pointer-events: none; user-select: none;
+  font: 500 var(--fs-11)/1.2 var(--mono); letter-spacing: var(--tr-mono); white-space: nowrap; }
+.watermark svg { display: block; flex: none; width: 16px; height: 16px; }
 .map-note { position: absolute; z-index: 900; top: 12px; right: 12px; max-width: min(24rem, calc(100% - 24px)); margin: 0;
   padding: 12px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-panel);
   box-shadow: var(--shadow-float); font-size: var(--fs-14); letter-spacing: var(--tr-14); }
@@ -784,6 +790,8 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   .flow .layers button .ic { width: 16px; height: 16px; }
   /* MapLibre opens the attribution on load, two or three lines high on a phone: the key sits above it */
   .flowkeys { left: 8px; bottom: 72px; }
+  /* and the watermark between the two, clear of the attribution at 320 px */
+  .watermark { left: 8px; bottom: 46px; }
   .player { right: 42px; width: min(300px, calc(100vw - 84px)); }
   .flowkey { width: 7.5rem; padding: 6px 8px; font-size: var(--fs-11); letter-spacing: var(--tr-11); }
   /* the caption under a ramp hides (the about page explains the field); a key that is only its caption keeps it */

@@ -125,6 +125,7 @@
   "lvl.moderate": "moderate",
   "map.failed": "the map could not start in this browser. the beach list still works.",
   "map.label": "map of beaches",
+  "map.lnt": "leave no trace",
   "map.no_token": "the base map did not load: this copy of the site has no Mapbox key. the beach list still works.",
   "nav.about": "about",
   "nav.alerts": "alerts",

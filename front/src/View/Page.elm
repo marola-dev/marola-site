@@ -16,6 +16,7 @@ import View.List
 import View.Nav
 import View.Sos
 import View.Trails
+import View.Watermark
 import Words
 
 
@@ -77,7 +78,7 @@ stage : Model -> Html Msg
 stage model =
     Html.main_ [ cls (mainClass model) ]
         (List.concat
-            [ [ Html.div [ idAttr "map", attr "role" "application", attr "aria-label" (Words.t model "map.label") ] [] ]
+            [ [ Html.div [ idAttr "map", attr "role" "application", attr "aria-label" (Words.t model "map.label") ] [], View.Watermark.view model ]
             , rail model
             , View.Sos.view model
             , [ mapNote model, View.List.view model, View.Trails.panel model, cardSlot model ]
