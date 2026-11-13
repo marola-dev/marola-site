@@ -148,14 +148,13 @@ small { font-size: var(--fs-13); letter-spacing: var(--tr-13); }
 .bar:has(> .hourbar:not([hidden])) > .controls { grid-area: controls; }
 .bar > .tagline { grid-area: tag; justify-self: end; text-align: right; }
 .bar:has(> .hourbar[hidden]) > .tagline { margin-left: auto; }
-/* the playlist's player hangs under the row, on the right, above the map, clear of the layer rail */
+/* the playlist's player: Spotify's compact embed alone, 80 px high, under the row on the right,
+ * clear of the layer rail; no panel around it, so it covers as little map as it can */
 .player {
-  position: absolute; z-index: 1002; top: calc(100% + 8px); right: 60px; width: min(340px, calc(100vw - 76px));
-  display: flex; flex-direction: column; gap: 6px; padding: 8px;
-  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-panel); box-shadow: var(--shadow-float);
+  position: absolute; z-index: 1002; top: calc(100% + 8px); right: 60px; width: min(300px, calc(100vw - 76px)); height: 80px;
+  overflow: hidden; border-radius: var(--r-panel); box-shadow: var(--shadow-float);
 }
-.player iframe { display: block; width: 100%; height: 152px; border: 0; border-radius: var(--r-inner); }
-.player a { align-self: flex-end; padding: 0 4px; font: 400 var(--fs-11)/1.6 var(--mono); letter-spacing: var(--tr-mono); }
+.player iframe { display: block; width: 100%; height: 80px; border: 0; }
 
 /* One control everywhere: a 34 px pill with a 1px border. Hover turns the border to the accent
  * and lifts it 1 px (piabrota.art's .btn); pressed toggles take the soft accent; the one primary
@@ -785,7 +784,7 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   .flow .layers button .ic { width: 16px; height: 16px; }
   /* MapLibre opens the attribution on load, two or three lines high on a phone: the key sits above it */
   .flowkeys { left: 8px; bottom: 72px; }
-  .player { left: 8px; right: 48px; width: auto; }
+  .player { right: 42px; width: min(300px, calc(100vw - 84px)); }
   .flowkey { width: 7.5rem; padding: 6px 8px; font-size: var(--fs-11); letter-spacing: var(--tr-11); }
   /* the caption under a ramp hides (the about page explains the field); a key that is only its caption keeps it */
   .flowkey > .ends ~ span:last-child { display: none; }

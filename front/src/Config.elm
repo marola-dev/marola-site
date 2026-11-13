@@ -1,4 +1,4 @@
-module Config exposing (areaCode, areaMinZoom, areaZoom, attributions, bandColour, enabledLayers, gibsAttribution, gibsTiles, instagram, maplibreModule, maplibreWorker, maxZoom, piabrota, playlist, playlistEmbed, pmtilesModule, repo, sourceLink, styleUrl, waveRamp, windRamp)
+module Config exposing (areaCode, areaMinZoom, areaZoom, attributions, bandColour, enabledLayers, gibsAttribution, gibsTiles, instagram, maplibreModule, maplibreWorker, maxZoom, piabrota, playlistEmbed, pmtilesModule, repo, sourceLink, styleUrl, waveRamp, windRamp)
 
 {-| The constants of the page: where the map comes from, which layers are live, and the colours
 MapLibre needs as values. Every colour here is a token of `style.css`.
@@ -73,14 +73,8 @@ maxZoom =
     17
 
 
-{-| GREAT RESET, the playlist room.piabrota.art plays (its `assets/config-*.js`, read 2026-11-12).
--}
-playlist : String
-playlist =
-    "https://open.spotify.com/playlist/2hsuqvhCouatM8DtmKKl7U"
-
-
-{-| Loaded only once the visitor opens the player; the CSP's `frame-src` names this origin alone.
+{-| GREAT RESET, the playlist room.piabrota.art plays (its `assets/config-*.js`, read 2026-11-12). Loaded
+only once the visitor opens the player; the CSP's `frame-src` names this origin alone.
 -}
 playlistEmbed : String
 playlistEmbed =
