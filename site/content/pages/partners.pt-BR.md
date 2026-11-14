@@ -14,9 +14,15 @@ O [Leave No Trace Center for Outdoor Ethics](https://lnt.org/) ensina a aproveit
 
 ## OpenDiving
 
-O [OpenDiving](https://github.com/opendiving/opendiving) é um diário de mergulho em código aberto. O marola está na lista de apps parceiros do projeto, e os dois se linkam: o marola diz onde e quando a água está boa, o OpenDiving guarda o mergulho.
+![OpenDiving](/vendor/opendiving/icon.svg 24x24)
+O selo é marca do OpenDiving e não está sob a licença do marola.
+
+O [OpenDiving](https://opendiving.app) é um diário de mergulho em código aberto ([código no GitHub](https://github.com/opendiving/opendiving)). O marola está na lista de apps parceiros do projeto, e os dois se linkam: o marola diz onde e quando a água está boa, o OpenDiving guarda o mergulho.
 
 ## piabrota
+
+![piabrota](/vendor/piabrota/favicon.svg 100x100)
+O olho é a marca do piabrota.
 
 O [piabrota](https://piabrota.art) é um grupo de projetos de software aberto feitos no Rio de Janeiro, cada um no seu repositório, com licença e testes próprios. O marola é um deles.
 

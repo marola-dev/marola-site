@@ -83,7 +83,7 @@ spec env = describe "pages" $ do
           mapM_ (\l -> Meta.sitemap `shouldSatisfy` has (Layout.origin <> Layout.path l s)) allLanguages
       )
       ["privacy", "takedown", "partners"]
-    mapM_ (\n -> renderWith env "partners" En `shouldSatisfy` has n) ["https://lnt.org/", "https://github.com/opendiving/opendiving", "https://piabrota.art", "/vendor/lnt/proud-partner.png"]
+    mapM_ (\n -> renderWith env "partners" En `shouldSatisfy` has n) ["https://lnt.org/", "https://github.com/opendiving/opendiving", "https://piabrota.art", "/vendor/lnt/proud-partner.png", "/vendor/opendiving/icon.svg", "/vendor/piabrota/favicon.svg"]
     let en = renderWith env "privacy" En
         pt = renderWith env "privacy" PtBr
     mapM_ (\n -> en `shouldSatisfy` has n) ["not legal advice", "IP address", "tombstone", "/account"]

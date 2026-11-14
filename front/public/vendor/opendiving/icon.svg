@@ -1,0 +1,10 @@
+<!-- The OpenDiving brand mark: three rising bubbles, in coral. Original artwork
+     for this project, so no third-party notice attaches to it. Kept in step with
+     src/components/logo.tsx, which draws the same three circles. The smallest is
+     filled rather than hollow, and the stroke here is heavier, which together are
+     what keep the mark crisp down to 16px. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#FF7F50" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="5.17" cy="20.22" r="1.78" fill="#FF7F50" />
+  <circle cx="10.72" cy="13.56" r="2.89" />
+  <circle cx="16.83" cy="5.78" r="3.78" />
+</svg>

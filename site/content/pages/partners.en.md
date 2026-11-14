@@ -14,9 +14,15 @@ The [Leave No Trace Center for Outdoor Ethics](https://lnt.org/) teaches people 
 
 ## OpenDiving
 
-[OpenDiving](https://github.com/opendiving/opendiving) is an open-source dive logbook. marola is on the project's list of partner apps, and the two link to each other: marola says where and when the water is good, OpenDiving keeps the dive.
+![OpenDiving](/vendor/opendiving/icon.svg 24x24)
+The mark belongs to OpenDiving and is not under marola's licence.
+
+[OpenDiving](https://opendiving.app) is an open-source dive logbook ([code on GitHub](https://github.com/opendiving/opendiving)). marola is on the project's list of partner apps, and the two link to each other: marola says where and when the water is good, OpenDiving keeps the dive.
 
 ## piabrota
+
+![piabrota](/vendor/piabrota/favicon.svg 100x100)
+The eye is piabrota's mark.
 
 [piabrota](https://piabrota.art) is a group of open-source projects made in Rio de Janeiro, each in its own repository with its own licence and tests. marola is one of them.
 
