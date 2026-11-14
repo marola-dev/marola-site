@@ -31,7 +31,7 @@ The board generator is a Docker image outside this repository. It already writes
    2026-11-11 against `nixpkgs` revision `f4a03c0`). This ADR records 5.26.0.
 3. Lock the NuGet packages. Each project has `RestorePackagesWithLockFile` and a committed
    `packages.lock.json`. The recipes restore with `RestoreLockedMode`. The packages are in
-   [the libraries page](../2-libraries.md#the-f-clients-libraries).
+   [the libraries page](../2-libraries.md).
 4. Decode the board with Thoth.Json.Core. One decoder runs on .NET and on Fable. The primitives in
    `app/Shared/Decoders.fs` read a JSON number only, because Thoth's own `int` and `float` accept a
    string such as "48".
