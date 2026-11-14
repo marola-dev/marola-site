@@ -29,7 +29,7 @@ The map at [marola.dev](https://marola.dev), in two builds that live side by sid
   with metadata), shown with the notice "not reviewed" (ADR 0004). The server needs a host that runs
   it; static hosting is not enough.
 - **The legacy site** (`site/static/`): plain JavaScript over Mapbox GL JS. Nothing deploys it any
-  more: since 2026-11-13 marola.dev and marola.piabrota.art serve the new site from piabrota2, a VPS
+  more: since 2026-11-13 marola.dev and marola.piabrota.art serve the new site from piabrota2, a Hostinger KVM 4 VPS
   in Brazil, as NixOS units in piabrota/nix-os (`marola-site.nix`), with no Cloudflare. Its files
   stay until a cutover pull request removes them.
 

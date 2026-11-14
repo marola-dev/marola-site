@@ -12,7 +12,7 @@ PRs: the app's first, then this bump.
 
 ## The build and deploy (on piabrota2, not GitHub Actions)
 
-marola.dev and marola.piabrota.art are served by piabrota2, a VPS in Brazil (`187.41.117.18`), as NixOS
+marola.dev and marola.piabrota.art are served by piabrota2, a Hostinger KVM 4 VPS in Brazil (`187.41.117.18`), as NixOS
 systemd units in [piabrota/nix-os](https://github.com/piabrota/nix-os) (`marola-site.nix`, its
 `docs/MAROLA-SITE.md`): the new site's server at the commit nix-os pins, behind nginx with Let's
 Encrypt, and no Cloudflare. They replaced `site.yml`, its self-hosted runner and the Cloudflare

@@ -46,8 +46,7 @@ expiresDays = 364
 
 robots :: Text
 robots =
-  "# marola.dev: every page and every board is public. Cloudflare prepends its managed content\n"
-    <> "# signals above this block; what they say is a zone setting (docs/3-development.md).\n"
+  "# marola.dev: every page and every board is public.\n"
     <> "User-agent: *\n"
     <> "Allow: /\n"
     <> "# The sign-in redirect and a signed-in person's own pages: nothing a search result can open.\n"

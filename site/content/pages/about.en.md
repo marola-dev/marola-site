@@ -57,6 +57,8 @@ We call this a distributed monolith. It is one project, with one plan, one way o
 
 We built it this way for two reasons. First, much of the code is written and maintained with Anthropic's Claude, both in a Claude Project and in Claude Code from the terminal. The umbrella with submodules helps with that: Claude sees the whole project from above, with the plans and the rules written in one place, and changes one small repository at a time, with that repository's tests. Second, each part keeps some autonomy outside the umbrella. Someone who only wants the water-quality data can use marola-oods without the rest, and a mistake in one repository does not take down the others. No part reads another's code: it uses a published version and moves to a new one only when it decides to.
 
+The site runs on one server of ours: a KVM 4 virtual machine rented from [Hostinger](https://www.hostinger.com/), in Brazil, set up with [NixOS](https://nixos.org/). The same machine serves the pages, the beach boards and the base map's tiles; there is no CDN or other company in between. It sits in Brazil because some state agencies answer only Brazilian addresses.
+
 ## Claude
 
 Much of marola's code is written with Claude, Anthropic's AI assistant, in a Claude Project: a space on claude.ai where it reads the repositories, opens pull requests and talks with us in threads. The project's settings are in an open file, [CLAUDE_PROJECT.config.md](https://github.com/marola-dev/marola/blob/main/CLAUDE_PROJECT.config.md): the instructions Claude follows, the repositories it reads, the environment it runs in and the routines it runs on its own. Anyone can read the file or set up a project like it.

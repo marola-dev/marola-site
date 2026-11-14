@@ -7,7 +7,7 @@ o marola é gratuito, tem código aberto e funciona sem anúncios e sem rastream
 
 ## contas abertas
 
-a hospedagem não custa nada: usamos o plano gratuito da Cloudflare e do GitHub Actions. os comprovantes e o andamento do projeto estão públicos no [repositório no GitHub](https://github.com/marola-dev/marola).
+o marola.dev roda numa máquina virtual KVM 4 da Hostinger, no Brasil, e os testes rodam no plano gratuito do GitHub Actions. os comprovantes e o andamento do projeto estão públicos no [repositório no GitHub](https://github.com/marola-dev/marola).
 
 ## como apoiar
 
