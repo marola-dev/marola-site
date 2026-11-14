@@ -99,6 +99,7 @@
   "footer.submit": "footer of the server-rendered pages: link to the page where a scientist submits a study (marola publishes it, not reviewed)",
   "footer.privacy_page": "footer of the server-rendered and static pages: link to the privacy page (what marola stores)",
   "footer.takedown": "footer of the server-rendered and static pages: link to the page that says how to ask for a study to be removed",
+  "footer.partners": "footer of the server-rendered and static pages: link to the partners page (Leave No Trace, OpenDiving, piabrota)",
   "gh.label": "accessible name of the GitHub pill in the nav (its text is hidden on phones)",
   "gh.star": "GitHub's own button word, kept as \"star\" in every language (maintainer's call)",
   "gh.title": "hover tooltip of the GitHub pill",

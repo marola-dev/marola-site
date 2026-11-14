@@ -34,7 +34,8 @@ llmsPages =
     ("support.html", "Support", "how to donate, where the money goes and how to check the accounts"),
     ("contact.html", "Contact", "a form whose message reaches the team's e-mail"),
     ("privacy.html", "Privacy", "what marola stores about authors and visitors, what it does not, and what you can do"),
-    ("takedown.html", "Takedown", "how to ask for a study to be removed and what the board does")
+    ("takedown.html", "Takedown", "how to ask for a study to be removed and what the board does"),
+    ("partners.html", "Partners", "Leave No Trace, OpenDiving and piabrota, and how to become a partner")
   ]
 
 securityPolicy :: Text

@@ -55,9 +55,10 @@ spec env = describe "pages" $ do
   forEach env "the nav links the studies list and the footer the submit page, in the page's language" $ \_ l html -> do
     allHrefs html `shouldContain` [Layout.dynamicPath l "studies"]
     allHrefs html `shouldContain` [Layout.dynamicPath l "submit"]
-  forEach env "the footer links the privacy and takedown pages, in the page's language" $ \_ l html -> do
+  forEach env "the footer links the privacy, takedown and partners pages, in the page's language" $ \_ l html -> do
     allHrefs html `shouldContain` [Layout.path l "privacy"]
     allHrefs html `shouldContain` [Layout.path l "takedown"]
+    allHrefs html `shouldContain` [Layout.path l "partners"]
   forEach env "the chrome is the map page's: the top bar, the wordmark as a link to the map, the eye, the credit line" $ \s l html -> do
     html `shouldSatisfy` has "<body><header class=\"top\"><div class=\"brand\"><h1><a href=\""
     html `shouldSatisfy` has ("<a href=\"" <> Layout.mapPath l <> "\"><span class=\"logo\" aria-hidden=\"true\"></span>marola</a></h1>")
@@ -81,7 +82,8 @@ spec env = describe "pages" $ do
           Site.noIndex s `shouldBe` False
           mapM_ (\l -> Meta.sitemap `shouldSatisfy` has (Layout.origin <> Layout.path l s)) allLanguages
       )
-      ["privacy", "takedown"]
+      ["privacy", "takedown", "partners"]
+    mapM_ (\n -> renderWith env "partners" En `shouldSatisfy` has n) ["https://lnt.org/", "https://github.com/opendiving/opendiving", "https://piabrota.art", "/vendor/lnt/proud-partner.png", "/vendor/opendiving/icon.svg", "/vendor/piabrota/favicon.svg"]
     let en = renderWith env "privacy" En
         pt = renderWith env "privacy" PtBr
     mapM_ (\n -> en `shouldSatisfy` has n) ["not legal advice", "IP address", "tombstone", "/account"]
@@ -147,11 +149,13 @@ spec env = describe "pages" $ do
           "en/contact.html",
           "en/members.html",
           "en/news.html",
+          "en/partners.html",
           "en/privacy.html",
           "en/support.html",
           "en/takedown.html",
           "members.html",
           "news.html",
+          "partners.html",
           "privacy.html",
           "support.html",
           "takedown.html"

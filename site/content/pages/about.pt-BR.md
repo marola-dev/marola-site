@@ -90,6 +90,10 @@ a ideia do botão de emergência veio do [swell-floripa](https://swell-floripa.v
 
 o som das ondas é uma gravação de Luftrum ([freesound](https://freesound.org/s/48412/), licença [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)), que Porrumentzio editou em loop para o [Blanket](https://github.com/rafaelmardojai/blanket).
 
+Aleksei Vesnin ([@aleskiontherun](https://github.com/aleskiontherun)), do [OpenDiving](https://github.com/opendiving/opendiving), recebeu o marola como app parceiro.
+
+Pedro Veras Guimarães ([@pvguima](https://github.com/pvguima)) dedicou tempo, gentileza e atenção para explicar física de ondas ao fundador do marola.
+
 ## como ajudar
 
 use o mapa e avise quando ele errar. conte também o que você vê na água, como água-viva, ou se está faltando alguma praia. abra uma [issue](https://github.com/marola-dev/marola/issues), em português ou em inglês. o código, os planos e cada decisão estão no [GitHub](https://github.com/marola-dev/marola). [a documentação](https://docs.marola.dev/) mostra o que já funciona e o que ainda é plano.
