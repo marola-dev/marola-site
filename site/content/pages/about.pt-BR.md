@@ -37,6 +37,12 @@ em 2026, não tem mais motivo para fazer código fechado. com a IA, nunca foi t�
 
 o marola precisa de computação em nuvem: espaço para guardar os dados e placas de vídeo para treinar e rodar os modelos. mesmo sem fins lucrativos, ele aceita parcerias com empresas que cedam esses recursos, ou dados, sem passar dinheiro. em troca, a empresa ganha um crédito discreto no site. nada de anúncio, banner ou rastreamento.
 
+## parceiros
+
+o marola é parceiro oficial (*Proud Partner*) do [Leave No Trace](https://lnt.org/), que ensina a aproveitar a natureza sem deixar rastro.
+
+o [OpenDiving](https://opendiving.app/) é um diário de mergulho de código aberto, feito para durar mais que qualquer fabricante de computador de mergulho. os dois projetos usam dados abertos e apontam um para o outro: o OpenDiving lista o marola entre os seus apps parceiros.
+
 ## como o marola é montado
 
 o marola é um conjunto de repositórios de código, cada um com uma tarefa:
