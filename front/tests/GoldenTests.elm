@@ -107,16 +107,12 @@ text =
                 check "compass"
                     (D.map3 (\l d o -> ( l, d, o )) (D.field "lang" langDecoder) (D.field "deg" D.float) (D.field "out" D.string))
                     (\( l, d, o ) -> same (I18n.word (locale l) "dir." (Geo.compassKey d)) o (Debug.toString ( l, d )))
-        , test "condition label" <|
-            \_ ->
-                check "cond_label"
-                    (D.map3 (\l c o -> ( l, c, o )) (D.field "lang" langDecoder) (D.field "condition" D.string) (D.field "out" D.string))
-                    (\( l, c, o ) -> same (Water.conditionLabel (Water.parseCondition c) (locale l)) o c)
-        , test "water summary and dot" <|
+        , test "water dot" <|
+            -- The labels and summaries left the old page's Portuguese-only words behind (WaterTests).
             \_ ->
                 check "water"
-                    (D.map4 (\l w s d -> ( ( l, w ), s, d )) (D.field "lang" langDecoder) (D.field "water" Water.decoder) (D.field "summary" D.string) (D.field "dot" D.string))
-                    (\( ( l, w ), s, d ) -> same ( Water.summaryText w (locale l), Water.dotClass w ) ( s, d ) w.summary)
+                    (D.map2 Tuple.pair (D.field "water" Water.decoder) (D.field "dot" D.string))
+                    (\( w, d ) -> same (Water.dotClass w) d w.summary)
         , test "lookup" <|
             \_ ->
                 check "lookup"

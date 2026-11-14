@@ -412,7 +412,7 @@ async function floripa() {
 async function english() {
   ok(document.documentElement.lang === 'en', '?lang=en starts in English');
   ok($('a[href=news.html]').textContent === 'news' && $('button[lang=en]').getAttribute('aria-pressed') === 'true', 'English nav text and EN pressed');
-  ok($('#watermark .lnt').getAttribute('aria-label') === 'Leave No Trace, Proud Partner', 'the logo\'s name in English');
+  ok($('#watermark .lnt').getAttribute('aria-label') === 'Leave No Trace, Proud Partner (marola is an official partner)', 'the logo\'s name in English');
   await click($('button[lang=pt-BR]'));
   ok($('a[href=news.html]').textContent === 'notícias', 'pressing PT-BR flips the nav to notícias');
   ok(store.get('marola.lang') === 'pt-BR', 'the choice is stored in localStorage marola.lang', store.get('marola.lang'));

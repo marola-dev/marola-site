@@ -888,7 +888,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
   ok(probe.t('footer.generated', { when: 'w', area: 'a', day: 'd', n: 2, sources: 's' }).includes('· 2 praias ·'),
     'the real catalog pluralises footer.generated');
   // Lowercase house style in the catalogs; these are names marola did not choose.
-  const CASE_OK = ['°C', 'UV', 'km/h', 'mL', 'PRÓPRIA', 'IMPRÓPRIA', 'GitHub', 'Instagram', 'LinkedIn', 'Open-Meteo', 'IMA/SC', 'OpenStreetMap', 'Mapbox', 'NASA', 'VIIRS', 'MUR', 'El Niño', 'La Niña', 'Niño', 'Spotify', 'GREAT RESET', 'Leave No Trace', 'Proud Partner'];
+  const CASE_OK = ['°C', 'UV', 'km/h', 'mL', 'IMPRÓPRIA', 'PRÓPRIA', 'GitHub', 'Instagram', 'LinkedIn', 'Open-Meteo', 'IMA/SC', 'OpenStreetMap', 'Mapbox', 'NASA', 'VIIRS', 'MUR', 'El Niño', 'La Niña', 'Niño', 'Spotify', 'GREAT RESET', 'Leave No Trace', 'Proud Partner'];
   for (const [lang, cat] of Object.entries(CATALOGS)) {
     const shouty = Object.entries(cat).filter(([k, v]) => {
       if (/^dir\./.test(k)) return !/^[A-Z]{1,2}$/.test(v); // compass abbreviations, shown uppercase
@@ -1042,7 +1042,7 @@ ok(new Set(areaIds).size === areaIds.length, AREAS_PATH + ': area ids are unique
     ['water_unfit', unfitArgs, 'water unfit for bathing: IMA/SC Aug 25, Ponto 12 (Brava), count n/a',
       'água imprópria para banho: IMA/SC, 25 de ago., Ponto 12 (Brava), contagem n/d'],
     ['water_mixed', { proper: 1, total: 3, avoid: ['Ponto 7 (Canto)', 'Ponto 9 (Centro)'] },
-      '1/3 points PRÓPRIA; avoid Ponto 7 (Canto); Ponto 9 (Centro)', '1 de 3 pontos com laudo PRÓPRIA; evite Ponto 7 (Canto); Ponto 9 (Centro)'],
+      '1/3 points fit for bathing; avoid Ponto 7 (Canto); Ponto 9 (Centro)', '1 de 3 pontos com laudo PRÓPRIA; evite Ponto 7 (Canto); Ponto 9 (Centro)'],
     ['a_code_from_a_newer_board', {}, 'its english note', 'its english note']
   ];
   const coded = structuredClone(BOARD);

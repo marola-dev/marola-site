@@ -207,7 +207,7 @@ waterMarker : Model -> WaterPoint -> Marker
 waterMarker model p =
     let
         text =
-            p.point ++ " (" ++ p.location ++ "): " ++ Water.conditionLabel p.condition model.loc ++ ", " ++ p.sampledOn
+            p.point ++ " (" ++ p.location ++ "): " ++ Water.conditionLabel p.condition model.loc ++ ", " ++ Water.sampledText p model.loc
     in
     { key = p.point
     , lon = p.lon
