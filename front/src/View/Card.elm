@@ -139,7 +139,7 @@ pointItem model p =
     in
     Html.li []
         ([ Html.span [ cls (conditionClass p.condition) ] [ Html.text (p.point ++ " (" ++ p.location ++ "): " ++ Water.conditionLabel p.condition model.loc) ]
-         , Html.text (", " ++ p.sampledOn)
+         , Html.text (", " ++ Water.sampledText p model.loc)
          ]
             ++ count
         )
