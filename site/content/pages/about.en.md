@@ -36,6 +36,12 @@ In 2026 there is no reason to write closed code. With AI, building a new feature
 
 marola needs compute and cloud: room to store data and graphics cards to train and run models. Even as a non-profit, it is open to partnerships with companies that donate those resources, or data, with no money changing hands. In return, the company gets a discreet credit on the site. No ads, banners or tracking.
 
+## Partners
+
+marola is an official Proud Partner of [Leave No Trace](https://lnt.org/), which teaches people to enjoy nature without leaving a trace.
+
+[OpenDiving](https://opendiving.app/) is an open source dive log, built to outlive every dive-computer vendor. Both projects use open data and link to each other: OpenDiving lists marola among its partner apps.
+
 ## How marola is built
 
 marola is a set of code repositories, each with one job:
