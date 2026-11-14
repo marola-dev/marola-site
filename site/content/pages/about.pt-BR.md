@@ -39,7 +39,7 @@ o marola precisa de computação em nuvem: espaço para guardar os dados e placa
 
 ## parceiros
 
-o marola é parceiro oficial (*Proud Partner*) do [Leave No Trace](https://lnt.org/), que ensina a aproveitar a natureza sem deixar rastro.
+o marola é parceiro oficial (Proud Partner) do [Leave No Trace](https://lnt.org/), que ensina a aproveitar a natureza sem deixar rastro.
 
 o [OpenDiving](https://opendiving.app/) é um diário de mergulho de código aberto, feito para durar mais que qualquer fabricante de computador de mergulho. os dois projetos usam dados abertos e apontam um para o outro: o OpenDiving lista o marola entre os seus apps parceiros.
 

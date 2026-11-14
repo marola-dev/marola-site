@@ -148,7 +148,7 @@ sections model =
         , link model "about.html" "nav.about"
         , link model "contact.html" "nav.contact"
         , link model "https://github.com/marola-dev/marola-research/blob/main/README.md" "nav.research"
-        , link model "https://github.com/marola-dev/marola-research/blob/main/chamada/chamada.pdf" "nav.contribute"
+        , link model "partners.html" "nav.partners"
         , link model "members.html" "nav.members"
         , link model "support.html" "nav.donate"
         ]

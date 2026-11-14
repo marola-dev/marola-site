@@ -141,6 +141,7 @@
   "nav.members": "section nav: link to the members page (the people who build marola)",
   "nav.studies": "section nav: link to the list of studies that scientists submitted; hidden on a 390 px phone, where about links it",
   "nav.research": "section nav: link to marola-research, the research of marola (its README on GitHub)",
+  "nav.partners": "section nav: link to the partners page (Leave No Trace, OpenDiving, piabrota); hidden on a 390 px phone, where the footer and about link it",
   "nav.contribute": "section nav: link to the call for contribution and publication (the chamada PDF in marola-research); imperative, like \"apoie\"",
   "nav.news": "section nav: link to the news page",
   "nav.soon": "small badge next to a section that has no page yet; shown uppercase by CSS",
