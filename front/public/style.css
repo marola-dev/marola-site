@@ -425,8 +425,12 @@ body { text-transform: lowercase; }
 .about-body figure a:hover { border-color: var(--accent); }
 .about-body figure img { display: block; width: 100%; height: auto; }
 /* a partner's mark is a logo, not a drawing: shown at its own small size */
-.p-partners .about-body figure { max-width: 280px; }
-.p-partners .about-body figure:has(img[src$=".svg"]) { max-width: 120px; }
+.p-partners .about-body figure { max-width: 260px; margin: 28px 0; }
+.p-partners .about-body figure:has(img[src$=".svg"]) { max-width: 112px; }
+/* the LNT logo carries its own white ground, so every mark sits on the same white card */
+.p-partners .about-body figure a { padding: 16px 20px; background: var(--on-fill); border-color: transparent; }
+.p-partners .about-body figure:has(img[src$=".svg"]) a { padding: 16px; }
+.about-body figcaption:empty { display: none; }
 .about-body figcaption { margin-top: 12px; color: var(--muted); font: 400 var(--fs-12)/1.6 var(--mono); letter-spacing: var(--tr-mono); }
 .about-body blockquote { margin: 28px 0; padding: 4px 0 4px 20px; border-left: 2px solid var(--accent);
   font-size: var(--fs-19); line-height: 1.5; letter-spacing: var(--tr-19); color: var(--ink); }
