@@ -274,7 +274,7 @@ nav loc p =
       navLink loc p "about" "nav.about",
       navLink loc p "contact" "nav.contact",
       external loc "https://github.com/marola-dev/marola-research/blob/main/README.md" "nav.research",
-      external loc "https://github.com/marola-dev/marola-research/blob/main/chamada/chamada.pdf" "nav.contribute",
+      navLink loc p "partners" "nav.partners",
       navLink loc p "members" "nav.members",
       navLink loc p "support" "nav.donate"
     ]
@@ -309,7 +309,7 @@ sectionKey s =
       ("support", "nav.donate"),
       ("privacy", "footer.privacy_page"),
       ("takedown", "footer.takedown"),
-      ("partners", "footer.partners")
+      ("partners", "nav.partners")
     ]
 
 -- | @p-studies@, @p-submit@: what the style sheet tells one page from another by. A study's address

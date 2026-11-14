@@ -762,10 +762,11 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   .navtools { gap: 2px; }
   /* sections with no page yet would take room on a phone for nothing to tap */
   .sitenav > span { display: none; }
-  /* members, studies, research and contribute are reached from about.html ("quem faz") on a phone */
+  /* members, studies, research and partners are reached from about.html ("quem faz") on a phone */
   .sitenav > a[href$="members.html"] { display: none; }
   .sitenav > a[href$="/studies"] { display: none; }
   .sitenav > a[href*="marola-research"] { display: none; }
+  .sitenav > a[href$="partners.html"] { display: none; }
   .gh .gh-name, .gh .gh-star { display: none; }
   .gh svg, .li-mark { width: 18px; height: 18px; }
   .bar { padding: 7px 16px 8px; gap: 6px 12px; }
