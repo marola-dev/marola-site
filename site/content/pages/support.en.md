@@ -7,7 +7,7 @@ marola is free, open source, and runs without advertisements or tracking of its 
 
 ## The ledger, not a pitch
 
-Hosting costs zero on the Cloudflare and GitHub Actions free tiers. Receipts and development progress are public in [the repository on GitHub](https://github.com/marola-dev/marola).
+marola.dev runs on one KVM 4 virtual machine at Hostinger, in Brazil, and the checks run on GitHub Actions' free tier. Receipts and development progress are public in [the repository on GitHub](https://github.com/marola-dev/marola).
 
 ## Channels
 

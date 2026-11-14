@@ -58,6 +58,8 @@ o nome disso é monólito distribuído. monólito porque funciona como uma peça
 
 a gente fez assim por dois motivos. o primeiro: boa parte do código é escrita e mantida com o Claude, da Anthropic, tanto num Claude Project quanto no Claude Code pelo terminal. o guarda-chuva com submódulos ajuda nisso: o Claude enxerga o projeto inteiro de cima, com os planos e as regras por escrito num lugar só, e mexe num repositório pequeno de cada vez, com os testes daquele repositório. o segundo: cada parte também anda sozinha, até certo ponto. quem só quer os dados de balneabilidade pode usar o marola-oods sem o resto, e um erro num repositório não derruba os outros. uma parte nunca usa o código da outra direto: ela pega uma versão publicada e só troca de versão quando decide trocar.
 
+o site roda num servidor nosso: uma máquina virtual KVM 4 alugada da [Hostinger](https://www.hostinger.com/), no Brasil, configurada com [NixOS](https://nixos.org/). a mesma máquina entrega as páginas, os quadros das praias e os pedaços do mapa de fundo, sem CDN nem outra empresa no meio. ela fica no Brasil porque alguns órgãos estaduais só respondem a endereços brasileiros.
+
 ## Claude
 
 boa parte do código do marola é escrita com o Claude, o assistente de IA da Anthropic, num Claude Project: um espaço no claude.ai em que ele lê os repositórios, abre pull requests e conversa com a gente em threads. as configurações desse projeto estão num arquivo aberto, o [CLAUDE_PROJECT.config.md](https://github.com/marola-dev/marola/blob/main/CLAUDE_PROJECT.config.md) (em inglês): as instruções que o Claude segue, os repositórios que ele lê, o ambiente em que ele roda e as rotinas que ele executa sozinho. qualquer pessoa pode ler o arquivo ou montar um projeto igual a partir dele.
