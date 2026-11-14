@@ -14,8 +14,8 @@ ref="${1:?usage: scripts/pages_parity.sh <reference-dir>}"
 
 # What marola-pages writes: Site.all (every slug in both languages) and Meta.files.
 expected=(
-  news.html about.html contact.html members.html support.html privacy.html takedown.html contact-sent.html 404.html
-  en/news.html en/about.html en/contact.html en/members.html en/support.html en/privacy.html en/takedown.html
+  news.html about.html contact.html members.html support.html privacy.html takedown.html partners.html contact-sent.html 404.html
+  en/news.html en/about.html en/contact.html en/members.html en/support.html en/privacy.html en/takedown.html en/partners.html
   en/contact-sent.html en/404.html
   robots.txt sitemap.xml llms.txt humans.txt .well-known/security.txt
 )

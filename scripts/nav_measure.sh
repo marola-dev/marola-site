@@ -30,7 +30,7 @@ cp -r "$root/dist/." "$tmp/"
 cat >"$tmp/measure.html" <<'HTML'
 <!doctype html><meta charset=utf-8><pre id=out>wait</pre>
 <script>
-const pages = ["about", "contact", "news", "members", "support", "privacy", "takedown"]
+const pages = ["about", "contact", "news", "members", "support", "privacy", "takedown", "partners"]
   .flatMap((p) => [p + ".html", "en/" + p + ".html"]);
 const width = Number(new URLSearchParams(location.search).get("w")) || 390;
 const lines = [];

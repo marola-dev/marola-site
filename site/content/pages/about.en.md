@@ -87,6 +87,10 @@ The emergency button idea came from [swell-floripa](https://swell-floripa.vercel
 
 The wave sound is a recording by Luftrum ([freesound](https://freesound.org/s/48412/), [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)), looped by Porrumentzio for [Blanket](https://github.com/rafaelmardojai/blanket).
 
+Aleksei Vesnin ([@aleskiontherun](https://github.com/aleskiontherun)), of [OpenDiving](https://github.com/opendiving/opendiving), welcomed marola as a partner app.
+
+Pedro Veras Guimarães ([@pvguima](https://github.com/pvguima)) gave his time, kindness and attention to explain wave physics to marola's founder.
+
 ## How to help
 
 Use the map and tell us when it is wrong. Tell us what you see in the water, like jellyfish or a missing beach. Open an [issue](https://github.com/marola-dev/marola/issues), in Portuguese or English. The code, the plans and every decision are on [GitHub](https://github.com/marola-dev/marola), and [the docs](https://docs.marola.dev/) show what works today and what is still a plan.

@@ -22,7 +22,7 @@ Three parts of the code draw what a visitor sees:
 
 - The map page is the Elm page: `front/src` (the views) and `front/js` (the MapLibre and WebGL
   glue, reached through `front/ports.js`).
-- The static pages (about, support, contact, news, members, privacy, takedown, 404) are rendered
+- The static pages (about, support, contact, news, members, privacy, takedown, partners, 404) are rendered
   by `back/pages` from Markdown. `back/pages/src/Marola/Pages/Layout.hs` is their head, top bar, page bar and
   footer.
 - The study pages (`/submit`, `/studies`, `/studies/<id>`, `/account`, `/report/<id>`) are
@@ -569,7 +569,7 @@ pages](#no-inline-style-no-script-on-content-pages)). Each layout mirrors `View/
 - **Message page** (a refusal or a failure from the server): the eyebrow "marola", the title, and
   one sentence as the lede.
 - **Footer on a content page**: the same `.footer` as a plain block. The privacy sentence, then
-  three links, "submit", "privacy", "takedown", with a literal `·` between them, then the credit
+  four links, "submit", "privacy", "takedown", "partners", with a literal `·` between them, then the credit
   line (`p.credit`) as on the map page, its "crew" link going to the members page in the page's
   language. Links are `--accent` on `--surface` (10.35:1).
 

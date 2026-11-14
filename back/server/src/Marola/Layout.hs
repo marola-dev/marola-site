@@ -308,7 +308,8 @@ sectionKey s =
       ("members", "nav.members"),
       ("support", "nav.donate"),
       ("privacy", "footer.privacy_page"),
-      ("takedown", "footer.takedown")
+      ("takedown", "footer.takedown"),
+      ("partners", "footer.partners")
     ]
 
 -- | @p-studies@, @p-submit@: what the style sheet tells one page from another by. A study's address
@@ -356,7 +357,9 @@ page loc hd mainNodes =
                         text " · ",
                         el "a" [attr "href" (path lang "privacy")] [text (t loc "footer.privacy_page")],
                         text " · ",
-                        el "a" [attr "href" (path lang "takedown")] [text (t loc "footer.takedown")]
+                        el "a" [attr "href" (path lang "takedown")] [text (t loc "footer.takedown")],
+                        text " · ",
+                        el "a" [attr "href" (path lang "partners")] [text (t loc "footer.partners")]
                       ],
                     credit loc
                   ]

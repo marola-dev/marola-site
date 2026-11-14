@@ -168,7 +168,7 @@ run base inbox = do
 
   -- Every page of both languages, and the files that are not pages: status, content type, language, and
   -- that each site link on a page (the nav above all) answers 200. A page that moves or goes missing fails here.
-  let slugs = ["about", "news", "contact", "members", "support", "contact-sent"] :: [Text]
+  let slugs = ["about", "news", "contact", "members", "support", "partners", "contact-sent"] :: [Text]
   links <- fmap concat . forM [("", "pt-BR"), ("/en", "en")] $ \(prefix, lang) ->
     fmap concat . forM slugs $ \slug -> do
       let p = prefix <> "/" <> slug <> ".html"
