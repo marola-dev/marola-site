@@ -22,12 +22,18 @@ The repo holds two builds of the site:
 >
 > What changes for you as a contributor:
 >
-> - New code goes in `front/` (Elm 0.19.1, elm-format) or `back/` (GHC 9.6, ormolu, hspec). Do not
->   add new JavaScript, except a port or a small FFI file in `front/js/` that says why it exists.
+> - New code is Elm or Haskell. The page goes in `front/` (Elm 0.19.1, elm-format); the server, the
+>   pages and every script, check and harness go in `back/` (GHC 9.6, ormolu, hspec). Do not add
+>   new JavaScript: [ADR 0007](docs/adr/0007-elm-or-haskell-hard-rule.md) allows it only where
+>   nothing else can run, and every JavaScript file git tracks is on
+>   [`scripts/js-allowlist.tsv`](scripts/js-allowlist.tsv) with the reason it cannot be Elm or
+>   Haskell (`just js-check` fails on a file that is not listed).
 > - Data errors are values (`Result`, `Maybe`), not exceptions or partial functions. Every effect
->   leaves Elm as data through a port.
-> - Tools come from `nix develop path:.`. CI runs `cabal test all`, `npm test` (elm-test), the
->   built-page check and the server smoke test.
+>   leaves Elm as data: elm/http and `Browser.Dom` for requests and focus, a port for what
+>   JavaScript must do.
+> - Tools come from `nix develop path:.`. CI runs the devkit's static, python and agents jobs plus
+>   the Haskell and Elm jobs (ormolu, `cabal test all`, elm-format, elm-test, the built-page check,
+>   the design check and the JS check); `just quality` runs the same checks locally.
 >
 > What is still left: the chat widget is not ported yet. `site/static/` stays the live site until the
 > owners switch over. Then come the other marola-dev repos, each with its own ADR.
@@ -37,17 +43,19 @@ The repo holds two builds of the site:
 | Part | What it does | Where |
 |---|---|---|
 | Map page | The map, the beach list and card, the layer rail and the footer, in Elm, bundled by Vite. Effects go through ports to a small JavaScript shell. MapLibre GL JS 6.17.0 over the site's own base map (a style, glyphs and one PMTiles file cut from a Protomaps build of OpenStreetMap; [ADR 0006](docs/adr/0006-self-hosted-basemap.md)), trails from OpenStreetMap | [`front/`](front) |
-| Static pages | About, support, contact, news, members, privacy, takedown, partners and 404, in pt-BR (at the root) and English (under `en/`), rendered at build time from Markdown by a Haskell program | [`back/pages`](back/pages), [`site/content`](site/content) |
+| Static pages | About, support, contact, contact-sent, news, members, privacy, takedown, partners and 404, in pt-BR (at the root) and English (under `en/`), rendered at build time from Markdown by a Haskell program | [`back/pages`](back/pages), [`site/content`](site/content) |
 | Server | Haskell (warp, SQLite). Serves the files, sends the security headers, takes the contact form, the GitHub login and the study API and pages. Listens on `127.0.0.1` behind nginx | [`back/server`](back/server) |
 | Study submission | Anyone with a GitHub account of 7 days or more publishes a study as a PDF with metadata. It shows the notice "not reviewed, not medical advice". The board can hide a study | [ADR 0004](docs/adr/0004-study-submission.md), [board runbook](docs/6-board.md) |
+| Tools | The checks and harnesses in Haskell (`marola-tools`): the design check, the JS allowlist check, the offline board fixtures, the Elm test fixture generator, the fake GitHub and the smoke suites (server, package, studies, submit, board) | [`back/tools`](back/tools) |
 | Visual system | Tokens, type, components and contrast. `just design-check` compares it with the stylesheet | [`DESIGN.md`](DESIGN.md), [`front/public/style.css`](front/public/style.css) |
 | Nix package | The server, the pages and the map page as one package that builds with no network | [`nix/package.nix`](nix/package.nix), [`flake.nix`](flake.nix) |
 
 The decisions are in [ADR 0005](docs/adr/0005-elm-and-haskell.md) (Elm and Haskell; it supersedes
-the language choices of ADRs 0001 to 0003, whose MapLibre, hosting and page decisions stand) and
-[ADR 0004](docs/adr/0004-study-submission.md) (study submission) and
+the language choices of ADRs 0001 to 0003, whose MapLibre, hosting and page decisions stand),
+[ADR 0004](docs/adr/0004-study-submission.md) (study submission),
 [ADR 0006](docs/adr/0006-self-hosted-basemap.md) (the base map is the site's own: Protomaps tiles in one
-PMTiles file on the host).
+PMTiles file on the host) and [ADR 0007](docs/adr/0007-elm-or-haskell-hard-rule.md) (Elm or Haskell;
+JavaScript only when it is 100 % necessary, held by the allowlist check).
 
 ### Architecture
 
@@ -99,7 +107,7 @@ just quality    # every check CI runs that needs no docker: the Elm and Haskell 
 The parts have their own recipes: `just front-test` (elm-test), `just back-test` (the pages' and the
 server's hspec suites), `just front-fmt` and `just back-fmt` (elm-format and ormolu), `just front-check` (the built page in a fake DOM, no browser),
 `just server-smoke` (the built server on a free port), `just pages-parity <dir>` (the pages against
-another build) and `just design-check`. `just --list` shows all of them.
+another build), `just design-check` and `just js-check` (both `marola-tools`, in Haskell). `just --list` shows all of them.
 `scripts/nav_measure.sh` measures the phone nav in a real browser. It needs a Chromium and is not in
 `just quality`.
 
@@ -110,8 +118,11 @@ nix build .#default     # result/bin/marola-server and result/share/marola/dist
 just package-smoke      # starts that server and checks four URLs
 ```
 
-The package has not been built since the move to Elm and Haskell: its npm and Elm hashes are
-placeholders until a first build with network ([docs/5-hosting.md](docs/5-hosting.md#build-with-nix)).
+The build has no network: the Haskell packages come from nixpkgs' Hackage set, the npm packages from
+`front/package-lock.json` and the Elm packages from [`nix/elm-srcs.nix`](nix/elm-srcs.nix) and
+[`nix/registry.dat`](nix/registry.dat), all with real hashes confirmed by `nix build` on 2026-11-12
+([docs/5-hosting.md](docs/5-hosting.md#build-with-nix)). After a change to `front/package-lock.json`
+the npm hash is stale: the next `nix build` fails and prints the right one.
 
 ## Deploy it
 
@@ -143,6 +154,7 @@ one). `404.html` forwards `marola.dev/docs/*` to [docs.marola.dev](https://docs.
 | Piece | Where |
 |---|---|
 | The new site | [`front/`](front) (Elm), [`back/`](back) (Haskell), [`cabal.project`](cabal.project) |
+| The tools | [`back/tools/`](back/tools) (`marola-tools`), and the allowlist it checks: [`scripts/js-allowlist.tsv`](scripts/js-allowlist.tsv) |
 | The pages' text | [`site/content/`](site/content), the chrome words in [`site/i18n/`](site/i18n) |
 | The legacy page | [`site/static/`](site/static) |
 | The areas | [`site/areas.json`](site/areas.json) |
