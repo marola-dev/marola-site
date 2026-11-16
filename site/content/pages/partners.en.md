@@ -1,5 +1,5 @@
 title: partners
-description: Who walks with marola: Leave No Trace, OpenDiving and piabrota, what each one does and how to become a partner.
+description: Who walks with marola: Leave No Trace, OpenDiving, Ouroboric and piabrota, what each one does and how to become a partner.
 
 ## Partners
 
@@ -28,6 +28,12 @@ Leave No Trace Seven Principles © 1999 by the Leave No Trace Center for Outdoor
 ![OpenDiving](/vendor/opendiving/icon.svg 24x24)
 
 [OpenDiving](https://opendiving.app) is an open-source dive logbook ([code on GitHub](https://github.com/opendiving/opendiving)). marola is on the project's list of partner apps, and the two link to each other: marola says where and when the water is good, OpenDiving keeps the dive.
+
+## Ouroboric
+
+![Ouroboric](/vendor/ouroboric/ouroboric-icon-dark.svg 100x100)
+
+[Ouroboric](https://ouroboric.dev) ([code on GitHub](https://github.com/ouroboric-dev)) is Bruno Valerio's ([@brunogbv](https://github.com/brunogbv), [valerio.dev](https://valerio.dev)) open factory: it builds Yggdrasil, which builds software with agents while people steer the direction, and every run makes the factory measurably better — in the open, like marola.
 
 ## piabrota
 
