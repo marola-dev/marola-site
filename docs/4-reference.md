@@ -36,9 +36,9 @@ this is the cost and provenance side:
   ([Base map pin](#base-map-pin), [5-hosting](5-hosting.md#the-base-map)).
 - **NASA GIBS** (the four satellite raster layers): free, keyless, public tiles, fetched only when
   a visitor turns one of those layers on. No account and no cost.
-- **Spotify** (the new site's playlist player): the embed of GREAT RESET, the playlist
-  room.piabrota.art plays (`Config.playlist`), loaded in an iframe only when a visitor presses the
-  Spotify button. No account and no cost for marola; playing in full needs the visitor's own login.
+- **Spotify** (the new site's playlist player): the embed of WELCOME TO MAROLA, the marola playlist
+  (`Config.playlistEmbed`), loaded in an iframe only when a visitor presses the Spotify button. No
+  account and no cost for marola; playing in full needs the visitor's own login.
 
 ## Base map pin
 
