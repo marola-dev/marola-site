@@ -2,6 +2,17 @@
  "schema": 1,
  "runs": [
   {
+   "run_id": "44367502131",
+   "run_url": "https://github.com/marola-dev/marola-app/actions/runs/44367502131",
+   "when": "2026-11-18T18:21:01Z",
+   "lat": -27.6733,
+   "lon": -48.47,
+   "model": "llama3.2:1b",
+   "ok": false,
+   "top_pick": null,
+   "review": null
+  },
+  {
    "run_id": "44150366870",
    "run_url": "https://github.com/marola-dev/marola-app/actions/runs/44150366870",
    "when": "2026-11-17T18:49:00Z",
@@ -741,23 +752,6 @@
    },
    "review": {
     "score": 65,
-    "verdict": "approve"
-   }
-  },
-  {
-   "run_id": "36503016787",
-   "run_url": "https://github.com/marola-dev/marola/actions/runs/36503016787",
-   "when": "2026-09-29T00:27:48Z",
-   "lat": -27.6733,
-   "lon": -48.47,
-   "model": "llama3.2:1b",
-   "ok": true,
-   "top_pick": {
-    "name": "Praia da Armação",
-    "score": 75
-   },
-   "review": {
-    "score": 80,
     "verdict": "approve"
    }
   }
