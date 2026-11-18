@@ -362,7 +362,7 @@ Fjalla name or numeral is what the eye lands on, Inter explains it, mono dates a
   hides the muted section and the links to members, studies, research and contribute (about links
   them), and it scrolls sideways before it wraps.
 - **Tool row** (`div.bar`): under the top bar, `--bg`. Row one: the controls at left (area, the
-  Instagram link, days, near me, spotify, list), the legend at right. Row two: the hour label, the
+  Instagram link, days, near me, list), the legend at right. Row two: the hour label, the
   slider (up to 30 rem), and the one-line tagline at the right. Under 900 px the tagline is kept
   for screen readers only and the legend takes a third row that scrolls sideways. On phones the
   controls are one row that does not wrap, and the action buttons keep only their icon; the hour
@@ -408,9 +408,10 @@ Fjalla name or numeral is what the eye lands on, Inter explains it, mono dates a
   (Inter 600, 11 px, `--tr-eyebrow`), each route a full-width row with its difficulty as a small
   band pill, its name, and its length in mono at the right. The picked route takes `--accent-soft`.
   The foot (source, IBGE code) is mono 11 px.
-- **Player** (`#player`): the playlist's frame in a `--surface` panel that hangs under the tool
-  row at the right, clear of the layer rail, with a mono link to open it in Spotify. Under 900 px
-  it starts under the emergency button, and on a phone it runs from the left gutter to the rail.
+- **Player** (`#player`): the playlist's frame in a `--surface` panel that hangs under the layer
+  buttons of the rail, over the map, as wide as the compact embed allows (`min(300px, ...)`) and
+  80 px high, with a mono link to open it in Spotify. The rail scrolls when the two together are
+  taller than the map.
 - **Close button**: the control as a borderless 32 px circle in `--muted`, `--raised` on hover.
   On a phone the card's close button is sticky at the top right of its sheet, so it stays in reach
   while the card scrolls.

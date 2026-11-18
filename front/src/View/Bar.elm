@@ -17,24 +17,36 @@ import Ui exposing (attr, cls, idAttr)
 import Words
 
 
-{-| The iframe exists only while the player is open, so Spotify is not contacted before a click. Spotify's
-compact embed carries its own link to the playlist, so the player is the iframe alone.
+{-| The tool row under the top bar: the controls, the hour slider with its legend, the tagline.
 -}
-player : Model -> Html Msg
-player model =
-    if model.playlistOpen then
-        Html.section [ idAttr "player", cls "player", attr "aria-label" (Words.t model "player.label") ]
-            [ Html.iframe
-                [ attr "src" Config.playlistEmbed
-                , attr "title" (Words.t model "player.label")
-                , attr "allow" "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                , attr "loading" "lazy"
+tools : Model -> Html Msg
+tools model =
+    let
+        picked =
+            Maybe.map .id model.area |> Maybe.withDefault ""
+    in
+    Html.div [ cls "bar" ]
+        [ Html.div [ cls "controls" ]
+            [ Html.Keyed.node "select"
+                [ idAttr "area"
+                , attr "aria-label" (Words.t model "controls.area")
+                , Html.Events.on "change" (D.map AreaPicked Html.Events.targetValue)
                 ]
-                []
+                (List.map (\a -> areaOption (a.id == picked) a) model.areas)
+            , insta model
+            , days model
+            , control model "near" "locate" (Words.t model "controls.near") "controls.near_title" [ Words.pressed (model.here /= Nothing) ] NearPressed
+            , control model
+                "toggle-list"
+                "list"
+                (Words.t model "controls.list")
+                ""
+                [ attr "aria-controls" "list", Words.expanded (model.panel == BeachList) ]
+                ListToggled
             ]
-
-    else
-        Html.section ([ idAttr "player", cls "player" ] ++ Ui.hidden True) []
+        , hourbar model
+        , Html.p [ cls "tagline" ] [ Html.text (Words.t model "header.tagline") ]
+        ]
 
 
 areaOption : Bool -> Area -> ( String, Html Msg )
@@ -232,38 +244,4 @@ hourbar model =
             ]
             []
         , legend model
-        ]
-
-
-{-| The tool row under the top bar: the controls, the hour slider with its legend, the tagline.
--}
-tools : Model -> Html Msg
-tools model =
-    let
-        picked =
-            Maybe.map .id model.area |> Maybe.withDefault ""
-    in
-    Html.div [ cls "bar" ]
-        [ Html.div [ cls "controls" ]
-            [ Html.Keyed.node "select"
-                [ idAttr "area"
-                , attr "aria-label" (Words.t model "controls.area")
-                , Html.Events.on "change" (D.map AreaPicked Html.Events.targetValue)
-                ]
-                (List.map (\a -> areaOption (a.id == picked) a) model.areas)
-            , insta model
-            , days model
-            , control model "near" "locate" (Words.t model "controls.near") "controls.near_title" [ Words.pressed (model.here /= Nothing) ] NearPressed
-            , control model "playlist" "music" (Words.t model "controls.playlist") "controls.playlist_title" [ Words.pressed model.playlistOpen, attr "aria-controls" "player" ] PlaylistPressed
-            , control model
-                "toggle-list"
-                "list"
-                (Words.t model "controls.list")
-                ""
-                [ attr "aria-controls" "list", Words.expanded (model.panel == BeachList) ]
-                ListToggled
-            ]
-        , hourbar model
-        , Html.p [ cls "tagline" ] [ Html.text (Words.t model "header.tagline") ]
-        , player model
         ]

@@ -527,14 +527,15 @@ async function nearDenied() {
 
 async function playlist() {
   const embed = 'https://open.spotify.com/embed/playlist/7gWbjcgkq0UQJzp70tfewB?theme=0';
-  ok(!$('#player iframe') && $('#playlist').getAttribute('aria-pressed') === 'false', 'no Spotify iframe before the playlist button is pressed');
-  await click($('#playlist'));
+  const btn = () => document.querySelector('[data-toggle="playlist"]');
+  ok(!$('#player iframe') && btn().getAttribute('aria-pressed') === 'false', 'no Spotify iframe before the playlist button is pressed');
+  await click(btn());
   const frame = $('#player iframe');
   ok(frame && frame.getAttribute('src') === embed, 'the playlist button opens the WELCOME TO MAROLA embed', frame && frame.getAttribute('src'));
-  ok($('#playlist').getAttribute('aria-pressed') === 'true', 'the playlist button reads as pressed while the player is open');
+  ok(btn().getAttribute('aria-pressed') === 'true', 'the playlist button reads as pressed while the player is open');
   const csp = /http-equiv="Content-Security-Policy" content="([^"]*)"/.exec(fs.readFileSync(path.join(DIST, 'index.html'), 'utf8'))[1];
   ok(/(^|; )frame-src https:\/\/open\.spotify\.com(;|$)/.test(csp), 'the CSP lets the page frame open.spotify.com and nothing else', csp);
-  await click($('#playlist'));
+  await click(btn());
   ok(!$('#player iframe'), 'pressing it again removes the iframe');
   const eye = $('a.piabrota');
   ok(eye && eye.getAttribute('href') === 'https://piabrota.art' && $('a.piabrota svg'), 'the piabrota eye is an inline svg linking to piabrota.art');

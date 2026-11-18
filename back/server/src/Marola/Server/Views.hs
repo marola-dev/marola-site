@@ -196,8 +196,13 @@ submitPage loc csrf values errors =
               fieldNode
                 "repository"
                 (tr loc "Repositório do código" "Code repository")
-                (tr loc "Um link https. Pode ficar vazio." "An https link. May be empty.")
+                (tr loc "Obrigatório: o link https do repositório no GitHub, https://github.com/autor/projeto." "Required: the https link of the repository on GitHub, https://github.com/author/project.")
                 (input "repository" "url" linkMax),
+              fieldNode
+                "archive"
+                (tr loc "Arquivo do estudo" "The study's archive")
+                (tr loc "Obrigatório: o link https do estudo no Zenodo, no arXiv ou no aiXiv." "Required: the https link of the study on Zenodo, arXiv or aiXiv.")
+                (input "archive" "url" linkMax),
               fieldNode
                 "licence"
                 (tr loc "Licença do arquivo" "Licence of the file")
@@ -449,6 +454,7 @@ studyPage loc r = case r.status of
                      else [h3 (tr loc "Fontes" "Sources"), el "ul" [] [el "li" [] [outside u u] | u <- s.sources]]
                  )
               <> maybe [] (\repo -> [h3 (tr loc "Código" "Code"), p_ [outside repo repo]]) s.repository
+              <> maybe [] (\a -> [h3 (tr loc "Arquivo" "Archive"), p_ [outside a a]]) s.archive
               <> [ h3 (tr loc "Licença" "Licence"),
                    p_ [text (licenceName s.licence)],
                    h3 (tr loc "Declaração sobre IA" "AI declaration"),

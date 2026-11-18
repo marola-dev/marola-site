@@ -32,6 +32,8 @@ form pdf =
     partBS "abstract" (B.concat (replicate 10 "A smoke test study. ")),
     partBS "area" "rio",
     partBS "topic" "data",
+    partBS "repository" "https://github.com/marola-dev/marola-site",
+    partBS "archive" "https://zenodo.org/records/23224155",
     partBS "rights" "true",
     partBS "ai_contribution" "none",
     pdfPart "smoke.pdf" pdf

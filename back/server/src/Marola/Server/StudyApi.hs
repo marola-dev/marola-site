@@ -106,7 +106,7 @@ data Upload = Upload
 fieldNames :: Set.Set Text
 fieldNames =
   Set.fromList
-    ["title", "authors", "abstract", "area", "topic", "sources", "repository", "licence", "rights", "ai_models", "ai_contribution", "ai_process"]
+    ["title", "authors", "abstract", "area", "topic", "sources", "repository", "archive", "licence", "rights", "ai_models", "ai_contribution", "ai_process"]
 
 -- | A text part, at most 'maxFieldBytes', strict UTF-8.
 readText :: M.Part -> IO (Either Text Text)
@@ -443,7 +443,8 @@ skill =
           "| `area` | " <> j areaValues <> " |",
           "| `topic` | " <> j topicValues <> " |",
           "| `sources` | 0 to 10 https links, one per line |",
-          "| `repository` | optional https link |",
+          "| `repository` | required: the https link of the study's GitHub repository, `https://github.com/<owner>/<repo>` |",
+          "| `archive` | required: the study's archive, an https link on Zenodo, arXiv (`https://arxiv.org/abs/...`), aiXiv, or a Zenodo DOI (`https://doi.org/10.5281/zenodo...`) |",
           "| `licence` | " <> j licenceValues <> ". Default `CC-BY-4.0` |",
           "| `rights` | `true`: you have the right to publish this file under that licence |",
           "| `ai_models` | optional, up to 300 characters |",
@@ -469,6 +470,7 @@ skill =
           "curl -sS -H \"Authorization: Bearer $MAROLA_KEY\" \"https://marola.dev/api/v1/studies?dry_run=1\" \\",
           "  -F title=\"Enterococcus at Leblon, 2025\" -F \"authors=Ana Silva | 0000-0002-1825-0097\" \\",
           "  -F \"abstract=<abstract.txt\" -F area=rio -F topic=water-quality -F rights=true \\",
+          "  -F repository=https://github.com/example/study -F archive=https://zenodo.org/records/12345 \\",
           "  -F ai_contribution=none -F pdf=@study.pdf",
           "```",
           "",
@@ -483,6 +485,7 @@ skill =
           "",
           "`400` returns `{\"errors\":[{\"field\",\"code\",\"message\"}]}` with every error at once. The codes are",
           "`required`, `too_short`, `too_long`, `too_many`, `invalid`, `unknown_value`, `bad_name`, `bad_orcid`, `bad_link`,",
+          "`not_github`, `bad_archive`,",
           "`must_be_true`, `invalid_utf8`, `duplicate_field`, `unknown_field`, `too_many_parts`, `malformed_multipart`,",
           "and for the file `not_pdf`, `truncated`, `active_content`, `pdf_encrypted`, `pdf_unscannable`.",
           "`401` bad or missing key. `403` the account is under 7 days old. `409` this account sent this file already (the answer has the old `id`).",

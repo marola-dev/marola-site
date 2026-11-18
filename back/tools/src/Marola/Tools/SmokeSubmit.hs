@@ -117,6 +117,8 @@ run base pdfPath expectedSha = do
                partBS "abstract" (B.concat (replicate 5 "A smoke test study sent through the form. ")),
                partBS "area" "rio",
                partBS "topic" "data",
+               partBS "repository" "https://github.com/marola-dev/marola-site",
+               partBS "archive" "https://zenodo.org/records/23224155",
                partBS "rights" "true",
                partBS "ai_contribution" "none",
                (partFileRequestBody "pdf" "smoke.pdf" (H.RequestBodyBS pdf)) {partContentType = Just "application/pdf"}

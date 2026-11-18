@@ -31,6 +31,8 @@ goodFields =
     ("area", "rio"),
     ("topic", "water-quality"),
     ("sources", "https://example.org/data"),
+    ("repository", "https://github.com/example/r"),
+    ("archive", "https://zenodo.org/records/23224155"),
     ("rights", "true"),
     ("ai_contribution", "none")
   ]
@@ -145,7 +147,7 @@ spec = describe "study api" $ do
     key <- newAccount site 1 "ana" 30
     r <- submit site key [("title", "no"), ("authors", "Ana | 0000-0002-1825-0098"), ("area", "mars"), ("rights", "false"), ("ai_contribution", "drafting")] "not a pdf"
     r.status `shouldBe` 400
-    forM_ [("title", "too_short"), ("authors", "bad_orcid"), ("abstract", "required"), ("area", "unknown_value"), ("topic", "required"), ("rights", "must_be_true"), ("ai_process", "required"), ("pdf", "not_pdf")] $ \e ->
+    forM_ [("title", "too_short"), ("authors", "bad_orcid"), ("abstract", "required"), ("area", "unknown_value"), ("topic", "required"), ("repository", "required"), ("archive", "required"), ("rights", "must_be_true"), ("ai_process", "required"), ("pdf", "not_pdf")] $ \e ->
       errorCodes r `shouldContain` [e]
     missing <- sendBody site (Just key) "/api/v1/studies" (studyBody goodFields Nothing)
     errorCodes missing `shouldBe` [("pdf", "required")]
@@ -154,6 +156,24 @@ spec = describe "study api" $ do
     cut <- submit site key goodFields (BS.take (BS.length validPdf - 24) validPdf)
     errorCodes cut `shouldBe` [("pdf", "truncated")]
     filesUnder site.config.studies >>= (`shouldBe` [])
+
+  it "the repository must be a GitHub repository and the archive a Zenodo, arXiv or aiXiv link" $ withSite $ \site -> do
+    key <- newAccount site 1 "ana" 30
+    let with field value = [(k, v) | (k, v) <- goodFields, k /= field] <> [(field, value)]
+    notHttps <- submit site key (with "repository" "http://github.com/example/r") validPdf
+    errorCodes notHttps `shouldContain` [("repository", "bad_link")]
+    notRepo <- submit site key (with "repository" "https://example.org/r") validPdf
+    errorCodes notRepo `shouldContain` [("repository", "not_github")]
+    noPath <- submit site key (with "repository" "https://github.com/example") validPdf
+    errorCodes noPath `shouldContain` [("repository", "not_github")]
+    query <- submit site key (with "repository" "https://github.com/example/r?x=1") validPdf
+    errorCodes query `shouldContain` [("repository", "not_github")]
+    badArchive <- submit site key (with "archive" "https://example.org/paper") validPdf
+    errorCodes badArchive `shouldContain` [("archive", "bad_archive")]
+    doi <- submit site key (with "archive" "https://doi.org/10.5281/zenodo.23224155") validPdf
+    doi.status `shouldBe` 201
+    arxiv <- dryRun site key (studyBody (with "archive" "https://arxiv.org/abs/2611.12345") (Just validPdf))
+    arxiv.status `shouldBe` 200
 
   it "the same file from the same account is a 409 that names the old id; another account may send it" $ withSite $ \site -> do
     key <- newAccount site 1 "ana" 30

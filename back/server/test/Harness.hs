@@ -303,6 +303,7 @@ submission =
       topic = WaterQuality,
       sources = ["https://example.org/a", "https://example.org/b"],
       repository = Just "https://github.com/example/r",
+      archive = Just "https://zenodo.org/records/23224155",
       licence = CcBy40,
       aiModels = "",
       aiContribution = NoAi,
