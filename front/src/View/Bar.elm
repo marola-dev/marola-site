@@ -33,7 +33,6 @@ tools model =
                 , Html.Events.on "change" (D.map AreaPicked Html.Events.targetValue)
                 ]
                 (List.map (\a -> areaOption (a.id == picked) a) model.areas)
-            , insta model
             , days model
             , control model "near" "locate" (Words.t model "controls.near") "controls.near_title" [ Words.pressed (model.here /= Nothing) ] NearPressed
             , control model
@@ -56,41 +55,6 @@ areaOption selected a =
         [ attr "value" a.id, attr "title" a.name, attr "aria-label" a.name, Ui.flag "selected" selected ]
         [ Html.text (Config.areaCode a.id a.name) ]
     )
-
-
-insta : Model -> Html Msg
-insta model =
-    let
-        handle =
-            model.area |> Maybe.andThen (\a -> Config.instagram a.id)
-
-        city =
-            Maybe.map .name model.area |> Maybe.withDefault ""
-    in
-    case handle of
-        Nothing ->
-            Html.a ([ idAttr "insta", cls "insta" ] ++ Ui.hidden True) []
-
-        Just "" ->
-            let
-                soon =
-                    Words.ta model "insta.soon" [ I18n.arg "city" city ]
-            in
-            Html.a
-                [ idAttr "insta", cls "insta soon", attr "aria-disabled" "true", attr "aria-label" soon, attr "title" soon ]
-                [ Words.icon "instagram", Html.span [] [ Html.text (Words.t model "nav.soon") ] ]
-
-        Just name ->
-            Html.a
-                [ idAttr "insta"
-                , cls "insta"
-                , attr "href" ("https://www.instagram.com/" ++ name ++ "/")
-                , attr "target" "_blank"
-                , attr "rel" "noopener"
-                , attr "aria-label" (Words.ta model "insta.label" [ I18n.arg "handle" ("@" ++ name) ])
-                , attr "title" (Words.ta model "insta.title" [ I18n.arg "city" city ])
-                ]
-                [ Words.icon "instagram", Html.span [] [ Html.text ("@" ++ name) ] ]
 
 
 monthDay : String -> String

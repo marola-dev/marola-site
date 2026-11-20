@@ -361,8 +361,8 @@ Fjalla name or numeral is what the eye lands on, Inter explains it, mono dates a
   repo link, pushed to the right. Under 1100 px the sections take their own row. On phones that row
   hides the muted section and the links to members, studies, research and contribute (about links
   them), and it scrolls sideways before it wraps.
-- **Tool row** (`div.bar`): under the top bar, `--bg`. Row one: the controls at left (area, the
-  Instagram link, days, near me, list), the legend at right. Row two: the hour label, the
+- **Tool row** (`div.bar`): under the top bar, `--bg`. Row one: the controls at left (area, days,
+  near me, list), the legend at right. Row two: the hour label, the
   slider (up to 30 rem), and the one-line tagline at the right. Under 900 px the tagline is kept
   for screen readers only and the legend takes a third row that scrolls sideways. On phones the
   controls are one row that does not wrap, and the action buttons keep only their icon; the hour

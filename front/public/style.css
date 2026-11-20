@@ -191,7 +191,6 @@ button:active { transform: none; }
 button[aria-pressed="true"], button[aria-expanded="true"] {
   background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
 button[aria-pressed="true"] > .ic, button[aria-expanded="true"] > .ic { color: inherit; }
-.insta > span { font-family: var(--mono); font-size: var(--fs-12); letter-spacing: var(--tr-mono); text-transform: none; }
 /* segmented groups (day, language): a pill track, the picked segment raised (piabrota.art's .designs) */
 .segmented, .lang { display: inline-flex; align-items: center; gap: 2px; padding: 2px; min-height: 34px;
   border-radius: var(--r-control); background: var(--surface); border: 1px solid var(--line); }
@@ -367,8 +366,7 @@ button[aria-pressed="true"] > .ic, button[aria-expanded="true"] > .ic { color: i
 .footer .fold { min-height: 28px; padding: 0 12px 0 10px; gap: 6px; font-size: var(--fs-12); letter-spacing: var(--tr-12); white-space: nowrap; background: var(--bg); }
 .footer .fold[aria-expanded="true"] { background: var(--accent-soft); }
 /* not built yet: reads as a control, muted, and does nothing (no pressed look, no hover lift) */
-.insta.soon, .insta.soon:hover, .footer .fold.soon, .footer .fold.soon:hover { color: var(--muted); border-color: var(--line); cursor: default; transform: none; }
-.insta.soon:hover .ic { color: var(--muted); }
+.footer .fold.soon, .footer .fold.soon:hover { color: var(--muted); border-color: var(--line); cursor: default; transform: none; }
 .fold .pm { position: relative; width: 10px; height: 10px; flex: none; }
 .fold .pm::before, .fold .pm::after { content: ""; position: absolute; left: 0; top: 4px; width: 10px; height: 2px; border-radius: 1px; background: currentColor; }
 .fold .pm::after { transform: rotate(90deg); }
@@ -735,11 +733,11 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
  * motion"): a control keeps its drawn size and takes a bigger hit area from a pseudo-element, so the
  * chrome does not grow over the map. */
 @media (max-width: 640px), (pointer: coarse) {
-  .piabrota, .controls > button, .controls > .insta, .lang button, .lang a, .sos-panel header button { position: relative; }
-  .piabrota::after, .controls > button::after, .controls > .insta::after, .lang button::after, .lang a::after,
+  .piabrota, .controls > button, .lang button, .lang a, .sos-panel header button { position: relative; }
+  .piabrota::after, .controls > button::after, .lang button::after, .lang a::after,
   .sos::after, .card .close::after, .sos-panel header button::after { content: ""; position: absolute; }
   .piabrota::after { inset: -7px; }
-  .controls > button::after, .controls > .insta::after { inset: -5px -3px; }
+  .controls > button::after { inset: -5px -3px; }
   .lang button::after, .lang a::after { inset: -10px -1px -8px; }
   .sos::after, .card .close::after, .sos-panel header button::after { inset: -7px; }
   .navtools .gh, .navtools .li { justify-content: center; min-width: 32px; min-height: 32px; }
@@ -783,7 +781,7 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   .gh .gh-name, .gh .gh-star { display: none; }
   .gh svg, .li-mark { width: 18px; height: 18px; }
   .bar { padding: 7px 16px 8px; gap: 6px 12px; }
-  /* one row on a phone: the day buttons drop their dates, the actions and the Instagram pill keep
+  /* one row on a phone: the day buttons drop their dates and the actions keep
    * only their icon (the label stays for screen readers) */
   .controls { width: 100%; flex-wrap: nowrap; gap: 6px; }
   select, button, .pill, .controls > a { min-height: 36px; }
@@ -791,9 +789,9 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   .controls .segmented { flex: 1 1 auto; min-width: 0; min-height: 36px; }
   .controls .segmented button { flex: 1; min-width: 0; min-height: 30px; padding: 0 6px; overflow: hidden; }
   .controls .segmented button small { display: none; }
-  .controls > button, .controls > .insta { flex: none; width: 36px; padding: 0; }
-  .controls > button .ic, .controls > .insta .ic { width: 17px; height: 17px; }
-  .controls > button > span, .controls > .insta > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .controls > button { flex: none; width: 36px; padding: 0; }
+  .controls > button .ic { width: 17px; height: 17px; }
+  .controls > button > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   /* The slider takes the full row under its label: beside the label it was 74 px wide at 320 px, and
    * it changed width under the finger when the label changed. */
   .bar:has(> .hourbar:not([hidden])) { grid-template-columns: minmax(0, 1fr); grid-template-areas: "controls" "label" "slider" "legend"; row-gap: 4px; }
