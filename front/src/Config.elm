@@ -73,12 +73,12 @@ maxZoom =
     17
 
 
-{-| WELCOME TO MAROLA, the playlist the player opens (Spotify, 2026-11-16). Loaded only once the
-visitor opens the player; the CSP's `frame-src` names this origin alone.
+{-| GREAT RESET, the playlist room.piabrota.art plays (its `assets/config-*.js`). Loaded only once
+the visitor opens the player; the CSP's `frame-src` names this origin alone.
 -}
 playlistEmbed : String
 playlistEmbed =
-    "https://open.spotify.com/embed/playlist/7gWbjcgkq0UQJzp70tfewB?theme=0"
+    "https://open.spotify.com/embed/playlist/2hsuqvhCouatM8DtmKKl7U?theme=0"
 
 
 piabrota : String
