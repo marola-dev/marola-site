@@ -60,6 +60,8 @@ goodFields =
       ("area", "rio"),
       ("topic", "water-quality"),
       ("sources", "https://example.org/data"),
+      ("repository", "https://github.com/example/r"),
+      ("archive", "https://zenodo.org/records/23224155"),
       ("rights", "true"),
       ("ai_contribution", "none")
     ]
@@ -157,6 +159,8 @@ spec = describe "openapi" $ do
     let f = fieldOf "sources"
         base = "https://example.org/"
         link n = base <> text (n - T.length base)
+        repoLink n = "https://github.com/example/" <> text (n - T.length "https://github.com/example/")
+        archiveLink n = "https://zenodo.org/records/" <> text (n - T.length "https://zenodo.org/records/")
         lines'' n = T.intercalate "\n" [base <> T.pack (show i) | i <- [1 .. n]]
     number f "x-max-lines" `shouldBe` sourcesMax
     number f "x-max-line-length" `shouldBe` linkMax
@@ -165,8 +169,17 @@ spec = describe "openapi" $ do
     accepted "sources" (link linkMax) `shouldBe` True
     accepted "sources" (link (linkMax + 1)) `shouldBe` False
     number (fieldOf "repository") "maxLength" `shouldBe` linkMax
-    accepted "repository" (link linkMax) `shouldBe` True
-    accepted "repository" (link (linkMax + 1)) `shouldBe` False
+    accepted "repository" (repoLink linkMax) `shouldBe` True
+    accepted "repository" (repoLink (linkMax + 1)) `shouldBe` False
+    accepted "repository" "https://example.org/r" `shouldBe` False
+    accepted "repository" "https://github.com/example" `shouldBe` False
+    number (fieldOf "archive") "maxLength" `shouldBe` linkMax
+    accepted "archive" (archiveLink linkMax) `shouldBe` True
+    accepted "archive" (archiveLink (linkMax + 1)) `shouldBe` False
+    accepted "archive" "https://example.org/paper" `shouldBe` False
+    accepted "archive" "https://doi.org/10.5281/zenodo.1" `shouldBe` True
+    accepted "archive" "https://arxiv.org/abs/2611.12345" `shouldBe` True
+    accepted "archive" "https://doi.org/10.1234/x" `shouldBe` False
 
   it "the document limits are the validation limits: enums, licence default and the file" $ do
     let values n = strings (jpath ["enum"] (fieldOf n))

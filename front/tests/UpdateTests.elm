@@ -89,7 +89,7 @@ suite =
                     , Expect.equal model.showBeaches False
                     , Expect.equal model.showTrails False
                     , Expect.equal model.loc.language Language.En
-                    , Expect.equal effects [ FetchCatalog Language.PtBr, FetchCatalog Language.En ]
+                    , Expect.equal effects [ FetchCatalog Language.PtBr, FetchCatalog Language.En, FetchCatalog Language.Ja, FetchCatalog Language.ZhHant ]
                     ]
         , test "init ignores a layer whose button is off" <|
             \_ ->
@@ -97,7 +97,7 @@ suite =
                     [ Expect.equal (Tuple.first (Update.init (browser "?layer=wind" []))).layer Layer.Off
                     , Expect.equal (Tuple.first (Update.init (browser "?layer=nonsense" []))).layer Layer.Off
                     ]
-        , test "the page waits for both catalogs, then fetches the areas" <|
+        , test "the page waits for every catalog, then fetches the areas" <|
             \_ ->
                 let
                     ( start, _ ) =
@@ -106,14 +106,21 @@ suite =
                     ( one, first ) =
                         Update.update (CatalogLoaded Language.PtBr (Ok Support.emptyMessages)) start
 
-                    ( both, second ) =
+                    ( two, _ ) =
                         Update.update (CatalogLoaded Language.En (Ok Support.emptyMessages)) one
+
+                    ( three, _ ) =
+                        Update.update (CatalogLoaded Language.Ja (Ok Support.emptyMessages)) two
+
+                    ( all4, fourth ) =
+                        Update.update (CatalogLoaded Language.ZhHant (Ok Support.emptyMessages)) three
                 in
                 all
                     [ Expect.equal first []
-                    , Expect.equal one.catalogsPending 1
-                    , Expect.equal both.catalogsPending 0
-                    , Expect.equal (has second FetchAreas) True
+                    , Expect.equal one.catalogsPending 3
+                    , Expect.equal three.catalogsPending 1
+                    , Expect.equal all4.catalogsPending 0
+                    , Expect.equal (has fourth FetchAreas) True
                     ]
         , test "a catalog that failed is said in the footer, and the page still goes on" <|
             \_ ->
@@ -124,7 +131,7 @@ suite =
                     ( after, _ ) =
                         Update.update (CatalogLoaded Language.En (Err (HttpError 500))) start
                 in
-                all [ Expect.equal after.status (Failed "500 i18n/en.json" False), Expect.equal after.catalogsPending 1 ]
+                all [ Expect.equal after.status (Failed "500 i18n/en.json" False), Expect.equal after.catalogsPending 3 ]
         , test "the area in the link wins over the first" <|
             \_ ->
                 let
@@ -368,6 +375,44 @@ suite =
                     [ Expect.equal on.playlistOpen True
                     , Expect.equal effects []
                     , Expect.equal (Tuple.first (Update.update PlaylistPressed on)).playlistOpen False
+                    ]
+        , test "dragging the player moves it by the pointer's deltas, and the drop stills it" <|
+            \_ ->
+                let
+                    start =
+                        page ""
+
+                    ( gripped, first ) =
+                        Update.update (PlayerDragStarted 100 100) start
+
+                    ( moved, moveEffects ) =
+                        Update.update (PlayerDragged 140 90) gripped
+
+                    ( more, moreEffects ) =
+                        Update.update (PlayerDragged 60 130) moved
+
+                    ( dropped, dropEffects ) =
+                        Update.update PlayerDragEnded more
+                in
+                all
+                    [ Expect.equal first []
+                    , Expect.equal gripped.playerOffset ( 0, 0 )
+                    , Expect.equal moved.playerOffset ( 40, -10 )
+                    , Expect.equal moveEffects [ MovePlayer 40 -10 ]
+                    , Expect.equal more.playerOffset ( -40, 30 )
+                    , Expect.equal moreEffects [ MovePlayer -40 30 ]
+                    , Expect.equal dropped.playerOffset ( -40, 30 )
+                    , Expect.equal dropEffects []
+                    ]
+        , test "a pointer move with no drag on hand changes nothing" <|
+            \_ ->
+                let
+                    ( model, effects ) =
+                        Update.update (PlayerDragged 10 10) (page "")
+                in
+                all
+                    [ Expect.equal model.playerOffset ( 0, 0 )
+                    , Expect.equal effects []
                     ]
         , test "the SOS panel opens, and closing it gives the focus back" <|
             \_ ->

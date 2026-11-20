@@ -405,7 +405,7 @@ async function floripa() {
   const hosts = new Set(fetched.map((u) => u.host));
   ok([...hosts].every((h) => h === '127.0.0.1:8000' || h === 'gibs.earthdata.nasa.gov'), 'every request stays on the origin or NASA GIBS', [...hosts].join());
   const paths = fetched.map((u) => u.pathname);
-  ok(['/data/areas.json', '/i18n/en.json', '/i18n/pt-BR.json', '/data/floripa/latest.json', '/data/trails/floripa.json'].every((p) => paths.includes(p)), 'the page fetched catalogs, areas, latest and trails');
+  ok(['/data/areas.json', '/i18n/en.json', '/i18n/pt-BR.json', '/i18n/ja.json', '/i18n/zh-Hant.json', '/data/floripa/latest.json', '/data/trails/floripa.json'].every((p) => paths.includes(p)), 'the page fetched the four catalogs, areas, latest and trails');
   ok(!JSON.stringify({ ...map.opts, container: null }).includes('pk.'), 'no token in the map options');
 }
 
@@ -417,6 +417,11 @@ async function english() {
   ok($('a[href=news.html]').textContent === 'notícias', 'pressing PT-BR flips the nav to notícias');
   ok(store.get('marola.lang') === 'pt-BR', 'the choice is stored in localStorage marola.lang', store.get('marola.lang'));
   ok(lastUrl().searchParams.get('lang') === 'pt-BR' && document.documentElement.lang === 'pt-BR', 'the URL and <html lang> follow');
+  await click($('button[lang=ja]'));
+  ok($('a[href=news.html]').textContent === 'ニュース' && document.documentElement.lang === 'ja', 'JA switches the nav to ニュース and <html lang>');
+  await click($('button[lang=zh-Hant]'));
+  ok($('a[href=news.html]').textContent === '消息' && document.documentElement.lang === 'zh-Hant', 'zh-Hant switches the nav to 消息 and <html lang>');
+  ok(store.get('marola.lang') === 'zh-Hant', 'the stored choice follows');
 }
 
 async function layerWater() {
@@ -526,15 +531,17 @@ async function nearDenied() {
 }
 
 async function playlist() {
-  const embed = 'https://open.spotify.com/embed/playlist/7gWbjcgkq0UQJzp70tfewB?theme=0';
-  ok(!$('#player iframe') && $('#playlist').getAttribute('aria-pressed') === 'false', 'no Spotify iframe before the playlist button is pressed');
-  await click($('#playlist'));
+  const embed = 'https://open.spotify.com/embed/playlist/2hsuqvhCouatM8DtmKKl7U?theme=0';
+  const btn = () => document.querySelector('[data-toggle="playlist"]');
+  ok(!$('#player iframe') && btn().getAttribute('aria-pressed') === 'false', 'no Spotify iframe before the playlist button is pressed');
+  await click(btn());
   const frame = $('#player iframe');
-  ok(frame && frame.getAttribute('src') === embed, 'the playlist button opens the WELCOME TO MAROLA embed', frame && frame.getAttribute('src'));
-  ok($('#playlist').getAttribute('aria-pressed') === 'true', 'the playlist button reads as pressed while the player is open');
+  ok(frame && frame.getAttribute('src') === embed, 'the playlist button opens the GREAT RESET embed', frame && frame.getAttribute('src'));
+  ok(btn().getAttribute('aria-pressed') === 'true', 'the playlist button reads as pressed while the player is open');
   const csp = /http-equiv="Content-Security-Policy" content="([^"]*)"/.exec(fs.readFileSync(path.join(DIST, 'index.html'), 'utf8'))[1];
   ok(/(^|; )frame-src https:\/\/open\.spotify\.com(;|$)/.test(csp), 'the CSP lets the page frame open.spotify.com and nothing else', csp);
-  await click($('#playlist'));
+  ok($('#player .grip') && $('#player .grip').getAttribute('aria-label') === distJson('i18n/pt-BR.json')['player.drag'], 'the player has a drag grip, named in the page language');
+  await click(btn());
   ok(!$('#player iframe'), 'pressing it again removes the iframe');
   const eye = $('a.piabrota');
   ok(eye && eye.getAttribute('href') === 'https://piabrota.art' && $('a.piabrota svg'), 'the piabrota eye is an inline svg linking to piabrota.art');

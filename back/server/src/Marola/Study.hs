@@ -42,6 +42,8 @@ module Marola.Study
     cleanText,
     validOrcid,
     httpsLink,
+    githubRepo,
+    archiveLink,
     validate,
     urlOf,
     pdfUrlOf,
@@ -89,6 +91,7 @@ data Submission = Submission
     topic :: Topic,
     sources :: [Text],
     repository :: Maybe Text,
+    archive :: Maybe Text,
     licence :: Licence,
     aiModels :: Text,
     aiContribution :: AiContribution,
@@ -274,6 +277,41 @@ httpsLink url = case safeHref url of
     | U.len cleaned > 8 && U.len cleaned <= linkMax && "https://" `T.isPrefixOf` T.toLower cleaned -> Just cleaned
   _ -> Nothing
 
+-- | The prefix, case-insensitive, of an https URL: what follows it in the original text.
+afterCI :: Text -> Text -> Maybe Text
+afterCI prefix url
+  | T.length url >= T.length prefix, T.toLower (T.take (T.length prefix) url) == T.toLower prefix = Just (T.drop (T.length prefix) url)
+  | otherwise = Nothing
+
+-- | A GitHub repository link: @https://github.com/<owner>/<repo>@, the host in any case, one optional
+-- trailing slash, and the owner and the repository made of @A-Za-z0-9-_.@ alone. Returns the link when
+-- it is one; the query string and the fragment make it none, so a link that carries either is refused.
+githubRepo :: Text -> Maybe Text
+githubRepo url = do
+  path <- afterCI "https://github.com/" url
+  let clean = T.dropSuffix "/" path
+  case T.splitOn "/" clean of
+    [owner, repo]
+      | repoName owner && repoName repo -> Just url
+    _ -> Nothing
+  where
+    repoName p = not (T.null p) && T.all (\c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '-' || c == '_' || c == '.') p
+
+-- | The study's archive: a link on Zenodo or aiXiv, an @abs@ page of arXiv, or the DOI of a Zenodo
+-- record (@https://doi.org/10.5281/zenodo...@). The host decides; the path is left as it is written.
+archiveLink :: Text -> Maybe Text
+archiveLink url = do
+  afterScheme <- afterCI "https://" url
+  let (host, path) = T.break (== '/') afterScheme
+  if case T.toLower host of
+    "zenodo.org" -> True
+    "arxiv.org" -> True
+    "aixiv.org" -> True
+    "doi.org" -> T.toLower path `T.isPrefixOf` "/10.5281/zenodo"
+    _ -> False
+    then Just url
+    else Nothing
+
 nonEmptyLines :: Text -> [Text]
 nonEmptyLines = filter (not . T.null) . map T.strip . T.splitOn "\n"
 
@@ -340,8 +378,15 @@ validate get =
                   | (i, l) <- zip [1 :: Int ..] ls
                   ]
       repository' = case text "repository" of
-        "" -> Right Nothing
-        url -> maybe (Left (err "repository" "bad_link" "repository must be an https link")) (Right . Just) (httpsLink url)
+        "" -> Left [err "repository" "required" "repository is required: the GitHub repository of the study"]
+        url -> case httpsLink url of
+          Nothing -> Left [err "repository" "bad_link" "repository must be an https link"]
+          Just link -> maybe (Left [err "repository" "not_github" "repository must be the https link of a GitHub repository"]) (Right . Just) (githubRepo link)
+      archive' = case text "archive" of
+        "" -> Left [err "archive" "required" "archive is required: the study's link on Zenodo, arXiv or aiXiv"]
+        url -> case httpsLink url of
+          Nothing -> Left [err "archive" "bad_link" "archive must be an https link"]
+          Just link -> maybe (Left [err "archive" "bad_archive" "archive must be a link on Zenodo, arXiv or aiXiv"]) (Right . Just) (archiveLink link)
       licence' = case text "licence" of
         "" -> Right CcBy40
         raw -> enumField "licence" licenceValues parseLicence raw
@@ -368,15 +413,16 @@ validate get =
           <> single topic'
           <> many sources'
           <> single repository'
+          <> single archive'
           <> single licence'
           <> single rights'
           <> single aiModels'
           <> single level'
           <> single aiProcess'
-   in case (title', authors', abstract', area', topic', sources', repository', licence', rights', aiModels', level', aiProcess') of
-        (Right t, Right au, Right ab, Right ar, Right tp, Right so, Right re, Right li, Right (), Right am, Right lv, Right ap)
+   in case (title', authors', abstract', area', topic', sources', repository', archive', licence', rights', aiModels', level', aiProcess') of
+        (Right t, Right au, Right ab, Right ar, Right tp, Right so, Right re, Right ac, Right li, Right (), Right am, Right lv, Right ap)
           | null errors ->
-              Right (Submission t au ab ar tp so re li am lv ap)
+              Right (Submission t au ab ar tp so re ac li am lv ap)
         _ -> Left errors
 
 -- ---- JSON ---------------------------------------------------------------------------------------
@@ -407,6 +453,7 @@ submissionJson s =
     ("topic", JString (topicName s.topic)),
     ("sources", JArray (map JString s.sources)),
     ("repository", optString s.repository),
+    ("archive", optString s.archive),
     ("licence", JString (licenceName s.licence)),
     ("ai_models", JString s.aiModels),
     ("ai_contribution", JString (levelName s.aiContribution)),

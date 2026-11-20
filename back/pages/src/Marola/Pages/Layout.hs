@@ -42,6 +42,8 @@ origin = "https://marola.dev"
 
 prefix :: Language -> Text
 prefix En = "/en/"
+prefix Ja = "/ja/"
+prefix ZhHant = "/zh-Hant/"
 prefix PtBr = "/"
 
 -- | The path of a page: pt-BR at the root, English under @/en/@.
@@ -57,10 +59,14 @@ whereOf p l = if dynamic p then dynamicPath l (slug p) else path l (slug p)
 
 mapPath :: Language -> Text
 mapPath En = "/?lang=en"
+mapPath Ja = "/?lang=ja"
+mapPath ZhHant = "/?lang=zh-Hant"
 mapPath PtBr = "/"
 
 ogLocale :: Language -> Text
 ogLocale En = "en_US"
+ogLocale Ja = "ja_JP"
+ogLocale ZhHant = "zh_Hant"
 ogLocale PtBr = "pt_BR"
 
 attrs :: [(Text, Text)] -> [Attr]
@@ -83,11 +89,11 @@ headNodes l p =
     <> [meta [("name", "robots"), ("content", "noindex")] | noIndex p]
     <> ( if canonical p
            then
-             [ link [("rel", "canonical"), ("href", origin <> whereOf p l)],
-               link [("rel", "alternate"), ("hreflang", Language.tag PtBr), ("href", origin <> whereOf p PtBr)],
-               link [("rel", "alternate"), ("hreflang", Language.tag En), ("href", origin <> whereOf p En)],
-               link [("rel", "alternate"), ("hreflang", "x-default"), ("href", origin <> whereOf p PtBr)]
-             ]
+             [link [("rel", "canonical"), ("href", origin <> whereOf p l)]]
+               <> [ link [("rel", "alternate"), ("hreflang", Language.tag la), ("href", origin <> whereOf p la)]
+                  | la <- [PtBr, En, Ja, ZhHant]
+                  ]
+               <> [link [("rel", "alternate"), ("hreflang", "x-default"), ("href", origin <> whereOf p PtBr)]]
            else []
        )
     <> [ meta [("property", "og:type"), ("content", "website")],
@@ -97,7 +103,6 @@ headNodes l p =
        ]
     <> [meta [("property", "og:url"), ("content", origin <> whereOf p l)] | canonical p]
     <> [ meta [("property", "og:locale"), ("content", ogLocale l)],
-         meta [("property", "og:locale:alternate"), ("content", ogLocale other)],
          meta [("property", "og:image"), ("content", origin <> "/og.png")],
          meta [("property", "og:image:width"), ("content", "1200")],
          meta [("property", "og:image:height"), ("content", "1200")],
@@ -107,8 +112,10 @@ headNodes l p =
          link [("rel", "apple-touch-icon"), ("href", "/apple-touch-icon.png")],
          link [("rel", "stylesheet"), ("href", "/style.css")]
        ]
-  where
-    other = if l == En then PtBr else En
+    <> [ meta [("property", "og:locale:alternate"), ("content", ogLocale la)]
+       | la <- [PtBr, En, Ja, ZhHant],
+         la /= l
+       ]
 
 -- | An inline decorative svg: hidden from assistive technology, not focusable (NavView.svg).
 decorative :: [Attr] -> [Node] -> Node
@@ -140,8 +147,10 @@ languageSwitch loc p =
           svgEl "ellipse" [("cx", "8"), ("cy", "8"), ("rx", "2.8"), ("ry", "6.5")],
           svgEl "path" [("d", "M1.5 8h13")]
         ],
-      langLink loc p PtBr "PT-BR" "português (Brasil)",
-      langLink loc p En "EN" "English"
+      langLink loc p PtBr "🇧🇷 PT-BR" "português (Brasil)",
+      langLink loc p En "🇺🇸 EN" "English",
+      langLink loc p Ja "🇯🇵 JA" "日本語",
+      langLink loc p ZhHant "🇹🇼 繁" "繁體中文"
     ]
 
 linkedin :: Locale -> Node

@@ -43,9 +43,9 @@ The repo holds two builds of the site:
 | Part | What it does | Where |
 |---|---|---|
 | Map page | The map, the beach list and card, the layer rail and the footer, in Elm, bundled by Vite. Effects go through ports to a small JavaScript shell. MapLibre GL JS 6.17.0 over the site's own base map (a style, glyphs and one PMTiles file cut from a Protomaps build of OpenStreetMap; [ADR 0006](docs/adr/0006-self-hosted-basemap.md)), trails from OpenStreetMap | [`front/`](front) |
-| Static pages | About, support, contact, contact-sent, news, members, privacy, takedown, partners and 404, in pt-BR (at the root) and English (under `en/`), rendered at build time from Markdown by a Haskell program | [`back/pages`](back/pages), [`site/content`](site/content) |
+| Static pages | About, support, contact, contact-sent, news, members, privacy, takedown, partners and 404, in pt-BR (at the root), English, Japanese and Traditional Chinese (under `en/`, `ja/` and `zh-Hant/`), rendered at build time from Markdown by a Haskell program | [`back/pages`](back/pages), [`site/content`](site/content) |
 | Server | Haskell (warp, SQLite). Serves the files, sends the security headers, takes the contact form, the GitHub login and the study API and pages. Listens on `127.0.0.1` behind nginx | [`back/server`](back/server) |
-| Study submission | Anyone with a GitHub account of 7 days or more publishes a study as a PDF with metadata. It shows the notice "not reviewed, not medical advice". The board can hide a study | [ADR 0004](docs/adr/0004-study-submission.md), [board runbook](docs/6-board.md) |
+| Study submission | Anyone with a GitHub account of 7 days or more publishes a study as a PDF with metadata: the GitHub repository of the code and the archive of the study (Zenodo, arXiv or aiXiv) are required. It shows the notice "not reviewed, not medical advice". The board can hide a study | [ADR 0004](docs/adr/0004-study-submission.md), [board runbook](docs/6-board.md) |
 | Tools | The checks and harnesses in Haskell (`marola-tools`): the design check, the JS allowlist check, the offline board fixtures, the Elm test fixture generator, the fake GitHub and the smoke suites (server, package, studies, submit, board) | [`back/tools`](back/tools) |
 | Visual system | Tokens, type, components and contrast. `just design-check` compares it with the stylesheet | [`DESIGN.md`](DESIGN.md), [`front/public/style.css`](front/public/style.css) |
 | Nix package | The server, the pages and the map page as one package that builds with no network | [`nix/package.nix`](nix/package.nix), [`flake.nix`](flake.nix) |
@@ -54,8 +54,11 @@ The decisions are in [ADR 0005](docs/adr/0005-elm-and-haskell.md) (Elm and Haske
 the language choices of ADRs 0001 to 0003, whose MapLibre, hosting and page decisions stand),
 [ADR 0004](docs/adr/0004-study-submission.md) (study submission),
 [ADR 0006](docs/adr/0006-self-hosted-basemap.md) (the base map is the site's own: Protomaps tiles in one
-PMTiles file on the host) and [ADR 0007](docs/adr/0007-elm-or-haskell-hard-rule.md) (Elm or Haskell;
-JavaScript only when it is 100 % necessary, held by the allowlist check).
+PMTiles file on the host),
+[ADR 0007](docs/adr/0007-elm-or-haskell-hard-rule.md) (Elm or Haskell;
+JavaScript only when it is 100 % necessary, held by the allowlist check) and
+[ADR 0008](docs/adr/0008-embeddable-map.md) (the embeddable map: an iframe of a chrome-less page,
+behind an allowlist the server owns; the plan of eight tasks is in the ADR).
 
 ### Architecture
 

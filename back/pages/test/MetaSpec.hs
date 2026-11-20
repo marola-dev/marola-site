@@ -54,7 +54,7 @@ spec env = describe "meta" $ do
       [base <> "/api/v1/openapi.json", base <> "/api/v1/skill.md"]
   it "the sitemap has every indexable page in both languages, the map once" $ do
     let indexable = filter (not . Site.noIndex) Site.allSlugs
-    length sitemapLocs `shouldBe` 1 + 2 * (length indexable + length Meta.dynamicSlugs)
+    length sitemapLocs `shouldBe` 1 + length allLanguages * (length indexable + length Meta.dynamicSlugs)
     all (T.isPrefixOf (base <> "/")) sitemapLocs `shouldBe` True
     mapM_ (\(s, l) -> sitemapLocs `shouldContain` [base <> Layout.path l s]) [(s, l) | s <- indexable, l <- allLanguages]
   it "no noindex page is in the sitemap, in either language" $
@@ -89,21 +89,30 @@ spec env = describe "meta" $ do
     Meta.robots `shouldSatisfy` has "User-agent: *\nAllow: /\n"
     Meta.robots `shouldSatisfy` has ("Sitemap: " <> base <> "/sitemap.xml")
   it "robots.txt keeps crawlers off the sign-in and the account pages, and nothing public" $ do
-    mapM_ (\p -> Meta.robots `shouldSatisfy` has ("Disallow: " <> p <> "\n")) ["/auth/", "/account", "/en/account", "/report/", "/en/report/"]
+    mapM_
+      (\pre -> mapM_ (\p -> Meta.robots `shouldSatisfy` has ("Disallow: " <> pre <> p <> "\n")) ["account", "report/"])
+      ["", "/en/", "/ja/", "/zh-Hant/"]
     mapM_ (\p -> Meta.robots `shouldNotSatisfy` has ("Disallow: " <> p)) ["/studies", "/submit", "/api", "/data", "/en/\n", "/\n"]
-  it "the English map page: lang, title, description, canonical and og tags, from front/index.html" $ do
+  it "the non-pt-BR map pages: lang, title, description, canonical and og tags, from front/index.html" $ do
     dir <- root
     page <- readText (dir <> "/front/index.html")
-    case MapPage.english (envCatalog env) page of
+    case MapPage.variants (envCatalog env) page of
       Left e -> expectationFailure (T.unpack e)
-      Right en -> do
-        en `shouldSatisfy` has "<html lang=\"en\">"
-        en `shouldSatisfy` has "<link rel=\"canonical\" href=\"https://marola.dev/?lang=en\">"
-        en `shouldSatisfy` has "<meta property=\"og:url\" content=\"https://marola.dev/?lang=en\">"
+      Right vs -> do
+        vs `shouldSatisfy` any (\(l, _) -> l == En)
+        forM_ vs $ \(l, html) -> do
+          let tag = Language.tag l
+          html `shouldSatisfy` has ("<html lang=\"" <> tag <> "\">")
+          html `shouldSatisfy` has ("<link rel=\"canonical\" href=\"https://marola.dev/?lang=" <> tag <> "\">")
+          html `shouldSatisfy` has ("<meta property=\"og:url\" content=\"https://marola.dev/?lang=" <> tag <> "\">")
+          html `shouldNotSatisfy` has MapPage.descriptionPt
+          html `shouldNotSatisfy` has "condições do mar"
+        let [(En, en), (Ja, ja), (ZhHant, zh)] = vs
         en `shouldSatisfy` has "<meta property=\"og:locale\" content=\"en_US\">"
         en `shouldSatisfy` has MapPage.descriptionEn
-        en `shouldNotSatisfy` has MapPage.descriptionPt
-        en `shouldNotSatisfy` has "condições do mar"
-        en `shouldSatisfy` has "<link rel=\"alternate\" hreflang=\"en\" href=\"https://marola.dev/?lang=en\">"
-  it "the English map page fails the build when front/index.html drifts from it" $
-    MapPage.english (envCatalog env) "<html lang=\"pt-BR\"><title>x</title>" `shouldSatisfy` either (const True) (const False)
+        ja `shouldSatisfy` has "<meta property=\"og:locale\" content=\"ja_JP\">"
+        ja `shouldSatisfy` has MapPage.descriptionJa
+        zh `shouldSatisfy` has "<meta property=\"og:locale\" content=\"zh_Hant\">"
+        zh `shouldSatisfy` has MapPage.descriptionZh
+  it "a non-pt-BR map page fails the build when front/index.html drifts from it" $
+    MapPage.variants (envCatalog env) "<html lang=\"pt-BR\"><title>x</title>" `shouldSatisfy` either (const True) (const False)

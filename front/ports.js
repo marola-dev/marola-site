@@ -13,6 +13,11 @@ const run = {
   replaceUrl: (c) => ffi.replaceUrl(c.path, c.query),
   setDocument: (c) => ffi.setDocument(c.language, c.title),
   storeLanguage: (c) => ffi.storeLanguage(c.tag),
+  // The player's dragged offset: the CSP keeps position out of inline styles, so Elm hands it here.
+  movePlayer: (c) => {
+    const el = document.getElementById("player");
+    if (el) el.style.transform = `translate(${c.x}px, ${c.y}px)`;
+  },
   initMap: (c) => ffi.initMap(c.json, (event, arg) => send({ kind: "map", event, arg: String(arg) })),
   syncMap: (c) => ffi.syncMap(c.json),
   setTrails: (c) => ffi.setTrails(c.json),

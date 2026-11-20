@@ -27,9 +27,9 @@ o marola não é salva-vidas, não é previsão oficial e não é serviço de al
 
 ## como o site roda
 
-o mapa é estático: nenhum servidor nosso e nenhuma IA trabalham quando você abre a página. a cada 3 horas, uma automação no GitHub roda o marola-app, calcula a nota de cada praia e publica os arquivos. quem entrega o marola.dev é um [Cloudflare Worker](https://github.com/marola-dev/marola-site/blob/main/docs/3-development.md), um pequeno programa na rede da Cloudflare, no [plano gratuito](https://github.com/marola-dev/marola-site/blob/main/AGENTS.md#cost--deployment-safety-hard-rule), e o GitHub Pages fica de reserva. o INEA e o INEMA só respondem a endereços brasileiros, então a automação passa por um proxy: um computador no Brasil, mantido por voluntários, que repassa os pedidos.
+o mapa é estático: nenhum cálculo e nenhuma IA acontecem quando você abre a página. quatro vezes por dia, uma rotina no servidor próprio — uma máquina virtual KVM 4 da [Hostinger](https://www.hostinger.com/), no Brasil — roda o marola-app, calcula a nota de cada praia e publica os arquivos. é essa mesma máquina que entrega o marola.dev, com nginx, sem CDN e sem Cloudflare. o INEA e o INEMA só respondem a endereços brasileiros, e a máquina está no Brasil, então não precisa de proxy.
 
-os dados devem ir para o Cloudflare R2, um serviço de armazenamento de arquivos, num lago de dados que ainda está sendo montado (mais sobre isso abaixo).
+os dados devem ir para o Cloudflare R2, um serviço de armazenamento de arquivos, num lago de dados que ainda está sendo montado (a troca para o R2 foi aceita em [marola#692](https://github.com/marola-dev/marola/pull/692); a estrutura, em [marola-oods#22](https://github.com/marola-dev/marola-oods/pull/22), segue em revisão. mais sobre isso abaixo).
 
 ## os repositórios
 
@@ -45,7 +45,7 @@ o programa principal, em Scala 3 com [Kyo](https://getkyo.io/). busca as praias 
 
 ### [marola-site](https://github.com/marola-dev/marola-site)
 
-o mapa em marola.dev, com o mapa-base do Mapbox. JavaScript puro, sem framework, em português e inglês.
+o mapa em marola.dev. a página é Elm e o servidor e as páginas estáticas são Haskell ([ADR 0005](https://github.com/marola-dev/marola-site/blob/main/docs/adr/0005-elm-and-haskell.md)), sobre um mapa-base próprio, sem Mapbox e sem token. em português, inglês, japonês e chinês tradicional.
 
 ### [marola-oods](https://github.com/marola-dev/marola-oods)
 

@@ -155,21 +155,29 @@ run base inbox = do
   check (missing.status == 404) "GET /nope is 404" (tshow missing.status)
   check (isHtml missing && bodyHas "<html lang=\"pt-BR\">" missing) "/nope is the pt-BR 404 page" ""
   checkHeaders c "/nope" missing
-  missingEn <- g "/en/nope"
-  check (missingEn.status == 404 && bodyHas "<html lang=\"en\">" missingEn) "/en/nope is the English 404 page" (tshow missingEn.status)
+  forM_ [("/en/nope", "en"), ("/ja/nope", "ja"), ("/zh-Hant/nope", "zh-Hant")] $ \(p, lang) -> do
+    r <- g p
+    check (r.status == 404 && bodyHas ("<html lang=\"" <> lang <> "\">") r) (TE.decodeUtf8 p <> " is the " <> lang <> " 404 page") (tshow r.status)
 
-  -- The pages of back/pages, in both languages (run scripts/site_build.sh first).
-  forM_ [("/about.html", "pt-BR"), ("/en/about.html", "en"), ("/contact.html", "pt-BR"), ("/en/contact.html", "en"), ("/contact-sent.html", "pt-BR"), ("/en/support.html", "en")] $ \(p, lang) -> do
-    res <- g (TE.encodeUtf8 p)
-    check (res.status == 200 && isHtml res && bodyHas ("<html lang=\"" <> lang <> "\">") res) ("GET " <> p <> " is the " <> lang <> " page") (tshow res.status)
-    checkHeaders c p res
+  -- The pages of back/pages, in the four languages (run scripts/site_build.sh first).
+  forM_
+    ( concat
+        [ [("/about.html", "pt-BR"), ("/contact.html", "pt-BR"), ("/contact-sent.html", "pt-BR")],
+          [("/" <> pre <> "/about.html", lang) | (pre, lang) <- [("en", "en"), ("ja", "ja"), ("zh-Hant", "zh-Hant")]],
+          [("/" <> pre <> "/support.html", lang) | (pre, lang) <- [("en", "en"), ("ja", "ja"), ("zh-Hant", "zh-Hant")]]
+        ]
+    )
+    $ \(p, lang) -> do
+      res <- g (TE.encodeUtf8 p)
+      check (res.status == 200 && isHtml res && bodyHas ("<html lang=\"" <> lang <> "\">") res) ("GET " <> p <> " is the " <> lang <> " page") (tshow res.status)
+      checkHeaders c p res
   clean <- g "/en/about"
   check (clean.status == 200 && bodyHas "<html lang=\"en\">" clean) "/en/about finds en/about.html" (tshow clean.status)
 
   -- Every page of both languages, and the files that are not pages: status, content type, language, and
   -- that each site link on a page (the nav above all) answers 200. A page that moves or goes missing fails here.
   let slugs = ["about", "news", "contact", "members", "support", "partners", "contact-sent"] :: [Text]
-  links <- fmap concat . forM [("", "pt-BR"), ("/en", "en")] $ \(prefix, lang) ->
+  links <- fmap concat . forM [("", "pt-BR"), ("/en", "en"), ("/ja", "ja"), ("/zh-Hant", "zh-Hant")] $ \(prefix, lang) ->
     fmap concat . forM slugs $ \slug -> do
       let p = prefix <> "/" <> slug <> ".html"
       res <- g (TE.encodeUtf8 p)

@@ -27,29 +27,30 @@ import Data.Text qualified as T
 import Marola.Vdom
 import System.FilePath ((</>))
 
-data Language = PtBr | En deriving (Eq, Ord, Show)
+data Language = PtBr | En | Ja | ZhHant deriving (Eq, Ord, Show)
 
 languageTag :: Language -> Text
 languageTag = \case
   PtBr -> "pt-BR"
   En -> "en"
+  Ja -> "ja"
+  ZhHant -> "zh-Hant"
 
 type Catalog = Map Language (Map Text Text)
 
 data Locale = Locale {catalog :: Catalog, language :: Language}
 
--- | Both catalogs, or the file that failed.
+-- | Every catalog, or the file that failed.
 loadCatalog :: FilePath -> IO (Either String Catalog)
 loadCatalog dir = do
   let one lang = do
-        let file = dir </> (if lang == PtBr then "pt-BR" else "en") <> ".json"
+        let file = dir </> T.unpack (languageTag lang) <> ".json"
         bytes <- try (BS.readFile file) :: IO (Either SomeException BS.ByteString)
         pure $ case bytes of
           Left e -> Left (file <> ": " <> show e)
           Right b -> either (Left . ((file <> ": ") <>)) (Right . (lang,)) (A.eitherDecodeStrict b)
-  pt <- one PtBr
-  en <- one En
-  pure (Map.fromList <$> sequence [pt, en])
+  loaded <- mapM one [PtBr, En, Ja, ZhHant]
+  pure (Map.fromList <$> sequence loaded)
 
 -- | The message for a key in the language, else the source language's (pt-BR), else the key. The
 -- keys the chrome uses carry no ICU argument, so the text is used as it is.
@@ -78,6 +79,8 @@ origin = "https://marola.dev"
 prefixOf :: Language -> Text
 prefixOf = \case
   En -> "/en/"
+  Ja -> "/ja/"
+  ZhHant -> "/zh-Hant/"
   PtBr -> "/"
 
 path :: Language -> Text -> Text
@@ -92,11 +95,15 @@ whereOf p lang = if p.dynamic then dynamicPath lang p.slug else path lang p.slug
 mapPath :: Language -> Text
 mapPath = \case
   En -> "/?lang=en"
+  Ja -> "/?lang=ja"
+  ZhHant -> "/?lang=zh-Hant"
   PtBr -> "/"
 
 ogLocale :: Language -> Text
 ogLocale = \case
   En -> "en_US"
+  Ja -> "ja_JP"
+  ZhHant -> "zh_Hant"
   PtBr -> "pt_BR"
 
 meta :: [(Text, Text)] -> Node
@@ -107,15 +114,14 @@ link as = el "link" as []
 
 headNodes :: Language -> PageHead -> [Node]
 headNodes lang p =
-  let other = if lang == En then PtBr else En
-      canon =
+  let canon =
         if p.canonical
           then
-            [ link [("rel", "canonical"), ("href", origin <> whereOf p lang)],
-              link [("rel", "alternate"), ("hreflang", languageTag PtBr), ("href", origin <> whereOf p PtBr)],
-              link [("rel", "alternate"), ("hreflang", languageTag En), ("href", origin <> whereOf p En)],
-              link [("rel", "alternate"), ("hreflang", "x-default"), ("href", origin <> whereOf p PtBr)]
-            ]
+            [link [("rel", "canonical"), ("href", origin <> whereOf p lang)]]
+              <> [ link [("rel", "alternate"), ("hreflang", languageTag l), ("href", origin <> whereOf p l)]
+                 | l <- [PtBr, En, Ja, ZhHant]
+                 ]
+              <> [link [("rel", "alternate"), ("hreflang", "x-default"), ("href", origin <> whereOf p PtBr)]]
           else []
    in [ meta [("charset", "utf-8")],
         meta [("name", "viewport"), ("content", "width=device-width, initial-scale=1")],
@@ -131,9 +137,9 @@ headNodes lang p =
              meta [("property", "og:description"), ("content", p.description)]
            ]
         <> [meta [("property", "og:url"), ("content", origin <> whereOf p lang)] | p.canonical]
-        <> [ meta [("property", "og:locale"), ("content", ogLocale lang)],
-             meta [("property", "og:locale:alternate"), ("content", ogLocale other)],
-             meta [("property", "og:image"), ("content", origin <> "/og.png")],
+        <> [meta [("property", "og:locale"), ("content", ogLocale lang)]]
+        <> [meta [("property", "og:locale:alternate"), ("content", ogLocale l)] | l <- [PtBr, En, Ja, ZhHant], l /= lang]
+        <> [ meta [("property", "og:image"), ("content", origin <> "/og.png")],
              meta [("property", "og:image:width"), ("content", "1200")],
              meta [("property", "og:image:height"), ("content", "1200")],
              meta [("property", "og:image:alt"), ("content", "marola")],
@@ -170,8 +176,10 @@ languageSwitch loc p =
           svg "ellipse" [attr "cx" "8", attr "cy" "8", attr "rx" "2.8", attr "ry" "6.5"] [],
           svg "path" [attr "d" "M1.5 8h13"] []
         ],
-      langLink loc p PtBr "PT-BR" "português (Brasil)",
-      langLink loc p En "EN" "English"
+      langLink loc p PtBr "🇧🇷 PT-BR" "português (Brasil)",
+      langLink loc p En "🇺🇸 EN" "English",
+      langLink loc p Ja "🇯🇵 JA" "日本語",
+      langLink loc p ZhHant "🇹🇼 繁" "繁體中文"
     ]
 
 linkedin :: Locale -> Node

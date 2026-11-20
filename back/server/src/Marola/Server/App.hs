@@ -105,6 +105,8 @@ routes :: [Route]
 routes =
   [ Route "POST" "/contact" True (\env req _ -> Contact.handle env req),
     Route "POST" "/en/contact" True (\env req _ -> Contact.handle env req),
+    Route "POST" "/ja/contact" True (\env req _ -> Contact.handle env req),
+    Route "POST" "/zh-Hant/contact" True (\env req _ -> Contact.handle env req),
     Route "POST" StudyApi.apiPath False (\env req _ -> StudyApi.submit env req),
     Route "GET" StudyApi.apiPath False (\env req _ -> StudyApi.list env req),
     Route "GET" (StudyApi.apiPath <> "/{id}") False (\env _ p -> StudyApi.one env (maybe "" id (lookupParam "id" p))),
@@ -196,7 +198,7 @@ payloadTooLarge = plain status413 "payload too large\n"
 
 -- | Whether this request is the study upload, which has its own body limit.
 isUpload :: Request -> Bool
-isUpload req = requestMethod req == methodPost && rawPathInfo req `elem` [TE.encodeUtf8 StudyApi.apiPath, "/submit", "/en/submit"]
+isUpload req = requestMethod req == methodPost && rawPathInfo req `elem` [TE.encodeUtf8 StudyApi.apiPath, "/submit", "/en/submit", "/ja/submit", "/zh-Hant/submit"]
 
 -- | Refuses a declared body over the limit, and stops a body that grows over it while it streams.
 bodyGuard :: Request -> IO (Either Response Request)

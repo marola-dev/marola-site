@@ -11,6 +11,7 @@ import Data.Time.Calendar (Day)
 import Data.Time.Clock (getCurrentTime, utctDay)
 import Data.Time.Format (defaultTimeLocale, parseTimeM)
 import Marola.Pages.Fixtures qualified as Fixtures
+import Marola.Pages.Language qualified as Language
 import Marola.Pages.Loader (readText)
 import Marola.Pages.Loader qualified as Loader
 import Marola.Pages.MapPage qualified as MapPage
@@ -96,11 +97,13 @@ main = do
           if hasMap
             then do
               page <- readText mapFile
-              case MapPage.english (envCatalog env) page of
+              case MapPage.variants (envCatalog env) page of
                 Left message -> do
                   B.hPut stderr (TE.encodeUtf8 ("pages: " <> message <> "\n"))
                   exitWith (ExitFailure 1)
-                Right en -> B.writeFile (outDir </> "index.en.html") (TE.encodeUtf8 en)
+                Right vs ->
+                  forM_ vs $ \(l, txt) ->
+                    B.writeFile (outDir </> ("index." <> T.unpack (Language.tag l) <> ".html")) (TE.encodeUtf8 txt)
             else pure ()
           TIO.putStrLn ("pages: " <> T.pack (show (length pages)) <> " files in " <> T.pack outDir)
     _ -> do

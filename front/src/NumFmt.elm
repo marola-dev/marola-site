@@ -14,7 +14,14 @@ separators language =
         PtBr ->
             ( ".", "," )
 
+        -- The CLDR group and decimal marks of en, ja and zh-Hant.
         En ->
+            ( ",", "." )
+
+        Ja ->
+            ( ",", "." )
+
+        ZhHant ->
             ( ",", "." )
 
 

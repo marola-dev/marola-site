@@ -177,6 +177,12 @@ steps =
         "alter table reports add column closed_utc text",
         "alter table reports add column close_note text"
       ]
+    ),
+    -- The study's archive (Zenodo, arXiv, aiXiv) became a required field: the studies sent before
+    -- it keep NULL, which reads as no archive (the column stays nullable on purpose).
+    ( 4,
+      [ "alter table studies add column archive text"
+      ]
     )
   ]
 
@@ -369,9 +375,9 @@ insertStudy path now account sha s = withConn path $ \c -> do
   executeNamed
     c
     "insert into studies (id, received_utc, sha256, title, authors, abstract, area, topic, sources,\n\
-    \     repository, licence, ai_models, ai_contribution, ai_process, author_login, author_github_id)\n\
+    \     repository, archive, licence, ai_models, ai_contribution, ai_process, author_login, author_github_id)\n\
     \ values (:id, :now, :sha, :title, :authors, :abstract, :area, :topic, :sources,\n\
-    \     :repo, :licence, :models, :level, :process, :login, :gid)\n\
+    \     :repo, :archive, :licence, :models, :level, :process, :login, :gid)\n\
     \ on conflict (author_github_id, sha256) do nothing"
     [ ":id" := i,
       ":now" := utc now,
@@ -383,6 +389,7 @@ insertStudy path now account sha s = withConn path $ \c -> do
       ":topic" := topicName s.topic,
       ":sources" := T.intercalate "\n" s.sources,
       ":repo" := s.repository,
+      ":archive" := s.archive,
       ":licence" := licenceName s.licence,
       ":models" := s.aiModels,
       ":level" := levelName s.aiContribution,
@@ -398,7 +405,7 @@ insertStudy path now account sha s = withConn path $ \c -> do
 
 columns :: Text
 columns =
-  "id, received_utc, sha256, title, authors, abstract, area, topic, sources, repository, licence,\n\
+  "id, received_utc, sha256, title, authors, abstract, area, topic, sources, repository, archive, licence,\n\
   \ ai_models, ai_contribution, ai_process, author_login, author_github_id, status, hidden_reason, hidden_utc"
 
 newtype Row = Row Record
@@ -415,6 +422,7 @@ instance FromRow Row where
     topicT <- field
     sources <- field
     repo <- field
+    archiveCol <- field
     licenceT <- field
     models <- field
     levelT <- field
@@ -434,6 +442,7 @@ instance FromRow Row where
               topic = must "topic" (parseTopic topicT),
               sources = if T.null sources then [] else T.splitOn "\n" sources,
               repository = repo,
+              archive = archiveCol,
               licence = must "licence" (parseLicence licenceT),
               aiModels = models,
               aiContribution = must "level" (parseLevel levelT),

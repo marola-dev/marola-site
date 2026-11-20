@@ -5,6 +5,7 @@ import Beach exposing (Beach, Selection)
 import Board exposing (Board)
 import Geo exposing (Point)
 import I18n exposing (Locale)
+import Language exposing (Language)
 import Layer exposing (Layer)
 import Params exposing (Query)
 import Trails exposing (Trails)
@@ -74,6 +75,8 @@ type alias Model =
     , blurbOpen : Bool
     , sosOpen : Bool
     , playlistOpen : Bool
+    , playerOffset : ( Int, Int )
+    , playerDrag : Maybe { x : Int, y : Int }
     , map : MapState
     , status : Status
     , zoomedOut : Bool
@@ -100,7 +103,7 @@ trails model =
 initial : Locale -> String -> Query -> Bool -> Model
 initial loc path query reducedMotion =
     { loc = loc
-    , catalogsPending = 2
+    , catalogsPending = List.length Language.all
     , path = path
     , query = query
     , areas = []
@@ -122,6 +125,8 @@ initial loc path query reducedMotion =
     , blurbOpen = False
     , sosOpen = False
     , playlistOpen = False
+    , playerOffset = ( 0, 0 )
+    , playerDrag = Nothing
     , map = MapNone
     , status = Idle
     , zoomedOut = False

@@ -9,6 +9,7 @@ browser's storage and history, the document's language, and alerts (ADR 0007).
 import Area
 import Browser
 import Browser.Dom
+import Browser.Events
 import Config
 import Effect exposing (Effect(..))
 import Http
@@ -38,8 +39,27 @@ main =
         { init = \flags -> Update.init (Wire.env flags) |> withEffects
         , update = \msg model -> Update.update msg model |> withEffects
         , view = View.Page.view
-        , subscriptions = \_ -> fromJs incoming
+        , subscriptions = subscriptions
         }
+
+
+{-| The map events, and the pointer while a drag of the player is on: Elm's own subscriptions, so
+the drag itself stays in the update, testable (ADR 0007).
+-}
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.batch
+        ([ fromJs incoming ]
+            ++ (case model.playerDrag of
+                    Just _ ->
+                        [ Browser.Events.onMouseMove (D.map2 PlayerDragged (D.field "pageX" D.int) (D.field "pageY" D.int))
+                        , Browser.Events.onMouseUp (D.succeed PlayerDragEnded)
+                        ]
+
+                    Nothing ->
+                        []
+               )
+        )
 
 
 withEffects : ( Model, List Effect ) -> ( Model, Cmd Msg )
@@ -134,6 +154,9 @@ run effect =
 
         Alert message ->
             send "alert" (text "text" message)
+
+        MovePlayer x y ->
+            send "movePlayer" [ ( "x", E.int x ), ( "y", E.int y ) ]
 
         Focus id ->
             Task.attempt (\_ -> Ignored) (Browser.Dom.focus id)
