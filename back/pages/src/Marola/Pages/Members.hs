@@ -263,6 +263,40 @@ copy En =
           H.text " on GitHub. To join it or fix your details, open a pull request on that file."
         ]
     }
+copy Ja =
+  Copy
+    { cTitle = "メンバー",
+      cLede =
+        [ H.text "marolaを作っている人々。プロジェクトのリポジトリでの最初のコミット順に並んでいます。ORCIDを持つ人は ",
+          a zenodo [H.text "marolaのZenodo登録"],
+          H.text " の著者でもあります。"
+        ],
+      cCommit = ("最初のコミット: " <>),
+      cRole = ("marolaでの役割: " <>),
+      cGitHubRole = ("GitHubでの役割: " <>),
+      cFoot =
+        [ H.text "この一覧はGitHubの組織の ",
+          a file [H.el "code" [] [H.text "MEMBERS.md"]],
+          H.text " から来ています。載るには、そのファイルにpull requestを開いてください。"
+        ]
+    }
+copy ZhHant =
+  Copy
+    { cTitle = "成員",
+      cLede =
+        [ H.text "打造 marola 的人，依各自在專案儲存庫首次提交的順序排列。有 ORCID 的人也是 ",
+          a zenodo [H.text "marola 的 Zenodo 登錄"],
+          H.text " 的作者。"
+        ],
+      cCommit = ("首次提交於 " <>),
+      cRole = ("marola 的角色: " <>),
+      cGitHubRole = ("GitHub 的角色: " <>),
+      cFoot =
+        [ H.text "這份名單來自 GitHub 組織的 ",
+          a file [H.el "code" [] [H.text "MEMBERS.md"]],
+          H.text "。要加入或更正資料，請對該檔案提出合併請求。"
+        ]
+    }
 
 span' :: Text -> [Node] -> Node
 span' c = H.el "span" [H.cls c]

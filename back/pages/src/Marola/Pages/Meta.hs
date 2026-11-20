@@ -15,6 +15,7 @@ import Data.Text (Text)
 import Data.Text qualified as T
 import Data.Time.Calendar (Day, addDays, showGregorian)
 import Marola.Pages.Language (Language (..))
+import Marola.Pages.Language qualified as Language
 import Marola.Pages.Layout qualified as Layout
 import Marola.Pages.Members qualified as Members
 import Marola.Pages.Site (Area (..), Env (..))
@@ -131,31 +132,37 @@ llms areas =
 dynamicSlugs :: [Text]
 dynamicSlugs = ["submit", "studies"]
 
--- | Every page a crawler may index, in both languages, each with the three alternates; the map once.
+-- | Every page a crawler may index, in the four languages, each with its alternates; the map once.
 sitemap :: Text
 sitemap =
   T.intercalate "\n" lines' <> "\n"
   where
-    entry loc pt en =
+    entry loc links =
       [ "  <url>",
-        "    <loc>" <> loc <> "</loc>",
-        "    <xhtml:link rel=\"alternate\" hreflang=\"pt-BR\" href=\"" <> pt <> "\"/>",
-        "    <xhtml:link rel=\"alternate\" hreflang=\"en\" href=\"" <> en <> "\"/>",
-        "    <xhtml:link rel=\"alternate\" hreflang=\"x-default\" href=\"" <> pt <> "\"/>",
-        "  </url>"
+        "    <loc>" <> loc <> "</loc>"
       ]
-    pair f s =
-      let pt = baseUrl <> f PtBr s
-          en = baseUrl <> f En s
-       in entry pt pt en <> entry en pt en
+        <> [ "    <xhtml:link rel=\"alternate\" hreflang=\"" <> Language.tag l <> "\" href=\"" <> href <> "\"/>"
+           | (l, href) <- links
+           ]
+        <> [ "    <xhtml:link rel=\"alternate\" hreflang=\"x-default\" href=\"" <> fallback links <> "\"/>",
+             "  </url>"
+           ]
+    fallback links = case [href | (l, href) <- links, l == PtBr] of
+      (h : _) -> h
+      [] -> baseUrl <> "/"
+    -- One <url> per language of a page, each naming the same four addresses.
+    page f s =
+      let links = [(l, baseUrl <> f l s) | l <- [PtBr, En, Ja, ZhHant]]
+       in concatMap (\(_, href) -> entry href links) links
+    mapLinks = [(l, baseUrl <> Layout.mapPath l) | l <- [PtBr, En, Ja, ZhHant]]
     lines' =
       [ "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
         "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\" xmlns:xhtml=\"http://www.w3.org/1999/xhtml\">"
       ]
-        <> entry (baseUrl <> "/") (baseUrl <> "/") (baseUrl <> "/?lang=en")
-        <> concatMap (pair Layout.path) (filter (not . Site.noIndex) Site.allSlugs)
+        <> entry (baseUrl <> "/") mapLinks
+        <> concatMap (page Layout.path) (filter (not . Site.noIndex) Site.allSlugs)
         -- Pages the server renders. Study pages are not listed: they change at run time (ADR 0004).
-        <> concatMap (pair Layout.dynamicPath) dynamicSlugs
+        <> concatMap (page Layout.dynamicPath) dynamicSlugs
         <> ["</urlset>"]
 
 securityTxt :: Day -> Text

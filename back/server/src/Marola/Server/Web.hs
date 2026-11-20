@@ -246,7 +246,7 @@ reportGet env req params = do
     Nothing -> notFound env req
 
 reasonCodes :: [Text]
-reasonCodes = [c | (c, _, _) <- Views.reasons]
+reasonCodes = [c | (c, _, _, _, _) <- Views.reasons]
 
 reportPost :: Env -> Request -> Params -> IO Response
 reportPost env req params

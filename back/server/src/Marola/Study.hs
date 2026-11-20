@@ -307,7 +307,7 @@ archiveLink url = do
     "zenodo.org" -> True
     "arxiv.org" -> True
     "aixiv.org" -> True
-    "doi.org" -> T.toLower path `T.isPrefixOf` "/10.5281/zenodo"
+    "doi.org" -> "/10.5281/zenodo" `T.isPrefixOf` T.toLower path
     _ -> False
     then Just url
     else Nothing

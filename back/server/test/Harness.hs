@@ -143,7 +143,7 @@ start tweak extra = do
   write (static </> "style.css") ("body { margin: 0 }\n" <> bulk)
   -- The pages the server renders read the catalogs under static/i18n, as in the built page.
   createDirectoryIfMissing True (static </> "i18n")
-  mapM_ (\tag -> BS.readFile ("../../site/i18n" </> tag <> ".json") >>= BS.writeFile (static </> "i18n" </> tag <> ".json")) ["pt-BR", "en"]
+  mapM_ (\tag -> BS.readFile ("../../site/i18n" </> tag <> ".json") >>= BS.writeFile (static </> "i18n" </> tag <> ".json")) ["pt-BR", "en", "ja", "zh-Hant"]
   write (static </> "logo.svg") ("<svg></svg>" <> bulk)
   write (static </> "font.woff2") bulk
   write (static </> "photo.png") bulk

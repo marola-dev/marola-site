@@ -214,12 +214,14 @@ bodyBlock l file blk
       H.el "ul" [] <$> collect [withInline "li" [] (collapse i) | i <- T.splitOn "\n- " (T.drop 2 blk)]
   | otherwise = withInline "p" [] (collapse blk)
 
--- @^(\d{4})-(\d{2})-(\d{2})-([a-z0-9-]+)\.(pt-BR|en)\.md$@
+-- @^(\d{4})-(\d{2})-(\d{2})-([a-z0-9-]+)\.(pt-BR|en|ja|zh-Hant)\.md$@
 fileName :: Text -> Maybe ((Text, Text, Text), Text, Language)
 fileName file = do
-  (stem, l) <- case (T.stripSuffix ".pt-BR.md" file, T.stripSuffix ".en.md" file) of
-    (Just s, _) -> Just (s, PtBr)
-    (_, Just s) -> Just (s, En)
+  (stem, l) <- case (T.stripSuffix ".pt-BR.md" file, T.stripSuffix ".en.md" file, T.stripSuffix ".ja.md" file, T.stripSuffix ".zh-Hant.md" file) of
+    (Just s, _, _, _) -> Just (s, PtBr)
+    (_, Just s, _, _) -> Just (s, En)
+    (_, _, Just s, _) -> Just (s, Ja)
+    (_, _, _, Just s) -> Just (s, ZhHant)
     _ -> Nothing
   (ymd, rest) <- isoDate stem
   s <- T.stripPrefix "-" rest
