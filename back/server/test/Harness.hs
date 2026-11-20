@@ -18,6 +18,7 @@ module Harness
     goodForm,
     bulk,
     secret,
+    tileBytes,
     fakeClientSecret,
     advance,
     logLines,
@@ -142,7 +143,7 @@ start tweak extra = do
   write (static </> "style.css") ("body { margin: 0 }\n" <> bulk)
   -- The pages the server renders read the catalogs under static/i18n, as in the built page.
   createDirectoryIfMissing True (static </> "i18n")
-  mapM_ (\tag -> BS.readFile ("../../site/i18n" </> tag <> ".json") >>= BS.writeFile (static </> "i18n" </> tag <> ".json")) ["pt-BR", "en"]
+  mapM_ (\tag -> BS.readFile ("../../site/i18n" </> tag <> ".json") >>= BS.writeFile (static </> "i18n" </> tag <> ".json")) ["pt-BR", "en", "ja", "zh-Hant"]
   write (static </> "logo.svg") ("<svg></svg>" <> bulk)
   write (static </> "font.woff2") bulk
   write (static </> "photo.png") bulk
@@ -155,6 +156,11 @@ start tweak extra = do
   write (static </> "data" </> "rio" </> "latest.json") "{\"from\":\"static\"}"
   write (static </> "data" </> "floripa" </> "latest.json") "{\"from\":\"static\"}"
   write (dataDir </> "floripa" </> "latest.json") "{\"from\":\"data\"}"
+  -- 1000 bytes that name their own offset, so a range is checked by its content.
+  write (root </> "tiles" </> "marola.pmtiles") tileBytes
+  write (root </> "tiles" </> "secret.txt") secret
+  write (static </> "tiles" </> "marola.pmtiles") "the build's copy"
+  write (static </> "tiles" </> "fixture.pmtiles") "the build's fixture"
   let config =
         tweak
           Config
@@ -164,6 +170,7 @@ start tweak extra = do
               db = root </> "db" </> "marola.db",
               studies = root </> "studies",
               studiesQuota = 1000000,
+              tiles = root </> "tiles",
               dev = False,
               githubClientId = Just "test-client-id",
               githubSecretFile = Just (root </> "github-secret"),
@@ -296,11 +303,16 @@ submission =
       topic = WaterQuality,
       sources = ["https://example.org/a", "https://example.org/b"],
       repository = Just "https://github.com/example/r",
+      archive = Just "https://zenodo.org/records/23224155",
       licence = CcBy40,
       aiModels = "",
       aiContribution = NoAi,
       aiProcess = ""
     }
+
+-- | @0000000100020003...@: byte @4n@ starts the number @n@ in four digits.
+tileBytes :: Text
+tileBytes = T.concat [T.justifyRight 4 '0' (T.pack (show n)) | n <- [0 .. 249 :: Int]]
 
 hashOf :: Char -> Text
 hashOf c = T.replicate 64 (T.singleton c)
@@ -314,6 +326,7 @@ bareConfig db =
       db = db,
       studies = "",
       studiesQuota = 0,
+      tiles = "",
       dev = False,
       githubClientId = Nothing,
       githubSecretFile = Nothing,

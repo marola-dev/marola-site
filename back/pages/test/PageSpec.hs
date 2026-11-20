@@ -34,29 +34,47 @@ spec :: Env -> Spec
 spec env = describe "pages" $ do
   forEach env "the document has its language, a favicon and the shared style" $ \_ l html -> do
     html `shouldSatisfy` T.isPrefixOf ("<!doctype html>\n<html lang=\"" <> Language.tag l <> "\">")
-    html `shouldSatisfy` has "<link rel=\"icon\" href=\"/favicon.svg\" type=\"image/svg+xml\">"
+    html `shouldSatisfy` has "<link rel=\"icon\" href=\"/favicon.png\" type=\"image/png\">"
+    html `shouldSatisfy` has "<link rel=\"apple-touch-icon\" href=\"/apple-touch-icon.png\">"
     html `shouldSatisfy` has "<link rel=\"stylesheet\" href=\"/style.css\">"
   forEach env "canonical and the three alternates point at the page's own files" $ \s l html ->
     if s == "404"
       then html `shouldNotSatisfy` has "rel=\"canonical\""
       else do
         html `shouldSatisfy` has ("<link rel=\"canonical\" href=\"" <> Layout.origin <> Layout.path l s <> "\">")
-        html `shouldSatisfy` has ("hreflang=\"pt-BR\" href=\"" <> Layout.origin <> Layout.path PtBr s <> "\"")
-        html `shouldSatisfy` has ("hreflang=\"en\" href=\"" <> Layout.origin <> Layout.path En s <> "\"")
+        mapM_ (\la -> html `shouldSatisfy` has ("hreflang=\"" <> Language.tag la <> "\" href=\"" <> Layout.origin <> Layout.path la s <> "\"")) allLanguages
         html `shouldSatisfy` has ("hreflang=\"x-default\" href=\"" <> Layout.origin <> Layout.path PtBr s <> "\"")
   forEach env "no script, no style element, no style attribute, no handler" $ \_ _ html ->
     scripted html `shouldBe` False
-  forEach env "the language switch is two plain links to this page in each language" $ \s _ html -> do
-    html `shouldSatisfy` has ("<a href=\"" <> Layout.path PtBr s <> "\" lang=\"pt-BR\"")
-    html `shouldSatisfy` has ("<a href=\"" <> Layout.path En s <> "\" lang=\"en\"")
+  forEach env "the language switch is four plain links to this page in each language" $ \s _ html -> do
+    mapM_ (\la -> html `shouldSatisfy` has ("<a href=\"" <> Layout.path la s <> "\" lang=\"" <> Language.tag la <> "\"")) allLanguages
   forEach env "the nav links go to the page's own language" $ \_ l html ->
     mapM_ (\n -> allHrefs html `shouldContain` [Layout.path l n]) Layout.navSlugs
   forEach env "the nav links the studies list and the footer the submit page, in the page's language" $ \_ l html -> do
     allHrefs html `shouldContain` [Layout.dynamicPath l "studies"]
     allHrefs html `shouldContain` [Layout.dynamicPath l "submit"]
-  forEach env "the footer links the privacy and takedown pages, in the page's language" $ \_ l html -> do
+  forEach env "the footer links the privacy, takedown and partners pages, in the page's language" $ \_ l html -> do
     allHrefs html `shouldContain` [Layout.path l "privacy"]
     allHrefs html `shouldContain` [Layout.path l "takedown"]
+    allHrefs html `shouldContain` [Layout.path l "partners"]
+  forEach env "the chrome is the map page's: the top bar, the wordmark as a link to the map, the eye, the credit line" $ \s l html -> do
+    html `shouldSatisfy` has "<body><header class=\"top\"><div class=\"brand\"><h1><a href=\""
+    html `shouldSatisfy` has ("<a href=\"" <> Layout.mapPath l <> "\"><span class=\"logo\" aria-hidden=\"true\"></span>marola</a></h1>")
+    html `shouldSatisfy` has "<a class=\"piabrota\" href=\"https://piabrota.art\" target=\"_blank\" rel=\"noopener\""
+    html `shouldSatisfy` has "<div class=\"navtools\"><div class=\"lang\" role=\"group\""
+    html `shouldSatisfy` has ("<div class=\"bar pagebar\"><div class=\"controls\"><a href=\"" <> Layout.mapPath l <> "\">")
+    html `shouldSatisfy` has ("<main class=\"main about p-" <> s <> "\">")
+    html `shouldSatisfy` has "<meta name=\"theme-color\" content=\"#0B0D12\">"
+    html `shouldSatisfy` (not . has "<a href=\"https://github.com/h0ffmann\" target=")
+    html `shouldSatisfy` has ("<a href=\"" <> Layout.path l "members" <> "\">")
+    html `shouldSatisfy` has "piabrota</a></p></footer></body>"
+    count "<h1" html `shouldBe` 1
+  it "a page of a nav section has its eyebrow; the 404 has none" $ do
+    renderWith env "about" PtBr `shouldSatisfy` has "<p class=\"eyebrow\">marola · sobre</p><article"
+    renderWith env "contact-sent" En `shouldSatisfy` has "<p class=\"eyebrow\">marola · contact</p>"
+    renderWith env "about" Ja `shouldSatisfy` has "<p class=\"eyebrow\">marola · このサイトについて</p>"
+    renderWith env "contact-sent" ZhHant `shouldSatisfy` has "<p class=\"eyebrow\">marola · 聯絡</p>"
+    renderWith env "404" En `shouldNotSatisfy` has "class=\"eyebrow\""
   it "the privacy and takedown pages are in the build and the sitemap, in both languages, and say what they must" $ do
     mapM_
       ( \s -> do
@@ -64,7 +82,8 @@ spec env = describe "pages" $ do
           Site.noIndex s `shouldBe` False
           mapM_ (\l -> Meta.sitemap `shouldSatisfy` has (Layout.origin <> Layout.path l s)) allLanguages
       )
-      ["privacy", "takedown"]
+      ["privacy", "takedown", "partners"]
+    mapM_ (\n -> renderWith env "partners" En `shouldSatisfy` has n) ["https://lnt.org/", "https://github.com/opendiving/opendiving", "https://piabrota.art", "/vendor/lnt/proud-partner.png", "/vendor/opendiving/icon.svg", "/vendor/piabrota/favicon.svg", "https://github.com/ouroboric-dev", "/vendor/ouroboric/ouroboric-icon-dark.svg"]
     let en = renderWith env "privacy" En
         pt = renderWith env "privacy" PtBr
     mapM_ (\n -> en `shouldSatisfy` has n) ["not legal advice", "IP address", "tombstone", "/account"]
@@ -117,25 +136,23 @@ spec env = describe "pages" $ do
   it "a missing catalog key shows the key" $ do
     let bare = env {envCatalog = Map.fromList [(PtBr, Map.empty), (En, Map.empty)]}
     renderWith bare "about" En `shouldSatisfy` has ">nav.about</a>"
-  it "the build lists pt-BR at the root and English under en/" $
+  it "the build lists pt-BR at the root and each language under its tag" $
     fmap (sort . map fst) (Site.allPages env)
       `shouldBe` Right
-        [ "404.html",
-          "about.html",
-          "contact-sent.html",
-          "contact.html",
-          "en/404.html",
-          "en/about.html",
-          "en/contact-sent.html",
-          "en/contact.html",
-          "en/members.html",
-          "en/news.html",
-          "en/privacy.html",
-          "en/support.html",
-          "en/takedown.html",
-          "members.html",
-          "news.html",
-          "privacy.html",
-          "support.html",
-          "takedown.html"
-        ]
+        ( sort
+            ( [ "404.html",
+                "about.html",
+                "contact-sent.html",
+                "contact.html",
+                "members.html",
+                "news.html",
+                "partners.html",
+                "privacy.html",
+                "support.html",
+                "takedown.html"
+              ]
+                ++ concatMap
+                  (\pre -> map (\s -> pre <> s <> ".html") ["404", "about", "contact-sent", "contact", "members", "news", "partners", "privacy", "support", "takedown"])
+                  ["en/", "ja/", "zh-Hant/"]
+            )
+        )

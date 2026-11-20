@@ -1,8 +1,10 @@
 # News posts
 
 The posts on [marola.dev/news.html](https://marola.dev/news.html), one Markdown file per post and
-language: `YYYY-MM-DD-<slug>.pt-BR.md` and `YYYY-MM-DD-<slug>.en.md`, both required.
-`scripts/news_build.py` writes them into `site/static/news.html`, newest first; edit the posts here,
+language: `YYYY-MM-DD-<slug>.pt-BR.md` and `YYYY-MM-DD-<slug>.en.md`, both required; `ja` and
+`zh-Hant` are the LLM passes and come per post. `scripts/news_build.py` writes the pt-BR and en
+posts into `site/static/news.html`, newest first (the legacy page keeps its two languages; the new
+pages render all four); edit the posts here,
 never the generated block in `news.html`. `just quality` and CI run `news_build.py --check`, which
 fails on a stale page or a post that breaks the format below.
 
@@ -39,5 +41,4 @@ links to what backs it (`citizen-science-site`).
 
 | Date | Post | For |
 |---|---|---|
-| 2026-10-09 | [The Science of Wind](2026-10-09-a-ciencia-do-vento.en.md) ([pt-BR](2026-10-09-a-ciencia-do-vento.pt-BR.md)) | #100 |
-| 2026-10-09 | [Sic Mundus Creatus Est](2026-10-09-sic-mundus-creatus-est.en.md) ([pt-BR](2026-10-09-sic-mundus-creatus-est.pt-BR.md)) | #7, #96 |
+| 2026-10-09 | [Sic Mundus Creatus Est](2026-10-09-sic-mundus-creatus-est.en.md) ([pt-BR](2026-10-09-sic-mundus-creatus-est.pt-BR.md) · [ja](2026-10-09-sic-mundus-creatus-est.ja.md) · [zh-Hant](2026-10-09-sic-mundus-creatus-est.zh-Hant.md)) | #7, #96 |

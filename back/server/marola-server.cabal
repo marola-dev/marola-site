@@ -34,6 +34,7 @@ library
     Marola.Server.RateLimit
     Marola.Server.Http
     Marola.Server.Files
+    Marola.Server.Tiles
     Marola.Server.Store
     Marola.Server.StudyStore
     Marola.Server.Session
@@ -98,6 +99,7 @@ test-suite marola-server-test
     HeaderSpec
     LimitSpec
     FileSpec
+    TileSpec
     ContactSpec
     SessionSpec
     LoginSpec

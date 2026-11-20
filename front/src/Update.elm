@@ -22,6 +22,7 @@ import Params exposing (Query)
 import Parse
 import TrailGeo
 import Trails exposing (Route, Trails)
+import Tuple
 
 
 {-| What the page reads from the browser before it starts.
@@ -115,29 +116,42 @@ guardDay model area day next =
 
 
 {-| What the footer says of a failed request: the status and the path, as the old page's
-`fetchJson` did. The flag is true for a missing file.
+`fetchJson` did, through the catalog (in English when the catalog is what failed to load). The
+flag is true for a missing file.
 -}
-describe : FetchError -> String -> ( String, Bool )
-describe error path =
+describe : I18n.Locale -> FetchError -> String -> ( String, Bool )
+describe loc error path =
+    let
+        say key english =
+            let
+                text =
+                    I18n.t loc key [ I18n.arg "path" path ]
+            in
+            if text == key then
+                english ++ " " ++ path
+
+            else
+                text
+    in
     case error of
         HttpError status ->
             ( String.fromInt status ++ " " ++ path, status == 404 )
 
         NetworkError ->
-            ( "network error " ++ path, False )
+            ( say "fail.network" "network error", False )
 
         BadUrl ->
-            ( "bad address " ++ path, False )
+            ( say "fail.bad_url" "bad address", False )
 
         BadData _ ->
-            ( "bad data " ++ path, False )
+            ( say "fail.bad_data" "bad data", False )
 
 
 fail : Model -> FetchError -> String -> ( Model, List Effect )
 fail model error path =
     let
         ( text, missing ) =
-            describe error path
+            describe model.loc error path
     in
     ( { model | status = Failed text missing }, [] )
 
@@ -169,7 +183,7 @@ catalogLoaded model language result =
         next =
             case result of
                 Err e ->
-                    { next0 | status = Failed (Tuple.first (describe e ("i18n/" ++ Language.tag language ++ ".json"))) False }
+                    { next0 | status = Failed (Tuple.first (describe next0.loc e ("i18n/" ++ Language.tag language ++ ".json"))) False }
 
                 Ok _ ->
                     next0
@@ -288,7 +302,7 @@ latestLoaded model area days =
                         last days
             of
                 Nothing ->
-                    ( { model | days = days, status = Failed ("no days " ++ area) False }, [] )
+                    ( { model | days = days, status = Failed (I18n.t model.loc "fail.no_days" [ I18n.arg "area" area ]) False }, [] )
 
                 Just day ->
                     selectDay { model | days = days } day
@@ -779,11 +793,31 @@ update message model =
         LanguagePicked language ->
             languagePicked model language
 
-        SoundPressed ->
-            ( { model | soundOn = not model.soundOn }, [ Sound (not model.soundOn) ] )
+        PlaylistPressed ->
+            ( { model | playlistOpen = not model.playlistOpen }, [] )
 
-        SoundFailed ->
-            ( { model | soundOn = False }, [] )
+        PlayerDragStarted x y ->
+            ( { model | playerDrag = Just { x = x, y = y } }, [] )
+
+        PlayerDragged x y ->
+            case model.playerDrag of
+                Just at ->
+                    let
+                        ( dx, dy ) =
+                            model.playerOffset
+
+                        offset =
+                            ( dx + (x - at.x), dy + (y - at.y) )
+                    in
+                    ( { model | playerDrag = Just { x = x, y = y }, playerOffset = offset }
+                    , [ MovePlayer (Tuple.first offset) (Tuple.second offset) ]
+                    )
+
+                Nothing ->
+                    ( model, [] )
+
+        PlayerDragEnded ->
+            ( { model | playerDrag = Nothing }, [] )
 
         MapEvent kind arg ->
             mapEvent model kind arg

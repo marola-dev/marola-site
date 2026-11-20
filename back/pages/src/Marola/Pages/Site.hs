@@ -50,11 +50,11 @@ data Env = Env
 
 -- | Pages whose body is Markdown, by file name without @.html@.
 slugs :: [Text]
-slugs = ["about", "support", "contact", "contact-sent", "privacy", "takedown", "404"]
+slugs = ["about", "support", "contact", "contact-sent", "privacy", "takedown", "partners", "404"]
 
 -- | Every page of the site, in the order of the nav.
 allSlugs :: [Text]
-allSlugs = ["news", "about", "contact", "members", "support", "privacy", "takedown", "contact-sent", "404"]
+allSlugs = ["news", "about", "contact", "members", "support", "privacy", "takedown", "partners", "contact-sent", "404"]
 
 -- | A page a search engine must not list.
 noIndex :: Text -> Bool
@@ -76,7 +76,7 @@ form loc =
     [ H.el
         "form"
         [ H.cls "contact",
-          H.attr "action" (if language loc == En then "/en/contact" else "/contact"),
+          H.attr "action" (case language loc of En -> "/en/contact"; Ja -> "/ja/contact"; ZhHant -> "/zh-Hant/contact"; PtBr -> "/contact"),
           H.attr "method" "POST"
         ]
         [ -- The honeypot: a person never sees it, the server drops a post that fills it.

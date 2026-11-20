@@ -42,6 +42,8 @@ wordsPerMinute :: Int
 wordsPerMinute = 200
 
 months :: Language -> [Text]
+months Ja = months En
+months ZhHant = months En
 months PtBr =
   [ "janeiro",
     "fevereiro",
@@ -74,6 +76,8 @@ months En =
 readTime :: Language -> Int -> Text
 readTime PtBr m = tshow m <> " min de leitura"
 readTime En m = tshow m <> " min read"
+readTime Ja m = tshow m <> "分で読める"
+readTime ZhHant m = "閱讀時間 " <> tshow m <> " 分"
 
 tshow :: Int -> Text
 tshow = T.pack . show
@@ -87,6 +91,9 @@ longDate l y mo d =
    in case l of
         PtBr -> tshow (int d) <> " de " <> month <> " de " <> y
         En -> month <> " " <> tshow (int d) <> ", " <> y
+        -- "2026年11月9日"; the month table is not read, the numerals carry the date.
+        Ja -> y <> "年" <> tshow (int mo) <> "月" <> tshow (int d) <> "日"
+        ZhHant -> y <> "年" <> tshow (int mo) <> "月" <> tshow (int d) <> "日"
 
 -- A regex \w: letters, non-spacing marks, decimal digits, connector punctuation.
 isWordChar :: Char -> Bool
@@ -207,12 +214,14 @@ bodyBlock l file blk
       H.el "ul" [] <$> collect [withInline "li" [] (collapse i) | i <- T.splitOn "\n- " (T.drop 2 blk)]
   | otherwise = withInline "p" [] (collapse blk)
 
--- @^(\d{4})-(\d{2})-(\d{2})-([a-z0-9-]+)\.(pt-BR|en)\.md$@
+-- @^(\d{4})-(\d{2})-(\d{2})-([a-z0-9-]+)\.(pt-BR|en|ja|zh-Hant)\.md$@
 fileName :: Text -> Maybe ((Text, Text, Text), Text, Language)
 fileName file = do
-  (stem, l) <- case (T.stripSuffix ".pt-BR.md" file, T.stripSuffix ".en.md" file) of
-    (Just s, _) -> Just (s, PtBr)
-    (_, Just s) -> Just (s, En)
+  (stem, l) <- case (T.stripSuffix ".pt-BR.md" file, T.stripSuffix ".en.md" file, T.stripSuffix ".ja.md" file, T.stripSuffix ".zh-Hant.md" file) of
+    (Just s, _, _, _) -> Just (s, PtBr)
+    (_, Just s, _, _) -> Just (s, En)
+    (_, _, Just s, _) -> Just (s, Ja)
+    (_, _, _, Just s) -> Just (s, ZhHant)
     _ -> Nothing
   (ymd, rest) <- isoDate stem
   s <- T.stripPrefix "-" rest

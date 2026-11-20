@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 /** front_check: smoke test of the BUILT Elm page in dist (run `scripts/site_build.sh --fixtures` first).
  * No browser, no network, no dependencies: a DOM that has only the members Elm's virtual-dom, ports.js and the two FFI
- * files touch, a MapLibre stub that records every call, and a fetch that serves dist. Each scenario runs in a child
+ * files touch, a MapLibre stub that records every call, and an XMLHttpRequest (elm/http's) that serves dist. Each scenario runs in a child
  * node process because the bundle keeps state.
  *
  * Not checked here:
  *  - the board JSON-Schema validator and the frozen schema-1 board (the Elm decoder tests and board-schema.sh own that)
  *  - the wind/wave flow layer (flow.js) and its particles: the compiled client ships them disabled, WebGL has no stub here
- *  - the AudioContext wave sound (the page plays an Audio loop; the sound-blocked scenario covers its url, loop and refusal)
+ *  - Spotify's player inside its iframe (the playlist scenario covers the iframe's url, the toggle and the CSP's frame-src)
  *  - the aspect-by-aspect tooltip numbers (MIP-0009 section 3), note codes, sea lore and score-note folds, SOS numbers
  *  - data-i18n attributes, the pseudo-locale gate, the lowercase house style
- *  - Mapbox token handling and the composite coastline layer (the client uses OpenFreeMap, no token)
+ *  - Mapbox token handling and the composite coastline layer (the client draws the site's own tiles, no token)
  *  - the static pages: section nav, donations, members, contact, favicon, page heads/JSON-LD
  */
 'use strict';
@@ -24,7 +24,7 @@ const ROOT = path.resolve(__dirname, '..');
 const DIST = process.env.FRONT_CHECK_DIST || path.join(ROOT, 'dist');
 const distJson = (rel) => JSON.parse(fs.readFileSync(path.join(DIST, rel), 'utf8'));
 const read = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8');
-const NOT_CHECKED = ['board schema validation', 'flow layer (wind/waves/particles)', 'wave sound', 'tooltip aspect numbers, note codes, folds, SOS',
+const NOT_CHECKED = ['board schema validation', 'flow layer (wind/waves/particles)', 'Spotify player', 'tooltip aspect numbers, note codes, folds, SOS',
   'data-i18n attributes and the pseudo-locale', 'Mapbox token and composite coastline', 'static pages (nav, donate, members, contact, heads)'];
 
 let fails = 0, total = 0;
@@ -61,6 +61,25 @@ function staticChecks() {
   ok(!/unsafe-inline|unsafe-eval/.test(csp), "the CSP has no 'unsafe-inline' or 'unsafe-eval'");
   const tokens = csp.split(/[\s;]+/);
   ok(!tokens.includes('https:') && !tokens.includes('*'), 'the CSP has no bare https: or *');
+  const directive = (name) => (csp.split('; ').find((d) => d.startsWith(name + ' ')) || '').slice(name.length + 1);
+  ok(directive('connect-src') === "'self' https://gibs.earthdata.nasa.gov", 'connect-src is the origin and NASA GIBS, no map host', directive('connect-src'));
+  ok(directive('img-src') === "'self' data: blob: https://gibs.earthdata.nasa.gov", 'img-src is the origin, data:, blob: and NASA GIBS', directive('img-src'));
+  const origins = [...new Set(csp.match(/https:\/\/[^\s;]+/g) || [])].sort();
+  ok(origins.join() === 'https://gibs.earthdata.nasa.gov,https://open.spotify.com', 'the CSP names two origins: NASA GIBS and the Spotify player', origins.join());
+
+  // The base map is the site's own: one style, its glyphs and one PMTiles file, all under the origin.
+  const styleText = fs.readFileSync(path.join(DIST, 'map/style.json'), 'utf8');
+  const style = JSON.parse(styleText);
+  ok(!/https?:/.test(styleText), 'the map style names no host');
+  ok(Object.keys(style.sources).length === 1 && style.sources.basemap.url === 'pmtiles:///tiles/marola.pmtiles', 'its one source is the PMTiles file under /tiles/', JSON.stringify(style.sources));
+  ok(style.glyphs === '/map/fonts/{fontstack}/{range}.pbf' && !('sprite' in style) && !styleText.includes('icon-image'), 'its glyphs are local and it needs no sprite');
+  const stacks = new Set();
+  JSON.stringify(style.layers, (k, v) => { if (typeof v === 'string' && /^noto-/.test(v)) stacks.add(v); return v; });
+  ok(stacks.size >= 2 && [...stacks].every((f) => ['0-255', '256-511'].every((r) => fs.existsSync(path.join(DIST, 'map/fonts', f, r + '.pbf')))), 'every font stack the style names has its Latin glyphs in dist', [...stacks].join());
+  ok(style.layers.every((l) => l.type === 'background' || l.source === 'basemap'), 'every layer reads that source');
+  ok(style.layers.some((l) => l.type === 'symbol') && style.layers.findIndex((l) => l.type === 'symbol') > style.layers.findIndex((l) => l.id === 'water'), 'the labels come after the fills, where the satellite layer is inserted');
+  ok(style.layers.some((l) => l.id === 'landuse_beach') && style.layers.some((l) => l.id === 'pois_beach'), 'the style draws the sand and names the beaches');
+  ok(fs.existsSync(path.join(DIST, 'vendor/pmtiles/pmtiles.mjs')) && fs.existsSync(path.join(DIST, 'vendor/pmtiles/LICENSE.pmtiles')), 'the PMTiles library is vendored with its licence');
 
   const words = [['innerHTML', /innerHTML/], ['outerHTML', /outerHTML/], ['setHTML', /setHTML/], ['insertAdjacentHTML', /insertAdjacentHTML/],
     ['document.write', /document\.write/], ['eval(', /\beval\(/], ['new Function', /new Function/]];
@@ -191,7 +210,7 @@ async function until(pred, label) {
 const click = async (el) => { fire(el, 'click'); await sleep(40); };
 
 // ---- the MapLibre stub: every call recorded; the data: module below re-exports it ------------------------------
-const ml = { maps: [], markers: [], popups: [], controls: [], workerUrl: null, mode: 'load' };
+const ml = { maps: [], markers: [], popups: [], controls: [], workerUrl: null, mode: 'load', protocols: {}, protocolOpts: null };
 class Emitter {
   constructor() { this.handlers = []; }
   on(ev, a, b) { this.handlers.push({ ev, layer: b ? a : null, fn: b || a }); return this; }
@@ -205,7 +224,13 @@ class MapStub extends Emitter {
     Object.assign(this, { opts, calls: [], sources: {}, layers: [], loaded: false, hits: [] });
     ml.maps.push(this);
     // The FFI wires its handlers right after the constructor, so events go out on the next tick, as MapLibre's do.
-    setTimeout(() => (ml.mode === 'load' ? (this.loaded = true, this.emit('load')) : this.emit('error', { error: new Error('style failed') })), 0);
+    // A tile the sparse file does not hold is an error MapLibre reports and the page must ignore, before load too.
+    // 'error' is the tiles file missing: MapLibre reports the source and then fires load all the same.
+    setTimeout(() => {
+      this.emit('error', { error: new Error('Tile not found.'), tile: {}, sourceId: 'basemap' });
+      if (ml.mode === 'error') this.emit('error', { error: new Error('Bad response code: 404'), sourceId: 'basemap' });
+      this.loaded = true; this.emit('load');
+    }, 0);
   }
   rec(name, ...args) { this.calls.push({ name, args }); }
   addControl(c) { this.rec('addControl', c); }
@@ -244,14 +269,17 @@ class PopupStub {
 globalThis.__ml = { Map: MapStub, Marker: MarkerStub, Popup: PopupStub,
   AttributionControl: class { constructor(o) { this.kind = 'attribution'; this.opts = o; ml.controls.push(this); } },
   NavigationControl: class { constructor(o) { this.kind = 'navigation'; this.opts = o; ml.controls.push(this); } },
-  setWorkerUrl: (u) => { ml.workerUrl = u; } };
+  setWorkerUrl: (u) => { ml.workerUrl = u; }, addProtocol: (name, fn) => { ml.protocols[name] = fn; },
+  Protocol: class { constructor(o) { ml.protocolOpts = o; this.tile = () => {}; } } };
 // The loader hook runs on its own thread, so the module it serves only re-exports what this thread built.
-const STUB_MODULE = 'const m = globalThis.__ml; export const { Map, Marker, Popup, AttributionControl, NavigationControl, setWorkerUrl } = m;';
-const HOOK = `export async function resolve(s, c, next) { if (s === '/vendor/maplibre/maplibre-gl.mjs') return { url: 'data:text/javascript,' + ${JSON.stringify(encodeURIComponent(STUB_MODULE))}, shortCircuit: true }; return next(s, c); }`;
+const STUB_MODULE = 'const m = globalThis.__ml; export const { Map, Marker, Popup, AttributionControl, NavigationControl, setWorkerUrl, addProtocol } = m;';
+const PMTILES_MODULE = 'export const Protocol = globalThis.__ml.Protocol;';
+const stubUrl = (code) => JSON.stringify('data:text/javascript,' + encodeURIComponent(code));
+const HOOK = `export async function resolve(s, c, next) { if (s === '/vendor/maplibre/maplibre-gl.mjs') return { url: ${stubUrl(STUB_MODULE)}, shortCircuit: true }; if (s === '/vendor/pmtiles/pmtiles.mjs') return { url: ${stubUrl(PMTILES_MODULE)}, shortCircuit: true }; return next(s, c); }`;
 
 // ---- browser globals per scenario ----------------------------------------------------------------------------
 const BASE = 'http://127.0.0.1:8000/';
-const fetched = [], raw = [], urls = [], audios = [], store = new Map();
+const fetched = [], raw = [], urls = [], store = new Map();
 function installGlobals(search, overrides) {
   const def = (k, value) => Object.defineProperty(globalThis, k, { value, configurable: true, writable: true });
   def('document', document); def('HTMLElement', HTMLElement_);
@@ -263,16 +291,31 @@ function installGlobals(search, overrides) {
   def('history', { replaceState: (_s, _t, url) => urls.push(url) });
   def('localStorage', { getItem: (k) => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)) });
   def('matchMedia', () => ({ matches: false }));
-  def('fetch', async (req) => {
-    raw.push(typeof req === 'string' ? req : req.url);
-    const url = new URL(typeof req === 'string' ? req : req.url, BASE);
+  // elm/http's transport: open, send, then one "load" with the status, the headers and the text.
+  const serve = (target) => {
+    raw.push(target);
+    const url = new URL(target, BASE);
     fetched.push(url);
     const rel = decodeURIComponent(url.pathname.slice(1));
     const hit = overrides[rel];
-    if (hit === 404) return new Response('', { status: 404 });
     const file = path.join(DIST, rel);
-    if (hit === undefined && !(file.startsWith(DIST) && fs.existsSync(file) && fs.statSync(file).isFile())) return new Response('', { status: 404 });
-    return new Response(hit === undefined ? fs.readFileSync(file) : JSON.stringify(hit), { status: 200, headers: { 'content-type': 'application/json' } });
+    if (hit === 404 || (hit === undefined && !(file.startsWith(DIST) && fs.existsSync(file) && fs.statSync(file).isFile()))) return { url, status: 404, body: '' };
+    return { url, status: 200, body: hit === undefined ? fs.readFileSync(file, 'utf8') : JSON.stringify(hit) };
+  };
+  def('XMLHttpRequest', class {
+    constructor() { this.on = {}; this.status = 0; this.statusText = ''; this.response = null; this.head = ''; }
+    addEventListener(kind, fn) { this.on[kind] = fn; }
+    open(_method, url) { this.target = url; }
+    setRequestHeader() {}
+    getAllResponseHeaders() { return this.head; }
+    send() {
+      setTimeout(() => {
+        const r = serve(this.target);
+        Object.assign(this, { status: r.status, response: r.body, responseText: r.body, responseURL: String(r.url) });
+        this.head = r.status === 200 ? 'content-type: application/json\r\n' : '';
+        if (this.on.load) this.on.load();
+      }, 0);
+    }
   });
 }
 const lastUrl = () => new URL(urls[urls.length - 1], BASE);
@@ -293,13 +336,23 @@ async function openTrailPanel() { await click($('button[data-panel=trails]')); }
 async function floripa() {
   const board = distJson(dayFile('floripa')), map = ml.maps[0];
   const byScore = [...board.beaches].sort((a, b) => b.best.score - a.best.score);
-  ok(ml.maps.length === 1 && map.opts.style === 'https://tiles.openfreemap.org/styles/liberty', 'the map starts on the OpenFreeMap liberty style');
+  ok(ml.maps.length === 1 && map.opts.style === '/map/style.json', "the map starts on the site's own style", map.opts.style);
+  ok(typeof ml.protocols.pmtiles === 'function' && ml.protocolOpts && ml.protocolOpts.errorOnMissingTile === true, 'pmtiles:// is registered, and a missing tile is an error (so its ancestor is drawn)');
   const attribution = ml.controls.find((c) => c.kind === 'attribution');
-  ok(attribution && attribution.opts.customAttribution.some((a) => a.includes('OpenStreetMap')), 'the attribution credits OpenStreetMap');
+  const credits = attribution ? attribution.opts.customAttribution : [];
+  ok(credits.some((a) => a.includes('© OpenStreetMap') && a.includes('https://www.openstreetmap.org/copyright')), 'the attribution credits OpenStreetMap with its copyright link');
+  ok(credits.some((a) => a.includes('Protomaps') && a.includes('https://protomaps.com')), 'and Protomaps', credits.join());
+  ok(credits.some((a) => a.includes('MapLibre') && a.includes('https://maplibre.org')) && credits.length === 3, 'and MapLibre, and nobody else', credits.join());
   ok(ml.controls.some((c) => c.kind === 'navigation') && map.opts.attributionControl === false, 'navigation control added, default attribution off');
+  // Closing the emergency panel gives focus back to its button (Browser.Dom.focus, after the next frame).
+  await click($('#sos'));
+  await click($('#sos-close'));
+  await sleep(40);
+  ok(document.activeElement && document.activeElement.getAttribute('id') === 'sos', 'closing the emergency panel focuses its button again', document.activeElement && document.activeElement.getAttribute('id'));
   ok(ml.workerUrl === '/vendor/maplibre/maplibre-gl-worker.mjs', 'the worker is the vendored one', ml.workerUrl);
   ok(map.calls.some((c) => c.name === 'fitBounds'), 'the first board fits the map to the beaches');
   ok(document.documentElement.lang === 'pt-BR' && $('a[href=news.html]').textContent === 'notícias', 'default language is pt-BR');
+  ok($('#watermark .lnt') && $('#watermark .lnt').getAttribute('role') === 'img' && $('#watermark .lnt').getAttribute('aria-label') === 'Leave No Trace, Proud Partner (marola é parceira oficial)' && $('#watermark svg').getAttribute('aria-hidden') === 'true', 'the map carries the watermark: the Leave No Trace logo with its name, the eye hidden from screen readers');
   ok(beachMarkers().length === 2 && live().length === 2, 'one marker per beach, no water points yet', live().length);
   ok(live().every((m) => cls(m.el).includes('wave')), 'beach marker nodes carry class wave');
   const best = markerOf(byScore[0].name);
@@ -350,19 +403,25 @@ async function floripa() {
   ok($$('[data-trail]').length === routesOf(file).length && $('.trail-foot').textContent.includes(String(file.ibge_municipality)), 'floripa panel lists its routes and the IBGE code');
 
   const hosts = new Set(fetched.map((u) => u.host));
-  ok([...hosts].every((h) => h === '127.0.0.1:8000' || h.endsWith('tiles.openfreemap.org') || h.endsWith('gibs.earthdata.nasa.gov')), 'every request stays on the origin or the CSP hosts', [...hosts].join());
+  ok([...hosts].every((h) => h === '127.0.0.1:8000' || h === 'gibs.earthdata.nasa.gov'), 'every request stays on the origin or NASA GIBS', [...hosts].join());
   const paths = fetched.map((u) => u.pathname);
-  ok(['/data/areas.json', '/i18n/en.json', '/i18n/pt-BR.json', '/data/floripa/latest.json', '/data/trails/floripa.json'].every((p) => paths.includes(p)), 'the page fetched catalogs, areas, latest and trails');
+  ok(['/data/areas.json', '/i18n/en.json', '/i18n/pt-BR.json', '/i18n/ja.json', '/i18n/zh-Hant.json', '/data/floripa/latest.json', '/data/trails/floripa.json'].every((p) => paths.includes(p)), 'the page fetched the four catalogs, areas, latest and trails');
   ok(!JSON.stringify({ ...map.opts, container: null }).includes('pk.'), 'no token in the map options');
 }
 
 async function english() {
   ok(document.documentElement.lang === 'en', '?lang=en starts in English');
   ok($('a[href=news.html]').textContent === 'news' && $('button[lang=en]').getAttribute('aria-pressed') === 'true', 'English nav text and EN pressed');
+  ok($('#watermark .lnt').getAttribute('aria-label') === 'Leave No Trace, Proud Partner (marola is an official partner)', 'the logo\'s name in English');
   await click($('button[lang=pt-BR]'));
   ok($('a[href=news.html]').textContent === 'notícias', 'pressing PT-BR flips the nav to notícias');
   ok(store.get('marola.lang') === 'pt-BR', 'the choice is stored in localStorage marola.lang', store.get('marola.lang'));
   ok(lastUrl().searchParams.get('lang') === 'pt-BR' && document.documentElement.lang === 'pt-BR', 'the URL and <html lang> follow');
+  await click($('button[lang=ja]'));
+  ok($('a[href=news.html]').textContent === 'ニュース' && document.documentElement.lang === 'ja', 'JA switches the nav to ニュース and <html lang>');
+  await click($('button[lang=zh-Hant]'));
+  ok($('a[href=news.html]').textContent === '消息' && document.documentElement.lang === 'zh-Hant', 'zh-Hant switches the nav to 消息 and <html lang>');
+  ok(store.get('marola.lang') === 'zh-Hant', 'the stored choice follows');
 }
 
 async function layerWater() {
@@ -442,7 +501,8 @@ async function boardTrails() {
 }
 
 async function styleFail() {
-  ok(shown($('#map-note')) && $('#map-note').textContent === distJson('i18n/pt-BR.json')['map.failed'], 'a failed style shows #map-note with the pt-BR map.failed text');
+  await sleep(60);
+  ok(shown($('#map-note')) && $('#map-note').textContent === distJson('i18n/pt-BR.json')['map.failed'], 'a missing tiles file shows #map-note with the pt-BR map.failed text, and the load that follows does not undo it');
   ok(!$('#flow') && $$('button[data-layer]').length === 0, 'the layer rail is not rendered');
   ok(shown($('aside#list')) && rows().length === 2, 'the beach list opens by itself');
   ok(ml.markers.length === 0 && !ml.maps[0].calls.some((c) => c.name === 'addSource'), 'nothing is drawn on the failed map');
@@ -470,11 +530,23 @@ async function nearDenied() {
   ok($('#near').getAttribute('aria-pressed') === 'false', 'the near button stays off');
 }
 
-async function soundBlocked() {
-  await click($('#sound'));
-  ok(audios.length === 1 && audios[0].url === 'vendor/sounds/waves.mp3' && audios[0].loop === true, 'the sound is the vendored wave loop, set to repeat', audios.map((a) => a.url).join());
-  await sleep(40);
-  ok($('#sound').getAttribute('aria-pressed') === 'false', 'a browser that refuses to play turns the sound button off again');
+async function playlist() {
+  const embed = 'https://open.spotify.com/embed/playlist/2hsuqvhCouatM8DtmKKl7U?theme=0';
+  const btn = () => document.querySelector('[data-toggle=playlist]');
+  ok(!$('#player iframe') && btn().getAttribute('aria-pressed') === 'false', 'no Spotify iframe before the playlist button is pressed');
+  await click(btn());
+  console.error('DEBUG toggles:', $$('[data-toggle]').map(b => b.getAttribute && b.getAttribute('data-toggle')));
+  console.error('DEBUG app children:', (app.childNodes || []).map(c => (c.tagName || '?') + ':' + (c.getAttribute && c.getAttribute('id') || '')).join(','));
+  const frame = $('#player iframe');
+  ok(frame && frame.getAttribute('src') === embed, 'the playlist button opens the GREAT RESET embed', frame && frame.getAttribute('src'));
+  ok(btn().getAttribute('aria-pressed') === 'true', 'the playlist button reads as pressed while the player is open');
+  const csp = /http-equiv="Content-Security-Policy" content="([^"]*)"/.exec(fs.readFileSync(path.join(DIST, 'index.html'), 'utf8'))[1];
+  ok(/(^|; )frame-src https:\/\/open\.spotify\.com(;|$)/.test(csp), 'the CSP lets the page frame open.spotify.com and nothing else', csp);
+  ok($('#player .grip') && $('#player .grip').getAttribute('aria-label') === distJson('i18n/pt-BR.json')['player.drag'], 'the player has a drag grip, named in the page language');
+  await click(btn());
+  ok(!$('#player iframe'), 'pressing it again removes the iframe');
+  const eye = $('a.piabrota');
+  ok(eye && eye.getAttribute('href') === 'https://piabrota.art' && $('a.piabrota svg'), 'the piabrota eye is an inline svg linking to piabrota.art');
 }
 
 const SCENARIOS = {
@@ -492,9 +564,7 @@ const SCENARIOS = {
     Object.defineProperty(globalThis, 'localStorage', { value: { getItem: boom, setItem: boom }, configurable: true, writable: true });
   } },
   'near-denied': { search: '?area=floripa', run: nearDenied },
-  'sound-blocked': { search: '?area=floripa', run: soundBlocked, setup: () => {
-    globalThis.Audio = class { constructor(url) { this.url = url; audios.push(this); } pause() {} play() { return Promise.reject(new Error('blocked')); } };
-  } },
+  playlist: { search: '?area=floripa', run: playlist },
 };
 
 async function child(name) {
@@ -508,7 +578,7 @@ async function child(name) {
     await import(pathToFileURL(bundle()[0]).href);
     await sleep(100);
     // Every request starts with "./", so the page works from any path; the stub resolves it against the page.
-    ok(fetched.length > 0 && raw.every((u) => u.startsWith('./')), 'the page reaches fetch, and every URL starts with ./', raw.join());
+    ok(fetched.length > 0 && raw.every((u) => u.startsWith('./')), 'the page makes its requests, and every URL starts with ./', raw.join());
     if (ml.mode === 'error') await until(() => shown($('#map-note')), '#map-note');
     else await until(() => ml.maps[0] && ml.maps[0].loaded && $('li[data-name]'), 'the board and the map');
     await sleep(60);

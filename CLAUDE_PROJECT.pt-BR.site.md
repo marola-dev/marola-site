@@ -124,8 +124,7 @@ Encontrar código (Hoffmann, 2026-10-11): para uma palavra-chave conhecida, use 
   substituto (`AGENTS.md`, "Screenshots in the PR").
 - Rodar o `just site-build`, que precisa de Docker e da imagem fixada do app no ghcr.io. Os
   threads do Marola Agent receberam "unauthorized" ao baixar essa imagem.
-- Fazer deploy. O `site.yml` faz o deploy a partir da `main` e num agendamento, e o
-  `.claude/settings.json` bloqueia o `just site-deploy`.
+- Fazer deploy. O piabrota2 faz o deploy da página legada pelas units do piabrota/nix-os, nunca daqui.
 
 ## 3. Plugins, skills e conectores
 

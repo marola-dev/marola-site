@@ -36,5 +36,6 @@ type Effect
     | MoveCamera Camera
     | Locate
     | Alert String
-    | Sound Bool
     | Focus String
+      -- The player's dragged offset in pixels, applied to #player as a transform.
+    | MovePlayer Int Int

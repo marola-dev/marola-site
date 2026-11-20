@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "test": "node tests/gen-fixtures.mjs && elm-test"
+    "test": "cd .. && cabal run -v0 exe:marola-tools -- elm-fixtures && cd front && elm-test"
   },
   "devDependencies": {
     "elm-format": "0.8.8",

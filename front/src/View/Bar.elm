@@ -1,4 +1,4 @@
-module View.Bar exposing (header, hourIndex, hourLabel, hourbar)
+module View.Bar exposing (hourIndex, hourLabel, tools)
 
 import Area exposing (Area)
 import Beach exposing (Selection(..))
@@ -17,10 +17,34 @@ import Ui exposing (attr, cls, idAttr)
 import Words
 
 
-brand : Model -> Html Msg
-brand model =
-    Html.div [ cls "brand" ]
-        [ Html.h1 [] [ Words.icon "brand", Html.text "marola" ]
+{-| The tool row under the top bar: the controls, the hour slider with its legend, the tagline.
+-}
+tools : Model -> Html Msg
+tools model =
+    let
+        picked =
+            Maybe.map .id model.area |> Maybe.withDefault ""
+    in
+    Html.div [ cls "bar" ]
+        [ Html.div [ cls "controls" ]
+            [ Html.Keyed.node "select"
+                [ idAttr "area"
+                , attr "aria-label" (Words.t model "controls.area")
+                , Html.Events.on "change" (D.map AreaPicked Html.Events.targetValue)
+                ]
+                (List.map (\a -> areaOption (a.id == picked) a) model.areas)
+            , insta model
+            , days model
+            , control model "near" "locate" (Words.t model "controls.near") "controls.near_title" [ Words.pressed (model.here /= Nothing) ] NearPressed
+            , control model
+                "toggle-list"
+                "list"
+                (Words.t model "controls.list")
+                ""
+                [ attr "aria-controls" "list", Words.expanded (model.panel == BeachList) ]
+                ListToggled
+            ]
+        , hourbar model
         , Html.p [ cls "tagline" ] [ Html.text (Words.t model "header.tagline") ]
         ]
 
@@ -139,36 +163,6 @@ control model id iconName label title extra message =
         [ Words.icon iconName, Html.span [] [ Html.text label ] ]
 
 
-header : Model -> Html Msg
-header model =
-    let
-        picked =
-            Maybe.map .id model.area |> Maybe.withDefault ""
-    in
-    Html.header [ cls "bar" ]
-        [ brand model
-        , Html.div [ cls "controls" ]
-            [ Html.Keyed.node "select"
-                [ idAttr "area"
-                , attr "aria-label" (Words.t model "controls.area")
-                , Html.Events.on "change" (D.map AreaPicked Html.Events.targetValue)
-                ]
-                (List.map (\a -> areaOption (a.id == picked) a) model.areas)
-            , insta model
-            , days model
-            , control model "near" "locate" (Words.t model "controls.near") "controls.near_title" [ Words.pressed (model.here /= Nothing) ] NearPressed
-            , control model "sound" "sound" (Words.t model "controls.sound") "controls.sound_title" [ Words.pressed model.soundOn ] SoundPressed
-            , control model
-                "toggle-list"
-                "list"
-                (Words.t model "controls.list")
-                ""
-                [ attr "aria-controls" "list", Words.expanded (model.panel == BeachList) ]
-                ListToggled
-            ]
-        ]
-
-
 {-| The slider's index: -1 is each beach at its own best hour.
 -}
 hourIndex : Model -> Int
@@ -215,7 +209,6 @@ legend : Model -> Html Msg
 legend model =
     Html.span [ cls "legend", attr "aria-hidden" "true" ]
         [ Html.b [] [ Html.text (Words.t model "legend.score") ]
-        , Html.text " "
         , chip "c70" [ Html.text "≥70" ]
         , chip "c40" [ Html.text "40–69" ]
         , chip "c1" [ Html.text "1–39" ]

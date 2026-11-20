@@ -3,6 +3,8 @@
 module Marola.Server.Files (segments, resolve, contentType, cacheControl, handle, notFoundPage, docsRedirect) where
 
 import Control.Monad (filterM)
+import Crypto.Hash (Digest, SHA256, hash)
+import Data.ByteArray.Encoding (Base (Base16), convertToBase)
 import Data.ByteString (ByteString)
 import Data.ByteString qualified as BS
 import Data.ByteString.Char8 qualified as BC
@@ -83,6 +85,7 @@ contentType file = case map toLower (takeExtension file) of
   ".woff2" -> "font/woff2"
   ".woff" -> "font/woff"
   ".mp3" -> "audio/mpeg"
+  ".pbf" -> "application/x-protobuf"
   _ -> "application/octet-stream"
 
 -- | @name.<8 or more hex digits>.ext@: the file name carries its content hash, so it never changes.
@@ -98,7 +101,7 @@ hashed name = case reverse (splitOn '.' name) of
 cacheControl :: FilePath -> ByteString
 cacheControl file
   | hashed name = "public, max-age=31536000, immutable"
-  | map toLower (takeExtension name) `elem` [".woff2", ".woff", ".png", ".jpg", ".jpeg", ".webp", ".ico", ".svg"] = "public, max-age=86400"
+  | map toLower (takeExtension name) `elem` [".woff2", ".woff", ".png", ".jpg", ".jpeg", ".webp", ".ico", ".svg", ".pbf"] = "public, max-age=86400"
   | otherwise = "no-cache"
   where
     name = takeFileName file
@@ -107,7 +110,15 @@ cacheControl file
 -- none, and the plain text answers.
 notFoundPage :: Config -> Text -> IO Response
 notFoundPage cfg p = do
-  let file = if "/en/" `T.isPrefixOf` p then cfg.static </> "en" </> "404.html" else cfg.static </> "404.html"
+  -- The same prefixes languageOf reads: /ja and /zh-Hant get their own 404 page (Files.hs cannot
+  -- import Http, so the mapping is written out here).
+  let l = T.toCaseFold p
+      dir
+        | "/en/" `T.isPrefixOf` l || l == "/en" = "en"
+        | "/ja/" `T.isPrefixOf` l || l == "/ja" = "ja"
+        | "/zh-hant/" `T.isPrefixOf` l || l == "/zh-hant" = "zh-Hant"
+        | otherwise = ""
+      file = if dir == "" then cfg.static </> "404.html" else cfg.static </> dir </> "404.html"
   exists <- doesFileExist file
   if exists
     then do
@@ -128,29 +139,63 @@ docsRedirect req
   where
     path = rawPathInfo req
 
--- | GET and HEAD only, with an ETag of size plus mtime (cheap, and it changes with every deploy)
--- and @Last-Modified@, answered with a 304 when the client has them.
+-- | The map page in a non-pt-BR language, @/?lang=<tag>@: its own file, so a crawler reads a head
+-- in that language whose canonical is that address (marola-pages writes them next to @index.html@).
+variantMap :: Config -> Request -> Text -> IO (Maybe FilePath)
+variantMap cfg req p
+  | p `elem` ["/", "/index.html"],
+    Just tag <- lookup (queryText req "lang") [("en", "en"), ("ja", "ja"), ("zh-Hant", "zh-Hant")] = do
+      let file = cfg.static </> ("index." <> tag <> ".html")
+      exists <- doesFileExist file
+      pure (if exists then Just file else Nothing)
+  | otherwise = pure Nothing
+
+-- | Files up to this size get an ETag of their content; a larger one of its size and mtime.
+hashLimit :: Integer
+hashLimit = 8 * 1024 * 1024
+
+-- | A Nix store file has mtime 1 (1970), so size and mtime alone would give two deploys of an
+-- @index.html@ of the same length the same ETag, and a browser would keep the old one, which names
+-- asset files the new deploy no longer has. The content hash changes whenever the bytes do.
+entityTag :: FilePath -> Integer -> Integer -> IO ByteString
+entityTag file size seconds
+  | size <= hashLimit = do
+      -- Strict: a lazy read would hold the file open (and locked) until the header is forced.
+      bytes <- BS.readFile file
+      let digest = hash bytes :: Digest SHA256
+          tag = BC.pack "\"" <> BS.take 32 (convertToBase Base16 digest) <> BC.pack "\""
+      BS.length tag `seq` pure tag
+  | otherwise = pure (BC.pack ("\"" <> showHex size "" <> "-" <> showHex seconds "" <> "\""))
+
+-- | An mtime in the first day of 1970 is a normalised one (Nix), not a date: no @Last-Modified@.
+realDate :: Integer -> Bool
+realDate seconds = seconds > 86400
+
+-- | GET and HEAD only, with an ETag of the content and, when the mtime is a real date,
+-- @Last-Modified@, answered with a 304 when the client has them.
 handle :: Config -> Request -> IO Response
 handle cfg req
   | requestMethod req `notElem` [methodGet, methodHead] =
       pure (responseLBS status405 [(hContentType, "text/plain; charset=utf-8"), ("Allow", "GET, HEAD")] "method not allowed\n")
   | otherwise = do
       let p = decodedPath req
-      found <- resolve cfg p
+      variant <- variantMap cfg req p
+      found <- maybe (resolve cfg p) (pure . Just) variant
       case found of
         Nothing -> maybe (notFoundPage cfg p) pure (docsRedirect req)
         Just file -> do
           size <- getFileSize file
           modified <- getModificationTime file
           let seconds = floor (utcTimeToPOSIXSeconds modified) :: Integer
-              etag = BC.pack ("\"" <> showHex size "" <> "-" <> showHex seconds "" <> "\"")
-              lastModified = BC.pack (formatTime defaultTimeLocale "%a, %d %b %Y %H:%M:%S GMT" modified)
-              common = [("ETag", etag), (hLastModified, lastModified), (hCacheControl, cacheControl file)]
+          etag <- entityTag file size seconds
+          let lastModified = BC.pack (formatTime defaultTimeLocale "%a, %d %b %Y %H:%M:%S GMT" modified)
+              dated = realDate seconds
+              common = [("ETag", etag)] <> [(hLastModified, lastModified) | dated] <> [(hCacheControl, cacheControl file)]
               inm = lookup hIfNoneMatch (requestHeaders req)
               ims = lookup hIfModifiedSince (requestHeaders req)
               notModified = case inm of
                 Just v -> etag `elem` map BC.strip (BC.split ',' v) || BC.strip v == "*"
-                Nothing -> maybe False (== lastModified) ims
+                Nothing -> dated && maybe False (== lastModified) ims
           pure $
             if notModified
               then responseLBS status304 common ""

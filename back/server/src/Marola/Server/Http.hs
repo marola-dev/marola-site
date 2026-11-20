@@ -70,6 +70,7 @@ data Env = Env
     catalog :: Catalog,
     keyRates :: Window Text,
     general :: Window String,
+    tiles :: Window String,
     strict :: Window String
   }
 
@@ -203,8 +204,13 @@ matchRoute pat path =
         xs <- segs path
         go Map.empty ps xs
 
--- | @/en@ and everything under it, segment by segment, is English (@/english@ is not).
+-- | @/en@, @/ja@ and @/zh-Hant@ and everything under them are that language (@/english@ is not).
 languageOf :: Text -> Language
 languageOf path =
   let l = T.toCaseFold path
-   in if l == "/en" || "/en/" `T.isPrefixOf` l then En else PtBr
+   in case l of
+        _
+          | l == "/en" || "/en/" `T.isPrefixOf` l -> En
+          | l == "/ja" || "/ja/" `T.isPrefixOf` l -> Ja
+          | l == "/zh-hant" || "/zh-hant/" `T.isPrefixOf` l -> ZhHant
+          | otherwise -> PtBr

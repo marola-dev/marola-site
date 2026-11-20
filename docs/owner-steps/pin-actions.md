@@ -30,16 +30,9 @@ one tag, one SHA.
 | `pr.yml:14` | `marola-dev/marola-devkit/.github/workflows/pr-body.yml@v0.20.4` | v0.20.4 | `2d49d22212997581039acacd191465221d8bbf1e` | `uses: marola-dev/marola-devkit/.github/workflows/pr-body.yml@2d49d22212997581039acacd191465221d8bbf1e # v0.20.4` |
 | `pr.yml:23` | `marola-dev/marola-devkit/.github/workflows/ci-short-circuit.yml@v0.20.4` | v0.20.4 | `2d49d22212997581039acacd191465221d8bbf1e` | `uses: marola-dev/marola-devkit/.github/workflows/ci-short-circuit.yml@2d49d22212997581039acacd191465221d8bbf1e # v0.20.4` |
 | `site-health.yml:34` | `actions/checkout@v7` | v7 | `3d3c42e5aac5ba805825da76410c181273ba90b1` | `uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7` |
-| `site.yml:61` | `actions/checkout@v7` | v7 | `3d3c42e5aac5ba805825da76410c181273ba90b1` | `uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7` |
-| `site.yml:69` | `docker/login-action@v4` | v4 | `8aa5831fb8d48d8f76594c7ddde61ae58019f550` | `uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4` |
-| `site.yml:99` | `actions/cache/restore@v6` | v6 | `55cc8345863c7cc4c66a329aec7e433d2d1c52a9` | `uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6` |
-| `site.yml:131` | `actions/cache/save@v6` | v6 | `55cc8345863c7cc4c66a329aec7e433d2d1c52a9` | `uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6` |
-| `site.yml:219` | `cloudflare/wrangler-action@v4` | v4 | `953926a2e2182532811c01a25e53647d93bf07c0` | `uses: cloudflare/wrangler-action@953926a2e2182532811c01a25e53647d93bf07c0 # v4` |
-| `site.yml:227` | `actions/upload-pages-artifact@v5` | v5 | `fc324d3547104276b827a68afc52ff2a11cc49c9` | `uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5` |
-| `site.yml:241` | `actions/deploy-pages@v5` | v5 | `368f82528645a54fb793d4d04e342629a3f51346` | `uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5` |
 | `skills.yml:16` | `marola-dev/marola-devkit/.github/workflows/skills-update.yml@v0.20.4` | v0.20.4 | `2d49d22212997581039acacd191465221d8bbf1e` | `uses: marola-dev/marola-devkit/.github/workflows/skills-update.yml@2d49d22212997581039acacd191465221d8bbf1e # v0.20.4` |
 
-Result: 22 of 22 lines resolved; 0 not resolved.
+Result: 15 of 15 lines resolved; 0 not resolved.
 
 ## What the SHA does not cover
 

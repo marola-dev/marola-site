@@ -7,11 +7,11 @@
 import { createFlowLayer } from "./flow_layer_ffi.mjs";
 
 const PACIFIC = [[-170, -5], [-120, 5]];
-let lib = null, map = null, loaded = false, emitFn = () => {};
+let lib = null, map = null, loaded = false, dead = false, emitFn = () => {};
 const pending = new Map();
 const parts = {}; // per part: last JSON text and live markers
 const trails = { data: null, visible: true, selected: -1 };
-let trailPopup = null, flow = null, audio = null;
+let trailPopup = null, flow = null;
 
 const queue = (kind, fn) => (loaded ? fn() : pending.set(kind, fn));
 const fail = (m) => { if (!loaded) emitFn("error", String(m)); };
@@ -40,18 +40,24 @@ async function mount(config) {
     await new Promise((r) => requestAnimationFrame(r));
   }
   if (!el) return fail("map container missing");
-  lib = await import(config.module);
+  const [maplibre, pmtiles] = await Promise.all([import(config.module), import(config.pmtiles)]);
+  lib = maplibre;
   lib.setWorkerUrl(config.worker);
+  // The tiles file is deep only around each area (scripts/basemap_extract.sh). A missing tile must be
+  // an error, not an empty tile: MapLibre then keeps drawing the nearest ancestor it has.
+  lib.addProtocol("pmtiles", new pmtiles.Protocol({ errorOnMissingTile: true }).tile);
+  const expected = (e) => e.tile && e.error && e.error.message === "Tile not found.";
   map = new lib.Map({
     container: el, style: config.style, center: [config.lon, config.lat],
     zoom: config.zoom, minZoom: config.minZoom, maxZoom: config.maxZoom,
     attributionControl: false, renderWorldCopies: false,
   });
   map.addControl(new lib.AttributionControl({ compact: true, customAttribution: config.attributions }));
-  map.addControl(new lib.NavigationControl());
-  map.on("error", (e) => fail((e.error && e.error.message) || "map error"));
+  map.addControl(new lib.NavigationControl(), 'top-left');
+  // A source that failed as a whole (no tiles file) still lets MapLibre fire "load": the map stays failed.
+  map.on("error", (e) => { if (expected(e)) return; dead = dead || (!!e.sourceId && !e.tile); fail((e.error && e.error.message) || "map error"); });
   map.on("click", onMapClick);
-  map.on("load", () => { loaded = true; emitFn("ready", ""); flush(); });
+  map.on("load", () => { if (dead) return; loaded = true; emitFn("ready", ""); flush(); });
 }
 
 export function initMap(configJson, emit) {
@@ -227,18 +233,11 @@ export function locate(onOk, onErr) {
   );
 }
 
-export function playSound(on, url, onFail) {
-  if (!on) { if (audio) audio.pause(); return; }
-  if (!audio) { audio = new Audio(url); audio.loop = true; }
-  audio.play().catch(() => onFail());
-}
-
 export const storeLanguage = (tag) => { try { localStorage.setItem("marola.lang", tag); } catch (_) { /* private mode */ } };
 export const readLanguage = () => { try { return localStorage.getItem("marola.lang") || ""; } catch (_) { return ""; } };
 export const replaceUrl = (path, query) => history.replaceState(null, "", path + (query ? "?" + query : ""));
 export const alertText = (text) => window.alert(text);
 export const setDocument = (language, title) => { document.documentElement.lang = language; document.title = title; };
-export const focusId = (id) => { const el = document.getElementById(id); if (el) el.focus(); };
 
 export const readEnv = () => JSON.stringify({
   path: location.pathname, search: location.search, languages: [...(navigator.languages || [])],
