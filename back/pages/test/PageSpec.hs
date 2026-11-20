@@ -136,27 +136,23 @@ spec env = describe "pages" $ do
   it "a missing catalog key shows the key" $ do
     let bare = env {envCatalog = Map.fromList [(PtBr, Map.empty), (En, Map.empty)]}
     renderWith bare "about" En `shouldSatisfy` has ">nav.about</a>"
-  it "the build lists pt-BR at the root and English under en/" $
+  it "the build lists pt-BR at the root and each language under its tag" $
     fmap (sort . map fst) (Site.allPages env)
       `shouldBe` Right
-        [ "404.html",
-          "about.html",
-          "contact-sent.html",
-          "contact.html",
-          "en/404.html",
-          "en/about.html",
-          "en/contact-sent.html",
-          "en/contact.html",
-          "en/members.html",
-          "en/news.html",
-          "en/partners.html",
-          "en/privacy.html",
-          "en/support.html",
-          "en/takedown.html",
-          "members.html",
-          "news.html",
-          "partners.html",
-          "privacy.html",
-          "support.html",
-          "takedown.html"
-        ]
+        ( sort
+            ( [ "404.html",
+                "about.html",
+                "contact-sent.html",
+                "contact.html",
+                "members.html",
+                "news.html",
+                "partners.html",
+                "privacy.html",
+                "support.html",
+                "takedown.html"
+              ]
+                ++ concatMap
+                  (\pre -> map (\s -> pre <> s <> ".html") ["404", "about", "contact-sent", "contact", "members", "news", "partners", "privacy", "support", "takedown"])
+                  ["en/", "ja/", "zh-Hant/"]
+            )
+        )

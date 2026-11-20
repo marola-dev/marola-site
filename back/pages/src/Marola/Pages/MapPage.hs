@@ -18,7 +18,7 @@ descriptionJa = "今日と明日の海況で並べた地域のすべてのビー
 descriptionZh = "依今天與明天的海況排序的區域所有海灘: 海況、風、浪、潮汐、水質與水母。公開資料，無 Cookie。"
 
 description :: Language -> Text
-description = \case
+description l = case l of
   PtBr -> descriptionPt
   En -> descriptionEn
   Ja -> descriptionJa
@@ -30,7 +30,7 @@ queryOf l = "?lang=" <> Language.tag l
 
 -- | The og:locale of a language.
 ogLocale :: Language -> Text
-ogLocale = \case
+ogLocale l = case l of
   PtBr -> "pt_BR"
   En -> "en_US"
   Ja -> "ja_JP"

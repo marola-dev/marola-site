@@ -34,7 +34,12 @@ END = "<!-- news:end -->"
 NAME = re.compile(r"^(\d{4})-(\d{2})-(\d{2})-([a-z0-9-]+)\.(pt-BR|en|ja|zh-Hant)\.md$")
 # A common silent-reading rate for non-fiction; the minutes are rounded up so a short post says 1.
 WORDS_PER_MINUTE = 200
-READ = {"pt-BR": "{} min de leitura", "en": "{} min read", "ja": "{}分で読める", "zh-Hant": "閱讀時間 {} 分"}
+READ = {
+    "pt-BR": "{} min de leitura",
+    "en": "{} min read",
+    "ja": "{}分で読める",
+    "zh-Hant": "閱讀時間 {} 分",
+}
 RELEASE = re.compile(r"^::: release (v\d+\.\d+\.\d+) (\d{4})-(\d{2})-(\d{2})$")
 RELEASES = "https://github.com/marola-dev/marola/releases/tag/"
 MONTHS = {

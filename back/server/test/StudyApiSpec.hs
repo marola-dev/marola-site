@@ -160,19 +160,21 @@ spec = describe "study api" $ do
   it "the repository must be a GitHub repository and the archive a Zenodo, arXiv or aiXiv link" $ withSite $ \site -> do
     key <- newAccount site 1 "ana" 30
     let with field value = [(k, v) | (k, v) <- goodFields, k /= field] <> [(field, value)]
-    notHttps <- submit site key (with "repository" "http://github.com/example/r") validPdf
-    errorCodes notHttps `shouldContain` [("repository", "bad_link")]
-    notRepo <- submit site key (with "repository" "https://example.org/r") validPdf
-    errorCodes notRepo `shouldContain` [("repository", "not_github")]
-    noPath <- submit site key (with "repository" "https://github.com/example") validPdf
-    errorCodes noPath `shouldContain` [("repository", "not_github")]
-    query <- submit site key (with "repository" "https://github.com/example/r?x=1") validPdf
-    errorCodes query `shouldContain` [("repository", "not_github")]
-    badArchive <- submit site key (with "archive" "https://example.org/paper") validPdf
-    errorCodes badArchive `shouldContain` [("archive", "bad_archive")]
-    doi <- submit site key (with "archive" "https://doi.org/10.5281/zenodo.23224155") validPdf
+        -- A dry run runs the same validation and stores nothing, and it spends a third of the rate.
+        rejected field code value = do
+          r <- dryRun site key (studyBody (with (TE.encodeUtf8 field) value) (Just validPdf))
+          (r.status, errorCodes r) `shouldBe` (400, [(field, code)])
+    rejected "repository" "bad_link" "http://github.com/example/r"
+    rejected "repository" "not_github" "https://example.org/r"
+    rejected "repository" "not_github" "https://github.com/example"
+    rejected "repository" "not_github" "https://github.com/example/r?x=1"
+    rejected "archive" "bad_archive" "https://example.org/paper"
+    rejected "archive" "bad_archive" "https://doi.org/10.1234/x"
+    let valid = studyBody (with "archive" "https://doi.org/10.5281/zenodo.23224155") (Just validPdf)
+    doi <- sendBody site (Just key) "/api/v1/studies" valid
     doi.status `shouldBe` 201
-    arxiv <- dryRun site key (studyBody (with "archive" "https://arxiv.org/abs/2611.12345") (Just validPdf))
+    later site
+    arxiv <- dryRun site key (studyBody (with "archive" "https://arxiv.org/abs/2611.12345") (Just (pdfBytes "" 5)))
     arxiv.status `shouldBe` 200
 
   it "the same file from the same account is a 409 that names the old id; another account may send it" $ withSite $ \site -> do

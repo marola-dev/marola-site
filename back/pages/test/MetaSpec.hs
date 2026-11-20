@@ -1,13 +1,14 @@
 -- | The cases of scripts/site_meta.py's self-test, plus the rules the build adds: both languages in the sitemap.
 module MetaSpec (spec) where
 
+import Control.Monad (forM_)
 import Data.Char (isAsciiLower)
 import Data.List (sort)
 import Data.Set qualified as Set
 import Data.Text (Text)
 import Data.Text qualified as T
 import Data.Time.Calendar (diffDays, fromGregorian)
-import Marola.Pages.Language (allLanguages)
+import Marola.Pages.Language (Language (..), allLanguages)
 import Marola.Pages.Language qualified as Language
 import Marola.Pages.Layout qualified as Layout
 import Marola.Pages.Loader (readText)
@@ -91,7 +92,7 @@ spec env = describe "meta" $ do
   it "robots.txt keeps crawlers off the sign-in and the account pages, and nothing public" $ do
     mapM_
       (\pre -> mapM_ (\p -> Meta.robots `shouldSatisfy` has ("Disallow: " <> pre <> p <> "\n")) ["account", "report/"])
-      ["", "/en/", "/ja/", "/zh-Hant/"]
+      ["/", "/en/", "/ja/", "/zh-Hant/"]
     mapM_ (\p -> Meta.robots `shouldNotSatisfy` has ("Disallow: " <> p)) ["/studies", "/submit", "/api", "/data", "/en/\n", "/\n"]
   it "the non-pt-BR map pages: lang, title, description, canonical and og tags, from front/index.html" $ do
     dir <- root

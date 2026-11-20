@@ -289,7 +289,7 @@ afterCI prefix url
 githubRepo :: Text -> Maybe Text
 githubRepo url = do
   path <- afterCI "https://github.com/" url
-  let clean = T.dropSuffix "/" path
+  let clean = fromMaybe path (T.stripSuffix "/" path)
   case T.splitOn "/" clean of
     [owner, repo]
       | repoName owner && repoName repo -> Just url
@@ -307,7 +307,7 @@ archiveLink url = do
     "zenodo.org" -> True
     "arxiv.org" -> True
     "aixiv.org" -> True
-    "doi.org" -> T.toLower path `T.isPrefixOf` "/10.5281/zenodo"
+    "doi.org" -> "/10.5281/zenodo" `T.isPrefixOf` T.toLower path
     _ -> False
     then Just url
     else Nothing
@@ -378,15 +378,15 @@ validate get =
                   | (i, l) <- zip [1 :: Int ..] ls
                   ]
       repository' = case text "repository" of
-        "" -> Left [err "repository" "required" "repository is required: the GitHub repository of the study"]
+        "" -> Left (err "repository" "required" "repository is required: the GitHub repository of the study")
         url -> case httpsLink url of
-          Nothing -> Left [err "repository" "bad_link" "repository must be an https link"]
-          Just link -> maybe (Left [err "repository" "not_github" "repository must be the https link of a GitHub repository"]) (Right . Just) (githubRepo link)
+          Nothing -> Left (err "repository" "bad_link" "repository must be an https link")
+          Just link -> maybe (Left (err "repository" "not_github" "repository must be the https link of a GitHub repository")) (Right . Just) (githubRepo link)
       archive' = case text "archive" of
-        "" -> Left [err "archive" "required" "archive is required: the study's link on Zenodo, arXiv or aiXiv"]
+        "" -> Left (err "archive" "required" "archive is required: the study's link on Zenodo, arXiv or aiXiv")
         url -> case httpsLink url of
-          Nothing -> Left [err "archive" "bad_link" "archive must be an https link"]
-          Just link -> maybe (Left [err "archive" "bad_archive" "archive must be a link on Zenodo, arXiv or aiXiv"]) (Right . Just) (archiveLink link)
+          Nothing -> Left (err "archive" "bad_link" "archive must be an https link")
+          Just link -> maybe (Left (err "archive" "bad_archive" "archive must be a link on Zenodo, arXiv or aiXiv")) (Right . Just) (archiveLink link)
       licence' = case text "licence" of
         "" -> Right CcBy40
         raw -> enumField "licence" licenceValues parseLicence raw
