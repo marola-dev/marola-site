@@ -289,7 +289,7 @@ afterCI prefix url
 githubRepo :: Text -> Maybe Text
 githubRepo url = do
   path <- afterCI "https://github.com/" url
-  let clean = T.dropSuffix "/" path
+  let clean = fromMaybe path (T.stripSuffix "/" path)
   case T.splitOn "/" clean of
     [owner, repo]
       | repoName owner && repoName repo -> Just url

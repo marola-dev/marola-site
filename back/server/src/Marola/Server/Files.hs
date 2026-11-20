@@ -136,7 +136,7 @@ docsRedirect req
 variantMap :: Config -> Request -> Text -> IO (Maybe FilePath)
 variantMap cfg req p
   | p `elem` ["/", "/index.html"],
-    Just tag <- queryText req "lang" >>= \v -> lookup v [("en", "en"), ("ja", "ja"), ("zh-Hant", "zh-Hant")] = do
+    Just tag <- lookup (queryText req "lang") [("en", "en"), ("ja", "ja"), ("zh-Hant", "zh-Hant")] = do
       let file = cfg.static </> ("index." <> tag <> ".html")
       exists <- doesFileExist file
       pure (if exists then Just file else Nothing)
