@@ -1,5 +1,6 @@
-module View.Nav exposing (github, linkedin, svgIcon, view)
+module View.Nav exposing (eye, github, linkedin, svgIcon, view)
 
+import Config
 import Html exposing (Html)
 import I18n exposing (Locale)
 import Language exposing (Language(..))
@@ -48,8 +49,10 @@ languageToggle model =
             , shape "ellipse" [ ( "cx", "8" ), ( "cy", "8" ), ( "rx", "2.8" ), ( "ry", "6.5" ) ]
             , shape "path" [ ( "d", "M1.5 8h13" ) ]
             ]
-        , langButton model PtBr "PT-BR" "português (Brasil)"
-        , langButton model En "EN" "English"
+        , langButton model PtBr "🇧🇷 PT-BR" "português (Brasil)"
+        , langButton model En "🇺🇸 EN" "English"
+        , langButton model Ja "🇯🇵 JA" "日本語"
+        , langButton model ZhHant "🇹🇼 繁" "繁體中文"
         ]
 
 
@@ -96,8 +99,44 @@ github loc =
         ]
 
 
-view : Model -> Html Msg
-view model =
+{-| piabrota's mark, room.piabrota.art's favicon (`/favicon.svg`), drawn inline: the page holds no `<img>`.
+-}
+eye : Html msg
+eye =
+    Svg.svg [ attr "viewBox" "0 0 100 100", attr "aria-hidden" "true", attr "focusable" "false" ]
+        [ shape "rect" [ ( "width", "100" ), ( "height", "100" ), ( "rx", "22" ), ( "fill", "#BC2318" ) ]
+        , shape "path" [ ( "d", "M12 50 Q50 18 88 50 Q50 82 12 50Z" ), ( "fill", "#F7F3EA" ) ]
+        , shape "circle" [ ( "cx", "50" ), ( "cy", "50" ), ( "r", "14" ), ( "fill", "#2E9E4F" ) ]
+        , shape "circle" [ ( "cx", "50" ), ( "cy", "50" ), ( "r", "6" ), ( "fill", "#0B0D12" ) ]
+        ]
+
+
+piabrota : Model -> Html Msg
+piabrota model =
+    Html.a
+        [ cls "piabrota"
+        , attr "href" Config.piabrota
+        , attr "target" "_blank"
+        , attr "rel" "noopener"
+        , attr "title" (Words.t model "brand.piabrota")
+        , attr "aria-label" (Words.t model "brand.piabrota")
+        ]
+        [ eye ]
+
+
+{-| The logo is `favicon.png` as a CSS background (`.logo` in style.css): a raster badge, kept out of
+the bundle.
+-}
+brand : Model -> Html Msg
+brand model =
+    Html.div [ cls "brand" ]
+        [ Html.h1 [] [ Html.span [ cls "logo", attr "aria-hidden" "true" ] [], Html.text "marola" ]
+        , piabrota model
+        ]
+
+
+sections : Model -> Html Msg
+sections model =
     Html.nav
         [ cls "sitenav", attr "aria-label" (Words.t model "nav.label") ]
         [ link model "https://docs.marola.dev/" "nav.docs"
@@ -111,10 +150,18 @@ view model =
         , link model "about.html" "nav.about"
         , link model "contact.html" "nav.contact"
         , link model "https://github.com/marola-dev/marola-research/blob/main/README.md" "nav.research"
-        , link model "https://github.com/marola-dev/marola-research/blob/main/chamada/chamada.pdf" "nav.contribute"
+        , link model "partners.html" "nav.partners"
         , link model "members.html" "nav.members"
         , link model "support.html" "nav.donate"
-        , languageToggle model
-        , linkedin model.loc
-        , github model.loc
+        ]
+
+
+{-| The top bar: the brand, the sections, then the language switch and the two outside links.
+-}
+view : Model -> Html Msg
+view model =
+    Html.header [ cls "top" ]
+        [ brand model
+        , sections model
+        , Html.div [ cls "navtools" ] [ languageToggle model, linkedin model.loc, github model.loc ]
         ]

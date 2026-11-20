@@ -57,8 +57,10 @@ type Msg
     | SosToggled
     | SosClosed
     | LanguagePicked Language
-    | SoundPressed
-    | SoundFailed
+    | PlaylistPressed
+    | PlayerDragStarted Int Int
+    | PlayerDragged Int Int
+    | PlayerDragEnded
       -- An event of the map named by `maplibre_ffi.mjs`: ready, error, click, beach, trail.
     | MapEvent String String
     | Ignored

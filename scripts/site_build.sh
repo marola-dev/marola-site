@@ -9,7 +9,7 @@ set -euo pipefail
 
 usage() {
   echo "usage: scripts/site_build.sh [--fixtures] [--no-install]" >&2
-  echo "  --fixtures    add data/<area>/latest.json and a fixture board per area (offline preview)" >&2
+  echo "  --fixtures    add data/<area>/latest.json, a fixture board per area and the fixture base map (offline preview)" >&2
   echo "  --no-install  skip 'npm ci'; reuse front/node_modules" >&2
 }
 
@@ -43,15 +43,18 @@ rm -rf "$dist"
 cp -r front/dist "$dist"
 "$pages" site "$dist" >&2
 mkdir -p "$dist/i18n" "$dist/img"
-cp site/i18n/en.json site/i18n/pt-BR.json "$dist/i18n/"
+cp site/i18n/pt-BR.json site/i18n/en.json site/i18n/ja.json site/i18n/zh-Hant.json "$dist/i18n/"
 cp site/static/img/umbrella.svg site/static/img/umbrella.pt-BR.svg "$dist/img/"
 cp -r site/static/img/members "$dist/img/members"
 cp site/board.schema.json "$dist/"
 "$server" csp > "$dist/csp.txt"
 
-node scripts/site_fixtures.mjs areas "$dist"
+"$pages" fixtures areas "$dist"
 if [ "$fixtures" -eq 1 ]; then
-  node scripts/site_fixtures.mjs boards "$dist"
+  "$pages" fixtures boards "$dist"
+  # The base map is host data (MAROLA_TILES, docs/5-hosting.md); the server falls back to this copy.
+  mkdir -p "$dist/tiles"
+  cp site/fixtures/basemap.pmtiles "$dist/tiles/marola.pmtiles"
 fi
 
 echo "site_build: $dist ready (run it with: just server-run)" >&2

@@ -36,6 +36,12 @@ In 2026 there is no reason to write closed code. With AI, building a new feature
 
 marola needs compute and cloud: room to store data and graphics cards to train and run models. Even as a non-profit, it is open to partnerships with companies that donate those resources, or data, with no money changing hands. In return, the company gets a discreet credit on the site. No ads, banners or tracking.
 
+## Partners
+
+marola is an official Proud Partner of [Leave No Trace](https://lnt.org/), which teaches people to enjoy nature without leaving a trace.
+
+[OpenDiving](https://opendiving.app/) is an open source dive log, built to outlive every dive-computer vendor. Both projects use open data and link to each other: OpenDiving lists marola among its partner apps.
+
 ## How marola is built
 
 marola is a set of code repositories, each with one job:
@@ -57,6 +63,8 @@ We call this a distributed monolith. It is one project, with one plan, one way o
 
 We built it this way for two reasons. First, much of the code is written and maintained with Anthropic's Claude, both in a Claude Project and in Claude Code from the terminal. The umbrella with submodules helps with that: Claude sees the whole project from above, with the plans and the rules written in one place, and changes one small repository at a time, with that repository's tests. Second, each part keeps some autonomy outside the umbrella. Someone who only wants the water-quality data can use marola-oods without the rest, and a mistake in one repository does not take down the others. No part reads another's code: it uses a published version and moves to a new one only when it decides to.
 
+The site runs on one server of ours: a KVM 4 virtual machine rented from [Hostinger](https://www.hostinger.com/), in Brazil, set up with [NixOS](https://nixos.org/). The same machine serves the pages, the beach boards and the base map's tiles; there is no CDN or other company in between. It sits in Brazil because some state agencies answer only Brazilian addresses.
+
 ## Claude
 
 Much of marola's code is written with Claude, Anthropic's AI assistant, in a Claude Project: a space on claude.ai where it reads the repositories, opens pull requests and talks with us in threads. The project's settings are in an open file, [CLAUDE_PROJECT.config.md](https://github.com/marola-dev/marola/blob/main/CLAUDE_PROJECT.config.md): the instructions Claude follows, the repositories it reads, the environment it runs in and the routines it runs on its own. Anyone can read the file or set up a project like it.
@@ -67,11 +75,11 @@ Each beach gets a number in one of the five bands on the map legend: **≥70** g
 
 ## Where the data comes from
 
-Beaches come from [OpenStreetMap](https://www.openstreetmap.org/copyright), sea and weather from [Open-Meteo](https://open-meteo.com/), and water quality from the official bulletins of IMA/SC, INEA (RJ) and INEMA (BA). They are public, free sources. The base map is [OpenFreeMap](https://openfreemap.org/)'s, drawn with MapLibre from OpenStreetMap data. For now only the beaches and water-quality layers are on; wind, waves and NASA's satellite imagery ([GIBS](https://www.earthdata.nasa.gov/gibs)) are coming soon.
+Beaches come from [OpenStreetMap](https://www.openstreetmap.org/copyright), sea and weather from [Open-Meteo](https://open-meteo.com/), and water quality from the official bulletins of IMA/SC, INEA (RJ) and INEMA (BA). They are public, free sources. The base map is marola's own: its tiles are cut from OpenStreetMap data with [Protomaps](https://protomaps.com/), kept on our server and drawn with [MapLibre](https://maplibre.org/), an open source map library. For now only the beaches and water-quality layers are on; wind, waves and NASA's satellite imagery ([GIBS](https://www.earthdata.nasa.gov/gibs)) are coming soon.
 
 ## Privacy
 
-marola sets no cookies and does no tracking of its own. The base map is the exception: to draw it, your browser fetches the style, map tiles and fonts from [OpenFreeMap](https://openfreemap.org/)'s servers, which see your IP address. No key is needed and no identifier is kept in your browser for it. When you pick a satellite layer, its images come from NASA's servers, which also see your IP address. The "near me" sort uses your location only inside your own browser; it is never sent anywhere.
+marola sets no cookies and does no tracking of its own. The base map comes from marola's own server: its style, tiles and fonts are files of this site, so drawing the map tells no one else that you were here. Two things reach a third party, and only when you open them: a satellite layer, whose images come from NASA's servers, and the Spotify player, which loads from Spotify. Each of them then sees your IP address. The "near me" sort uses your location only inside your own browser; it is never sent anywhere.
 
 ## Who builds it
 
@@ -86,6 +94,10 @@ Scientists can publish a study here too. Read the [studies](/en/studies) that pe
 The emergency button idea came from [swell-floripa](https://swell-floripa.vercel.app/), by Carlos Toledo ([@carlostoledo1891](https://github.com/carlostoledo1891)).
 
 The wave sound is a recording by Luftrum ([freesound](https://freesound.org/s/48412/), [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)), looped by Porrumentzio for [Blanket](https://github.com/rafaelmardojai/blanket).
+
+Aleksei Vesnin ([@aleskiontherun](https://github.com/aleskiontherun)), of [OpenDiving](https://github.com/opendiving/opendiving), welcomed marola as a partner app.
+
+Pedro Veras Guimarães ([@pvguima](https://github.com/pvguima)) gave his time, kindness and attention to explain wave physics to marola's founder.
 
 ## How to help
 

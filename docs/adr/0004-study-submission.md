@@ -31,7 +31,8 @@ the board's commands, the deletion of an account, and the privacy and takedown p
    | `area` | `rio`, `floripa`, `salvador`, `other` |
    | `topic` | `water-quality`, `waves`, `wind`, `trails`, `ecology`, `safety`, `data`, `other` |
    | `sources` | 0 to 10 https links, each accepted by `Html.safeHref` |
-   | `repository` | optional https link |
+   | `repository` | required: the https link of a GitHub repository, `https://github.com/<owner>/<repo>` (the codes `not_github` when it is not one) |
+   | `archive` | required: the study's archive, an https link on Zenodo, arXiv (`/abs/`), aiXiv, or a Zenodo DOI (`https://doi.org/10.5281/zenodo...`) (the code `bad_archive` when it is none of them) |
    | `licence` | `CC-BY-4.0` (default), `CC-BY-SA-4.0`, `CC0-1.0`. Open licences only, because marola hosts the file |
    | `rights` | must be `true`: the author may publish this file under that licence |
    | `ai_models` | 0 to 300 characters |

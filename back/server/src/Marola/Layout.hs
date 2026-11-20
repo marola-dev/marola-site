@@ -1,4 +1,4 @@
--- | The frame of every page the server renders: head, nav, header, footer and the language switch.
+-- | The frame of every page the server renders: head, top bar, footer and the language switch.
 -- The static pages' layout (back/pages, with the pieces of the nav and icons it draws), so a study page has
 -- the same chrome as the static pages. The catalogs are the site's, read from @MAROLA_STATIC/i18n@.
 module Marola.Layout
@@ -19,35 +19,38 @@ where
 import Control.Exception (SomeException, try)
 import Data.Aeson qualified as A
 import Data.ByteString qualified as BS
+import Data.Char (isAsciiLower, isDigit)
 import Data.Map.Strict (Map)
 import Data.Map.Strict qualified as Map
 import Data.Text (Text)
+import Data.Text qualified as T
 import Marola.Vdom
 import System.FilePath ((</>))
 
-data Language = PtBr | En deriving (Eq, Ord, Show)
+data Language = PtBr | En | Ja | ZhHant deriving (Eq, Ord, Show)
 
 languageTag :: Language -> Text
 languageTag = \case
   PtBr -> "pt-BR"
   En -> "en"
+  Ja -> "ja"
+  ZhHant -> "zh-Hant"
 
 type Catalog = Map Language (Map Text Text)
 
 data Locale = Locale {catalog :: Catalog, language :: Language}
 
--- | Both catalogs, or the file that failed.
+-- | Every catalog, or the file that failed.
 loadCatalog :: FilePath -> IO (Either String Catalog)
 loadCatalog dir = do
   let one lang = do
-        let file = dir </> (if lang == PtBr then "pt-BR" else "en") <> ".json"
+        let file = dir </> T.unpack (languageTag lang) <> ".json"
         bytes <- try (BS.readFile file) :: IO (Either SomeException BS.ByteString)
         pure $ case bytes of
           Left e -> Left (file <> ": " <> show e)
           Right b -> either (Left . ((file <> ": ") <>)) (Right . (lang,)) (A.eitherDecodeStrict b)
-  pt <- one PtBr
-  en <- one En
-  pure (Map.fromList <$> sequence [pt, en])
+  loaded <- mapM one [PtBr, En, Ja, ZhHant]
+  pure (Map.fromList <$> sequence loaded)
 
 -- | The message for a key in the language, else the source language's (pt-BR), else the key. The
 -- keys the chrome uses carry no ICU argument, so the text is used as it is.
@@ -76,6 +79,8 @@ origin = "https://marola.dev"
 prefixOf :: Language -> Text
 prefixOf = \case
   En -> "/en/"
+  Ja -> "/ja/"
+  ZhHant -> "/zh-Hant/"
   PtBr -> "/"
 
 path :: Language -> Text -> Text
@@ -90,11 +95,15 @@ whereOf p lang = if p.dynamic then dynamicPath lang p.slug else path lang p.slug
 mapPath :: Language -> Text
 mapPath = \case
   En -> "/?lang=en"
+  Ja -> "/?lang=ja"
+  ZhHant -> "/?lang=zh-Hant"
   PtBr -> "/"
 
 ogLocale :: Language -> Text
 ogLocale = \case
   En -> "en_US"
+  Ja -> "ja_JP"
+  ZhHant -> "zh_Hant"
   PtBr -> "pt_BR"
 
 meta :: [(Text, Text)] -> Node
@@ -105,21 +114,20 @@ link as = el "link" as []
 
 headNodes :: Language -> PageHead -> [Node]
 headNodes lang p =
-  let other = if lang == En then PtBr else En
-      canon =
+  let canon =
         if p.canonical
           then
-            [ link [("rel", "canonical"), ("href", origin <> whereOf p lang)],
-              link [("rel", "alternate"), ("hreflang", languageTag PtBr), ("href", origin <> whereOf p PtBr)],
-              link [("rel", "alternate"), ("hreflang", languageTag En), ("href", origin <> whereOf p En)],
-              link [("rel", "alternate"), ("hreflang", "x-default"), ("href", origin <> whereOf p PtBr)]
-            ]
+            [link [("rel", "canonical"), ("href", origin <> whereOf p lang)]]
+              <> [ link [("rel", "alternate"), ("hreflang", languageTag l), ("href", origin <> whereOf p l)]
+                 | l <- [PtBr, En, Ja, ZhHant]
+                 ]
+              <> [link [("rel", "alternate"), ("hreflang", "x-default"), ("href", origin <> whereOf p PtBr)]]
           else []
    in [ meta [("charset", "utf-8")],
         meta [("name", "viewport"), ("content", "width=device-width, initial-scale=1")],
         el "title" [] [text p.title],
         meta [("name", "description"), ("content", p.description)],
-        meta [("name", "theme-color"), ("content", "#ffffff")]
+        meta [("name", "theme-color"), ("content", "#0B0D12")]
       ]
         <> [meta [("name", "robots"), ("content", "noindex")] | p.noIndex]
         <> canon
@@ -129,10 +137,15 @@ headNodes lang p =
              meta [("property", "og:description"), ("content", p.description)]
            ]
         <> [meta [("property", "og:url"), ("content", origin <> whereOf p lang)] | p.canonical]
-        <> [ meta [("property", "og:locale"), ("content", ogLocale lang)],
-             meta [("property", "og:locale:alternate"), ("content", ogLocale other)],
+        <> [meta [("property", "og:locale"), ("content", ogLocale lang)]]
+        <> [meta [("property", "og:locale:alternate"), ("content", ogLocale l)] | l <- [PtBr, En, Ja, ZhHant], l /= lang]
+        <> [ meta [("property", "og:image"), ("content", origin <> "/og.png")],
+             meta [("property", "og:image:width"), ("content", "1200")],
+             meta [("property", "og:image:height"), ("content", "1200")],
+             meta [("property", "og:image:alt"), ("content", "marola")],
              meta [("name", "twitter:card"), ("content", "summary")],
-             link [("rel", "icon"), ("href", "/favicon.svg"), ("type", "image/svg+xml")],
+             link [("rel", "icon"), ("href", "/favicon.png"), ("type", "image/png")],
+             link [("rel", "apple-touch-icon"), ("href", "/apple-touch-icon.png")],
              link [("rel", "stylesheet"), ("href", "/style.css")]
            ]
 
@@ -163,8 +176,10 @@ languageSwitch loc p =
           svg "ellipse" [attr "cx" "8", attr "cy" "8", attr "rx" "2.8", attr "ry" "6.5"] [],
           svg "path" [attr "d" "M1.5 8h13"] []
         ],
-      langLink loc p PtBr "PT-BR" "português (Brasil)",
-      langLink loc p En "EN" "English"
+      langLink loc p PtBr "🇧🇷 PT-BR" "português (Brasil)",
+      langLink loc p En "🇺🇸 EN" "English",
+      langLink loc p Ja "🇯🇵 JA" "日本語",
+      langLink loc p ZhHant "🇹🇼 繁" "繁體中文"
     ]
 
 linkedin :: Locale -> Node
@@ -212,14 +227,34 @@ github loc =
         ]
     ]
 
--- | Icons.icon "brand".
-brand :: Node
-brand =
-  svg
-    "svg"
-    [cls "ic ic-brand", attr "viewBox" "0 0 24 24", attr "aria-hidden" "true", attr "focusable" "false"]
-    [ svg "path" [attr "d" "M2 9c2.5 0 2.5-2.5 5-2.5S9.5 9 12 9s2.5-2.5 5-2.5S19.5 9 22 9"] [],
-      svg "path" [attr "d" "M2 16c2.5 0 2.5-2.5 5-2.5s2.5 2.5 5 2.5 2.5-2.5 5-2.5 2.5 2.5 5 2.5"] []
+-- | piabrota's eye, as Nav.elm draws it.
+eye :: Node
+eye =
+  decorative
+    [attr "viewBox" "0 0 100 100"]
+    [ svg "rect" [attr "width" "100", attr "height" "100", attr "rx" "22", attr "fill" "#BC2318"] [],
+      svg "path" [attr "d" "M12 50 Q50 18 88 50 Q50 82 12 50Z", attr "fill" "#F7F3EA"] [],
+      svg "circle" [attr "cx" "50", attr "cy" "50", attr "r" "14", attr "fill" "#2E9E4F"] [],
+      svg "circle" [attr "cx" "50", attr "cy" "50", attr "r" "6", attr "fill" "#0B0D12"] []
+    ]
+
+piabrota :: Text
+piabrota = "https://piabrota.art"
+
+outside :: [Attr]
+outside = [attr "target" "_blank", attr "rel" "noopener"]
+
+-- | The logo tile and the wordmark, a link to the map, then the eye.
+brand :: Locale -> Node
+brand loc =
+  el
+    "div"
+    [cls "brand"]
+    [ el "h1" [] [el "a" [attr "href" (mapPath loc.language)] [el "span" [cls "logo", attr "aria-hidden" "true"] [], text "marola"]],
+      el
+        "a"
+        ([cls "piabrota", attr "href" piabrota] <> outside <> [attr "title" (t loc "brand.piabrota"), attr "aria-label" (t loc "brand.piabrota")])
+        [eye]
     ]
 
 navLink :: Locale -> PageHead -> Text -> Text -> Node
@@ -247,21 +282,61 @@ nav loc p =
       navLink loc p "about" "nav.about",
       navLink loc p "contact" "nav.contact",
       external loc "https://github.com/marola-dev/marola-research/blob/main/README.md" "nav.research",
-      external loc "https://github.com/marola-dev/marola-research/blob/main/chamada/chamada.pdf" "nav.contribute",
+      navLink loc p "partners" "nav.partners",
       navLink loc p "members" "nav.members",
-      navLink loc p "support" "nav.donate",
-      languageSwitch loc p,
-      linkedin loc,
-      github loc
+      navLink loc p "support" "nav.donate"
     ]
 
-header :: Locale -> Node
-header loc =
+top :: Locale -> PageHead -> Node
+top loc p =
   el
     "header"
-    [cls "bar"]
-    [ el "div" [cls "brand"] [el "h1" [] [brand, text "marola"], el "p" [cls "tagline"] [text (t loc "header.tagline")]],
-      el "div" [cls "controls"] [el "a" [attr "href" (mapPath loc.language)] [text (t loc "about.back")]]
+    [cls "top"]
+    [brand loc, nav loc p, el "div" [cls "navtools"] [languageSwitch loc p, linkedin loc, github loc]]
+
+-- | Where the map page has its tool row: the way back to the map and what the site is.
+pageBar :: Locale -> Node
+pageBar loc =
+  el
+    "div"
+    [cls "bar pagebar"]
+    [ el "div" [cls "controls"] [el "a" [attr "href" (mapPath loc.language)] [text (t loc "about.back")]],
+      el "p" [cls "tagline"] [text (t loc "header.tagline")]
+    ]
+
+-- | The nav key of the section a page belongs to, shown as the eyebrow above its title.
+sectionKey :: Text -> Maybe Text
+sectionKey s =
+  lookup
+    s
+    [ ("news", "nav.news"),
+      ("studies", "nav.studies"),
+      ("about", "nav.about"),
+      ("contact", "nav.contact"),
+      ("members", "nav.members"),
+      ("support", "nav.donate"),
+      ("privacy", "footer.privacy_page"),
+      ("takedown", "footer.takedown"),
+      ("partners", "nav.partners")
+    ]
+
+-- | @p-studies@, @p-submit@: what the style sheet tells one page from another by. A study's address
+-- carries its id, so it has none.
+pageClass :: PageHead -> Text
+pageClass p = if T.all (\c -> isAsciiLower c || isDigit c || c == '-') p.slug then " p-" <> p.slug else ""
+
+eyebrow :: Locale -> PageHead -> [Node]
+eyebrow loc p = [el "p" [cls "eyebrow"] [text ("marola · " <> t loc key)] | Just key <- [p.current >>= sectionKey]]
+
+credit :: Locale -> Node
+credit loc =
+  el
+    "p"
+    [cls "credit"]
+    [ text (t loc "credit.made" <> " "),
+      el "a" [attr "href" (path loc.language "members")] [text (t loc "credit.crew")],
+      text (" · " <> t loc "credit.project" <> " "),
+      el "a" ([cls "pia", attr "href" piabrota] <> outside) [eye, text "piabrota"]
     ]
 
 -- | The whole document for the children of @<main class="main about">@.
@@ -276,9 +351,9 @@ page loc hd mainNodes =
             el
               "body"
               []
-              [ nav loc hd,
-                header loc,
-                el "main" [cls "main about"] mainNodes,
+              [ top loc hd,
+                pageBar loc,
+                el "main" [cls ("main about" <> pageClass hd)] (eyebrow loc hd <> mainNodes),
                 el
                   "footer"
                   [cls "footer"]
@@ -290,8 +365,11 @@ page loc hd mainNodes =
                         text " · ",
                         el "a" [attr "href" (path lang "privacy")] [text (t loc "footer.privacy_page")],
                         text " · ",
-                        el "a" [attr "href" (path lang "takedown")] [text (t loc "footer.takedown")]
-                      ]
+                        el "a" [attr "href" (path lang "takedown")] [text (t loc "footer.takedown")],
+                        text " · ",
+                        el "a" [attr "href" (path lang "partners")] [text (t loc "footer.partners")]
+                      ],
+                    credit loc
                   ]
               ]
           ]

@@ -37,6 +37,12 @@ em 2026, não tem mais motivo para fazer código fechado. com a IA, nunca foi t�
 
 o marola precisa de computação em nuvem: espaço para guardar os dados e placas de vídeo para treinar e rodar os modelos. mesmo sem fins lucrativos, ele aceita parcerias com empresas que cedam esses recursos, ou dados, sem passar dinheiro. em troca, a empresa ganha um crédito discreto no site. nada de anúncio, banner ou rastreamento.
 
+## parceiros
+
+o marola é parceiro oficial (Proud Partner) do [Leave No Trace](https://lnt.org/), que ensina a aproveitar a natureza sem deixar rastro.
+
+o [OpenDiving](https://opendiving.app/) é um diário de mergulho de código aberto, feito para durar mais que qualquer fabricante de computador de mergulho. os dois projetos usam dados abertos e apontam um para o outro: o OpenDiving lista o marola entre os seus apps parceiros.
+
 ## como o marola é montado
 
 o marola é um conjunto de repositórios de código, cada um com uma tarefa:
@@ -58,6 +64,8 @@ o nome disso é monólito distribuído. monólito porque funciona como uma peça
 
 a gente fez assim por dois motivos. o primeiro: boa parte do código é escrita e mantida com o Claude, da Anthropic, tanto num Claude Project quanto no Claude Code pelo terminal. o guarda-chuva com submódulos ajuda nisso: o Claude enxerga o projeto inteiro de cima, com os planos e as regras por escrito num lugar só, e mexe num repositório pequeno de cada vez, com os testes daquele repositório. o segundo: cada parte também anda sozinha, até certo ponto. quem só quer os dados de balneabilidade pode usar o marola-oods sem o resto, e um erro num repositório não derruba os outros. uma parte nunca usa o código da outra direto: ela pega uma versão publicada e só troca de versão quando decide trocar.
 
+o site roda num servidor nosso: uma máquina virtual KVM 4 alugada da [Hostinger](https://www.hostinger.com/), no Brasil, configurada com [NixOS](https://nixos.org/). a mesma máquina entrega as páginas, os quadros das praias e os pedaços do mapa de fundo, sem CDN nem outra empresa no meio. ela fica no Brasil porque alguns órgãos estaduais só respondem a endereços brasileiros.
+
 ## Claude
 
 boa parte do código do marola é escrita com o Claude, o assistente de IA da Anthropic, num Claude Project: um espaço no claude.ai em que ele lê os repositórios, abre pull requests e conversa com a gente em threads. as configurações desse projeto estão num arquivo aberto, o [CLAUDE_PROJECT.config.md](https://github.com/marola-dev/marola/blob/main/CLAUDE_PROJECT.config.md) (em inglês): as instruções que o Claude segue, os repositórios que ele lê, o ambiente em que ele roda e as rotinas que ele executa sozinho. qualquer pessoa pode ler o arquivo ou montar um projeto igual a partir dele.
@@ -68,11 +76,11 @@ cada praia cai numa das cinco faixas da legenda do mapa: **≥70** bom, **40–6
 
 ## de onde vêm os dados
 
-as praias vêm do [OpenStreetMap](https://www.openstreetmap.org/copyright), a previsão do mar e do tempo vem do [Open-Meteo](https://open-meteo.com/), e a balneabilidade, dos boletins oficiais do IMA/SC, do INEA (RJ) e do INEMA (BA). são fontes públicas e gratuitas. o mapa de fundo é do [OpenFreeMap](https://openfreemap.org/), desenhado com o MapLibre a partir dos dados do OpenStreetMap. por enquanto, só as camadas de praias e de balneabilidade estão ligadas. vento, ondas e as imagens de satélite da NASA ([GIBS](https://www.earthdata.nasa.gov/gibs)) chegam em breve.
+as praias vêm do [OpenStreetMap](https://www.openstreetmap.org/copyright), a previsão do mar e do tempo vem do [Open-Meteo](https://open-meteo.com/), e a balneabilidade, dos boletins oficiais do IMA/SC, do INEA (RJ) e do INEMA (BA). são fontes públicas e gratuitas. o mapa de fundo é do próprio marola: os pedaços do mapa são recortados dos dados do OpenStreetMap com o [Protomaps](https://protomaps.com/), ficam no nosso servidor e são desenhados com o [MapLibre](https://maplibre.org/), uma biblioteca de mapas de código aberto. por enquanto, só as camadas de praias e de balneabilidade estão ligadas. vento, ondas e as imagens de satélite da NASA ([GIBS](https://www.earthdata.nasa.gov/gibs)) chegam em breve.
 
 ## privacidade
 
-o marola não usa cookies nem rastreamento próprio. o mapa de fundo é a exceção. para desenhar o mapa, o seu navegador busca o estilo, os pedaços do mapa e as fontes nos servidores do [OpenFreeMap](https://openfreemap.org/). esses servidores recebem o seu endereço IP. o mapa não precisa de chave, e nada fica guardado no seu navegador para ele. quando você escolhe uma camada de satélite, as imagens vêm dos servidores da NASA, que também veem o seu endereço IP. a opção "perto de mim" usa a sua localização só dentro do navegador, e ela nunca sai dali.
+o marola não usa cookies nem rastreamento próprio. o mapa de fundo vem do servidor do próprio marola: o estilo, os pedaços do mapa e as fontes são arquivos deste site. por isso, desenhar o mapa não avisa mais ninguém de que você passou por aqui. duas coisas chegam a terceiros, e só quando você abre: uma camada de satélite, com imagens que vêm dos servidores da NASA, e o player do Spotify, que carrega do Spotify. nesses dois casos, eles veem o seu endereço IP. a opção "perto de mim" usa a sua localização só dentro do navegador, e ela nunca sai dali.
 
 ## quem faz
 
@@ -87,6 +95,10 @@ quem pesquisa também pode publicar um estudo aqui. leia os [estudos](/studies) 
 a ideia do botão de emergência veio do [swell-floripa](https://swell-floripa.vercel.app/), de Carlos Toledo ([@carlostoledo1891](https://github.com/carlostoledo1891)).
 
 o som das ondas é uma gravação de Luftrum ([freesound](https://freesound.org/s/48412/), licença [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)), que Porrumentzio editou em loop para o [Blanket](https://github.com/rafaelmardojai/blanket).
+
+Aleksei Vesnin ([@aleskiontherun](https://github.com/aleskiontherun)), do [OpenDiving](https://github.com/opendiving/opendiving), recebeu o marola como app parceiro.
+
+Pedro Veras Guimarães ([@pvguima](https://github.com/pvguima)) dedicou tempo, gentileza e atenção para explicar física de ondas ao fundador do marola.
 
 ## como ajudar
 

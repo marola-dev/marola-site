@@ -31,7 +31,7 @@
     trails: true,
     folds: { lore: false, blurb: false } // the footer's disclosures, kept across re-renders
   };
-  // site.yml writes mapbox-config.js from the repo's MAPBOX_PUBLIC_TOKEN at deploy (AGENTS.md).
+  // The deploy on piabrota2 writes mapbox-config.js from MAPBOX_PUBLIC_TOKEN (AGENTS.md).
   var MAPBOX = window.MAROLA_MAPBOX || {};
   var DEFAULT_STYLE = 'mapbox://styles/mapbox/outdoors-v12';
 

@@ -98,7 +98,8 @@ submissionProps =
     ("area", choice areaValues "The area the study is about."),
     ("topic", choice topicValues "The topic."),
     ("sources", JObject [("type", s "array"), ("items", JObject [("type", s "string"), ("format", s "uri")])]),
-    ("repository", nullable "string" "An https link to the code or data, or null."),
+    ("repository", nullable "string" "The https link of the study's GitHub repository, or null for a study sent before it was required."),
+    ("archive", nullable "string" "The study's archive link (Zenodo, arXiv or aiXiv), or null for a study sent before it was required."),
     ("licence", choice licenceValues "The licence of the file."),
     ("ai_models", textField "The AI systems used, as the author wrote it."),
     ("ai_contribution", choice levelValues "How much of the work an AI system did, as the author states it."),
@@ -175,7 +176,7 @@ schemas =
           )
         ]
     ),
-    studySchema "Submission" ["title", "authors", "abstract"] submissionProps,
+    studySchema "Submission" ["title", "authors", "abstract", "repository", "archive"] submissionProps,
     studySchema "Record" ["id", "sha256", "received_utc", "status", "notice"] recordProps,
     studySchema
       "Receipt"
@@ -258,7 +259,8 @@ submitSchema =
                     <> [("x-max-lines", n sourcesMax), ("x-max-line-length", n linkMax)]
                 )
             ),
-            ("repository", JObject (ofType "string" ("Optional https link of at most " <> tshow linkMax <> " characters.") <> [("maxLength", n linkMax)])),
+            ("repository", JObject (ofType "string" ("Required: the https link of the study's GitHub repository, `https://github.com/<owner>/<repo>`, at most " <> tshow linkMax <> " characters.") <> [("maxLength", n linkMax)])),
+            ("archive", JObject (ofType "string" ("Required: the study's archive, an https link on Zenodo, arXiv or aiXiv, at most " <> tshow linkMax <> " characters.") <> [("maxLength", n linkMax)])),
             ( "licence",
               JObject (ofType "string" "Open licences only, because marola hosts the file." <> [("enum", strings licenceValues), ("default", s (licenceName CcBy40))])
             ),

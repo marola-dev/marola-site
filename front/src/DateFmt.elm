@@ -18,6 +18,13 @@ enMonths =
     [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ]
 
 
+{-| Japanese and Traditional Chinese print the month and the day the same way: "11月17日".
+-}
+cjkMonthDay : Int -> Int -> String
+cjkMonthDay m d =
+    String.fromInt m ++ "月" ++ String.fromInt d ++ "日"
+
+
 nth : Int -> List String -> String
 nth i xs =
     List.drop i xs |> List.head |> Maybe.withDefault ""
@@ -38,6 +45,12 @@ short iso language =
 
                             En ->
                                 nth (m - 1) enMonths ++ " " ++ String.fromInt d
+
+                            Ja ->
+                                cjkMonthDay m d
+
+                            ZhHant ->
+                                cjkMonthDay m d
 
                     else
                         iso

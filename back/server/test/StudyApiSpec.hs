@@ -31,6 +31,8 @@ goodFields =
     ("area", "rio"),
     ("topic", "water-quality"),
     ("sources", "https://example.org/data"),
+    ("repository", "https://github.com/example/r"),
+    ("archive", "https://zenodo.org/records/23224155"),
     ("rights", "true"),
     ("ai_contribution", "none")
   ]
@@ -145,7 +147,7 @@ spec = describe "study api" $ do
     key <- newAccount site 1 "ana" 30
     r <- submit site key [("title", "no"), ("authors", "Ana | 0000-0002-1825-0098"), ("area", "mars"), ("rights", "false"), ("ai_contribution", "drafting")] "not a pdf"
     r.status `shouldBe` 400
-    forM_ [("title", "too_short"), ("authors", "bad_orcid"), ("abstract", "required"), ("area", "unknown_value"), ("topic", "required"), ("rights", "must_be_true"), ("ai_process", "required"), ("pdf", "not_pdf")] $ \e ->
+    forM_ [("title", "too_short"), ("authors", "bad_orcid"), ("abstract", "required"), ("area", "unknown_value"), ("topic", "required"), ("repository", "required"), ("archive", "required"), ("rights", "must_be_true"), ("ai_process", "required"), ("pdf", "not_pdf")] $ \e ->
       errorCodes r `shouldContain` [e]
     missing <- sendBody site (Just key) "/api/v1/studies" (studyBody goodFields Nothing)
     errorCodes missing `shouldBe` [("pdf", "required")]
@@ -154,6 +156,26 @@ spec = describe "study api" $ do
     cut <- submit site key goodFields (BS.take (BS.length validPdf - 24) validPdf)
     errorCodes cut `shouldBe` [("pdf", "truncated")]
     filesUnder site.config.studies >>= (`shouldBe` [])
+
+  it "the repository must be a GitHub repository and the archive a Zenodo, arXiv or aiXiv link" $ withSite $ \site -> do
+    key <- newAccount site 1 "ana" 30
+    let with field value = [(k, v) | (k, v) <- goodFields, k /= field] <> [(field, value)]
+        -- A dry run runs the same validation and stores nothing, and it spends a third of the rate.
+        rejected field code value = do
+          r <- dryRun site key (studyBody (with (TE.encodeUtf8 field) value) (Just validPdf))
+          (r.status, errorCodes r) `shouldBe` (400, [(field, code)])
+    rejected "repository" "bad_link" "http://github.com/example/r"
+    rejected "repository" "not_github" "https://example.org/r"
+    rejected "repository" "not_github" "https://github.com/example"
+    rejected "repository" "not_github" "https://github.com/example/r?x=1"
+    rejected "archive" "bad_archive" "https://example.org/paper"
+    rejected "archive" "bad_archive" "https://doi.org/10.1234/x"
+    let valid = studyBody (with "archive" "https://doi.org/10.5281/zenodo.23224155") (Just validPdf)
+    doi <- sendBody site (Just key) "/api/v1/studies" valid
+    doi.status `shouldBe` 201
+    later site
+    arxiv <- dryRun site key (studyBody (with "archive" "https://arxiv.org/abs/2611.12345") (Just (pdfBytes "" 5)))
+    arxiv.status `shouldBe` 200
 
   it "the same file from the same account is a 409 that names the old id; another account may send it" $ withSite $ \site -> do
     key <- newAccount site 1 "ana" 30

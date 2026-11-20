@@ -1,12 +1,15 @@
 module Language exposing (Language(..), all, fromTag, matching, resolve, source, tag)
 
-{-| The two languages of the page (MIP-0054 5.5).
+{-| The four languages of the page (MIP-0054 5.5): pt-BR is the source the owner manages, en is the
+ASD-STE100 pass after it, and ja and zh-Hant are the LLM passes.
 -}
 
 
 type Language
     = PtBr
     | En
+    | Ja
+    | ZhHant
 
 
 {-| A message missing elsewhere falls back to this one.
@@ -18,7 +21,7 @@ source =
 
 all : List Language
 all =
-    [ PtBr, En ]
+    [ PtBr, En, Ja, ZhHant ]
 
 
 tag : Language -> String
@@ -29,6 +32,12 @@ tag language =
 
         En ->
             "en"
+
+        Ja ->
+            "ja"
+
+        ZhHant ->
+            "zh-Hant"
 
 
 fromTag : String -> Maybe Language

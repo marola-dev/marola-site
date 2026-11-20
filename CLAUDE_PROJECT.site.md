@@ -115,8 +115,7 @@ Finding code (Hoffmann, 2026-10-11): for a known keyword, use `git grep`. For "w
   (`AGENTS.md`, "Screenshots in the PR").
 - Run `just site-build`, which needs Docker and the pinned app image from ghcr.io. Marola Agent's
   threads got "unauthorized" pulling that image.
-- Deploy. `site.yml` deploys from `main` and on a schedule, and `.claude/settings.json` denies
-  `just site-deploy`.
+- Deploy. piabrota2 deploys the legacy page from piabrota/nix-os's units, never from here.
 
 ## 3. Plugins, skills and connectors
 

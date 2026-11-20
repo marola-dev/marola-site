@@ -3,15 +3,50 @@ module View.Layers exposing (key, rail)
 {-| The rail of map layers and the key of the one on show.
 -}
 
+import Config
 import DateFmt
 import Html exposing (Html)
+import Html.Events
 import Html.Keyed
+import Json.Decode as D
 import Layer exposing (Layer)
 import Model exposing (Model, Panel(..))
 import Msg exposing (Msg(..))
 import Raster
 import Ui exposing (attr, cls, idAttr)
 import Words
+
+
+{-| The iframe exists only while the player is open, so Spotify is not contacted before a click. Spotify's
+compact embed carries its own link to the playlist, so the player is the iframe alone. It hangs under
+the layer buttons, over the map, and the grip at its top edge drags it anywhere over the map: the
+drag lives in the update (Elm's own pointer subscriptions); only the moved pixels, which the CSP
+keeps out of inline styles, go through a port (ADR 0007).
+-}
+player : Model -> Html Msg
+player model =
+    if model.playlistOpen then
+        Html.section [ idAttr "player", cls "player", attr "aria-label" (Words.t model "player.label") ]
+            [ Html.span
+                [ cls "grip"
+                , attr "role" "button"
+                , attr "tabindex" "0"
+                , attr "aria-label" (Words.t model "player.drag")
+                , attr "title" (Words.t model "player.drag")
+                , Html.Events.preventDefaultOn "mousedown" (D.map2 PlayerDragStarted (D.field "pageX" D.int) (D.field "pageY" D.int) |> D.map (\m -> ( m, True )))
+                ]
+                []
+            , Html.iframe
+                [ attr "src" Config.playlistEmbed
+                , attr "title" (Words.t model "player.label")
+                , attr "allow" "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                , attr "loading" "lazy"
+                ]
+                []
+            ]
+
+    else
+        Html.section ([ idAttr "player", cls "player" ] ++ Ui.hidden True) []
 
 
 iconOf : Layer -> String
@@ -107,6 +142,19 @@ rail model =
                 [ attr "type" "button", cls "soon", Ui.flag "disabled" True, attr "title" (Words.t model "flow.bathymetry_soon") ]
                 [ Words.icon "mountain", Html.span [] [ Html.text (Words.t model "flow.bathymetry_soon") ] ]
             )
+
+        playlist =
+            ( "playlist"
+            , Html.button
+                [ attr "type" "button"
+                , attr "data-toggle" "playlist"
+                , attr "aria-controls" "player"
+                , attr "title" (Words.t model "controls.playlist_title")
+                , Words.pressed model.playlistOpen
+                , Ui.onClick PlaylistPressed
+                ]
+                [ Words.icon "music", Html.span [] [ Html.text (Words.t model "controls.playlist") ] ]
+            )
     in
     Html.div
         [ idAttr "flow", cls "flow", attr "role" "group", attr "aria-label" (Words.t model "flow.label") ]
@@ -115,11 +163,13 @@ rail model =
             ([ toggle model "beaches" "pin" model.showBeaches BeachesToggled
              , toggle model "trails" "footprints" model.showTrails TrailsToggled
              , trailsList
+             , playlist
              , ( "sep", Html.span [ cls "sep", attr "aria-hidden" "true" ] [] )
              ]
                 ++ List.map (layerButton model) Layer.all
                 ++ [ bathymetry ]
             )
+        , player model
         ]
 
 

@@ -1,6 +1,7 @@
 packages:
   back/pages
   back/server
+  back/tools
 
 tests: True
 

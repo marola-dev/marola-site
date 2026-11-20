@@ -4,14 +4,18 @@ import Control.Monad (forM_)
 import Data.ByteString (ByteString)
 import Data.ByteString.Char8 qualified as BC
 import Data.ByteString.Lazy qualified as BL
+import Data.Maybe (fromMaybe)
 import Data.Text qualified as T
 import Data.Text.Encoding qualified as TE
+import Data.Time.Clock.POSIX (posixSecondsToUTCTime)
 import Harness
 import Marola.Server.App qualified as App
 import Marola.Server.Files qualified as Files
 import Network.HTTP.Client qualified as C
 import Network.HTTP.Types (statusCode)
 import Network.Wai.Handler.Warp (testWithApplication)
+import System.Directory (setModificationTime)
+import System.FilePath ((</>))
 import Test.Hspec
 
 -- | Paths as a client may send them, encoded or not. Each one must be a 404.
@@ -135,6 +139,33 @@ spec = describe "static files" $ do
     bodyText floripa `shouldSatisfy` T.isInfixOf "\"data\""
     rio <- send site (get "/data/rio/latest.json")
     bodyText rio `shouldSatisfy` T.isInfixOf "\"static\""
+
+  it "the ETag follows the content: same size and a Nix mtime of 1 still change it, and no Last-Modified" $ withSite $ \site -> do
+    let file = site.root </> "static" </> "same.txt"
+        nix = posixSecondsToUTCTime 1
+    write file "aaaa\n"
+    setModificationTime file nix
+    first <- send site (get "/same.txt")
+    write file "bbbb\n"
+    setModificationTime file nix
+    second <- send site (get "/same.txt")
+    header first "ETag" `shouldNotBe` header second "ETag"
+    header second "Last-Modified" `shouldBe` Nothing
+    stale <- send site (get "/same.txt") {headers = [("If-None-Match", fromMaybe "" (header first "ETag"))]}
+    stale.status `shouldBe` 200
+    byDate <- send site (get "/same.txt") {headers = [("If-Modified-Since", "Thu, 01 Jan 1970 00:00:01 GMT")]}
+    byDate.status `shouldBe` 200
+
+  it "/?lang=en is the English map file when the build wrote one, and / is not" $ withSite $ \site -> do
+    before <- send site (get "/?lang=en")
+    bodyText before `shouldSatisfy` T.isInfixOf "home"
+    write (site.root </> "static" </> "index.en.html") "<!doctype html><html lang=\"en\"><p>english home</p>\n"
+    en <- send site (get "/?lang=en")
+    bodyText en `shouldSatisfy` T.isInfixOf "english home"
+    enIndex <- send site (get "/index.html?lang=en")
+    bodyText enIndex `shouldSatisfy` T.isInfixOf "english home"
+    pt <- send site (get "/")
+    bodyText pt `shouldNotSatisfy` T.isInfixOf "english"
 
   it "a method other than GET and HEAD gets 405 with Allow" $ withSite $ \site ->
     forM_ ["PUT", "DELETE", "PATCH", "POST"] $ \m -> do

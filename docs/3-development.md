@@ -5,61 +5,40 @@
 Put the new jvm tag and its digest in [`marola-image`](https://github.com/marola-dev/marola-site/blob/main/marola-image) (the tag is
 `jvm-<short sha>` from the app's `docker.yml`; `docker buildx imagetools inspect <ref>` prints the
 digest), then run `just board-schema --update` and commit both files together. `board-schema.yml`
-fails a PR whose vendored schema differs from the image's, and `site.yml` checks the page against
-the image's own schema before every deploy. The jvm image is required: the schema is read out of
+fails a PR whose vendored schema differs from the image's, and `ci.yml`'s `static` job checks the
+page against the vendored copy. The jvm image is required: the schema is read out of
 `/app/marola.jar`, which the native image does not have. A board schema change in the app is two
 PRs: the app's first, then this bump.
 
-## The build and deploy (`site.yml`)
+## The build and deploy (on piabrota2, not GitHub Actions)
 
-Runs only on `workflow_dispatch` for now (one area, or `all`, the default), on the self-hosted
-runner [below](#the-self-hosted-runner-in-brazil); no schedule, push or `repository_dispatch`. `concurrency: site` queues a run rather
-than cancelling one that is already building.
+marola.dev and marola.piabrota.art are served by piabrota2, a Hostinger KVM 4 VPS in Brazil (`187.41.117.18`), as NixOS
+systemd units in [piabrota/nix-os](https://github.com/piabrota/nix-os) (`marola-site.nix`, its
+`docs/MAROLA-SITE.md`): the new site's server at the commit nix-os pins, behind nginx with Let's
+Encrypt, and no Cloudflare. They replaced `site.yml`, its self-hosted runner and the Cloudflare
+Worker. Nothing here runs them: a merge in nix-os deploys them, and a change here reaches the site
+when nix-os moves its pin (`scripts/pins.py one marola-site` there).
 
-The job: pull the pinned image (two tries) → check the harness and the page against the image's
-own board schema → restore the beach lists → build every area's boards (or one, with an area input) → copy the static page
-into `site/dist` → write the [crawl files](#crawl-files-and-metadata) → write the Mapbox token and style into `mapbox-config.js` → cache-bust
-`index.html`'s script/style tags with `?v=<sha>` (Pages caches each file independently) → add the
-`site-data` branch's panels → a required-files check (a half-built site must never reach Pages) →
-the publish allowlist (only the page, its assets and `data/`, `smoke/`, `coverage/`, `stats/` go
-out) → a `CNAME` file → deploy to GitHub Pages, and the same `site/dist` to the Cloudflare Worker
-`marola` (static assets only, `wrangler.jsonc`), which serves marola.dev since 2026-10-07. GitHub
-Pages keeps the same deploy as a fallback, and a Cloudflare failure does not fail the run
-(MIP-0078). Its secrets are `CLOUDFLARE_API_TOKEN` (Edit Cloudflare Workers) and
-`CLOUDFLARE_ACCOUNT_ID`.
+`marola-boards-build` runs four times a day (01, 07, 13, 19 UTC) and on every nix-os deploy that
+moves the app image: the image this repo pins in `marola-image` (or the one nix-os overrides),
+`--site` over `site/areas.json` of the pinned commit, with podman, into the server's board folder.
+INEA (Rio) and INEMA (Bahia) answer only Brazilian addresses, and the box is in Brazil, so no proxy.
+Two tries; an area it did not build keeps its old boards. nix-os's `marola-boards.yml` fails when a
+board on either name is older than 12 hours.
+
+The legacy page (`site/static`) is no longer deployed anywhere.
 
 ### Beach lists and Overpass
 
 The app keeps each area's beach list in `site/beaches/<lat>_<lon>_r<radius>_n<limit>.json` and asks
-Overpass only for an area without one, writing the file when the query succeeds. `site.yml` keeps
-that directory in the Actions cache (`beaches-<hash>`, restored newest first, saved after every
-run, a failed one included), so once every area has a list the build no longer depends on the
-public Overpass mirrors, whose timeouts used to fail whole builds (#63). Trails still come from
-Overpass, but a failure there only leaves them off the board. A list refreshes when its area's
-`lat`, `lon`, `radius_km` or `beach_limit` changes (that is the file name); to refetch otherwise,
-delete the `beaches-` entries under Actions → Caches. OSM beaches change over years, not hours.
+Overpass only for an area without one, writing the file when the query succeeds. The box keeps that
+directory between builds, so once every area has a list the build no longer depends on the public
+Overpass mirrors, whose timeouts used to fail whole builds (#63). Trails still come from Overpass,
+but a failure there only leaves them off the board. A list refreshes when its area's `lat`, `lon`,
+`radius_km` or `beach_limit` changes (that is the file name). OSM beaches change over years, not
+hours.
 
-### The self-hosted runner in Brazil
-
-INEA (Rio) and INEMA (Bahia) answer only Brazilian addresses, and GitHub's runners are not in
-Brazil. So `site.yml`'s build job runs on a self-hosted runner labelled `marola-br`, on a machine in
-Brazil, and reaches both directly: no proxy and no open port, since the runner only connects out to
-GitHub. The deploy job stays on GitHub's runners.
-
-`site.yml` runs only by hand for now, from the Actions tab or `gh workflow run site.yml` (pick an
-area, or `all`, the default). With the runner off, a run waits in the queue and marola.dev keeps
-the last deployed site. Only an owner (a repo admin) can run it: the `owner` job, on GitHub's
-runner, fails the run before the build job reaches the self-hosted one. Registering the runner,
-from the devkit:
-
-```bash
-MAROLA_RUNNER_REPO=marola-dev/marola-site MAROLA_RUNNER_PREFIX=marola-site \
-  MAROLA_RUNNER_LABELS=marola-br just runners 1
-```
-
-A public repo's self-hosted runner runs whatever a workflow in a pull request asks it to, so keep
-Settings → Actions → "Approval for running fork pull request workflows" on *all external
-contributors*. `just site-build` works the same from any machine in Brazil.
+`just site-build` builds the same boards on any machine in Brazil.
 
 ### Crawl files and metadata
 
@@ -70,31 +49,20 @@ one data link per area in `site/areas.json`, and the docs' own
 [llms.txt](https://docs.marola.dev/llms.txt)), `sitemap.xml` (the five indexable pages with their
 `hreflang` alternates; `contact.html` carries `noindex`), `.well-known/security.txt` (RFC 9116,
 `Expires` 364 days after the build) and `board.schema.json`. A site not rebuilt for a year serves
-an expired `security.txt`, and the health check says so. Pages' artifact drops dot-directories
-unless `include-hidden-files` is set, which `site.yml` does for `.well-known/`.
+an expired `security.txt`, and the health check says so.
 
-### Crawlers, AI and visitor counts (Cloudflare)
+### Crawlers and visitor counts
 
-Two things about crawlers are zone settings in Cloudflare's dashboard, not files here, and both
-are a person's call:
-
-- **The managed robots.txt.** Cloudflare prepends its content-signals block (`search`,
-  `ai-input`, `ai-train`) to our `robots.txt`. On 2026-11-10 it carried no `Content-Signal` line,
-  so it neither granted nor refused anything. Whatever it is set to has to agree with `llms.txt`,
-  which invites a model to read the site: `search=yes, ai-input=yes` at least.
-- **AI crawler blocking** ("Block AI bots", AI Crawl Control) answers some crawlers with 403
-  before they reach `robots.txt` or `llms.txt`.
-
-Visitor counts come from Cloudflare's zone analytics (#128): requests seen at the edge, no script
-in the page, no cookie. The page adds no analytics of its own (#176 holds that decision).
+`robots.txt` and `llms.txt` are served as written: no edge rewrites them and no edge blocks a
+crawler. There is no visitor count since the move off Cloudflare (its zone analytics, #128); the page
+adds no analytics of its own (#176 holds that decision).
 
 ## The `site-data` branch layout
 
 An orphan branch, never deployed by the workflows that write it: `coverage/` and `smoke/` (the
 app's CI and `docker-smoke.yml`), `stats/` (the umbrella). Each writer pushes with
 `scripts/site-data-push.sh` (retries on a rejected push, replaying its one commit onto the new
-tip) and then sends `repository_dispatch: site-data-updated`, which `site.yml` ignores while it runs
-only by hand: the panels refresh on the next manual run. A directory missing from the branch just means no panel for it;
+tip) and then sends `repository_dispatch: site-data-updated`, which nothing listens to any more. A directory missing from the branch just means no panel for it;
 a missing branch means none of the three.
 
 ## Health checks
@@ -102,7 +70,7 @@ a missing branch means none of the three.
 `site-health.yml` runs `python3 scripts/site_live_check.py` against the live site every six hours
 (the boards, and the crawl files: `robots.txt` names a sitemap, every sitemap `<loc>` and `llms.txt`
 link answers 200, `security.txt` has not expired),
-separate from `site.yml` on purpose: a red run here means upstream data is missing (a bulletin
+separate from the box's build on purpose: a red run here means upstream data is missing (a bulletin
 gone stale, a provider down), not that the build is broken, so it must never block a deploy.
 
 ## i18n bundling
@@ -161,7 +129,7 @@ pushed.
 
 ```bash
 just dist-build             # front_build.sh (Vite) and marola-pages into dist/, with the assets and csp.txt
-just dist-build --fixtures  # also writes data/<area>/ boards from site/fixtures/board.json
+just dist-build --fixtures  # also writes data/<area>/ boards from site/fixtures/board.json, and tiles/marola.pmtiles, the fixture base map
 just server-run             # http://127.0.0.1:8080, with the security headers (see below)
 just front-check            # a Node smoke test of the built page in dist
 just pages-parity <dir>     # the pages, byte for byte, against another build's dist
@@ -200,18 +168,34 @@ the server cannot drift. `just server-run` keeps the contact database in `.tmp/m
 ignores. The smoke script needs `just dist-build --fixtures` first. How it runs on a host, with the
 variables and the nginx and systemd settings, is in [the hosting page](5-hosting.md).
 
+**The base map in a preview.** `just dist-build --fixtures` puts the fixture tiles in `dist/tiles/`: the world
+to zoom 1 and the centre of Florianópolis to zoom 11, enough for the tests and for a map that is coarse
+everywhere else. For the real map, cut the host's file once and point the server at its folder:
+
+```bash
+nix shell nixpkgs#pmtiles nixpkgs#tippecanoe   # the two tools the dev shell lacks
+just basemap-extract .tmp/tiles/marola.pmtiles   # 216 MB, about a minute; .tmp/ is git-ignored
+MAROLA_TILES=.tmp/tiles just server-run
+```
+
+The style and the glyphs are committed under `front/public/map/`. To change a colour or a layer, edit
+`scripts/basemap_style.mjs` and run `just basemap-style`; `just basemap-style --check` fails on a stale
+`style.json`. It fetches `@protomaps/basemaps` and the glyph repository into `.tmp/basemap-tools/` on its first
+run, so it is not part of `just quality`; `scripts/front_check.js` checks the committed style offline (one local
+source, local glyphs, no sprite, no host). [4-reference](4-reference.md#base-map-pin) has the pin and the files.
+
 To try the login by hand, start the fake GitHub and the server in dev mode. The fake GitHub signs in a made-up
 user (`smoke-sci`); `MAROLA_DEV=1` lets the server take its URL from the environment and drop `Secure` and the
 `__Host-` prefix, which plain HTTP cannot carry. Never set `MAROLA_DEV` on a host.
 
 ```bash
-node scripts/fake_github.mjs fake-secret 9100 &       # prints the port
+cabal run -v0 exe:marola-tools -- fake-github fake-secret 9100 &   # prints the port
 printf 'fake-secret\n' > .tmp/github-secret
 MAROLA_DEV=1 MAROLA_GITHUB_CLIENT_ID=dev MAROLA_GITHUB_CLIENT_SECRET_FILE=.tmp/github-secret \
   MAROLA_GITHUB_BASE=http://127.0.0.1:9100 MAROLA_GITHUB_API_BASE=http://127.0.0.1:9100 just server-run
 ```
 
 Then open `http://127.0.0.1:8080/submit` and press the login button. `scripts/server_smoke.sh` does the same
-flow with `scripts/server_smoke_submit.mjs`: login through the redirects, a key, the form with its CSRF token,
+flow with `marola-tools smoke-submit`: login through the redirects, a key, the form with its CSRF token,
 the study page and its hash, a report, a withdrawal.
 

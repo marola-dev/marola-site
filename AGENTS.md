@@ -23,14 +23,15 @@ The map at [marola.dev](https://marola.dev), in two builds that live side by sid
 
 - **The new site** (`front/`, `back/`; [ADR 0005](docs/adr/0005-elm-and-haskell.md)): a Haskell server
   (`back/server`) that serves the map page, the static pages and the study API. The map page is Elm
-  (`front/`), bundled by Vite, over MapLibre GL JS and OpenFreeMap (no Mapbox token); the static pages
+  (`front/`), bundled by Vite, over MapLibre GL JS and the site's own base map (no map provider, no token;
+  [ADR 0006](docs/adr/0006-self-hosted-basemap.md)); the static pages
   are rendered by a Haskell program (`back/pages`). Anyone with a GitHub account can submit a study (a PDF
   with metadata), shown with the notice "not reviewed" (ADR 0004). The server needs a host that runs
   it; static hosting is not enough.
-- **The legacy site** (`site/static/`): plain JavaScript over Mapbox GL JS, built and published by
-  `.github/workflows/site.yml`. It is still what marola.dev serves. Whether and when the new site
-  replaces it is a decision of the owners; an agent does not make it, and does not touch the
-  workflow.
+- **The legacy site** (`site/static/`): plain JavaScript over Mapbox GL JS. Nothing deploys it any
+  more: since 2026-11-13 marola.dev and marola.piabrota.art serve the new site from piabrota2, a Hostinger KVM 4 VPS
+  in Brazil, as NixOS units in piabrota/nix-os (`marola-site.nix`), with no Cloudflare. Its files
+  stay until a cutover pull request removes them.
 
 Both show every area's precomputed boards (MIP-0005), with no LLM. The boards come from the pinned
 app image (`marola-image`); this repo never builds the app.
@@ -63,7 +64,7 @@ app image (`marola-image`); this repo never builds the app.
 - `front/`: the Elm map page. `src/` holds the domain types, the board decoder, the model, `update` (which returns
   effects as data) and the views, all pure; `ports.js` starts the page and carries out each effect; `js/` holds
   the MapLibre and WebGL glue (`maplibre_ffi.mjs`, `flow_layer_ffi.mjs`); `public/` the static files Vite copies
-  (`style.css`, `favicon.svg`, `vendor/`, `data/trails/`); `tests/` the elm-test suites and `golden.json`, what the
+  (`style.css`, `favicon.png`, `og.png`, `vendor/`, `data/trails/`); `tests/` the elm-test suites and `golden.json`, what the
   old `ui.js`, `app.js` and `flow.js` return (`scripts/golden.js`, `just golden`). `just front-build` builds
   `front/dist/`, `just front-test` runs elm-test, `just front-check` runs `scripts/front_check.js` on `dist/`.
   `package-lock.json` pins the npm build tools; `elm.json` the Elm packages.
@@ -74,21 +75,27 @@ app image (`marola-image`); this repo never builds the app.
   [docs/5-hosting.md](docs/5-hosting.md), [back/server/README.md](back/server/README.md)). Every response header
   comes from `Marola.Server.Security`, the CSP from `Marola.Csp`. Its hspec suite runs the pipeline in memory.
   `back/pages` (`marola-pages site <out>`) renders every static page (about, support, contact, contact-sent, 404,
-  news, members) and the metadata files (`robots.txt`, `sitemap.xml`, `llms.txt`, `humans.txt`,
-  `.well-known/security.txt`): `Loader` reads `site/content/pages/<page>.<lang>.md`, the posts of
+  news, members), the metadata files (`robots.txt`, `sitemap.xml`, `llms.txt`, `humans.txt`,
+  `.well-known/security.txt`) and `index.en.html`, the map page's English head, which the server sends for
+  `/?lang=en` (`Marola.Pages.MapPage`; the build fails if `front/index.html` drifts from it): `Loader` reads `site/content/pages/<page>.<lang>.md`, the posts of
   `site/content/news/`, the catalogs and MEMBERS.md (the vendored `site/members/MEMBERS.md`, which must hash to
   the blob id on line 2 of `site/members.version`; or the file in `MEMBERS_SOURCE`); `Layout` is the shared head,
   nav and footer. pt-BR goes at the root of the output and English under `en/`. Edit the Markdown and the posts,
   never the HTML; the pages carry no script and no inline style. The Python builders and the old `site/static`
   files stay until the cutover.
+- `back/tools` (`marola-tools`): the repo's own checks and test harnesses, in Haskell (ADR 0007): `design-check`
+  (DESIGN.md against `style.css`; `just design-check`), `js-check`, `elm-fixtures` (`front/tests/Fixtures.elm`
+  for elm-test), the server smoke checks and the fake GitHub. `marola-pages fixtures` writes `data/areas.json` and
+  a board per area for an offline preview.
 - `dist/` (not in git): what the server serves, assembled by `scripts/site_build.sh` (`just dist-build`).
 - `scripts/`, the new site: `site_build.sh` (assembles `dist/`), `front_build.sh` (Vite into `front/dist`),
-  `site_fixtures.mjs` (`data/areas.json` and a board per area for an offline preview), `front_check.js` (the
-  built page in a fake DOM and a MapLibre stub), `server_smoke.sh` with `server_smoke*.mjs` (the built server on
-  a free port; `fake_github.mjs` stands in for GitHub), `pages_parity.sh` (the pages against another build's,
-  byte for byte), `package_smoke.sh` (the Nix package's server), `golden.js` (writes and checks
-  `front/tests/golden.json`), `design_check.js` (DESIGN.md against `style.css`; `just design-check`), `nav_measure.sh` (the phone nav strip in a real browser; needs a Chromium, not in
-  `just quality`), `members_vendor_check.sh`.
+  `front_check.js` (the built page in a fake DOM and a MapLibre stub), `server_smoke.sh` (the built server on a
+  free port, checked by `marola-tools smoke*` against `marola-tools fake-github`), `pages_parity.sh` (the pages
+  against another build's, byte for byte), `package_smoke.sh` (the Nix package's server), `golden.js` (writes and checks
+  `front/tests/golden.json`), `js-allowlist.tsv` (every JavaScript file and why it is one; `just js-check`), `nav_measure.sh` (the phone nav strip in a real browser; needs a Chromium, not in
+  `just quality`), `members_vendor_check.sh`, `basemap_extract.sh` (cuts the host's PMTiles file, and the fixture
+  `site/fixtures/basemap.pmtiles`, from the Protomaps build pinned in `site/basemap.version`; network, by hand) and
+  `basemap_style.mjs` (writes `front/public/map/`: the style and its glyphs).
 - `scripts/`, the legacy site and shared: `site_check.js` (app.js and flow.js in a stub DOM and Mapbox GL),
   `site_meta.py` (`llms.txt`, `sitemap.xml` and `.well-known/security.txt`, written into `site/dist` at
   build), `mapbox_config.sh` (the public Mapbox token into `mapbox-config.js` at deploy),
@@ -96,9 +103,8 @@ app image (`marola-image`); this repo never builds the app.
   `stamp_site_version.sh`, `site_live_check.py` (what marola.dev actually serves),
   `site-data-push.sh` (the retrying push every `site-data` writer uses), `i18n_bundle.py`,
   `news_build.py`, `members_build.py`, `mip-trailer-check.sh`.
-- `site.yml`'s build runs on a self-hosted runner in Brazil (label `marola-br`), because INEA and
-  INEMA answer only Brazilian addresses, and only by hand for now
-  ([`docs/3-development.md`](docs/3-development.md#the-self-hosted-runner-in-brazil)).
+- The boards and the legacy deploy run on piabrota2, because INEA and INEMA answer only Brazilian
+  addresses ([`docs/3-development.md`](docs/3-development.md#the-build-and-deploy-on-piabrota2-not-github-actions)).
 - `DESIGN.md`: the visual system (tokens, type, components, contrast, known gaps) of the new site.
   `just design-check` fails when it and `front/public/style.css` drift. Inter is self-hosted in
   `front/public/vendor/fonts/`.
@@ -140,6 +146,7 @@ just back-test            # the pages' and the server's tests; `just front-test`
 just front-fmt            # elm-format --validate (`just front-fmt write` formats); `just back-fmt` is ormolu's check, same argument
 just server-smoke         # the built server on a free port, end to end
 just design-check         # DESIGN.md against style.css
+just js-check             # every JavaScript file is on scripts/js-allowlist.tsv with its reason (ADR 0007)
 just audit                # npm vulnerabilities of front/ (by hand, needs network; not in `just quality`)
 just nix-build            # nix build .#default: the whole site as one package
 just site-build floripa   # the legacy build: boards from the pinned image into site/dist (docker, network)
@@ -167,7 +174,7 @@ A new `/api/v1` route needs an entry in `Marola.Server.OpenApi`, or `OpenApiSpec
 dependency needs a bound in its `.cabal` file and `cabal freeze` at the root.
 
 **What CI runs for the new site** (`ci.yml`, all three in `ci-ok`): `back` (ormolu check, `cabal build all`,
-`cabal test all`), `front` (elm-format check, `npm test`, `scripts/site_build.sh --fixtures`,
+`cabal test all`, `marola-tools design-check` and `js-check`), `front` (elm-format check, `npm test`, `scripts/site_build.sh --fixtures`,
 `scripts/front_check.js`) and `smoke` (`scripts/server_smoke.sh` over the `dist/` the `front` job built). The
 legacy checks stay in `static` and `python`. A workflow action added to these jobs is pinned to a full commit SHA
 with the version in a comment.
@@ -177,6 +184,9 @@ with the version in a comment.
 | File | Regenerate with |
 |---|---|
 | `front/tests/golden.json` | `just golden` (runs the old JavaScript; `--check` is in `just quality`) |
+| `front/public/map/style.json`, `front/public/map/fonts/` | `just basemap-style` (`node scripts/basemap_style.mjs`; the colours and the layer choices are in that script; needs the network once) |
+| `site/fixtures/basemap.pmtiles` | `just basemap-extract --fixture site/fixtures/basemap.pmtiles` (pmtiles, tile-join, network) |
+| `front/public/vendor/pmtiles/pmtiles.mjs` | the command in its `INTEGRITY.txt` |
 | `site/static/i18n.js` | `python3 scripts/i18n_bundle.py` after editing `site/i18n/*.json` |
 | the block in `site/static/news.html` | `python3 scripts/news_build.py` after editing `site/content/news/` |
 | the block in `site/static/members.html`, `humans.txt`, `img/members/` | `just members` (see `site/members.version`) |
@@ -212,13 +222,14 @@ links. There is no `docs/index.md`. `docs/` holds numbered pages, not directorie
 `1-design` (the legacy page: files, the board → markers mapping, CSP), `1-design_chat-widget`,
 `2-libraries` (vendored libraries, the Elm page's and the Haskell packages), `3-development` (the build and
 deploy, the Elm and Haskell site, image bumps), `4-reference` (`areas.json`, the board schema pin, trail files),
-`5-hosting` (the Haskell server behind nginx: variables, nginx and systemd settings, the Nix build,
+`5-hosting` (the Haskell server behind nginx: variables, the base map's tiles file, nginx and systemd settings, the Nix build,
 backup, rollback), `6-board` (the runbook of the people who hide studies), `7-quality` (the scorecard: what is
 checked, how, and what is not; the owner steps and `docs/owner-steps/`, drafts for `.github/` and the repository
 settings that an agent never applies). The H1 is the nav label.
 The decisions are ADRs at `docs/adr/NNNN-<slug>.md`: 0001 MapLibre and dynamic hosting, 0002 the
 server's contract, 0003 the pages rendered at build time, 0004 study submission, 0005 Elm and Haskell
-(it supersedes the language choices of 0001 to 0003). `DESIGN.md` at the root is the visual system.
+(it supersedes the language choices of 0001 to 0003), 0006 the self-hosted base map (it supersedes 0001's
+map host). `DESIGN.md` at the root is the visual system.
 A decision that starts and ends here is an ADR; anything crossing a repo boundary is an umbrella MIP.
 
 - **Links**: relative inside the repo, written to work on GitHub (`../AGENTS.md`, `../DESIGN.md`
@@ -232,18 +243,18 @@ A decision that starts and ends here is an ADR; anything crossing a repo boundar
 
 ## Cost & deployment safety (hard rule)
 
-As in the umbrella. `site.yml` deploys to GitHub Pages (free) when a person runs it, and the
-same files to the Cloudflare Worker `marola` (free static assets), which serves marola.dev
-(MIP-0078); an agent does not
-trigger a deploy by hand (`just site-deploy` is denied in `.claude/settings.json`).
+As in the umbrella. piabrota2 serves marola.dev from piabrota/nix-os's units; a merge there deploys,
+an agent does not deploy by hand, and the box, its units and its token files are a human's.
 
-The new site has no map bill: MapLibre and OpenFreeMap need no account and no token. Its base map
-and its hosts are the CSP's `https://tiles.openfreemap.org` and NASA GIBS (`back/server/src/Marola/Csp.hs`). The
+The new site has no map bill and no map provider: MapLibre draws a style, glyphs and one PMTiles file that the
+site's own server sends (`/map/`, `/tiles/`). The tiles file is host data (`MAROLA_TILES`, about 216 MB, cut by
+`scripts/basemap_extract.sh`): it is never committed, and putting it on the host is a human's act. The CSP's one
+third-party host is NASA GIBS, and its one frame Spotify's player (`back/server/src/Marola/Csp.hs`); an agent adds
+no map host to it. The
 host that runs the server, its nginx and its backups are a human's. The legacy page's base map is
 Mapbox's, billed per map load above its free tier: the account, the token and any billing setting are
-a human's. So is the self-hosted runner and the machine it runs on. The Mapbox token is a public
-`pk.` token restricted to marola.dev's URLs, kept in the repo variable (or secret)
-`MAPBOX_PUBLIC_TOKEN` and written into `mapbox-config.js` only at deploy; never commit one, and never
+a human's. The Mapbox token is a public `pk.` token restricted to marola.dev's URLs, kept in a file on
+piabrota2 and written into `mapbox-config.js` only at deploy; never commit one, and never
 an `sk.` token anywhere in a page. The GitHub OAuth secret is a file on the host
 (`MAROLA_GITHUB_CLIENT_SECRET_FILE`), never in the repo, an environment variable or a log ([docs/5-hosting.md](docs/5-hosting.md)).
 
@@ -265,7 +276,7 @@ before and after, desktop (1280 × 800) and phone (390 × 844), of every page th
 Push the PNGs to the orphan `pr-screenshots` branch under `<pr-number>/` and embed them by their
 `https://raw.githubusercontent.com/marola-dev/marola-site/pr-screenshots/<pr-number>/<file>.png`
 URL, in a Before | After table. Images never go on `main`. A screenshot taken on a stand-in map
-style (the sandbox can't reach OpenFreeMap or Mapbox) says so under the table. No screenshots in the body, the
+style or on the fixture tiles (the sandbox has no host tiles file, or can't reach Mapbox) says so under the table. No screenshots in the body, the
 PR is not ready for review.
 
 **Large JavaScript changes** (Hoffmann, 2026-10-14). A PR that changes more than 500 lines of
@@ -277,21 +288,37 @@ touches, in both languages (pt-BR and en), on desktop and phone.
 
 The phase list is the umbrella's `docs/PHASES.md`. Site work serves the current phase.
 
+## Elm or Haskell (hard rule)
+
+Hoffmann, 2026-11-12: this repo is written in Elm or Haskell. JavaScript only when it is 100% necessary, and then
+as small as it can be ([ADR 0007](docs/adr/0007-elm-or-haskell-hard-rule.md)).
+
+- **What counts as necessary**: glue around a library or a browser API that has no Elm or Haskell binding
+  (MapLibre GL JS, WebGL, geolocation, `localStorage`, `history`), a tool that reads only JavaScript (Vite's
+  config), a check that must run compiled JavaScript (`front_check.js`), vendored third-party code, and the legacy
+  page until the cutover. Anything Elm can do is Elm: requests are elm/http, focus is `Browser.Dom`, decoding and
+  every pure function are Elm. Any script, check or harness is Haskell (`back/tools`), or shell when it only calls
+  other tools. A new Node script is never the answer to "it is a small tool".
+- **How it is held**: `scripts/js-allowlist.tsv` lists every JavaScript file git tracks with its reason, and
+  `just js-check` (in `just quality` and CI's `back` job) fails on a file that is not listed and on an entry that
+  matches no file. A pull request that adds a line to it says why Elm or Haskell cannot do it.
+- TypeScript is JavaScript for this rule (marola-dev/marola-site#50 is superseded).
+
 ## Code style
 
 The new site is Elm in `front/` and Haskell in `back/` ([ADR 0005](docs/adr/0005-elm-and-haskell.md)),
 which replaced the rule "plain JavaScript, no framework, no build step" for new code. The page keeps a
 strict CSP: scripts and styles from `'self'` only, no inline script, no inline style, no `eval`; MapLibre
-is an ES module served from `'self'`. The base map is OpenFreeMap's `liberty` style (`front/src/Config.elm`,
-the one place to change the URL), and NASA GIBS serves the satellite layers. The legacy page in
+is an ES module served from `'self'`. The base map is the site's own style, `/map/style.json` (`front/src/Config.elm`,
+the one place that names it), over the PMTiles file at `/tiles/marola.pmtiles`, and NASA GIBS serves the satellite layers. The legacy page in
 `site/static/` stays plain JavaScript with no build step, on Mapbox, until the owners cut over.
 
 Elm and Haskell: no exception and no partial function for a data error (a `Result` or a `Maybe`); a closed
 set is a custom type with an `Unknown String` case where the board may carry a new value.
 
 - **Elm** (0.19.1): formatted by elm-format 0.8.8, pinned in `front/package.json` (`just front-fmt`). Elm owns the
-  model and `update`; every effect leaves as data through a port, and no port exists beyond the ones
-  `front/ports.js` handles. A hand-written JavaScript file goes in `front/js/` (or is `front/ports.js`) with its
+  model and `update`; every effect leaves as data, Main carries it out with elm/http or `Browser.Dom` where Elm
+  can, and through a port only where it cannot; no port exists beyond the ones `front/ports.js` handles. A hand-written JavaScript file goes in `front/js/` (or is `front/ports.js`) with its
   reason at the top. Tests are elm-test (`just front-test`); a new `update` branch gets a case in `tests/`.
 - **Haskell** (GHC 9.6, `GHC2021`): formatted by ormolu 0.7.7.0 (`just back-fmt`), `-Wall` clean (the `common`
   stanza of each `.cabal` sets it; a new warning is fixed, not silenced), tested with hspec (`just back-test`).
