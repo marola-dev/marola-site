@@ -1,0 +1,83 @@
+# Temporary, for one PR's before/after screenshots (AGENTS.md, "Screenshots in the PR"). Runs on a
+# push of this side branch; the PR branch carries no workflow. Builds main and the feature branch,
+# starts the server of each against its own dist (a fake GitHub for the login), and captures the
+# pages the PR touches with a headless Chrome, before and after.
+name: Render the pages for the PR's screenshots
+
+on:
+  push:
+    branches: [claude/playlist-layer-studies-embed-render]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: render-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: the two trees
+        run: |
+          git clone -q --depth 1 "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" -b main /tmp/before-tree
+          git fetch -q origin claude/playlist-layer-studies-archive-embed-adr
+          git worktree add -q /tmp/after-tree FETCH_HEAD
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: front/package-lock.json
+      - name: Elm 0.19.1
+        run: |
+          curl -fsSL -o /tmp/elm.gz https://github.com/elm/compiler/releases/download/0.19.1/binary-for-linux-64-bit.gz
+          echo "e44af52bb27f725a973478e589d990a6428e115fe1bb14f03833134d6c0f155c  /tmp/elm.gz" | sha256sum -c -
+          mkdir -p "$HOME/.local/bin"
+          gunzip -c /tmp/elm.gz > "$HOME/.local/bin/elm"
+          chmod +x "$HOME/.local/bin/elm"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - uses: haskell-actions/setup@0512451d82f3ca8c147db62e30464e7c4ca63d30 # v2.9.1
+        with:
+          ghc-version: 9.6.6
+          cabal-version: 3.12.1.0
+      - name: system libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends pkg-config libsqlite3-dev libbrotli-dev zlib1g-dev
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.cabal/store
+            /tmp/before-tree/dist-newstyle
+            /tmp/after-tree/dist-newstyle
+          key: cabal-${{ runner.os }}-ghc9.6.6-${{ hashFiles('front/package-lock.json', 'cabal.project.freeze') }}
+          restore-keys: |
+            cabal-${{ runner.os }}-ghc9.6.6-${{ hashFiles('cabal.project.freeze') }}-
+      - name: build and render both trees
+        run: |
+          build() {
+            cd "$1"
+            (cd front && npm ci --no-audit --no-fund)
+            cabal build -v0 exe:marola-pages exe:marola-server exe:marola-tools
+            scripts/site_build.sh --fixtures
+          }
+          build /tmp/before-tree
+          build /tmp/after-tree
+          mkdir -p /tmp/shot && cd /tmp/shot
+          npm init -y >/dev/null 2>&1
+          npm install puppeteer@24 --no-audit --no-fund 2>&1 | tail -1
+      - name: capture
+        run: |
+          cp .github/workflows/capture.mjs /tmp/shot/capture.mjs
+          cd /tmp/shot
+          node capture.mjs
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: shots
+          path: /tmp/shot/shots
