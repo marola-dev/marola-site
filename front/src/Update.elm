@@ -22,6 +22,7 @@ import Params exposing (Query)
 import Parse
 import TrailGeo
 import Trails exposing (Route, Trails)
+import Tuple
 
 
 {-| What the page reads from the browser before it starts.
@@ -794,6 +795,29 @@ update message model =
 
         PlaylistPressed ->
             ( { model | playlistOpen = not model.playlistOpen }, [] )
+
+        PlayerDragStarted x y ->
+            ( { model | playerDrag = Just { x = x, y = y } }, [] )
+
+        PlayerDragged x y ->
+            case model.playerDrag of
+                Just at ->
+                    let
+                        ( dx, dy ) =
+                            model.playerOffset
+
+                        offset =
+                            ( dx + (x - at.x), dy + (y - at.y) )
+                    in
+                    ( { model | playerDrag = Just { x = x, y = y }, playerOffset = offset }
+                    , [ MovePlayer (Tuple.first offset) (Tuple.second offset) ]
+                    )
+
+                Nothing ->
+                    ( model, [] )
+
+        PlayerDragEnded ->
+            ( { model | playerDrag = Nothing }, [] )
 
         MapEvent kind arg ->
             mapEvent model kind arg

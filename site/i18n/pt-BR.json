@@ -230,5 +230,6 @@
   "metric.score": "pontuação",
   "metric.wind": "vento",
   "metric.waves": "ondas",
-  "metric.water": "água"
+  "metric.water": "água",
+  "player.drag": "arraste o tocador pelo mapa"
 }

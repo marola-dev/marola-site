@@ -230,5 +230,6 @@
   "metric.score": "beach card metric row: label under the score numeral (out of 100)",
   "metric.wind": "beach card metric row: label under the wind speed in km/h",
   "metric.waves": "beach card metric row: label under the wave height in metres",
-  "metric.water": "beach card metric row: label under the sea water temperature in °C"
+  "metric.water": "beach card metric row: label under the sea water temperature in °C",
+  "player.drag": "aria-label and tooltip of the player's drag grip"
 }

@@ -307,9 +307,9 @@ submitPage loc csrf values errors =
                 (el "input" [attr "type" "file", attr "name" "pdf", attr "accept" "application/pdf"] [])
             ]
               <> [ el "div" [cls "field-error"] (errorList loc errors "request" <> errorList loc errors "id"),
-                    button (tr loc "Publicar" "Publish" "公開する" "發布")
-                  ]
-           )
+                   button (tr loc "Publicar" "Publish" "公開する" "發布")
+                 ]
+          )
       li s = el "li" [] [text s]
       top =
         [ eyebrow (tr loc "estudos" "studies" "研究" "研究"),
@@ -483,9 +483,9 @@ studiesPage loc studies ar tp next =
             filters
           ]
             <> ( if null studies
-                    then [el "p" [cls "empty"] [text (tr loc "Nenhum estudo ainda." "No studies yet." "まだ研究はありません。" "目前沒有研究。")]]
-                    else [el "ul" [cls "studies"] (map (row loc) studies)]
-                )
+                   then [el "p" [cls "empty"] [text (tr loc "Nenhum estudo ainda." "No studies yet." "まだ研究はありません。" "目前沒有研究。")]]
+                   else [el "ul" [cls "studies"] (map (row loc) studies)]
+               )
             <> more
         )
 
@@ -554,9 +554,9 @@ studyPage loc r = case r.status of
               p_ [text s.abstract]
             ]
               <> ( if null s.sources
-                      then []
-                      else [h3 (tr loc "Fontes" "Sources" "参照" "參考來源"), el "ul" [] [el "li" [] [outside u u] | u <- s.sources]]
-                  )
+                     then []
+                     else [h3 (tr loc "Fontes" "Sources" "参照" "參考來源"), el "ul" [] [el "li" [] [outside u u] | u <- s.sources]]
+                 )
               <> maybe [] (\repo -> [h3 (tr loc "Código" "Code" "コード" "程式碼"), p_ [outside repo repo]]) s.repository
               <> maybe [] (\a -> [h3 (tr loc "Arquivo" "Archive" "アーカイブ" "封存"), p_ [outside a a]]) s.archive
               <> [ h3 (tr loc "Licença" "Licence" "ライセンス" "授權條款"),

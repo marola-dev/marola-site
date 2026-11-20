@@ -540,6 +540,7 @@ async function playlist() {
   ok(btn().getAttribute('aria-pressed') === 'true', 'the playlist button reads as pressed while the player is open');
   const csp = /http-equiv="Content-Security-Policy" content="([^"]*)"/.exec(fs.readFileSync(path.join(DIST, 'index.html'), 'utf8'))[1];
   ok(/(^|; )frame-src https:\/\/open\.spotify\.com(;|$)/.test(csp), 'the CSP lets the page frame open.spotify.com and nothing else', csp);
+  ok($('#player .grip') && $('#player .grip').getAttribute('aria-label') === distJson('i18n/pt-BR.json')['player.drag'], 'the player has a drag grip, named in the page language');
   await click(btn());
   ok(!$('#player iframe'), 'pressing it again removes the iframe');
   const eye = $('a.piabrota');

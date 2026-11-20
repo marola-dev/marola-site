@@ -6,7 +6,9 @@ module View.Layers exposing (key, rail)
 import Config
 import DateFmt
 import Html exposing (Html)
+import Html.Events
 import Html.Keyed
+import Json.Decode as D
 import Layer exposing (Layer)
 import Model exposing (Model, Panel(..))
 import Msg exposing (Msg(..))
@@ -17,13 +19,24 @@ import Words
 
 {-| The iframe exists only while the player is open, so Spotify is not contacted before a click. Spotify's
 compact embed carries its own link to the playlist, so the player is the iframe alone. It hangs under
-the layer buttons, over the map, clear of the panels.
+the layer buttons, over the map, and the grip at its top edge drags it anywhere over the map: the
+drag lives in the update (Elm's own pointer subscriptions); only the moved pixels, which the CSP
+keeps out of inline styles, go through a port (ADR 0007).
 -}
 player : Model -> Html Msg
 player model =
     if model.playlistOpen then
         Html.section [ idAttr "player", cls "player", attr "aria-label" (Words.t model "player.label") ]
-            [ Html.iframe
+            [ Html.span
+                [ cls "grip"
+                , attr "role" "button"
+                , attr "tabindex" "0"
+                , attr "aria-label" (Words.t model "player.drag")
+                , attr "title" (Words.t model "player.drag")
+                , Html.Events.preventDefaultOn "mousedown" (D.map2 PlayerDragStarted (D.field "pageX" D.int) (D.field "pageY" D.int) |> D.map (\m -> ( m, True )))
+                ]
+                []
+            , Html.iframe
                 [ attr "src" Config.playlistEmbed
                 , attr "title" (Words.t model "player.label")
                 , attr "allow" "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"

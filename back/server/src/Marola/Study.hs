@@ -283,10 +283,9 @@ afterCI prefix url
   | T.length url >= T.length prefix, T.toLower (T.take (T.length prefix) url) == T.toLower prefix = Just (T.drop (T.length prefix) url)
   | otherwise = Nothing
 
-{-| A GitHub repository link: @https://github.com/<owner>/<repo>@, the host in any case, one optional
-trailing slash, and the owner and the repository made of @A-Za-z0-9-_.@ alone. Returns the link when
-it is one; the query string and the fragment make it none, so a link that carries either is refused.
--}
+-- | A GitHub repository link: @https://github.com/<owner>/<repo>@, the host in any case, one optional
+-- trailing slash, and the owner and the repository made of @A-Za-z0-9-_.@ alone. Returns the link when
+-- it is one; the query string and the fragment make it none, so a link that carries either is refused.
 githubRepo :: Text -> Maybe Text
 githubRepo url = do
   path <- afterCI "https://github.com/" url
@@ -298,19 +297,18 @@ githubRepo url = do
   where
     repoName p = not (T.null p) && T.all (\c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '-' || c == '_' || c == '.') p
 
-{-| The study's archive: a link on Zenodo or aiXiv, an @abs@ page of arXiv, or the DOI of a Zenodo
-record (@https://doi.org/10.5281/zenodo...@). The host decides; the path is left as it is written.
--}
+-- | The study's archive: a link on Zenodo or aiXiv, an @abs@ page of arXiv, or the DOI of a Zenodo
+-- record (@https://doi.org/10.5281/zenodo...@). The host decides; the path is left as it is written.
 archiveLink :: Text -> Maybe Text
 archiveLink url = do
   afterScheme <- afterCI "https://" url
   let (host, path) = T.break (== '/') afterScheme
   if case T.toLower host of
-      "zenodo.org" -> True
-      "arxiv.org" -> True
-      "aixiv.org" -> True
-      "doi.org" -> T.toLower path `T.isPrefixOf` "/10.5281/zenodo"
-      _ -> False
+    "zenodo.org" -> True
+    "arxiv.org" -> True
+    "aixiv.org" -> True
+    "doi.org" -> T.toLower path `T.isPrefixOf` "/10.5281/zenodo"
+    _ -> False
     then Just url
     else Nothing
 

@@ -230,5 +230,6 @@
   "metric.score": "score",
   "metric.wind": "wind",
   "metric.waves": "waves",
-  "metric.water": "water"
+  "metric.water": "water",
+  "player.drag": "drag the player over the map"
 }

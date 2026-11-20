@@ -101,12 +101,12 @@ spec env = describe "meta" $ do
       Right vs -> do
         vs `shouldSatisfy` any (\(l, _) -> l == En)
         forM_ vs $ \(l, html) -> do
-            let tag = Language.tag l
-            html `shouldSatisfy` has ("<html lang=\"" <> tag <> "\">")
-            html `shouldSatisfy` has ("<link rel=\"canonical\" href=\"https://marola.dev/?lang=" <> tag <> "\">")
-            html `shouldSatisfy` has ("<meta property=\"og:url\" content=\"https://marola.dev/?lang=" <> tag <> "\">")
-            html `shouldNotSatisfy` has MapPage.descriptionPt
-            html `shouldNotSatisfy` has "condições do mar"
+          let tag = Language.tag l
+          html `shouldSatisfy` has ("<html lang=\"" <> tag <> "\">")
+          html `shouldSatisfy` has ("<link rel=\"canonical\" href=\"https://marola.dev/?lang=" <> tag <> "\">")
+          html `shouldSatisfy` has ("<meta property=\"og:url\" content=\"https://marola.dev/?lang=" <> tag <> "\">")
+          html `shouldNotSatisfy` has MapPage.descriptionPt
+          html `shouldNotSatisfy` has "condições do mar"
         let [(En, en), (Ja, ja), (ZhHant, zh)] = vs
         en `shouldSatisfy` has "<meta property=\"og:locale\" content=\"en_US\">"
         en `shouldSatisfy` has MapPage.descriptionEn

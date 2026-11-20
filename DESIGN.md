@@ -410,8 +410,11 @@ Fjalla name or numeral is what the eye lands on, Inter explains it, mono dates a
   The foot (source, IBGE code) is mono 11 px.
 - **Player** (`#player`): the playlist's frame in a `--surface` panel that hangs under the layer
   buttons of the rail, over the map, as wide as the compact embed allows (`min(300px, ...)`) and
-  80 px high, with a mono link to open it in Spotify. The rail scrolls when the two together are
-  taller than the map.
+  80 px high, with a mono link to open it in Spotify. The grip at its top edge (a 16 px bar with a
+  32 px handle in `--muted`, `cursor: grab`) drags the panel anywhere over the map: the drag runs
+  in Elm's own pointer subscriptions and only the moved pixels go through a port, because the CSP
+  keeps position out of inline styles. The rail scrolls when the two together are taller than the
+  map.
 - **Close button**: the control as a borderless 32 px circle in `--muted`, `--raised` on hover.
   On a phone the card's close button is sticky at the top right of its sheet, so it stays in reach
   while the card scrolls.

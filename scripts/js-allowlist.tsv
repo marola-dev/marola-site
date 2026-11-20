@@ -3,7 +3,7 @@
 # no file, so this list only shrinks. An entry ending in / covers a vendored folder. <path><TAB><reason>.
 #
 # The new site: glue around libraries and browser APIs Elm has no binding for.
-front/ports.js	the JavaScript side of Elm's two ports: starts the page and carries out the effects Elm cannot (MapLibre, geolocation, localStorage, history, the document's lang, alert)
+front/ports.js	the JavaScript side of Elm's two ports: starts the page and carries out the effects Elm cannot (MapLibre, geolocation, localStorage, history, the document's lang, the player's dragged position that the CSP keeps out of inline styles, alert)
 front/js/maplibre_ffi.mjs	MapLibre GL JS is a JavaScript library with no Elm binding: its map, markers, popups, sources, layers and camera calls live here, string in, string out
 front/js/flow_layer_ffi.mjs	the wind and wave particles are a MapLibre custom layer: a WebGL program MapLibre calls every frame, which Elm cannot be
 front/vite.config.js	Vite, which bundles the compiled Elm with ports.js, reads its configuration only as JavaScript

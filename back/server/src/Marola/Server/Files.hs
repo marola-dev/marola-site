@@ -135,8 +135,8 @@ docsRedirect req
 -- in that language whose canonical is that address (marola-pages writes them next to @index.html@).
 variantMap :: Config -> Request -> Text -> IO (Maybe FilePath)
 variantMap cfg req p
-  | p `elem` ["/", "/index.html"]
-  , Just tag <- queryText req "lang" >>= \v -> lookup v [("en", "en"), ("ja", "ja"), ("zh-Hant", "zh-Hant")] = do
+  | p `elem` ["/", "/index.html"],
+    Just tag <- queryText req "lang" >>= \v -> lookup v [("en", "en"), ("ja", "ja"), ("zh-Hant", "zh-Hant")] = do
       let file = cfg.static </> ("index." <> tag <> ".html")
       exists <- doesFileExist file
       pure (if exists then Just file else Nothing)

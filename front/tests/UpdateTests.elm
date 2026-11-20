@@ -376,6 +376,44 @@ suite =
                     , Expect.equal effects []
                     , Expect.equal (Tuple.first (Update.update PlaylistPressed on)).playlistOpen False
                     ]
+        , test "dragging the player moves it by the pointer's deltas, and the drop stills it" <|
+            \_ ->
+                let
+                    start =
+                        page ""
+
+                    ( gripped, first ) =
+                        Update.update (PlayerDragStarted 100 100) start
+
+                    ( moved, moveEffects ) =
+                        Update.update (PlayerDragged 140 90) gripped
+
+                    ( more, moreEffects ) =
+                        Update.update (PlayerDragged 60 130) moved
+
+                    ( dropped, dropEffects ) =
+                        Update.update PlayerDragEnded more
+                in
+                all
+                    [ Expect.equal first []
+                    , Expect.equal gripped.playerOffset ( 0, 0 )
+                    , Expect.equal moved.playerOffset ( 40, -10 )
+                    , Expect.equal moveEffects [ MovePlayer 40 -10 ]
+                    , Expect.equal more.playerOffset ( -40, 30 )
+                    , Expect.equal moreEffects [ MovePlayer -40 30 ]
+                    , Expect.equal dropped.playerOffset ( -40, 30 )
+                    , Expect.equal dropEffects []
+                    ]
+        , test "a pointer move with no drag on hand changes nothing" <|
+            \_ ->
+                let
+                    ( model, effects ) =
+                        Update.update (PlayerDragged 10 10) (page "")
+                in
+                all
+                    [ Expect.equal model.playerOffset ( 0, 0 )
+                    , Expect.equal effects []
+                    ]
         , test "the SOS panel opens, and closing it gives the focus back" <|
             \_ ->
                 let

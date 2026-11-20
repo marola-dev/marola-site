@@ -89,11 +89,11 @@ headNodes l p =
     <> [meta [("name", "robots"), ("content", "noindex")] | noIndex p]
     <> ( if canonical p
            then
-             [ link [("rel", "canonical"), ("href", origin <> whereOf p l)] ]
+             [link [("rel", "canonical"), ("href", origin <> whereOf p l)]]
                <> [ link [("rel", "alternate"), ("hreflang", Language.tag la), ("href", origin <> whereOf p la)]
-                    | la <- [PtBr, En, Ja, ZhHant]
+                  | la <- [PtBr, En, Ja, ZhHant]
                   ]
-               <> [ link [("rel", "alternate"), ("hreflang", "x-default"), ("href", origin <> whereOf p PtBr)] ]
+               <> [link [("rel", "alternate"), ("hreflang", "x-default"), ("href", origin <> whereOf p PtBr)]]
            else []
        )
     <> [ meta [("property", "og:type"), ("content", "website")],

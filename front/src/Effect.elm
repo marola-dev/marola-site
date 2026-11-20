@@ -37,3 +37,5 @@ type Effect
     | Locate
     | Alert String
     | Focus String
+      -- The player's dragged offset in pixels, applied to #player as a transform.
+    | MovePlayer Int Int

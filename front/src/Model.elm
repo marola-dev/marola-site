@@ -75,6 +75,8 @@ type alias Model =
     , blurbOpen : Bool
     , sosOpen : Bool
     , playlistOpen : Bool
+    , playerOffset : ( Int, Int )
+    , playerDrag : Maybe { x : Int, y : Int }
     , map : MapState
     , status : Status
     , zoomedOut : Bool
@@ -123,6 +125,8 @@ initial loc path query reducedMotion =
     , blurbOpen = False
     , sosOpen = False
     , playlistOpen = False
+    , playerOffset = ( 0, 0 )
+    , playerDrag = Nothing
     , map = MapNone
     , status = Idle
     , zoomedOut = False

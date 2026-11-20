@@ -157,14 +157,14 @@ run base inbox = do
   checkHeaders c "/nope" missing
   forM_ [("/en/nope", "en"), ("/ja/nope", "ja"), ("/zh-Hant/nope", "zh-Hant")] $ \(p, lang) -> do
     r <- g p
-    check (r.status == 404 && bodyHas ("<html lang=\"" <> lang <> "\">") r) (p <> " is the " <> lang <> " 404 page") (tshow r.status)
+    check (r.status == 404 && bodyHas ("<html lang=\"" <> lang <> "\">") r) (TE.decodeUtf8 p <> " is the " <> lang <> " 404 page") (tshow r.status)
 
   -- The pages of back/pages, in the four languages (run scripts/site_build.sh first).
   forM_
     ( concat
-        [ [ ("/about.html", "pt-BR"), ("/contact.html", "pt-BR"), ("/contact-sent.html", "pt-BR") ],
-          [ ("/" <> pre <> "/about.html", lang) | (pre, lang) <- [("en", "en"), ("ja", "ja"), ("zh-Hant", "zh-Hant")] ],
-          [ ("/" <> pre <> "/support.html", lang) | (pre, lang) <- [("en", "en"), ("ja", "ja"), ("zh-Hant", "zh-Hant")] ]
+        [ [("/about.html", "pt-BR"), ("/contact.html", "pt-BR"), ("/contact-sent.html", "pt-BR")],
+          [("/" <> pre <> "/about.html", lang) | (pre, lang) <- [("en", "en"), ("ja", "ja"), ("zh-Hant", "zh-Hant")]],
+          [("/" <> pre <> "/support.html", lang) | (pre, lang) <- [("en", "en"), ("ja", "ja"), ("zh-Hant", "zh-Hant")]]
         ]
     )
     $ \(p, lang) -> do
