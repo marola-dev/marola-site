@@ -110,7 +110,15 @@ cacheControl file
 -- none, and the plain text answers.
 notFoundPage :: Config -> Text -> IO Response
 notFoundPage cfg p = do
-  let file = if "/en/" `T.isPrefixOf` p then cfg.static </> "en" </> "404.html" else cfg.static </> "404.html"
+  -- The same prefixes languageOf reads: /ja and /zh-Hant get their own 404 page (Files.hs cannot
+  -- import Http, so the mapping is written out here).
+  let l = T.toCaseFold p
+      dir
+        | "/en/" `T.isPrefixOf` l || l == "/en" = "en"
+        | "/ja/" `T.isPrefixOf` l || l == "/ja" = "ja"
+        | "/zh-hant/" `T.isPrefixOf` l || l == "/zh-hant" = "zh-Hant"
+        | otherwise = ""
+      file = if dir == "" then cfg.static </> "404.html" else cfg.static </> dir </> "404.html"
   exists <- doesFileExist file
   if exists
     then do
