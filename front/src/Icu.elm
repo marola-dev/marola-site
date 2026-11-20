@@ -294,6 +294,13 @@ pluralCategory language value =
                     else
                         "other"
 
+                -- CLDR: Japanese and Chinese make no plural distinction.
+                Ja ->
+                    "other"
+
+                ZhHant ->
+                    "other"
+
 
 firstCase : Dict String (List Node) -> List String -> List Node
 firstCase found keys =

@@ -405,7 +405,7 @@ async function floripa() {
   const hosts = new Set(fetched.map((u) => u.host));
   ok([...hosts].every((h) => h === '127.0.0.1:8000' || h === 'gibs.earthdata.nasa.gov'), 'every request stays on the origin or NASA GIBS', [...hosts].join());
   const paths = fetched.map((u) => u.pathname);
-  ok(['/data/areas.json', '/i18n/en.json', '/i18n/pt-BR.json', '/data/floripa/latest.json', '/data/trails/floripa.json'].every((p) => paths.includes(p)), 'the page fetched catalogs, areas, latest and trails');
+  ok(['/data/areas.json', '/i18n/en.json', '/i18n/pt-BR.json', '/i18n/ja.json', '/i18n/zh-Hant.json', '/data/floripa/latest.json', '/data/trails/floripa.json'].every((p) => paths.includes(p)), 'the page fetched the four catalogs, areas, latest and trails');
   ok(!JSON.stringify({ ...map.opts, container: null }).includes('pk.'), 'no token in the map options');
 }
 
@@ -417,6 +417,11 @@ async function english() {
   ok($('a[href=news.html]').textContent === 'notícias', 'pressing PT-BR flips the nav to notícias');
   ok(store.get('marola.lang') === 'pt-BR', 'the choice is stored in localStorage marola.lang', store.get('marola.lang'));
   ok(lastUrl().searchParams.get('lang') === 'pt-BR' && document.documentElement.lang === 'pt-BR', 'the URL and <html lang> follow');
+  await click($('button[lang=ja]'));
+  ok($('a[href=news.html]').textContent === 'ニュース' && document.documentElement.lang === 'ja', 'JA switches the nav to ニュース and <html lang>');
+  await click($('button[lang=zh-Hant]'));
+  ok($('a[href=news.html]').textContent === '消息' && document.documentElement.lang === 'zh-Hant', 'zh-Hant switches the nav to 消息 and <html lang>');
+  ok(store.get('marola.lang') === 'zh-Hant', 'the stored choice follows');
 }
 
 async function layerWater() {

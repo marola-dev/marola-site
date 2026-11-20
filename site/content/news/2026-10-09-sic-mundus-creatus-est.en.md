@@ -27,9 +27,9 @@ marola is not a lifeguard, not an official forecast and not an alerting service.
 
 ## How the site runs
 
-The map is static: no server of ours and no AI runs when you open the page. Every 3 hours, a GitHub workflow runs marola-app, scores every beach and publishes the files. marola.dev is served by a [Cloudflare Worker](https://github.com/marola-dev/marola-site/blob/main/docs/3-development.md), a small program on Cloudflare's network, on the [free plan](https://github.com/marola-dev/marola-site/blob/main/AGENTS.md#cost--deployment-safety-hard-rule), with GitHub Pages as a fallback. INEA and INEMA only answer Brazilian addresses, so the workflow goes through a proxy: a computer in Brazil, run by volunteers, that relays the requests.
+The map is static: no computation and no AI runs when you open the page. Four times a day, a routine on the project's own server — a Hostinger KVM 4 virtual machine in Brazil — runs marola-app, scores every beach and publishes the files. That same machine serves marola.dev, behind nginx, with no CDN and no Cloudflare. INEA and INEMA only answer Brazilian addresses, and the machine is in Brazil, so no proxy is needed.
 
-The data should move to Cloudflare R2, a file-storage service, in a data lake that is still being built (more on that below).
+The data should move to Cloudflare R2, a file-storage service, in a data lake that is still being built (the move to R2 was accepted in [marola#692](https://github.com/marola-dev/marola/pull/692); the structure, in [marola-oods#22](https://github.com/marola-dev/marola-oods/pull/22), is still in review. More on that below).
 
 ## The repositories
 
@@ -45,7 +45,7 @@ The main program, in Scala 3 with [Kyo](https://getkyo.io/). It fetches beaches 
 
 ### [marola-site](https://github.com/marola-dev/marola-site)
 
-The map at marola.dev, on a Mapbox base map. Plain JavaScript with no framework, in Portuguese and English.
+The map at marola.dev. The page is Elm and the server and the static pages are Haskell ([ADR 0005](https://github.com/marola-dev/marola-site/blob/main/docs/adr/0005-elm-and-haskell.md)), on the site's own base map, with no Mapbox and no token. In Portuguese, English, Japanese and Traditional Chinese.
 
 ### [marola-oods](https://github.com/marola-dev/marola-oods)
 

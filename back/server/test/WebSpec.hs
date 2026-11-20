@@ -83,10 +83,10 @@ keyIn html = case [k | piece <- drop 1 (T.splitOn "msk_" html), let k = T.take 5
 
 spec :: Spec
 spec = describe "web" $ do
-  it "every error code has a message in both languages, and the API's codes are all covered" $ do
-    forM_ Messages.table $ \(c, pt, en) -> do
-      (c, T.null pt, T.null en) `shouldBe` (c, False, False)
-      (c, pt == en) `shouldBe` (c, False)
+  it "every error code has a message in the four languages, and the API's codes are all covered" $ do
+    forM_ Messages.table $ \(c, pt, en, ja, zh) -> do
+      (c, T.null pt, T.null en, T.null ja, T.null zh) `shouldBe` (c, False, False, False, False)
+      (c, pt == en, pt == ja, pt == zh) `shouldBe` (c, False, False, False)
     let errors = snd (T.breakOn "## Errors" StudyApi.skill)
         listed = [w | piece <- drop 1 (T.splitOn "`" errors) `every` 2, let w = piece, not (T.null w), T.all (\x -> isAsciiLower x || x == '_') w, w /= "id"]
         every xs n = [x | (i, x) <- zip [0 :: Int ..] xs, i `mod` n == 0]
@@ -231,14 +231,19 @@ spec = describe "web" $ do
     (c, csrf) <- loggedIn site 1 "ana"
     i <- publish site c csrf goodFields validPdf
     forM_ [("/submit", True), ("/studies", True), ("/studies/" <> i, True), ("/account", False), ("/report/" <> i, False)] $ \(p, canonical) ->
-      forM_ ["", "/en"] $ \prefix -> do
+      forM_ [("", "pt-BR"), ("/en", "en"), ("/ja", "ja"), ("/zh-Hant", "zh-Hant")] $ \(prefix, tag) -> do
         html <- bodyText <$> page site (TE.encodeUtf8 (prefix <> p)) (Just c)
         let wh = prefix <> p
         (wh, count "<h1" html, "<script" `T.isInfixOf` html, " style=" `T.isInfixOf` html) `shouldBe` (wh, 1, False, False)
-        html `shouldSatisfy` T.isInfixOf ("<html lang=\"" <> (if prefix == "" then "pt-BR" else "en") <> "\">")
+        html `shouldSatisfy` T.isInfixOf ("<html lang=\"" <> tag <> "\">")
         if canonical
-          then forM_ ["rel=\"canonical\" href=\"https://marola.dev" <> prefix <> p <> "\"", "hreflang=\"pt-BR\" href=\"https://marola.dev" <> p <> "\"", "hreflang=\"en\" href=\"https://marola.dev/en" <> p <> "\""] $ \n ->
-            (wh, n `T.isInfixOf` html) `shouldBe` (wh, True)
+          then
+            forM_
+              [ "rel=\"canonical\" href=\"https://marola.dev" <> prefix <> p <> "\"",
+                "hreflang=\"pt-BR\" href=\"https://marola.dev" <> p <> "\"",
+                "hreflang=\"ja\" href=\"https://marola.dev/ja" <> p <> "\""
+              ]
+              (\n -> (wh, n `T.isInfixOf` html) `shouldBe` (wh, True))
           else (wh, "content=\"noindex\"" `T.isInfixOf` html) `shouldBe` (wh, True)
         (wh, (prefix <> "/studies") `elem` hrefs html, (prefix <> "/submit") `elem` hrefs html) `shouldBe` (wh, True, True)
 
@@ -247,7 +252,7 @@ spec = describe "web" $ do
     i <- publish site c csrf goodFields validPdf
     now <- readIORef site.clock
     StudyStore.hide site.config.db now i "<script>alert(1)</script> \"onmouseover=x & <b>" >>= (`shouldBe` True)
-    forM_ ["/studies/" <> i, "/en/studies/" <> i] $ \p -> do
+    forM_ ["/studies/" <> i, "/en/studies/" <> i, "/ja/studies/" <> i, "/zh-Hant/studies/" <> i] $ \p -> do
       html <- bodyText <$> page site (TE.encodeUtf8 p) Nothing
       html `shouldNotSatisfy` T.isInfixOf "<script>alert"
       html `shouldSatisfy` T.isInfixOf "&amp; &lt;b&gt;"

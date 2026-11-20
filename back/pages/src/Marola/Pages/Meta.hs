@@ -51,7 +51,7 @@ robots =
     <> "User-agent: *\n"
     <> "Allow: /\n"
     <> "# The sign-in redirect and a signed-in person's own pages: nothing a search result can open.\n"
-    <> T.concat ["Disallow: " <> pre <> p <> "\n" | pre <- ["/", "/en/"], p <- ["account", "report/"]]
+    <> T.concat ["Disallow: " <> pre <> p <> "\n" | pre <- ["/", "/en/", "/ja/", "/zh-Hant/"], p <- ["account", "report/"]]
     <> "Disallow: /auth/\n\n"
     <> "Sitemap: "
     <> baseUrl

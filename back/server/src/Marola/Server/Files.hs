@@ -131,12 +131,13 @@ docsRedirect req
   where
     path = rawPathInfo req
 
--- | The map page in English, @/?lang=en@: its own file, so a crawler reads an English head whose
--- canonical is that address (marola-pages writes it next to @index.html@).
-englishMap :: Config -> Request -> Text -> IO (Maybe FilePath)
-englishMap cfg req p
-  | p `elem` ["/", "/index.html"] && queryText req "lang" == "en" = do
-      let file = cfg.static </> "index.en.html"
+-- | The map page in a non-pt-BR language, @/?lang=<tag>@: its own file, so a crawler reads a head
+-- in that language whose canonical is that address (marola-pages writes them next to @index.html@).
+variantMap :: Config -> Request -> Text -> IO (Maybe FilePath)
+variantMap cfg req p
+  | p `elem` ["/", "/index.html"]
+  , Just tag <- queryText req "lang" >>= \v -> lookup v [("en", "en"), ("ja", "ja"), ("zh-Hant", "zh-Hant")] = do
+      let file = cfg.static </> ("index." <> tag <> ".html")
       exists <- doesFileExist file
       pure (if exists then Just file else Nothing)
   | otherwise = pure Nothing
@@ -170,8 +171,8 @@ handle cfg req
       pure (responseLBS status405 [(hContentType, "text/plain; charset=utf-8"), ("Allow", "GET, HEAD")] "method not allowed\n")
   | otherwise = do
       let p = decodedPath req
-      english <- englishMap cfg req p
-      found <- maybe (resolve cfg p) (pure . Just) english
+      variant <- variantMap cfg req p
+      found <- maybe (resolve cfg p) (pure . Just) variant
       case found of
         Nothing -> maybe (notFoundPage cfg p) pure (docsRedirect req)
         Just file -> do

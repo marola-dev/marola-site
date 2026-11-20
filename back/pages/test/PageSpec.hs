@@ -42,14 +42,12 @@ spec env = describe "pages" $ do
       then html `shouldNotSatisfy` has "rel=\"canonical\""
       else do
         html `shouldSatisfy` has ("<link rel=\"canonical\" href=\"" <> Layout.origin <> Layout.path l s <> "\">")
-        html `shouldSatisfy` has ("hreflang=\"pt-BR\" href=\"" <> Layout.origin <> Layout.path PtBr s <> "\"")
-        html `shouldSatisfy` has ("hreflang=\"en\" href=\"" <> Layout.origin <> Layout.path En s <> "\"")
+        mapM_ (\la -> html `shouldSatisfy` has ("hreflang=\"" <> Language.tag la <> "\" href=\"" <> Layout.origin <> Layout.path la s <> "\"")) allLanguages
         html `shouldSatisfy` has ("hreflang=\"x-default\" href=\"" <> Layout.origin <> Layout.path PtBr s <> "\"")
   forEach env "no script, no style element, no style attribute, no handler" $ \_ _ html ->
     scripted html `shouldBe` False
-  forEach env "the language switch is two plain links to this page in each language" $ \s _ html -> do
-    html `shouldSatisfy` has ("<a href=\"" <> Layout.path PtBr s <> "\" lang=\"pt-BR\"")
-    html `shouldSatisfy` has ("<a href=\"" <> Layout.path En s <> "\" lang=\"en\"")
+  forEach env "the language switch is four plain links to this page in each language" $ \s _ html -> do
+    mapM_ (\la -> html `shouldSatisfy` has ("<a href=\"" <> Layout.path la s <> "\" lang=\"" <> Language.tag la <> "\"")) allLanguages
   forEach env "the nav links go to the page's own language" $ \_ l html ->
     mapM_ (\n -> allHrefs html `shouldContain` [Layout.path l n]) Layout.navSlugs
   forEach env "the nav links the studies list and the footer the submit page, in the page's language" $ \_ l html -> do
@@ -74,6 +72,8 @@ spec env = describe "pages" $ do
   it "a page of a nav section has its eyebrow; the 404 has none" $ do
     renderWith env "about" PtBr `shouldSatisfy` has "<p class=\"eyebrow\">marola · sobre</p><article"
     renderWith env "contact-sent" En `shouldSatisfy` has "<p class=\"eyebrow\">marola · contact</p>"
+    renderWith env "about" Ja `shouldSatisfy` has "<p class=\"eyebrow\">marola · このサイトについて</p>"
+    renderWith env "contact-sent" ZhHant `shouldSatisfy` has "<p class=\"eyebrow\">marola · 聯絡</p>"
     renderWith env "404" En `shouldNotSatisfy` has "class=\"eyebrow\""
   it "the privacy and takedown pages are in the build and the sitemap, in both languages, and say what they must" $ do
     mapM_

@@ -49,8 +49,10 @@ languageToggle model =
             , shape "ellipse" [ ( "cx", "8" ), ( "cy", "8" ), ( "rx", "2.8" ), ( "ry", "6.5" ) ]
             , shape "path" [ ( "d", "M1.5 8h13" ) ]
             ]
-        , langButton model PtBr "PT-BR" "português (Brasil)"
-        , langButton model En "EN" "English"
+        , langButton model PtBr "🇧🇷 PT-BR" "português (Brasil)"
+        , langButton model En "🇺🇸 EN" "English"
+        , langButton model Ja "🇯🇵 JA" "日本語"
+        , langButton model ZhHant "🇹🇼 繁" "繁體中文"
         ]
 
 

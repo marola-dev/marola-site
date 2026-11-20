@@ -42,6 +42,8 @@ wordsPerMinute :: Int
 wordsPerMinute = 200
 
 months :: Language -> [Text]
+months Ja = months En
+months ZhHant = months En
 months PtBr =
   [ "janeiro",
     "fevereiro",
@@ -87,6 +89,9 @@ longDate l y mo d =
    in case l of
         PtBr -> tshow (int d) <> " de " <> month <> " de " <> y
         En -> month <> " " <> tshow (int d) <> ", " <> y
+        -- "2026年11月9日"; the month table is not read, the numerals carry the date.
+        Ja -> y <> "年" <> tshow (int mo) <> "月" <> tshow (int d) <> "日"
+        ZhHant -> y <> "年" <> tshow (int mo) <> "月" <> tshow (int d) <> "日"
 
 -- A regex \w: letters, non-spacing marks, decimal digits, connector punctuation.
 isWordChar :: Char -> Bool

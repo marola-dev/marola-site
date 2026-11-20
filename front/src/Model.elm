@@ -5,6 +5,7 @@ import Beach exposing (Beach, Selection)
 import Board exposing (Board)
 import Geo exposing (Point)
 import I18n exposing (Locale)
+import Language exposing (Language)
 import Layer exposing (Layer)
 import Params exposing (Query)
 import Trails exposing (Trails)
@@ -100,7 +101,7 @@ trails model =
 initial : Locale -> String -> Query -> Bool -> Model
 initial loc path query reducedMotion =
     { loc = loc
-    , catalogsPending = 2
+    , catalogsPending = List.length Language.all
     , path = path
     , query = query
     , areas = []

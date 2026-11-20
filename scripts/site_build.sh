@@ -43,7 +43,7 @@ rm -rf "$dist"
 cp -r front/dist "$dist"
 "$pages" site "$dist" >&2
 mkdir -p "$dist/i18n" "$dist/img"
-cp site/i18n/en.json site/i18n/pt-BR.json "$dist/i18n/"
+cp site/i18n/pt-BR.json site/i18n/en.json site/i18n/ja.json site/i18n/zh-Hant.json "$dist/i18n/"
 cp site/static/img/umbrella.svg site/static/img/umbrella.pt-BR.svg "$dist/img/"
 cp -r site/static/img/members "$dist/img/members"
 cp site/board.schema.json "$dist/"

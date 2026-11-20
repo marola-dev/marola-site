@@ -76,7 +76,7 @@ form loc =
     [ H.el
         "form"
         [ H.cls "contact",
-          H.attr "action" (if language loc == En then "/en/contact" else "/contact"),
+          H.attr "action" (case language loc of En -> "/en/contact"; Ja -> "/ja/contact"; ZhHant -> "/zh-Hant/contact"; PtBr -> "/contact"),
           H.attr "method" "POST"
         ]
         [ -- The honeypot: a person never sees it, the server drops a post that fills it.

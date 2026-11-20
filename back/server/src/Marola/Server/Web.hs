@@ -38,10 +38,14 @@ page st = html (toEnum st)
 redirect :: Text -> Response
 redirect location = redirect303 (TE.encodeUtf8 location) []
 
-refuse :: Env -> Request -> Int -> (Text, Text) -> (Text, Text) -> Response
-refuse env req st pt en =
+refuse :: Env -> Request -> Int -> (Text, Text) -> (Text, Text) -> (Text, Text) -> (Text, Text) -> Response
+refuse env req st pt en ja zh =
   let loc = localeOf env req
-      (title, sentence) = if loc.language == En then en else pt
+      (title, sentence) = case loc.language of
+        En -> en
+        Ja -> ja
+        ZhHant -> zh
+        PtBr -> pt
    in page st "no-store" (Views.messagePage loc title sentence)
 
 forbidden :: Env -> Request -> Response
@@ -52,9 +56,19 @@ forbidden env req =
     403
     ("Pedido recusado", "O pedido não veio deste site ou a sessão do formulário venceu. Recarregue a página e tente de novo.")
     ("Request refused", "The request did not come from this site, or the form session ended. Reload the page and try again.")
+    ("リクエストは拒否されました", "リクエストはこのサイトから送られたものではないか、フォームのセッションが切れました。ページを再読み込みしてもう一度お試しください。")
+    ("請求被拒絕", "此請求並非來自本網站，或表單工作階段已過期。請重新載入頁面後再試一次。")
 
 notFound :: Env -> Request -> Response
-notFound env req = refuse env req 404 ("Não encontrado", "Não há nada neste endereço.") ("Not found", "There is nothing at this address.")
+notFound env req =
+  refuse
+    env
+    req
+    404
+    ("Não encontrado", "Não há nada neste endereço.")
+    ("Not found", "There is nothing at this address.")
+    ("見つかりません", "このアドレスには何もありません。")
+    ("找不到", "這個地址沒有任何內容。")
 
 fromSameSite :: Request -> Bool
 fromSameSite req = sameSite (header req "Host") (header req "Origin") (header req "Referer")
@@ -196,7 +210,11 @@ withdraw env req params = accountPost env req $ \l _ -> do
   pure (redirect (Views.url (localeOf env req) "/account"))
 
 home :: Request -> Text
-home req = if language req == En then "/?lang=en" else "/"
+home req = case language req of
+  En -> "/?lang=en"
+  Ja -> "/?lang=ja"
+  ZhHant -> "/?lang=zh-Hant"
+  PtBr -> "/"
 
 clearSession :: Env -> Response -> Response
 clearSession env = mapResponseHeaders (<> [("Set-Cookie", Session.clearCookie env.config.dev (Session.sessionCookie env.config.dev))])
@@ -269,7 +287,7 @@ parseInt64 t =
         then let v = sign * read (T.unpack digits) :: Integer in if abs v <= 9223372036854775807 then Just (fromInteger v) else Nothing
         else Nothing
 
--- | Each pattern under @""@ and @"/en"@.
+-- | Each pattern under @""@, @"/en"@, @"/ja"@ and @"/zh-Hant"@.
 routes :: [Route]
 routes =
   concat
@@ -288,4 +306,4 @@ routes =
       [Route "GET" "/studies.atom" False atom]
     ]
   where
-    both m p st h = [Route m (prefix <> p) st h | prefix <- ["", "/en"]]
+    both m p st h = [Route m (prefix <> p) st h | prefix <- ["", "/en", "/ja", "/zh-Hant"]]
