@@ -3,10 +3,10 @@ module View.Layers exposing (key, rail)
 {-| The rail of map layers and the key of the one on show.
 -}
 
+import Config
 import DateFmt
 import Html exposing (Html)
 import Html.Keyed
-import Config
 import Layer exposing (Layer)
 import Model exposing (Model, Panel(..))
 import Msg exposing (Msg(..))

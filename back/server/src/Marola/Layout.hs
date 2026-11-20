@@ -118,11 +118,11 @@ headNodes lang p =
       canon =
         if p.canonical
           then
-            [ link [("rel", "canonical"), ("href", origin <> whereOf p lang)],
-              link [("rel", "alternate"), ("hreflang", languageTag l), ("href", origin <> whereOf p l)]
-                | l <- [PtBr, En, Ja, ZhHant]
-            ]
-              <> [link [("rel", "alternate"), ("hreflang", "x-default"), ("href", origin <> whereOf p PtBr)]]
+            [ link [("rel", "canonical"), ("href", origin <> whereOf p lang)] ]
+              <> [ link [("rel", "alternate"), ("hreflang", languageTag l), ("href", origin <> whereOf p l)]
+                    | l <- [PtBr, En, Ja, ZhHant]
+                 ]
+              <> [ link [("rel", "alternate"), ("hreflang", "x-default"), ("href", origin <> whereOf p PtBr)] ]
           else []
    in [ meta [("charset", "utf-8")],
         meta [("name", "viewport"), ("content", "width=device-width, initial-scale=1")],
