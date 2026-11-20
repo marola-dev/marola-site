@@ -2,6 +2,7 @@
 module Marola.Pages.Build (main, membersText, today) where
 
 import Control.Exception (SomeException, try)
+import Control.Monad (forM_)
 import Data.ByteString qualified as B
 import Data.Text (Text)
 import Data.Text qualified as T

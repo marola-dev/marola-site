@@ -76,6 +76,8 @@ months En =
 readTime :: Language -> Int -> Text
 readTime PtBr m = tshow m <> " min de leitura"
 readTime En m = tshow m <> " min read"
+readTime Ja m = tshow m <> "分で読める"
+readTime ZhHant m = "閱讀時間 " <> tshow m <> " 分"
 
 tshow :: Int -> Text
 tshow = T.pack . show
