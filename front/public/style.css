@@ -150,9 +150,12 @@ small { font-size: var(--fs-13); letter-spacing: var(--tr-13); }
 .bar:has(> .hourbar[hidden]) > .tagline { margin-left: auto; }
 /* the playlist's player: Spotify's compact embed alone, 80 px high, under the layer buttons of
  * the rail, over the map; the grip at its top edge drags it anywhere over the map; no panel
- * around it, so it covers as little map as it can */
+ * around it, so it covers as little map as it can. flex: none, or the rail's flex column crushes
+ * it to a dark sliver when the map is too short for the buttons and the player together: an item
+ * with overflow: hidden has no automatic minimum to keep, and it is the only item that can shrink
+ * (the buttons' box cannot), so it took all of it. The rail scrolls instead. */
 .player {
-  margin-top: 8px; width: min(300px, calc(100vw - 76px)); height: 96px;
+  margin-top: 8px; width: min(300px, calc(100vw - 76px)); height: 96px; flex: none;
   overflow: hidden; border-radius: var(--r-panel); box-shadow: var(--shadow-float);
   touch-action: none;
 }
@@ -720,8 +723,6 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   .gh .gh-owner, .li .li-name { display: none; }
 }
 @media (max-width: 900px) {
-  /* under the emergency button, which stays in reach */
-  .player { top: calc(100% + 48px); }
   .main:has(.list:not([hidden])) .maplibregl-ctrl-top-left { top: 40px; }
   /* the list and the card together leave no map to zoom */
   .main:has(.list:not([hidden])):has(.card:not([hidden])) .maplibregl-ctrl-top-left { display: none; }
@@ -810,7 +811,7 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   .watermark { left: 8px; bottom: 50px; gap: 8px; }
   .watermark .lnt { width: 70px; }
   .watermark svg { width: 18px; height: 18px; }
-  .player { right: 42px; width: min(300px, calc(100vw - 84px)); }
+  .player { width: min(300px, calc(100vw - 84px)); }
   .flowkey { width: 7.5rem; padding: 6px 8px; font-size: var(--fs-11); letter-spacing: var(--tr-11); }
   /* the caption under a ramp hides (the about page explains the field); a key that is only its caption keeps it */
   .flowkey > .ends ~ span:last-child { display: none; }
