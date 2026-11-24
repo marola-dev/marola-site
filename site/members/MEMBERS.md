@@ -18,6 +18,7 @@ no commit yet follow, in the Zenodo record's order.
 | Oliveira, Elisa | | [0009-0002-9844-7865](https://orcid.org/0009-0002-9844-7865) | [elisaoliver5](https://github.com/elisaoliver5) | | ui / mkt | |
 | Almeida, Leonardo Ramos | Universidade Federal do Rio de Janeiro | [0009-0004-8570-4601](https://orcid.org/0009-0004-8570-4601) | [aracyla](https://github.com/aracyla) | | contributor | owner |
 | Kuniyoshi, Tiago Shin-Iti | | [0009-0004-3742-2861](https://orcid.org/0009-0004-3742-2861) | | | contributor | contributor |
+| Kuzniecow, Yuri | Canto das Aguas SC | | | | advisor | |
 
 ## Adding or changing a member
 
