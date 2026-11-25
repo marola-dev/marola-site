@@ -156,6 +156,10 @@ start tweak extra = do
   write (static </> "data" </> "rio" </> "latest.json") "{\"from\":\"static\"}"
   write (static </> "data" </> "floripa" </> "latest.json") "{\"from\":\"static\"}"
   write (dataDir </> "floripa" </> "latest.json") "{\"from\":\"data\"}"
+  -- The picker's list: the build's (four areas) beats the board folder's (three, as a board build
+  -- older than the deploy writes it).
+  write (static </> "data" </> "areas.json") "{\"areas\":[\"floripa\",\"rio\",\"salvador\",\"complexo-lagunar\"]}"
+  write (dataDir </> "areas.json") "{\"areas\":[\"floripa\",\"rio\",\"salvador\"]}"
   -- 1000 bytes that name their own offset, so a range is checked by its content.
   write (root </> "tiles" </> "marola.pmtiles") tileBytes
   write (root </> "tiles" </> "secret.txt") secret
