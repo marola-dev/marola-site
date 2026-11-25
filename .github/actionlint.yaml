@@ -1,0 +1,4 @@
+self-hosted-runner:
+  # The builds run on piabrota2, the Brazilian box INEA and INEMA answer (docs/3-development.md).
+  labels:
+    - marola-br
