@@ -269,16 +269,12 @@ nav loc p =
   el
     "nav"
     [cls "sitenav", attr "aria-label" (t loc "nav.label")]
-    [ external loc "https://docs.marola.dev/" "nav.docs",
-      el
-        "span"
-        [attr "aria-disabled" "true"]
-        [el "span" [] [text (t loc "nav.alerts")], text " ", el "i" [] [text (t loc "nav.soon")]],
-      navLink loc p "news" "nav.news",
+    [ navLink loc p "news" "nav.news",
       el
         "a"
         ([attr "href" (dynamicPath loc.language "studies")] <> [attr "aria-current" "page" | p.current == Just "studies"])
         [text (t loc "nav.studies")],
+      navLink loc p "ecomonitoramento" "nav.ecomonitoramento",
       navLink loc p "about" "nav.about",
       navLink loc p "contact" "nav.contact",
       external loc "https://github.com/marola-dev/marola-research/blob/main/README.md" "nav.research",
@@ -311,6 +307,7 @@ sectionKey s =
     s
     [ ("news", "nav.news"),
       ("studies", "nav.studies"),
+      ("ecomonitoramento", "nav.ecomonitoramento"),
       ("about", "nav.about"),
       ("contact", "nav.contact"),
       ("members", "nav.members"),

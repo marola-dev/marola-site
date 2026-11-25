@@ -50,11 +50,11 @@ data Env = Env
 
 -- | Pages whose body is Markdown, by file name without @.html@.
 slugs :: [Text]
-slugs = ["about", "support", "contact", "contact-sent", "privacy", "takedown", "partners", "404"]
+slugs = ["about", "support", "contact", "contact-sent", "privacy", "takedown", "partners", "ecomonitoramento", "404"]
 
 -- | Every page of the site, in the order of the nav.
 allSlugs :: [Text]
-allSlugs = ["news", "about", "contact", "members", "support", "privacy", "takedown", "partners", "contact-sent", "404"]
+allSlugs = ["news", "ecomonitoramento", "about", "contact", "members", "support", "privacy", "takedown", "partners", "contact-sent", "404"]
 
 -- | A page a search engine must not list.
 noIndex :: Text -> Bool

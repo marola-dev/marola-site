@@ -49,9 +49,13 @@ under :: FilePath -> [Text] -> FilePath
 under root parts = root </> intercalate "/" (map T.unpack parts)
 
 -- | @/data/<x>@ is the board data folder's first, so a deploy can replace the boards without
--- rebuilding the page; the page's own @data/@ (fixtures) is the fallback.
+-- rebuilding the page; the page's own @data/@ (fixtures) is the fallback. The one exception is
+-- @/data/areas.json@, the picker's list: it is the site build's, because the board pipeline writes
+-- its own copy from the areas file of the commit it runs, so an older board folder must not hide an
+-- area the deployed build already ships.
 candidates :: Config -> [Text] -> [FilePath]
 candidates cfg = \case
+  ["data", "areas.json"] -> [under cfg.static ["data", "areas.json"], under cfg.dataDir ["areas.json"]]
   parts@("data" : rest) | not (null rest) -> [under cfg.dataDir rest, under cfg.static parts]
   parts -> [under cfg.static parts]
 

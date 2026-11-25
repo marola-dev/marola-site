@@ -140,6 +140,12 @@ spec = describe "static files" $ do
     rio <- send site (get "/data/rio/latest.json")
     bodyText rio `shouldSatisfy` T.isInfixOf "\"static\""
 
+  -- The board pipeline writes its own areas.json from the areas of the commit it runs, so a board
+  -- folder older than the deploy would hide an area the build ships (the CL area).
+  it "/data/areas.json is the build's, not the board folder's" $ withSite $ \site -> do
+    res <- send site (get "/data/areas.json")
+    bodyText res `shouldSatisfy` T.isInfixOf "complexo-lagunar"
+
   it "the ETag follows the content: same size and a Nix mtime of 1 still change it, and no Last-Modified" $ withSite $ \site -> do
     let file = site.root </> "static" </> "same.txt"
         nix = posixSecondsToUTCTime 1
