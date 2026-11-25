@@ -27,11 +27,6 @@ Role: contributor
 GitHub: https://github.com/robkler
 ORCID: https://orcid.org/0009-0003-3102-4996
 
-Name: Elisa Oliveira
-Role: ui / mkt
-GitHub: https://github.com/elisaoliver5
-ORCID: https://orcid.org/0009-0002-9844-7865
-
 Name: Leonardo Ramos Almeida
 Role: contributor
 Affiliation: Universidade Federal do Rio de Janeiro
