@@ -54,6 +54,19 @@ entityTable =
     <> "| Piabrota | [piabrota](https://github.com/piabrota) | https://piabrota.art/ |\n"
     <> "| Ouroboric | [ouroboric-dev](https://github.com/ouroboric-dev) | https://ouroboric.dev/ |\n"
 
+-- The header with the State column (MEMBERS.md, 25 November 2026).
+states :: Text
+states =
+  "# Members\n\n| Name | Affiliation | State | ORCID | GitHub | Website | First commit | marola role | GitHub role |\n"
+    <> "|---|---|---|---|---|---|---|---|---|\n"
+    <> "| Hoffmann, Matheus | Piabrota ART | Rio de Janeiro / Santa Catarina"
+    <> " | [0009-0009-1056-7661](https://orcid.org/0009-0009-1056-7661)"
+    <> " | [h0ffmann](https://github.com/h0ffmann) | https://hffmnn.piabrota.art/"
+    <> " | [2026-09-05](https://github.com/marola-dev/marola/commit/"
+    <> sha
+    <> ") | contributor | owner |\n"
+    <> "| Soares da Silva Junior, Rob Kler | | Minas Gerais / Rio de Janeiro | | | | | ui / mkt | |\n"
+
 parsed :: Text -> [Member]
 parsed s = either (error . T.unpack) id (Members.parse s)
 
@@ -181,6 +194,18 @@ spec env = describe "members" $ do
     isLeft (Members.parseEntities (T.replace "[piabrota](https://github.com/piabrota)" "piabrota" entityTable)) `shouldBe` True
   it "an empty non-human table fails" $
     isLeft (Members.parseEntities "| Name | GitHub | Website |\n|---|---|---|\n") `shouldBe` True
+  it "the header with the State column passes" $ isRight (Members.parse states) `shouldBe` True
+  it "the state shows on the card, as MEMBERS.md spells it" $
+    page En states `shouldSatisfy` has "<span class=\"member-state\">Rio de Janeiro / Santa Catarina</span>"
+  it "humans.txt lists the state" $
+    Members.humans (parsed states)
+      `shouldSatisfy` has "Affiliation: Piabrota ART\nState: Rio de Janeiro / Santa Catarina\n"
+  it "a state as a two-letter code fails" $
+    isLeft (Members.parse (T.replace "Rio de Janeiro / Santa Catarina" "RJ/FL" states)) `shouldBe` True
+  it "a state that is not Brazilian fails" $
+    isLeft (Members.parse (T.replace "Minas Gerais / Rio de Janeiro" "Minas Gerais / Atlantis" states)) `shouldBe` True
+  it "three states fail" $
+    isLeft (Members.parse (T.replace "Minas Gerais / Rio de Janeiro" "Minas Gerais / Rio de Janeiro / Bahia" states)) `shouldBe` True
   fails "a row with five cells under the role header fails" (roles <> "| Oliveira, Elisa | | | | |\n")
   fails "a table with no rows fails" "| Name | Affiliation | ORCID | GitHub | First commit |\n|---|---|---|---|---|\n"
   it "the real avatars are the ones the real members list" $ do

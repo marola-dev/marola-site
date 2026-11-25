@@ -132,7 +132,7 @@ membersTable = do
         _ -> "\n## Non-human\n\n" <> T.intercalate "\n" (entityTable <> map oneEntity others)
   pure (peopleTable <> nonHuman)
   where
-    header = ["| " <> T.intercalate " | " Members.header <> " |", "|---|---|---|---|---|---|---|---|"]
+    header = ["| " <> T.intercalate " | " Members.header <> " |", "|" <> T.concat (replicate (length Members.header) "---|")]
     entityTable = ["| " <> T.intercalate " | " Members.entityHeader <> " |", "|---|---|---|"]
     span' c b = maybe "" htmlDecode (listToMaybe [T.takeWhile (/= '<') r | r <- occurrences ("<span class=\"" <> c <> "\">") b, "</span>" `T.isPrefixOf` T.dropWhile (/= '<') r])
     token prefix ok b =
@@ -179,6 +179,7 @@ membersTable = do
               " | "
               [ family <> ", " <> T.dropEnd 1 given,
                 span' "member-aff" b,
+                span' "member-state" b,
                 maybe "" (\o -> "[" <> o <> "](https://orcid.org/" <> o <> ")") orcid,
                 maybe "" (\l -> "[" <> l <> "](https://github.com/" <> l <> ")") login,
                 T.unwords websites,

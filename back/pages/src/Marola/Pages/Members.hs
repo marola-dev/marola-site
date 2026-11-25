@@ -5,9 +5,8 @@ module Marola.Pages.Members
   ( Member (..),
     Entity (..),
     header,
+    columns,
     entityHeader,
-    rolesOnly,
-    legacy,
     zenodo,
     file,
     blobId,
@@ -46,6 +45,9 @@ data Member = Member
   { -- | @Given Family@, from Zenodo's @Family, Given@.
     name :: Text,
     affiliation :: Text,
+    -- | The Brazilian state, or the two, the person comes from, as MEMBERS.md spells them; empty
+    -- under a header without the column or for a person who did not say.
+    state :: Text,
     orcid :: Maybe Text,
     gitHub :: Maybe Text,
     -- | The person's own site or profile, as MEMBERS.md writes it: zero, one or two URLs.
@@ -58,16 +60,66 @@ data Member = Member
   }
   deriving (Eq, Show)
 
+-- | The columns in the order MEMBERS.md has them. A header may leave one out (the file had none of
+-- State, Website or the roles at some point) but never reorder them: it must be a subsequence.
+columns :: [Text]
+columns = ["Name", "Affiliation", "State", "ORCID", "GitHub", "Website", "First commit", "marola role", "GitHub role"]
+
 header :: [Text]
-header = ["Name", "Affiliation", "ORCID", "GitHub", "Website", "First commit", "marola role", "GitHub role"]
+header = columns
 
--- The header before the Website column (MEMBERS.md, 25 November 2026) and the one before the two
--- role columns (14 October 2026): accepted until the pin moves past them.
-rolesOnly :: [Text]
-rolesOnly = filter (/= "Website") header
+-- The columns no header may leave out.
+required :: [Text]
+required = ["Name", "Affiliation", "ORCID", "GitHub", "First commit"]
 
-legacy :: [Text]
-legacy = filter (`notElem` ["Website", "marola role", "GitHub role"]) header
+-- | A people header: every column known, no repeat, the required ones present, and the order
+-- @columns@ has them.
+headerOk :: [Text] -> Bool
+headerOk hd =
+  length (Set.toList (Set.fromList hd)) == length hd
+    && all (`elem` columns) hd
+    && all (`elem` hd) required
+    && hd == filter (`elem` hd) columns
+
+-- The 27 states of Brazil, spelled out, as MEMBERS.md writes them.
+brazilianStates :: Set.Set Text
+brazilianStates =
+  Set.fromList
+    [ "Acre",
+      "Alagoas",
+      "Amapá",
+      "Amazonas",
+      "Bahia",
+      "Ceará",
+      "Distrito Federal",
+      "Espírito Santo",
+      "Goiás",
+      "Maranhão",
+      "Mato Grosso",
+      "Mato Grosso do Sul",
+      "Minas Gerais",
+      "Pará",
+      "Paraíba",
+      "Paraná",
+      "Pernambuco",
+      "Piauí",
+      "Rio de Janeiro",
+      "Rio Grande do Norte",
+      "Rio Grande do Sul",
+      "Rondônia",
+      "Roraima",
+      "Santa Catarina",
+      "São Paulo",
+      "Sergipe",
+      "Tocantins"
+    ]
+
+-- | One or two Brazilian states, separated by @ / @.
+stateOk :: Text -> Bool
+stateOk s = case T.splitOn " / " s of
+  [one] -> one `Set.member` brazilianStates
+  [one, two] -> one `Set.member` brazilianStates && two `Set.member` brazilianStates
+  _ -> False
 
 -- | Not a person: an agent or a software fabric, with the site it is known by and the GitHub
 -- login whose avatar the card shows.
@@ -176,23 +228,27 @@ commitCell cell = do
           Just (d, url)
     _ -> Nothing
 
-row :: [Text] -> [Text] -> Either Text Member
-row hdr cells =
-  let withWebsite = hdr == header
-      withRoles = hdr /= legacy
-      (nm, aff, orcidCell, gh) = (cells !! 0, cells !! 1, cells !! 2, cells !! 3)
-      websiteCell = if withWebsite then cells !! 4 else ""
-      sites = T.words websiteCell
-      firstCell = cells !! (if withWebsite then 5 else 4)
+row :: Map Text Int -> [Text] -> Either Text Member
+row ix cells =
+  let at n = maybe "" (cells !!) (Map.lookup n ix)
+      nm = at "Name"
+      aff = at "Affiliation"
+      st = at "State"
+      orcidCell = at "ORCID"
+      gh = at "GitHub"
+      siteCell = at "Website"
+      sites = T.words siteCell
+      firstCell = at "First commit"
+      withRoles = Map.member "marola role" ix
       (familyPart, givenPart) = T.breakOn ", " nm
-      at = T.length familyPart
+      at' = T.length familyPart
       o = selfLink orcidOk "https://orcid.org/" orcidCell
       g = selfLink loginOk "https://github.com/" gh
       c = commitCell firstCell
-   in if withRoles && cells !! (length cells - 2) == ""
+   in if withRoles && at "marola role" == ""
         then Left (nm <> ": marola role is empty")
         else
-          if T.null givenPart || at < 1 || at + 2 >= T.length nm
+          if T.null givenPart || at' < 1 || at' + 2 >= T.length nm
             then Left ("Name is 'Family, Given', as Zenodo writes it: " <> nm)
             else
               if orcidCell /= "" && not (isJust o)
@@ -201,28 +257,32 @@ row hdr cells =
                   if gh /= "" && not (isJust g)
                     then Left (nm <> ": GitHub is [login](https://github.com/login) or empty: " <> gh)
                     else
-                      if length sites > 2 || not (all websiteOk sites)
-                        then
-                          Left
-                            ( nm
-                                <> ": Website is one or two https:// links separated by a space, or empty: "
-                                <> websiteCell
-                            )
+                      if st /= "" && not (stateOk st)
+                        then Left (nm <> ": State is one or two Brazilian state names separated by ' / ', or empty: " <> st)
                         else
-                          if firstCell /= "" && not (isJust c)
-                            then Left (nm <> ": First commit is [YYYY-MM-DD](commit URL) or empty: " <> firstCell)
+                          if length sites > 2 || not (all websiteOk sites)
+                            then
+                              Left
+                                ( nm
+                                    <> ": Website is one or two https:// links separated by a space, or empty: "
+                                    <> siteCell
+                                )
                             else
-                              Right
-                                Member
-                                  { name = T.drop 2 givenPart <> " " <> familyPart,
-                                    affiliation = aff,
-                                    orcid = o,
-                                    gitHub = g,
-                                    websites = sites,
-                                    first = c,
-                                    marolaRole = if withRoles then cells !! (length cells - 2) else "",
-                                    gitHubRole = if withRoles then cells !! (length cells - 1) else ""
-                                  }
+                              if firstCell /= "" && not (isJust c)
+                                then Left (nm <> ": First commit is [YYYY-MM-DD](commit URL) or empty: " <> firstCell)
+                                else
+                                  Right
+                                    Member
+                                      { name = T.drop 2 givenPart <> " " <> familyPart,
+                                        affiliation = aff,
+                                        state = st,
+                                        orcid = o,
+                                        gitHub = g,
+                                        websites = sites,
+                                        first = c,
+                                        marolaRole = at "marola role",
+                                        gitHubRole = at "GitHub role"
+                                      }
 
 -- | MEMBERS.md's tables, each its rows of stripped cells, in the file's order.
 tables :: Text -> [[[Text]]]
@@ -238,19 +298,20 @@ tables txt = filter (not . null) (reverse (map reverse (finish rows [] [])))
 -- | MEMBERS.md's table as members, in the file's order.
 parse :: Text -> Either Text [Member]
 parse txt =
-  let wanted = "MEMBERS.md needs one table headed | " <> T.intercalate " | " header <> " |"
-      people = [cs | cs <- tables txt, head cs `elem` [header, rolesOnly, legacy]]
+  let wanted = "MEMBERS.md needs one table headed | " <> T.intercalate " | " columns <> " |"
+      people = [cs | cs <- tables txt, headerOk (head cs)]
    in case people of
         [] -> Left wanted
         cells : _ -> case cells of
           hd : rule : rows
             | all (T.all (`elem` ("-: " :: String))) rule
                 && not (null rows) -> do
+                let ix = Map.fromList (zip hd [0 ..])
                 members <-
                   collect
                     [ if length cs /= length hd
                         then Left ("a row needs " <> T.pack (show (length hd)) <> " cells: " <> T.intercalate " | " cs)
-                        else row hd cs
+                        else row ix cs
                     | cs <- rows
                     ]
                 let firsts = map (fmap fst . first) members
@@ -430,6 +491,7 @@ item c avatars m =
     [H.cls "member"]
     ( [mark, span' "member-name" [H.text (name m)]]
         <> [span' "member-aff" [H.text (affiliation m)] | affiliation m /= ""]
+        <> [span' "member-state" [H.text (state m)] | state m /= ""]
         <> [span' "member-role" [H.text (T.intercalate " · " roles)] | not (null roles)]
         <> [span' "member-links" links | not (null links)]
     )
@@ -512,6 +574,7 @@ humans members =
       ["Name: " <> name m]
         <> ["Role: " <> marolaRole m | marolaRole m /= ""]
         <> ["Affiliation: " <> affiliation m | affiliation m /= ""]
+        <> ["State: " <> state m | state m /= ""]
         <> maybe [] (\l -> ["GitHub: https://github.com/" <> l]) (gitHub m)
         <> maybe [] (\i -> ["ORCID: https://orcid.org/" <> i]) (orcid m)
         <> ["Website: " <> u | u <- websites m]
