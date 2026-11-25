@@ -62,9 +62,14 @@ Website: https://www.instagram.com/oseuprofessordefisica/
 
 Name: Guilherme Costa
 Role: advisor
-Affiliation: Yoga Professor
+Affiliation: @yoga com gui
 State: Rio de Janeiro
 Website: https://www.instagram.com/yogacomgui/
+
+Name: Dhirendra Hélder
+Role: advisor
+Affiliation: Dhidrone
+Website: https://dhidrone.com.br/
 
 /* SITE */
 Members: https://github.com/marola-dev/.github/blob/main/MEMBERS.md
