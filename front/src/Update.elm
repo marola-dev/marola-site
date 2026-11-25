@@ -23,6 +23,7 @@ import Parse
 import TrailGeo
 import Trails exposing (Route, Trails)
 import Tuple
+import WaterFile
 
 
 {-| What the page reads from the browser before it starts.
@@ -201,12 +202,33 @@ selectArea model area =
         firstMap =
             model.map == MapNone
 
+        areaLayer =
+            area.layer
+                |> Maybe.andThen Layer.ofKey
+                |> Maybe.andThen
+                    (\l ->
+                        if Layer.enabled l then
+                            Just l
+
+                        else
+                            Nothing
+                    )
+
+        layer =
+            if Params.get model.query "layer" == Nothing then
+                Maybe.withDefault model.layer areaLayer
+
+            else
+                model.layer
+
         next =
             setParam
                 { model
                     | area = Just area
+                    , layer = layer
                     , status = Loading area.name
                     , trailsFile = TrailsPending
+                    , waterFile = Model.WaterFilePending
                     , trailSelected = Nothing
                     , map =
                         if firstMap then
@@ -218,14 +240,27 @@ selectArea model area =
                 "area"
                 area.id
 
+        zoom =
+            area.zoom
+                |> Maybe.map toFloat
+                |> Maybe.withDefault Config.areaZoom
+
         mapEffect =
             if firstMap then
-                InitMap area.lon area.lat
+                InitMap area.lon area.lat zoom
 
             else
-                MoveCamera (Jump area.lon area.lat Config.areaZoom)
+                MoveCamera (Jump area.lon area.lat zoom)
+
+        boundsEffect =
+            case area.bounds of
+                Just b ->
+                    [ MoveCamera (Fit b.west b.south b.east b.north 40 12 True) ]
+
+                Nothing ->
+                    []
     in
-    ( next, [ url next, mapEffect, FetchLatest area.id, FetchTrails area.id ] )
+    ( next, [ url next, mapEffect ] ++ boundsEffect ++ [ FetchLatest area.id, FetchTrails area.id, FetchWater area.id ] )
 
 
 areasLoaded : Model -> List Area -> ( Model, List Effect )
@@ -318,6 +353,16 @@ dayPicked model day =
             ( model, [] )
 
 
+{-| An area that frames itself (bounded, or pinned to a partner's place) keeps that view: the
+beaches' bounds would pull the camera away from it (the Complexo Lagunar frames its lagoons around
+Canto das Águas).
+-}
+pinned : Model -> Bool
+pinned model =
+    Maybe.map (\area -> area.pin /= Nothing || area.bounds /= Nothing) model.area
+        |> Maybe.withDefault False
+
+
 {-| The first board of an area fits the map to its beaches; a layer that zoomed the map out keeps
 its view.
 -}
@@ -325,7 +370,10 @@ fit : Model -> ( Bool, List Effect )
 fit model =
     case model.board of
         Just board ->
-            if not (model.fitted || model.zoomedOut || not (active model)) then
+            if pinned model then
+                ( model.fitted, [] )
+
+            else if not (model.fitted || model.zoomedOut || not (active model)) then
                 case MapView.beachBounds board of
                     Just ( ( w, s ), ( e, n ) ) ->
                         ( True, [ MoveCamera (Fit w s e n 40 13 True) ] )
@@ -392,6 +440,22 @@ trailsLoaded model result =
                     { model | trailsFile = TrailsMissing }
     in
     ( next, trailEffects next )
+
+
+{-| The file's points add markers no beach carries, so the map is synced again once it arrives.
+-}
+waterLoaded : Model -> Result FetchError WaterFile.WaterFile -> ( Model, List Effect )
+waterLoaded model result =
+    let
+        next =
+            case result of
+                Ok found ->
+                    { model | waterFile = Model.WaterFileLoaded found }
+
+                Err _ ->
+                    { model | waterFile = Model.WaterFileMissing }
+    in
+    sync next []
 
 
 
@@ -709,6 +773,7 @@ init env =
         | layer = layer
         , showBeaches = Params.get env.query "beaches" /= Just "0"
         , showTrails = Params.get env.query "trails" /= Just "0"
+        , embed = Params.get env.query "embed" == Just "1"
         , zoomedOut = layer == Layer.Elnino
       }
     , List.map FetchCatalog Language.all
@@ -738,6 +803,9 @@ update message model =
 
         TrailsFileLoaded area result ->
             guardArea model area (\() -> trailsLoaded model result)
+
+        WaterFileLoaded area result ->
+            guardArea model area (\() -> waterLoaded model result)
 
         AreaPicked id ->
             areaPicked model id

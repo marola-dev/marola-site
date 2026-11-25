@@ -60,7 +60,11 @@ candidates cfg = \case
   parts -> [under cfg.static parts]
 
 -- | The file to send for a path: the file itself, else @<path>.html@. A folder is never listed.
+-- @/embed@ is the map page itself (ADR 0008), with no trailing slash: every asset path in
+-- @index.html@ is relative, so @/embed/@ would ask for @/embed/style.css@.
 resolve :: Config -> Text -> IO (Maybe FilePath)
+resolve cfg p
+  | p == "/embed" = resolve cfg "/index.html"
 resolve cfg p = case segments p of
   Nothing -> pure Nothing
   Just parts -> do
@@ -147,7 +151,7 @@ docsRedirect req
 -- in that language whose canonical is that address (marola-pages writes them next to @index.html@).
 variantMap :: Config -> Request -> Text -> IO (Maybe FilePath)
 variantMap cfg req p
-  | p `elem` ["/", "/index.html"],
+  | p `elem` ["/", "/index.html", "/embed"],
     Just tag <- lookup (queryText req "lang") [("en", "en"), ("ja", "ja"), ("zh-Hant", "zh-Hant")] = do
       let file = cfg.static </> ("index." <> tag <> ".html")
       exists <- doesFileExist file

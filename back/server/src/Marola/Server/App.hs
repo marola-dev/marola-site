@@ -255,7 +255,10 @@ applicationWith extra env req respond = do
         env.logger "Marola.Request" Information (TE.decodeUtf8Lenient (requestMethod req) <> " " <> T.take 200 path <> " " <> tshow st <> " " <> tshow ms)
       send res = do
         res' <- streamFile res
-        r <- respond (mapResponseStatus (reason . statusCode) (mapResponseHeaders Security.addHeaders res'))
+        let framed
+              | path == "/embed" = mapResponseHeaders (("Content-Security-Policy", Security.contentSecurityPolicyFor env.config.embedFrom) :) res'
+              | otherwise = res'
+        r <- respond (mapResponseStatus (reason . statusCode) (mapResponseHeaders Security.addHeaders framed))
         logLine (statusCode (responseStatus res))
         pure r
   outcome <- try (compression (inner path) req send)

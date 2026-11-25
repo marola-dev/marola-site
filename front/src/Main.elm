@@ -24,6 +24,7 @@ import Task
 import Trails
 import Update
 import View.Page
+import WaterFile
 import Wire exposing (Request(..))
 
 
@@ -125,6 +126,9 @@ run effect =
         FetchTrails area ->
             fetch (TrailsFile area)
 
+        FetchWater area ->
+            fetch (WaterFile area)
+
         ReplaceUrl path query ->
             send "replaceUrl" (text "path" path ++ text "query" query)
 
@@ -134,8 +138,8 @@ run effect =
         StoreLanguage language ->
             send "storeLanguage" (text "tag" (Language.tag language))
 
-        InitMap lon lat ->
-            send "initMap" (text "json" (MapJson.mapConfig lon lat))
+        InitMap lon lat zoom ->
+            send "initMap" (text "json" (MapJson.mapConfig lon lat zoom))
 
         SyncMap json ->
             send "syncMap" (text "json" json)
@@ -215,3 +219,6 @@ answered request result =
 
         TrailsFile area ->
             TrailsFileLoaded area (decode Trails.decoder)
+
+        WaterFile area ->
+            WaterFileLoaded area (decode WaterFile.decoder)

@@ -530,13 +530,41 @@ async function nearDenied() {
   ok($('#near').getAttribute('aria-pressed') === 'false', 'the near button stays off');
 }
 
+async function embed() {
+  ok(!$('.top') && !$('.bar') && !$('.footer'), 'an embed has no nav, tool row or footer');
+  ok($('.embed') && $('.embedbar') && $('.embedbar button[lang=pt-BR]'), 'the embed strip carries the language switch');
+  ok($('#map') && $('#watermark') && $('#sos') && $$('button[data-layer]').length === 7, 'the map, the watermark, the layer rail and the emergency button stay');
+  ok($$('a[href=news.html]').length === 0, 'no site navigation leaks into the embed');
+}
+
+async function complexoLagunar() {
+  const map = ml.maps[0];
+  const areas = distJson('data/areas.json');
+  const cl = (areas.areas || areas).find((a) => a.id === 'complexo-lagunar');
+  ok(cl && cl.pin && cl.pin.name === 'Canto das Águas', 'areas.json pins the area to Canto das Águas', JSON.stringify(cl && cl.pin));
+  ok(map.opts.center[0] === -48.7973 && map.opts.center[1] === -28.3287 && map.opts.zoom === 9, 'the map enters at the pin and the area zoom', JSON.stringify(map.opts.center.concat(map.opts.zoom)));
+  const fits = map.calls.filter((c) => c.name === 'fitBounds');
+  ok(fits.length === 1 && JSON.stringify(fits[0].args[0]) === JSON.stringify([[-48.95, -28.63], [-48.61, -28.07]]) && fits[0].args[1].maxZoom === 12, 'the camera frames the lagoon bounds, and the beaches never refit it', JSON.stringify(fits));
+  const pin = live().find((m) => cls(m.el).includes('pin'));
+  ok(pin && $('.pin-label', pin.el).textContent === 'Canto das Águas' && $('.pin-dot', pin.el), 'the pin is drawn on the map, named');
+  ok(pin && pin.el.getAttribute('href') === 'https://cantodasaguas.org/' && pin.el.getAttribute('target') === '_blank' && pin.el.getAttribute('rel') === 'noopener', "the pin is a link to the institute's site, in a new tab", pin && [pin.el.getAttribute('href'), pin.el.getAttribute('target')].join(' '));
+  const feats = trailCollection(map).features, file = trailFile('complexo-lagunar');
+  ok(feats.length === routesOf(file).filter((r) => r.lines.some((l) => l.length > 1)).length && feats.length > 0, 'the lagoon complex trails reach the map', feats.length);
+  const water = distJson('data/water/complexo-lagunar.json');
+  ok(water.points.length === 31 && water.points.some((p) => p.condition === 'improper'), "the area's own water file carries the IMA/SC points, beaches and lagoons", water.points.length);
+  ok(cls($('main')).includes('layer-water') && $('button[data-layer=water]').getAttribute('aria-pressed') === 'true', 'the area opens on its own layer: water');
+  const points = live().filter((m) => cls(m.el).includes('wpoint'));
+  ok(points.length === 31, "every IMA/SC point is drawn: the board's and the 19 the file alone has", points.length);
+  ok(new Set(points.map((m) => m.lngLat.join(','))).size === 31, 'each place is drawn once');
+  await click($('button[data-layer=water]'));
+  ok(!cls($('main')).includes('layer-water') && live().filter((m) => cls(m.el).includes('wpoint')).length === 0, 'pressing the layer again is the plain map');
+}
+
 async function playlist() {
   const embed = 'https://open.spotify.com/embed/playlist/2hsuqvhCouatM8DtmKKl7U?theme=0';
   const btn = () => document.querySelector('[data-toggle=playlist]');
   ok(!$('#player iframe') && btn().getAttribute('aria-pressed') === 'false', 'no Spotify iframe before the playlist button is pressed');
   await click(btn());
-  console.error('DEBUG toggles:', $$('[data-toggle]').map(b => b.getAttribute && b.getAttribute('data-toggle')));
-  console.error('DEBUG app children:', (app.childNodes || []).map(c => (c.tagName || '?') + ':' + (c.getAttribute && c.getAttribute('id') || '')).join(','));
   const frame = $('#player iframe');
   ok(frame && frame.getAttribute('src') === embed, 'the playlist button opens the GREAT RESET embed', frame && frame.getAttribute('src'));
   ok(btn().getAttribute('aria-pressed') === 'true', 'the playlist button reads as pressed while the player is open');
@@ -564,6 +592,8 @@ const SCENARIOS = {
     Object.defineProperty(globalThis, 'localStorage', { value: { getItem: boom, setItem: boom }, configurable: true, writable: true });
   } },
   'near-denied': { search: '?area=floripa', run: nearDenied },
+  embed: { search: '?embed=1&area=complexo-lagunar', run: embed },
+  'complexo-lagunar': { search: '?area=complexo-lagunar', run: complexoLagunar },
   playlist: { search: '?area=floripa', run: playlist },
 };
 

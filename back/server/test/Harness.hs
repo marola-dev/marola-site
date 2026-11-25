@@ -179,7 +179,8 @@ start tweak extra = do
               githubClientId = Just "test-client-id",
               githubSecretFile = Just (root </> "github-secret"),
               githubBase = "https://github.test",
-              githubApiBase = "https://api.github.test"
+              githubApiBase = "https://api.github.test",
+              embedFrom = []
             }
   logs <- newIORef []
   clock <- newIORef (UTCTime (fromGregorian 2026 11 11) (12 * 3600))
@@ -335,7 +336,8 @@ bareConfig db =
       githubClientId = Nothing,
       githubSecretFile = Nothing,
       githubBase = "",
-      githubApiBase = ""
+      githubApiBase = "",
+      embedFrom = []
     }
 
 -- | Runs a command-line entry point with its two outputs kept: (code, out, err).

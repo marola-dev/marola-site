@@ -1,4 +1,4 @@
-module Water exposing (Condition(..), Summary(..), Water, WaterPoint, conditionBand, conditionLabel, decoder, dotClass, parseCondition, parseSummary, sampledText, summaryText)
+module Water exposing (Condition(..), Summary(..), Water, WaterPoint, conditionBand, conditionLabel, decoder, dotClass, parseCondition, parseSummary, pointDecoder, sampledText, summaryText)
 
 import Band exposing (Band)
 import DateFmt

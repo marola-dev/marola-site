@@ -6,7 +6,7 @@
 -- tiles are the site's own files (docs/adr/0006-self-hosted-basemap.md). One third party answers
 -- the page, NASA GIBS for the satellite layers, and Spotify's player is the one frame. @data:@ and
 -- @blob:@ are schemes, not origins: MapLibre builds its images and its worker's transfers from them.
-module Marola.Csp (gibs, spotify, policy) where
+module Marola.Csp (embedPolicy, gibs, spotify, policy) where
 
 import Data.Text (Text)
 import Data.Text qualified as T
@@ -20,20 +20,28 @@ spotify = "open.spotify.com"
 origins :: Text
 origins = "https://" <> gibs
 
+-- | The page's directives with the given @frame-ancestors@ origins: the one directive a route may
+-- change is whose page may frame this one (ADR 0008).
+directives :: [Text] -> [Text]
+directives ancestors =
+  [ "default-src 'self'",
+    "script-src 'self'",
+    "style-src 'self'",
+    "img-src 'self' data: blob: " <> origins,
+    "connect-src 'self' " <> origins,
+    "font-src 'self'",
+    "worker-src 'self'",
+    "frame-src https://" <> spotify,
+    "object-src 'none'",
+    "base-uri 'self'",
+    "frame-ancestors " <> (if null ancestors then "'none'" else T.intercalate " " ancestors)
+  ]
+
 -- | A header cannot carry a newline, so the directives join into one line.
 policy :: Text
-policy =
-  T.intercalate
-    "; "
-    [ "default-src 'self'",
-      "script-src 'self'",
-      "style-src 'self'",
-      "img-src 'self' data: blob: " <> origins,
-      "connect-src 'self' " <> origins,
-      "font-src 'self'",
-      "worker-src 'self'",
-      "frame-src https://" <> spotify,
-      "object-src 'none'",
-      "base-uri 'self'",
-      "frame-ancestors 'none'"
-    ]
+policy = T.intercalate "; " (directives [])
+
+-- | @/embed@: the same page, frameable by the origins @MAROLA_EMBED_FROM@ lists and by no other. An
+-- empty list keeps @frame-ancestors 'none'@, so the embed is refused closed.
+embedPolicy :: [Text] -> Text
+embedPolicy = T.intercalate "; " . directives

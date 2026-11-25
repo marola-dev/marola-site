@@ -106,6 +106,7 @@ before this version runs ([The base map](#the-base-map)).
 | `MAROLA_GITHUB_CLIENT_ID` | unset | The client id of the GitHub OAuth app. Public. |
 | `MAROLA_GITHUB_CLIENT_SECRET_FILE` | unset | A path to the file that holds the client secret. The secret is read from that file at each login, never from an environment variable, and never logged. Without the id and the file, `/auth/github/login` answers 503 "login is not configured" and the rest of the site works. |
 | `MAROLA_DEV` | unset | Only the value `1` enables it: the command `dev-account`, cookies without `Secure` and the `__Host-` prefix (plain HTTP), and `MAROLA_GITHUB_BASE` and `MAROLA_GITHUB_API_BASE` (a fake GitHub for tests). Never set it in the unit. |
+| `MAROLA_EMBED_FROM` | unset | The origins whose pages may frame `/embed`, one per line (`https://cantodasaguas.org`), and no other page is frameable ([Embedding the map](4-reference.md#embedding-the-map)). Unset or empty is `frame-ancestors 'none'`: the embed is refused closed. A file the box owns, like its other secrets; never a wildcard. The first entry is Canto das Águas. |
 
 A relative path counts from the working directory of the process. Use absolute paths on a host.
 A wrong `MAROLA_PORT` or `MAROLA_STUDIES_QUOTA` stops the start with exit code 2.

@@ -1,4 +1,4 @@
-module Model exposing (DayEntry, MapState(..), Model, Panel(..), Status(..), TrailsFile(..), beaches, initial, trails)
+module Model exposing (DayEntry, MapState(..), Model, Panel(..), Status(..), TrailsFile(..), WaterFileState(..), beaches, initial, lagoonWater, trails)
 
 import Area exposing (Area)
 import Beach exposing (Beach, Selection)
@@ -9,6 +9,8 @@ import Language exposing (Language)
 import Layer exposing (Layer)
 import Params exposing (Query)
 import Trails exposing (Trails)
+import Water exposing (WaterPoint)
+import WaterFile
 
 
 {-| What the map is doing. A failed map keeps the page usable through the list.
@@ -35,6 +37,14 @@ type TrailsFile
     | TrailsLoaded Trails
       -- No file for the area: the board's own trails stand in.
     | TrailsMissing
+
+
+{-| The area's own sampling points (`data/water/<area>.json`): the points the board leaves out.
+-}
+type WaterFileState
+    = WaterFilePending
+    | WaterFileLoaded WaterFile.WaterFile
+    | WaterFileMissing
 
 
 {-| The one panel that may fill the map's left edge.
@@ -71,6 +81,7 @@ type alias Model =
     , panel : Panel
     , trailSelected : Maybe Int
     , trailsFile : TrailsFile
+    , waterFile : WaterFileState
     , loreOpen : Bool
     , blurbOpen : Bool
     , sosOpen : Bool
@@ -82,6 +93,7 @@ type alias Model =
     , zoomedOut : Bool
     , fitted : Bool
     , reducedMotion : Bool
+    , embed : Bool
     }
 
 
@@ -121,6 +133,7 @@ initial loc path query reducedMotion =
     , panel = Closed
     , trailSelected = Nothing
     , trailsFile = TrailsPending
+    , waterFile = WaterFilePending
     , loreOpen = False
     , blurbOpen = False
     , sosOpen = False
@@ -132,6 +145,7 @@ initial loc path query reducedMotion =
     , zoomedOut = False
     , fitted = False
     , reducedMotion = reducedMotion
+    , embed = False
     }
 
 
@@ -142,4 +156,21 @@ beaches model =
             board.beaches
 
         Nothing ->
+            []
+
+
+{-| The file's points the board does not already draw. They belong to no beach, so only the water
+layer shows them.
+-}
+lagoonWater : Model -> List WaterPoint
+lagoonWater model =
+    case model.waterFile of
+        WaterFileLoaded file ->
+            let
+                drawn =
+                    List.map WaterFile.spot (List.concatMap (.water >> .points) (beaches model))
+            in
+            List.filter (\p -> not (List.member (WaterFile.spot p) drawn)) file.points
+
+        _ ->
             []

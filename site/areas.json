@@ -35,12 +35,21 @@
   {
     "id": "complexo-lagunar",
     "name": "Complexo Lagunar Sul Catarinense",
-    "lat": -28.20,
-    "lon": -48.78,
+    "lat": -28.3287,
+    "lon": -48.7973,
     "radius_km": 55,
     "beach_limit": 80,
     "tz": "America/Sao_Paulo",
     "tiles": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-    "tiles_attribution": "© OpenStreetMap contributors"
+    "tiles_attribution": "© OpenStreetMap contributors",
+    "zoom": 9,
+    "bounds": [-48.95, -28.63, -48.61, -28.07],
+    "layer": "water",
+    "pin": {
+      "name": "Canto das Águas",
+      "lat": -28.3287,
+      "lon": -48.7973,
+      "url": "https://cantodasaguas.org/"
+    }
   }
 ]

@@ -31,7 +31,10 @@ data Config = Config
     -- | The file that holds the OAuth client secret. The secret itself is never in the environment.
     githubSecretFile :: Maybe FilePath,
     githubBase :: Text,
-    githubApiBase :: Text
+    githubApiBase :: Text,
+    -- | @MAROLA_EMBED_FROM@: the origins whose pages may frame @/embed@, one per line. Empty means
+    -- nobody: @frame-ancestors 'none'@ (ADR 0008). The allowlist is a file the box owns.
+    embedFrom :: [Text]
   }
   deriving (Show)
 
@@ -65,6 +68,8 @@ fromEnv get = do
       su <- pathOf "MAROLA_STUDIES" "data/studies"
       ti <- pathOf "MAROLA_TILES" "data/tiles"
       secret <- traverse absolute (nonEmpty "MAROLA_GITHUB_CLIENT_SECRET_FILE")
+      let embedFrom =
+            [T.strip (T.pack line) | line <- lines (maybe "" id (get "MAROLA_EMBED_FROM")), not (T.null (T.strip (T.pack line)))]
       pure . Right $
         Config
           { port = p,
@@ -78,7 +83,8 @@ fromEnv get = do
             githubClientId = T.pack <$> nonEmpty "MAROLA_GITHUB_CLIENT_ID",
             githubSecretFile = secret,
             githubBase = url "MAROLA_GITHUB_BASE" "https://github.com",
-            githubApiBase = url "MAROLA_GITHUB_API_BASE" "https://api.github.com"
+            githubApiBase = url "MAROLA_GITHUB_API_BASE" "https://api.github.com",
+            embedFrom = embedFrom
           }
 
 fromProcessEnv :: IO (Either String Config)
@@ -95,7 +101,8 @@ fromProcessEnv = do
           "MAROLA_GITHUB_CLIENT_ID",
           "MAROLA_GITHUB_CLIENT_SECRET_FILE",
           "MAROLA_GITHUB_BASE",
-          "MAROLA_GITHUB_API_BASE"
+          "MAROLA_GITHUB_API_BASE",
+          "MAROLA_EMBED_FROM"
         ]
   values <- mapM (\n -> (n,) <$> lookupEnv n) names
   fromEnv (\n -> maybe Nothing id (lookup n values))

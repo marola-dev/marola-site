@@ -221,6 +221,51 @@ waterMarker model p =
     }
 
 
+{-| The area's pin, when it has one: the partner's place, named on the map. The area's camera
+enters there and the beaches' bounds do not pull it away (`Update.pinned`).
+-}
+pinMarker : Model -> List Marker
+pinMarker model =
+    case model.area |> Maybe.andThen .pin of
+        Just pin ->
+            let
+                -- The partner's place is a link when the area names a URL: a visitor who wants to
+                -- know who keeps the map gets there in one click. A new tab, so an embed stays put.
+                link =
+                    case pin.url of
+                        Just url ->
+                            [ ( "href", url ), ( "target", "_blank" ), ( "rel", "noopener" ) ]
+
+                        Nothing ->
+                            []
+            in
+            [ { key = "pin"
+              , lon = pin.lon
+              , lat = pin.lat
+              , label = Just pin.name
+              , node =
+                    Tree.el
+                        (if List.isEmpty link then
+                            "div"
+
+                         else
+                            "a"
+                        )
+                        (( "class", "pin" ) :: ( "aria-label", pin.name ) :: link)
+                        [ Tree.el "span" [ ( "class", "pin-label" ) ] [ Tree.text pin.name ]
+                        , Tree.el "span" [ ( "class", "pin-dot" ) ] []
+                        ]
+              , tip = Tree.el "span" [] [ Tree.text pin.name ]
+              , tipClass = ""
+              , offset = 10
+              , click = Nothing
+              }
+            ]
+
+        Nothing ->
+            []
+
+
 selectedBeach : Model -> Maybe Beach
 selectedBeach model =
     model.selected
@@ -228,6 +273,11 @@ selectedBeach model =
 
 
 {-| The water layer shows every beach's sampling points; the others only the selected beach's.
+
+An area whose board has no beaches at all (the Complexo Lagunar while the app's Overpass query
+times out, marola-app#60) would otherwise open on an empty map: the file's points are the only
+data it has, so they are drawn whatever the layer.
+
 -}
 waterPoints : Model -> List WaterPoint
 waterPoints model =
@@ -244,6 +294,12 @@ waterPoints model =
                     []
     in
     List.concatMap (.water >> .points) shown
+        ++ (if model.layer == Layer.Water || List.isEmpty (Model.beaches model) then
+                Model.lagoonWater model
+
+            else
+                []
+           )
 
 
 hereMarker : Model -> List Marker
@@ -289,7 +345,7 @@ ninoJson model =
 syncJson : Model -> String
 syncJson model =
     E.object
-        [ ( "markers", E.list (beachMarker model >> markerJson) (Model.beaches model) )
+        [ ( "markers", E.list markerJson (List.map (beachMarker model) (Model.beaches model) ++ pinMarker model) )
         , ( "points", E.list (waterMarker model >> markerJson) (waterPoints model) )
         , ( "here", E.list markerJson (hereMarker model) )
         , ( "raster", rasterJson model )
