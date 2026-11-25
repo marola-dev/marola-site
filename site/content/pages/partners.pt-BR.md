@@ -1,9 +1,17 @@
 title: parceiros
-description: Quem caminha com o marola: Leave No Trace, OpenDiving, Ouroboric e piabrota, o que cada um faz e como virar parceiro.
+description: Quem caminha com o marola: Canto das Águas, Leave No Trace, OpenDiving, Ouroboric e piabrota, o que cada um faz e como virar parceiro.
 
 ## Parceiros
 
 O marola é feito em código aberto, como ciência cidadã, e não anda sozinho. Estes são os parceiros que aceitaram ser listados aqui.
+
+## Canto das Águas
+
+![Instituto Canto das Águas](/vendor/canto-das-aguas/logo.png 600x203)
+
+O [Instituto Canto das Águas](https://cantodasaguas.org/) é um centro de inovações em ciências da Terra em Imaruí, Santa Catarina, que articula ciência, educação e produção regenerativa para regenerar o Complexo Lagunar Sul Catarinense. Com escolas, universidades, gestores públicos e as comunidades dos 12 municípios da bacia, o instituto mantém um laboratório a céu aberto e uma exposição técnico-científica sobre a lagoa.
+
+O marola e o Canto das Águas se encontram no ecomonitoramento: as expedições embarcadas e as coletas mensais do instituto geram os dados que a [Plataforma de Ecomonitoramento Participativo](ecomonitoramento.html) reúne, e o marola leva a mesma pergunta para o mapa — como está a saúde da água e onde é seguro entrar. A parceria é aberta: os dados, os estudos e o código continuam públicos, para que qualquer pessoa possa conferir, citar e continuar o trabalho.
 
 ## Leave No Trace
 

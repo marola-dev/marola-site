@@ -9,8 +9,8 @@ requires; a malformed entry is silently dropped there rather than failing.
 
 | Field | Type | Notes |
 |---|---|---|
-| `id` | string, `^[a-z0-9-]+$` | The area's slug (`floripa`, `rio`, `salvador`); used in `data/<id>/…` paths and the `?area=` param |
-| `name` | string | The full display name (`Florianópolis`, `Rio de Janeiro`, `Salvador, BA`) |
+| `id` | string, `^[a-z0-9-]+$` | The area's slug (`floripa`, `rio`, `salvador`, `complexo-lagunar`); used in `data/<id>/…` paths and the `?area=` param |
+| `name` | string | The full display name (`Florianópolis`, `Rio de Janeiro`, `Salvador, BA`, `Complexo Lagunar Sul Catarinense`) |
 | `lat`, `lon` | number | The area's centre point, for the Overpass query the app runs to find beaches |
 | `radius_km` | number | How far out from `lat`/`lon` the app looks for beaches |
 | `beach_limit` | number | The most beaches the app keeps for this area |
@@ -56,7 +56,11 @@ does not hash the build itself, which it never downloads whole.
 | `front/public/map/style.json`, `front/public/map/fonts/` | the style and its glyphs | `node scripts/basemap_style.mjs` (`--check` compares) |
 
 An area's box is its centre plus and minus `radius_km + 50` km. A new area in `site/areas.json` needs the
-file cut again.
+file cut again: the `complexo-lagunar` area (the Southern Santa Catarina Lagoon Complex) is in the
+list, so the host's `MAROLA_TILES` file needs a new `scripts/basemap_extract.sh` run before the live
+map shows streets there. The fixture preview still cuts only the first area to zoom 11
+(`--fixture`), so it shows the CL area on the world and country tiles; that is a stand-in, not a
+missing build step.
 
 ## Board schema pin
 
@@ -79,6 +83,17 @@ then this repo's `marola-image`/`board-schema.sh --update` pair — see
 The schema (`$schema`: `https://json-schema.org/draft/2020-12/schema`) requires `schema`, `area`,
 `day`, `today`, `generated_at`, `sources`, `lore` and `beaches`; `trails` is optional.
 
+## Water quality in the Complexo Lagunar
+
+The `complexo-lagunar` boards use the usual pipeline: OpenStreetMap beaches and IMA/SC's
+bathing-water points. IMA publishes points in the lagoons (Lagoa de Ibiraquera, Lagoa da Ferrugem,
+Canal do Camacho, Lagoa de Cabeçuda, Lagoa do Arroio Corrente) and at the lagoon mouths. The app
+matches a provider point to a beach by name; for an inland name (`lagoa …`, `canal …`) it does not
+fall back to distance, so a lagoon point only reaches a beach whose name matches it. The fixture
+board carries the points for the offline preview (the `fixtures boards` command); a production
+board shows the points the app matches. An unmatched lagoon point needs an app-side change (an
+inland-water beach, or a name alias), not an edit here.
+
 ## Trail files
 
 `front/public/data/trails/<area>.json` holds the hiking routes of an area. The map page fetches
@@ -95,9 +110,11 @@ The schema (`$schema`: `https://json-schema.org/draft/2020-12/schema`) requires 
 
 The id of a route is its position in the bairros, in order. The map and the panel use that id.
 
-Rio de Janeiro has 113 routes in 17 bairros. Florianópolis has 44 routes. Salvador has an empty
-list and a note: the panel shows the note, never an empty panel. When an area has no file, the
-board's own optional `trails` array stands in.
+Rio de Janeiro has 113 routes in 17 bairros. Florianópolis has 44 routes. The Complexo Lagunar Sul
+Catarinense has 31 routes in seven groups (Imbituba, Garopaba, Paulo Lopes, Palhoça e Guarda do
+Embaú, Florianópolis, Laguna and Serra do Tabuleiro), from the same query over the lagoons and the
+Serra do Tabuleiro. Salvador has an empty list and a note: the panel shows the note, never an empty
+panel. When an area has no file, the board's own optional `trails` array stands in.
 
 **Provenance.** One query on the Overpass API made the files. The files are a one-off copy: no job
 refreshes them. The query takes every `way` with `highway` in `path|footway|track|steps` and a

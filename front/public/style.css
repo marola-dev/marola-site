@@ -150,15 +150,20 @@ small { font-size: var(--fs-13); letter-spacing: var(--tr-13); }
 .bar:has(> .hourbar[hidden]) > .tagline { margin-left: auto; }
 /* the playlist's player: Spotify's compact embed alone, 80 px high, under the layer buttons of
  * the rail, over the map; the grip at its top edge drags it anywhere over the map; no panel
- * around it, so it covers as little map as it can */
+ * around it, so it covers as little map as it can. flex: none, or the rail's flex column crushes
+ * it to a dark sliver when the map is too short for the buttons and the player together: an item
+ * with overflow: hidden has no automatic minimum to keep, and it is the only item that can shrink
+ * (the buttons' box cannot), so it took all of it. The rail scrolls instead. */
 .player {
-  margin-top: 8px; width: min(300px, calc(100vw - 76px)); height: 96px;
+  position: absolute; left: 50%; margin-left: -150px; top: 12px;
+  width: min(300px, calc(100vw - 76px)); height: 96px; flex: none;
   overflow: hidden; border-radius: var(--r-panel); box-shadow: var(--shadow-float);
   touch-action: none;
+  z-index: 900;
 }
 .player .grip {
   display: block; width: 100%; height: 16px; cursor: grab; user-select: none;
-  background: var(--surface); border-bottom: 1px solid var(--line);
+  background: var(--surface);
   position: relative;
 }
 .player .grip::after {
@@ -191,7 +196,6 @@ button:active { transform: none; }
 button[aria-pressed="true"], button[aria-expanded="true"] {
   background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
 button[aria-pressed="true"] > .ic, button[aria-expanded="true"] > .ic { color: inherit; }
-.insta > span { font-family: var(--mono); font-size: var(--fs-12); letter-spacing: var(--tr-mono); text-transform: none; }
 /* segmented groups (day, language): a pill track, the picked segment raised (piabrota.art's .designs) */
 .segmented, .lang { display: inline-flex; align-items: center; gap: 2px; padding: 2px; min-height: 34px;
   border-radius: var(--r-control); background: var(--surface); border: 1px solid var(--line); }
@@ -359,7 +363,7 @@ button[aria-pressed="true"] > .ic, button[aria-expanded="true"] > .ic { color: i
 .credit a:hover { color: var(--accent); text-decoration: underline; }
 .credit .pia { display: inline-flex; align-items: center; gap: 5px; vertical-align: bottom; }
 .credit .pia svg { width: 13px; height: 13px; flex: none; }
-.footer .lore { font-size: var(--fs-14); letter-spacing: var(--tr-14); color: var(--ink); }
+/* (removed: .footer .lore special sizing so the lore and blurb panels share one format) */
 .footer .lore .ic { color: var(--accent); }
 /* the lore and the score note fold behind compact controls (#59); open, they take the pressed look */
 .folds { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
@@ -367,8 +371,7 @@ button[aria-pressed="true"] > .ic, button[aria-expanded="true"] > .ic { color: i
 .footer .fold { min-height: 28px; padding: 0 12px 0 10px; gap: 6px; font-size: var(--fs-12); letter-spacing: var(--tr-12); white-space: nowrap; background: var(--bg); }
 .footer .fold[aria-expanded="true"] { background: var(--accent-soft); }
 /* not built yet: reads as a control, muted, and does nothing (no pressed look, no hover lift) */
-.insta.soon, .insta.soon:hover, .footer .fold.soon, .footer .fold.soon:hover { color: var(--muted); border-color: var(--line); cursor: default; transform: none; }
-.insta.soon:hover .ic { color: var(--muted); }
+.footer .fold.soon, .footer .fold.soon:hover { color: var(--muted); border-color: var(--line); cursor: default; transform: none; }
 .fold .pm { position: relative; width: 10px; height: 10px; flex: none; }
 .fold .pm::before, .fold .pm::after { content: ""; position: absolute; left: 0; top: 4px; width: 10px; height: 2px; border-radius: 1px; background: currentColor; }
 .fold .pm::after { transform: rotate(90deg); }
@@ -722,8 +725,6 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   .gh .gh-owner, .li .li-name { display: none; }
 }
 @media (max-width: 900px) {
-  /* under the emergency button, which stays in reach */
-  .player { top: calc(100% + 48px); }
   .main:has(.list:not([hidden])) .maplibregl-ctrl-top-left { top: 40px; }
   /* the list and the card together leave no map to zoom */
   .main:has(.list:not([hidden])):has(.card:not([hidden])) .maplibregl-ctrl-top-left { display: none; }
@@ -735,11 +736,11 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
  * motion"): a control keeps its drawn size and takes a bigger hit area from a pseudo-element, so the
  * chrome does not grow over the map. */
 @media (max-width: 640px), (pointer: coarse) {
-  .piabrota, .controls > button, .controls > .insta, .lang button, .lang a, .sos-panel header button { position: relative; }
-  .piabrota::after, .controls > button::after, .controls > .insta::after, .lang button::after, .lang a::after,
+  .piabrota, .controls > button, .lang button, .lang a, .sos-panel header button { position: relative; }
+  .piabrota::after, .controls > button::after, .lang button::after, .lang a::after,
   .sos::after, .card .close::after, .sos-panel header button::after { content: ""; position: absolute; }
   .piabrota::after { inset: -7px; }
-  .controls > button::after, .controls > .insta::after { inset: -5px -3px; }
+  .controls > button::after { inset: -5px -3px; }
   .lang button::after, .lang a::after { inset: -10px -1px -8px; }
   .sos::after, .card .close::after, .sos-panel header button::after { inset: -7px; }
   .navtools .gh, .navtools .li { justify-content: center; min-width: 32px; min-height: 32px; }
@@ -783,7 +784,7 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   .gh .gh-name, .gh .gh-star { display: none; }
   .gh svg, .li-mark { width: 18px; height: 18px; }
   .bar { padding: 7px 16px 8px; gap: 6px 12px; }
-  /* one row on a phone: the day buttons drop their dates, the actions and the Instagram pill keep
+  /* one row on a phone: the day buttons drop their dates and the actions keep
    * only their icon (the label stays for screen readers) */
   .controls { width: 100%; flex-wrap: nowrap; gap: 6px; }
   select, button, .pill, .controls > a { min-height: 36px; }
@@ -791,9 +792,9 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   .controls .segmented { flex: 1 1 auto; min-width: 0; min-height: 36px; }
   .controls .segmented button { flex: 1; min-width: 0; min-height: 30px; padding: 0 6px; overflow: hidden; }
   .controls .segmented button small { display: none; }
-  .controls > button, .controls > .insta { flex: none; width: 36px; padding: 0; }
-  .controls > button .ic, .controls > .insta .ic { width: 17px; height: 17px; }
-  .controls > button > span, .controls > .insta > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .controls > button { flex: none; width: 36px; padding: 0; }
+  .controls > button .ic { width: 17px; height: 17px; }
+  .controls > button > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   /* The slider takes the full row under its label: beside the label it was 74 px wide at 320 px, and
    * it changed width under the finger when the label changed. */
   .bar:has(> .hourbar:not([hidden])) { grid-template-columns: minmax(0, 1fr); grid-template-areas: "controls" "label" "slider" "legend"; row-gap: 4px; }
@@ -812,7 +813,7 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   .watermark { left: 8px; bottom: 50px; gap: 8px; }
   .watermark .lnt { width: 70px; }
   .watermark svg { width: 18px; height: 18px; }
-  .player { right: 42px; width: min(300px, calc(100vw - 84px)); }
+  .player { left: 50%; margin-left: calc(min(300px, calc(100vw - 84px)) / -2); top: calc(100% + 48px); }
   .flowkey { width: 7.5rem; padding: 6px 8px; font-size: var(--fs-11); letter-spacing: var(--tr-11); }
   /* the caption under a ramp hides (the about page explains the field); a key that is only its caption keeps it */
   .flowkey > .ends ~ span:last-child { display: none; }

@@ -112,12 +112,6 @@ shapes name =
             [ Path "m8 3 4 8 5-5 5 15H2L8 3z"
             ]
 
-        "instagram" ->
-            [ Rect 2 2 20 20 5
-            , Circle 12 12 4
-            , Path "M17.5 6.5h.01"
-            ]
-
         "locate" ->
             [ Circle 12 12 7
             , Path "M2 12h3M19 12h3M12 2v3M12 19v3"

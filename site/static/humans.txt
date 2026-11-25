@@ -42,6 +42,10 @@ Name: Tiago Shin-Iti Kuniyoshi
 Role: contributor
 ORCID: https://orcid.org/0009-0004-3742-2861
 
+Name: Yuri Kuzniecow
+Role: advisor
+Affiliation: Canto das Aguas SC
+
 /* SITE */
 Members: https://github.com/marola-dev/.github/blob/main/MEMBERS.md
 Cite: https://doi.org/10.5281/zenodo.23224155

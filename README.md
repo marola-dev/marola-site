@@ -74,7 +74,7 @@ drawn with the umbrella's Archify pin and `scripts/figure.sh` (in a marola check
 - **Boards.** The app image pinned in [`marola-image`](marola-image) writes each area's board (the
   ranked beaches, hour by hour). This repo never builds the app. The legacy build runs the image
   and puts the boards in `site/dist/data/`. The server reads `MAROLA_DATA` (default `data/`), then
-  `dist/data/`. `just dist-build --fixtures` writes one board per area from
+  `dist/data/`; `/data/areas.json`, the picker's list, is always the build's. `just dist-build --fixtures` writes one board per area from
   [`site/fixtures/board.json`](site/fixtures/board.json) for an offline preview.
 - **Trails.** `front/public/data/trails/<area>.json` holds the hiking routes, from OpenStreetMap
   (ODbL). The map page fetches the file of the area on show. See [the reference](docs/4-reference.md#trail-files).

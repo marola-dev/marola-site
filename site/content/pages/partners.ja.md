@@ -1,9 +1,17 @@
 title: パートナー
-description: marolaと歩む人々: Leave No Trace、OpenDiving、Ouroboric、piabrota。それぞれの役割と、パートナーになる方法。
+description: marolaと歩む人々: Canto das Águas、Leave No Trace、OpenDiving、Ouroboric、piabrota。それぞれの役割と、パートナーになる方法。
 
 ## パートナー
 
 marolaは市民科学として、コードを公開して作られており、一人で歩んではいません。ここに載ることを了承したパートナーです。
+
+## Canto das Águas
+
+![Instituto Canto das Águas](/vendor/canto-das-aguas/logo.png 600x203)
+
+[Instituto Canto das Águas](https://cantodasaguas.org/) は、サンタカタリーナ州イマルイにある地球科学のイノベーションセンターです。科学、教育、再生型の生産を結び、南サンタカタリーナ潟複合体の再生を目指しています。学校、大学、行政、そして流域12市町村のコミュニティとともに、屋外ラボラトリーと潟についての技術科学展示を運営しています。
+
+marola と Canto das Águas はエコモニタリングで出会います。研究所の船上遠征と毎月の採水が、[参加型エコモニタリング・プラットフォーム](ecomonitoramento.html)が集めるデータを生み、marola は同じ問いを地図に載せます — 水はどれくらい健全で、どこなら安全に入れるのか。この協働は開かれています。データ、研究、コードは公開のままで、誰でも確認し、引用し、続けられます。
 
 ## Leave No Trace
 

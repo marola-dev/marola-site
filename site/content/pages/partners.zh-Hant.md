@@ -1,9 +1,17 @@
 title: 合作夥伴
-description: 與 marola 同行的人: Leave No Trace、OpenDiving、Ouroboric 與 piabrota，各自的角色，以及如何成為夥伴。
+description: 與 marola 同行的人: Canto das Águas、Leave No Trace、OpenDiving、Ouroboric 與 piabrota，各自的角色，以及如何成為夥伴。
 
 ## 合作夥伴
 
 marola 以公民科學的方式、在開放程式碼中打造，而且不是獨自前行。以下是同意列名於此的夥伴。
+
+## Canto das Águas
+
+![Instituto Canto das Águas](/vendor/canto-das-aguas/logo.png 600x203)
+
+[Instituto Canto das Águas](https://cantodasaguas.org/) 是位於聖卡塔琳娜州伊馬魯伊的地球科學創新中心，結合科學、教育與再生式生產，致力於恢復南聖卡塔琳娜潟湖複合體。它與學校、大學、公共管理者以及流域 12 個市鎮的社區合作，維持一座露天實驗室，以及關於潟湖的技術科學展覽。
+
+marola 與 Canto das Águas 在生態監測中相遇：研究所的船上遠征與每月採樣，產生[參與式生態監測平台](ecomonitoramento.html)所匯集的數據；marola 則把同一個問題帶到地圖上——水有多健康，哪裡可以安全下水。這項合作是開放的：數據、研究與程式碼持續公開，任何人都可以查核、引用並延續這項工作。
 
 ## Leave No Trace
 

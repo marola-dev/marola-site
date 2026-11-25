@@ -50,9 +50,21 @@ spec env = describe "pages" $ do
     mapM_ (\la -> html `shouldSatisfy` has ("<a href=\"" <> Layout.path la s <> "\" lang=\"" <> Language.tag la <> "\"")) allLanguages
   forEach env "the nav links go to the page's own language" $ \_ l html ->
     mapM_ (\n -> allHrefs html `shouldContain` [Layout.path l n]) Layout.navSlugs
+  forEach env "the section nav has no docs link and no alerts placeholder" $ \_ _ html -> do
+    let nav = T.concat (betweenAll "<nav class=\"sitenav\"" "</nav>" html)
+    nav `shouldNotSatisfy` has "https://docs.marola.dev/"
+    nav `shouldNotSatisfy` has "aria-disabled"
   forEach env "the nav links the studies list and the footer the submit page, in the page's language" $ \_ l html -> do
     allHrefs html `shouldContain` [Layout.dynamicPath l "studies"]
     allHrefs html `shouldContain` [Layout.dynamicPath l "submit"]
+  it "the ecomonitoring page links the platform and names the CL area" $
+    mapM_
+      ( \l -> do
+          let html = renderWith env "ecomonitoramento" l
+          html `shouldSatisfy` has "https://cantodasaguas.org/"
+          html `shouldSatisfy` has "CL"
+      )
+      allLanguages
   forEach env "the footer links the privacy, takedown and partners pages, in the page's language" $ \_ l html -> do
     allHrefs html `shouldContain` [Layout.path l "privacy"]
     allHrefs html `shouldContain` [Layout.path l "takedown"]
@@ -83,7 +95,7 @@ spec env = describe "pages" $ do
           mapM_ (\l -> Meta.sitemap `shouldSatisfy` has (Layout.origin <> Layout.path l s)) allLanguages
       )
       ["privacy", "takedown", "partners"]
-    mapM_ (\n -> renderWith env "partners" En `shouldSatisfy` has n) ["https://lnt.org/", "https://github.com/opendiving/opendiving", "https://piabrota.art", "/vendor/lnt/proud-partner.png", "/vendor/opendiving/icon.svg", "/vendor/piabrota/favicon.svg", "https://github.com/ouroboric-dev", "/vendor/ouroboric/ouroboric-icon-dark.svg"]
+    mapM_ (\n -> renderWith env "partners" En `shouldSatisfy` has n) ["https://cantodasaguas.org/", "/vendor/canto-das-aguas/logo.png", "https://lnt.org/", "https://github.com/opendiving/opendiving", "https://piabrota.art", "/vendor/lnt/proud-partner.png", "/vendor/opendiving/icon.svg", "/vendor/piabrota/favicon.svg", "https://github.com/ouroboric-dev", "/vendor/ouroboric/ouroboric-icon-dark.svg"]
     let en = renderWith env "privacy" En
         pt = renderWith env "privacy" PtBr
     mapM_ (\n -> en `shouldSatisfy` has n) ["not legal advice", "IP address", "tombstone", "/account"]
@@ -144,6 +156,7 @@ spec env = describe "pages" $ do
                 "about.html",
                 "contact-sent.html",
                 "contact.html",
+                "ecomonitoramento.html",
                 "members.html",
                 "news.html",
                 "partners.html",
@@ -152,7 +165,7 @@ spec env = describe "pages" $ do
                 "takedown.html"
               ]
                 ++ concatMap
-                  (\pre -> map (\s -> pre <> s <> ".html") ["404", "about", "contact-sent", "contact", "members", "news", "partners", "privacy", "support", "takedown"])
+                  (\pre -> map (\s -> pre <> s <> ".html") ["404", "about", "contact-sent", "contact", "ecomonitoramento", "members", "news", "partners", "privacy", "support", "takedown"])
                   ["en/", "ja/", "zh-Hant/"]
             )
         )

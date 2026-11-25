@@ -37,7 +37,7 @@ MAROLA_DEV=1 marola-server dev-account --login <name> --age-days <n>
 |---|---|
 | `MAROLA_PORT` | the loopback port (8080) |
 | `MAROLA_STATIC` | the built page (`dist`, written by `scripts/site_build.sh`) |
-| `MAROLA_DATA` | the board data, served under `/data/` before the page's own |
+| `MAROLA_DATA` | the board data, served under `/data/` before the page's own; `/data/areas.json` is the page's own |
 | `MAROLA_TILES` | the folder of the base map's `marola.pmtiles`, answered by byte range under `/tiles/` before the page's own `tiles/` |
 | `MAROLA_DB` | the SQLite file |
 | `MAROLA_STUDIES`, `MAROLA_STUDIES_QUOTA` | where the PDFs go, and their total size |

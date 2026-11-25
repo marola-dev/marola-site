@@ -1,4 +1,4 @@
-module Config exposing (areaCode, areaMinZoom, areaZoom, attributions, bandColour, enabledLayers, gibsAttribution, gibsTiles, instagram, maplibreModule, maplibreWorker, maxZoom, piabrota, playlistEmbed, pmtilesModule, repo, sourceLink, styleUrl, waveRamp, windRamp)
+module Config exposing (areaCode, areaMinZoom, areaZoom, attributions, bandColour, enabledLayers, gibsAttribution, gibsTiles, maplibreModule, maplibreWorker, maxZoom, piabrota, playlistEmbed, pmtilesModule, repo, sourceLink, styleUrl, waveRamp, windRamp)
 
 {-| The constants of the page: where the map comes from, which layers are live, and the colours
 MapLibre needs as values. Every colour here is a token of `style.css`.
@@ -139,26 +139,11 @@ areaCode id name =
         "salvador" ->
             "BA"
 
+        "complexo-lagunar" ->
+            "CL"
+
         _ ->
             String.filter Char.isAlpha name |> String.left 2 |> String.toUpper
-
-
-{-| `Just ""` is a city whose account is still coming; an area not listed shows no pill.
--}
-instagram : String -> Maybe String
-instagram areaId =
-    case areaId of
-        "floripa" ->
-            Just "fl.marola"
-
-        "rio" ->
-            Just "rj.marola"
-
-        "salvador" ->
-            Just ""
-
-        _ ->
-            Nothing
 
 
 {-| The footer links a source by the first word of its name.

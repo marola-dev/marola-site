@@ -139,14 +139,9 @@ sections : Model -> Html Msg
 sections model =
     Html.nav
         [ cls "sitenav", attr "aria-label" (Words.t model "nav.label") ]
-        [ link model "https://docs.marola.dev/" "nav.docs"
-        , Html.span [ attr "aria-disabled" "true" ]
-            [ Html.span [] [ Html.text (Words.t model "nav.alerts") ]
-            , Html.text " "
-            , Html.i [] [ Html.text (Words.t model "nav.soon") ]
-            ]
-        , link model "news.html" "nav.news"
+        [ link model "news.html" "nav.news"
         , link model "/studies" "nav.studies"
+        , link model "ecomonitoramento.html" "nav.ecomonitoramento"
         , link model "about.html" "nav.about"
         , link model "contact.html" "nav.contact"
         , link model "https://github.com/marola-dev/marola-research/blob/main/README.md" "nav.research"

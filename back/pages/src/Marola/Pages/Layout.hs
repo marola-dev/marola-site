@@ -245,7 +245,7 @@ brand loc =
 
 -- | The slugs the nav links to, in the order of the map page's nav.
 navSlugs :: [Text]
-navSlugs = ["news", "about", "contact", "members", "support"]
+navSlugs = ["news", "ecomonitoramento", "about", "contact", "members", "support"]
 
 currentMark :: PageHead -> Text -> [Attr]
 currentMark p s = [H.attr "aria-current" "page" | current p == Just s]
@@ -262,19 +262,12 @@ nav loc p =
   H.el
     "nav"
     [H.cls "sitenav", H.attr "aria-label" (I18n.t loc "nav.label")]
-    [ external loc "https://docs.marola.dev/" "nav.docs",
-      H.el
-        "span"
-        [H.attr "aria-disabled" "true"]
-        [ H.el "span" [] [H.text (I18n.t loc "nav.alerts")],
-          H.text " ",
-          H.el "i" [] [H.text (I18n.t loc "nav.soon")]
-        ],
-      navLink loc p "news" "nav.news",
+    [ navLink loc p "news" "nav.news",
       H.el
         "a"
         (H.attr "href" (dynamicPath (language loc) "studies") : currentMark p "studies")
         [H.text (I18n.t loc "nav.studies")],
+      navLink loc p "ecomonitoramento" "nav.ecomonitoramento",
       navLink loc p "about" "nav.about",
       navLink loc p "contact" "nav.contact",
       external loc "https://github.com/marola-dev/marola-research/blob/main/README.md" "nav.research",
@@ -313,6 +306,7 @@ sectionKey s =
     s
     [ ("news", "nav.news"),
       ("studies", "nav.studies"),
+      ("ecomonitoramento", "nav.ecomonitoramento"),
       ("about", "nav.about"),
       ("contact", "nav.contact"),
       ("members", "nav.members"),
