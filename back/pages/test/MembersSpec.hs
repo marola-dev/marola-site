@@ -46,11 +46,22 @@ full =
 avatars :: Map.Map Text Text
 avatars = Map.fromList [("h0ffmann", "h0ffmann.png")]
 
+-- The ## Non-human table (MEMBERS.md, 25 November 2026), under the people's table.
+entityTable :: Text
+entityTable =
+  full
+    <> "\n## Non-human\n\n| Name | GitHub | Website |\n|---|---|---|\n"
+    <> "| Piabrota | [piabrota](https://github.com/piabrota) | https://piabrota.art/ |\n"
+    <> "| Ouroboric | [ouroboric-dev](https://github.com/ouroboric-dev) | https://ouroboric.dev/ |\n"
+
 parsed :: Text -> [Member]
 parsed s = either (error . T.unpack) id (Members.parse s)
 
+entities :: Text -> [Members.Entity]
+entities s = either (error . T.unpack) id (Members.parseEntities s)
+
 page :: Language -> Text -> Text
-page l s = toHtml (Members.article l avatars (parsed s))
+page l s = toHtml (Members.article l avatars (parsed s) (entities s))
 
 fails :: String -> Text -> Spec
 fails label s = it label (isLeft (Members.parse s) `shouldBe` True)
@@ -76,13 +87,13 @@ spec :: Env -> Spec
 spec env = describe "members" $ do
   it "a well-formed MEMBERS.md passes, with the avatar of each GitHub login" $ do
     isRight (Members.parse good) `shouldBe` True
-    Members.checkAvatars avatars (parsed good) `shouldBe` Right ()
+    Members.checkAvatars avatars (parsed good) [] `shouldBe` Right ()
     page PtBr good
       `shouldSatisfy` has "<img class=\"member-mark\" src=\"/img/members/h0ffmann.png\" width=\"48\" height=\"48\" alt=\"\""
   it "an avatar missing on disk fails" $
-    isLeft (Members.checkAvatars Map.empty (parsed good)) `shouldBe` True
+    isLeft (Members.checkAvatars Map.empty (parsed good) []) `shouldBe` True
   it "a stray avatar fails" $
-    isLeft (Members.checkAvatars (Map.insert "gone" "gone.png" avatars) (parsed good)) `shouldBe` True
+    isLeft (Members.checkAvatars (Map.insert "gone" "gone.png" avatars) (parsed good) []) `shouldBe` True
   it "humans.txt lists each member in order, empty cells left out" $ do
     let humans = Members.humans (parsed good)
     humans
@@ -149,11 +160,32 @@ spec env = describe "members" $ do
   fails "a third website fails" (T.replace "https://www.instagram.com/nader_oficial/" "https://a.example/ https://b.example/ https://c.example/" full)
   fails "a website without a dotted host fails" (T.replace "https://hffmnn.piabrota.art/" "https://localhost/" full)
   fails "an empty marola role fails" (T.replace "| ui / mkt |" "| |" roles)
+  it "the non-human table passes, with an avatar of its own" $ do
+    let all3 = Map.fromList [("h0ffmann", "h0ffmann.png"), ("piabrota", "piabrota.png"), ("ouroboric-dev", "ouroboric-dev.png")]
+    Members.checkAvatars all3 (parsed entityTable) (entities entityTable) `shouldBe` Right ()
+    isLeft (Members.checkAvatars avatars (parsed entityTable) (entities entityTable)) `shouldBe` True
+  it "the non-human section is headed in each language" $ do
+    page PtBr entityTable `shouldSatisfy` has "<h2>não humanos</h2>"
+    page En entityTable `shouldSatisfy` has "<h2>non-human</h2>"
+  it "a non-human card is its site first, then its GitHub login" $
+    page En entityTable
+      `shouldSatisfy` has
+        ( "<a href=\"https://piabrota.art/\">piabrota.art</a>"
+            <> " <a href=\"https://github.com/piabrota\">@piabrota</a>"
+        )
+  it "the non-human rows stay out of humans.txt" $
+    Members.humans (parsed entityTable) `shouldNotSatisfy` has "Piabrota"
+  it "a non-human row whose site is empty fails" $
+    isLeft (Members.parseEntities (T.replace "| https://piabrota.art/ |" "| |" entityTable)) `shouldBe` True
+  it "a non-human row without a GitHub login fails" $
+    isLeft (Members.parseEntities (T.replace "[piabrota](https://github.com/piabrota)" "piabrota" entityTable)) `shouldBe` True
+  it "an empty non-human table fails" $
+    isLeft (Members.parseEntities "| Name | GitHub | Website |\n|---|---|---|\n") `shouldBe` True
   fails "a row with five cells under the role header fails" (roles <> "| Oliveira, Elisa | | | | |\n")
   fails "a table with no rows fails" "| Name | Affiliation | ORCID | GitHub | First commit |\n|---|---|---|---|---|\n"
   it "the real avatars are the ones the real members list" $ do
-    members <- parsed <$> membersTable
-    Members.checkAvatars (envAvatars env) members `shouldBe` Right ()
+    table <- membersTable
+    Members.checkAvatars (envAvatars env) (parsed table) (entities table) `shouldBe` Right ()
   it "blobId is what git hash-object prints" $ do
     Members.blobId B.empty `shouldBe` "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
     Members.blobId (TE.encodeUtf8 "hello\n") `shouldBe` "ce013625030ba8dba906f756967f9e9ca394464a"

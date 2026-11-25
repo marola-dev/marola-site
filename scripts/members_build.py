@@ -56,6 +56,8 @@ WEBSITE = re.compile(r'^https://[A-Za-z0-9.-]+\.[A-Za-z]{2,}(?:/[^\s|<>`"\\]*)?$
 COMMIT = re.compile(
     r"^\[(\d{4}-\d{2}-\d{2})\]\((https://github\.com/marola-dev/[A-Za-z0-9._-]+/commit/[0-9a-f]{40})\)$"
 )
+# The second table, what is not a person: an agent or a software fabric, with its site.
+ENTITY_HEADER = ["Name", "GitHub", "Website"]
 COPY = {
     "pt-BR": {
         "title": "membros",
@@ -65,6 +67,8 @@ COPY = {
         "commit": "primeiro commit em {}",
         "role": "no marola: {}",
         "ghrole": "no GitHub: {}",
+        "nonhuman": "não humanos",
+        "nonhuman-lede": "não são pessoas: os agentes e as fábricas de software com que o marola é feito.",
         "foot": f'a lista vem do arquivo <a href="{FILE}"><code>MEMBERS.md</code></a> da organização no GitHub.'
         " para entrar na lista ou corrigir seus dados, abra um pull request nesse arquivo.",
     },
@@ -76,6 +80,8 @@ COPY = {
         "commit": "first commit on {}",
         "role": "marola: {}",
         "ghrole": "GitHub: {}",
+        "nonhuman": "non-human",
+        "nonhuman-lede": "Not people: the agents and software fabrics marola is built with.",
         "foot": f'The list comes from the organization\'s <a href="{FILE}"><code>MEMBERS.md</code></a> on GitHub.'
         " To join it or fix your details, open a pull request on that file.",
     },
@@ -86,19 +92,38 @@ class MembersError(ValueError):
     pass
 
 
+def tables(text):
+    """MEMBERS.md's tables, each a list of rows of stripped cells, in the file's order."""
+    out, cur = [], []
+    for line in text.splitlines():
+        if line.strip().startswith("|"):
+            cur.append([c.strip() for c in line.strip().strip("|").split("|")])
+        elif cur:
+            out.append(cur)
+            cur = []
+    if cur:
+        out.append(cur)
+    return out
+
+
+def people_table(text):
+    """The people table: the one headed with the role columns and the Website column, or one of
+    the two older headers."""
+    for cells in tables(text):
+        header = cells[0] if cells else []
+        if header in (HEADER, ROLES_ONLY, LEGACY):
+            return cells
+    raise MembersError(f"MEMBERS.md needs one table headed | {' | '.join(HEADER)} |")
+
+
 def parse(text):
     """MEMBERS.md's table as [(given family, affiliation, orcid, github, websites, (date, url),
     (marola role, GitHub role))]; MembersError if malformed. A marola role is never empty under a
     header with role columns; the older headers have none, so both are empty and the page shows
     none. The Website column is absent from those older headers, so no member has a site."""
-    rows = [line.strip() for line in text.splitlines() if line.strip().startswith("|")]
-    cells = [[c.strip() for c in r.strip("|").split("|")] for r in rows]
+    cells = people_table(text)
     header = cells[0] if cells else []
-    if (
-        len(cells) < 3
-        or header not in (HEADER, ROLES_ONLY, LEGACY)
-        or not all(set(c) <= set("-: ") for c in cells[1])
-    ):
+    if len(cells) < 3 or not all(set(c) <= set("-: ") for c in cells[1]):
         raise MembersError(f"MEMBERS.md needs one table headed | {' | '.join(HEADER)} |")
     has_website = header == HEADER
     has_roles = header != LEGACY
@@ -155,6 +180,39 @@ def parse(text):
     return members
 
 
+def parse_entities(text):
+    """MEMBERS.md's ## Non-human table as [(name, GitHub login, website)]; empty when the file has
+    no such table. Each row is an agent or a software fabric, so both the login (the avatar) and
+    the site are required."""
+    for cells in tables(text):
+        if not cells or cells[0] != ENTITY_HEADER:
+            continue
+        if len(cells) < 3 or not all(set(c) <= set("-: ") for c in cells[1]):
+            raise MembersError(
+                f"MEMBERS.md needs one non-human table headed | {' | '.join(ENTITY_HEADER)} |"
+            )
+        out = []
+        for row in cells[2:]:
+            if len(row) != len(ENTITY_HEADER):
+                raise MembersError(f"a non-human row needs {len(ENTITY_HEADER)} cells: {row}")
+            name, gh, site = row
+            if not name:
+                raise MembersError(f"a non-human row has no name: {row}")
+            g = GITHUB.match(gh)
+            s = WEBSITE.match(site)
+            if not g:
+                raise MembersError(
+                    f"{name}: GitHub is [login](https://github.com/login), never empty: {gh}"
+                )
+            if not s:
+                raise MembersError(f"{name}: Website is one https:// link, never empty: {site}")
+            out.append((name, g.group(1), site))
+        if not out:
+            raise MembersError("the ## Non-human table lists nobody")
+        return out
+    return []
+
+
 def initials(name):
     parts = name.split()
     return (parts[0][0] + parts[-1][0]).upper()
@@ -195,7 +253,7 @@ def site_label(url):
     return url.removeprefix("https://").rstrip("/")
 
 
-def render(members, avatars):
+def render(members, avatars, entities):
     out = []
     for lang, copy in COPY.items():
         out += [
@@ -239,7 +297,27 @@ def render(members, avatars):
                 ),
                 "        </li>",
             ]
-        out += ["      </ul>", f"      <p>{copy['foot']}</p>", "    </article>"]
+        out.append("      </ul>")
+        if entities:
+            out += [
+                f"      <h2>{copy['nonhuman']}</h2>",
+                f'      <p class="lede">{copy["nonhuman-lede"]}</p>',
+                '      <ul class="members">',
+            ]
+            for name, gh, site in entities:
+                links = [f'<a href="{html.escape(site)}">{html.escape(site_label(site))}</a>']
+                links.append(f'<a href="https://github.com/{gh}">@{gh}</a>')
+                out += [
+                    '        <li class="member">',
+                    f'          <img class="member-mark" src="img/members/{avatars[gh]}" width="48" height="48" alt="" loading="lazy">'
+                    if gh in avatars
+                    else f'          <span class="member-mark" aria-hidden="true">{initials(name)}</span>',
+                    f'          <span class="member-name">{html.escape(name)}</span>',
+                    f'          <span class="member-links">{" ".join(links)}</span>',
+                    "        </li>",
+                ]
+            out.append("      </ul>")
+        out += [f"      <p>{copy['foot']}</p>", "    </article>"]
         out.append("")
     return "\n".join(out[:-1])
 
@@ -280,7 +358,8 @@ def fetch(sha):
 def run(text, page, check, folder=AVATARS, get=get_avatar, humans=HUMANS):
     try:
         members = parse(text)
-        logins = [m[3] for m in members if m[3]]
+        entities = parse_entities(text)
+        logins = [m[3] for m in members if m[3]] + [e[1] for e in entities]
         if not check:
             sync_avatars(logins, folder, get)
         have = avatar_files(folder)
@@ -289,7 +368,7 @@ def run(text, page, check, folder=AVATARS, get=get_avatar, humans=HUMANS):
                 f"{folder.name}/ has avatars for {sorted(have)}, MEMBERS.md lists {sorted(logins)}:"
                 " run scripts/members_build.py"
             )
-        block = render(members, have)
+        block = render(members, have, entities)
         humans_text = render_humans(members)
     except MembersError as e:
         print(f"members_build: {e}", file=sys.stderr)
@@ -303,8 +382,10 @@ def run(text, page, check, folder=AVATARS, get=get_avatar, humans=HUMANS):
     new = f"{head}{BEGIN}\n{block}\n    {END}{tail}"
     humans_old = humans.read_text(encoding="utf-8") if humans.is_file() else None
     if new == old and humans_text == humans_old:
-        n = block.count('<li class="member">') // len(COPY)
-        print(f"members_build: ok ({n} members)")
+        n = f"{len(members)} members"
+        if entities:
+            n += f", {len(entities)} non-human"
+        print(f"members_build: ok ({n})")
         return 0
     stale = [
         p.name for p, same in ((page, new == old), (humans, humans_text == humans_old)) if not same
@@ -539,6 +620,49 @@ def self_test():
         False,
     )
     scenario("an empty marola role fails", roles.replace("| ui / mkt |", "| |"), False)
+    nonhuman = (
+        "\n## Non-human\n\n| Name | GitHub | Website |\n|---|---|---|\n"
+        "| Piabrota | [piabrota](https://github.com/piabrota) | https://piabrota.art/ |\n"
+        "| Ouroboric | [ouroboric-dev](https://github.com/ouroboric-dev) |"
+        " https://ouroboric.dev/ |\n"
+    )
+    got_entities, files_entities = scenario(
+        "the table with the non-human rows passes", full + nonhuman, True
+    )
+    ok(
+        files_entities == ["h0ffmann.png", "ouroboric-dev.png", "piabrota.png"],
+        "a non-human row has an avatar of its own",
+    )
+    ok(
+        "<h2>não humanos</h2>" in got_entities and "<h2>non-human</h2>" in got_entities,
+        "the non-human section is headed in each language",
+    )
+    ok(
+        '<span class="member-name">Piabrota</span>' in got_entities
+        and '<span class="member-links"><a href="https://piabrota.art/">piabrota.art</a>'
+        ' <a href="https://github.com/piabrota">@piabrota</a></span>'
+        in got_entities,
+        "a non-human card is its site first, then its GitHub login",
+    )
+    ok(
+        "Piabrota" not in scenario.humans and "Ouroboric" not in scenario.humans,
+        "the non-human rows stay out of humans.txt",
+    )
+    scenario(
+        "a non-human row whose site is empty fails",
+        (full + nonhuman).replace("| https://piabrota.art/ |", "| |"),
+        False,
+    )
+    scenario(
+        "a non-human row without a GitHub login fails",
+        (full + nonhuman).replace("[piabrota](https://github.com/piabrota)", "piabrota"),
+        False,
+    )
+    scenario(
+        "an empty non-human table fails",
+        full + nonhuman.split("|---|")[0] + "|---|---|---|\n",
+        False,
+    )
     scenario(
         "a row with five cells under the role header fails",
         roles + "| Oliveira, Elisa | | | | |\n",

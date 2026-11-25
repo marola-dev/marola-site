@@ -117,15 +117,23 @@ hrefs :: Text -> [Text]
 hrefs = map htmlDecode . attrValues "a" "href"
 
 -- | The repository keeps a pinned copy of MEMBERS.md, but the tests rebuild a table from the old
--- members page: the same people, in the same order.
+-- members page: the same people, in the same order, then the non-human rows.
 membersTable :: IO Text
 membersTable = do
   page <- oldPage "members.html"
   let article = fromMaybe "" (between "<article class=\"about-body\" lang=\"pt-BR\">" "</article>" page)
-      blocks = drop 1 (T.splitOn "<li class=\"member\">" article)
-  pure (T.intercalate "\n" (header <> map one blocks))
+      lists = betweenAll "<ul class=\"members\">" "</ul>" article
+      liBlocks l = drop 1 (T.splitOn "<li class=\"member\">" l)
+      people = case lists of l : _ -> liBlocks l; [] -> []
+      others = case lists of _ : l : _ -> liBlocks l; _ -> []
+      peopleTable = T.intercalate "\n" (header <> map one people)
+      nonHuman = case others of
+        [] -> ""
+        _ -> "\n## Non-human\n\n" <> T.intercalate "\n" (entityTable <> map oneEntity others)
+  pure (peopleTable <> nonHuman)
   where
     header = ["| " <> T.intercalate " | " Members.header <> " |", "|---|---|---|---|---|---|---|---|"]
+    entityTable = ["| " <> T.intercalate " | " Members.entityHeader <> " |", "|---|---|---|"]
     span' c b = maybe "" htmlDecode (listToMaybe [T.takeWhile (/= '<') r | r <- occurrences ("<span class=\"" <> c <> "\">") b, "</span>" `T.isPrefixOf` T.dropWhile (/= '<') r])
     token prefix ok b =
       listToMaybe
@@ -177,6 +185,26 @@ membersTable = do
                 maybe "" (\(url, d) -> "[" <> d <> "](" <> url <> ")") (commit b),
                 marola,
                 gh
+              ]
+            <> " |"
+    oneEntity b0 =
+      let b = fst (T.breakOn "</li>" b0)
+          name = span' "member-name" b
+          login = token "@" (\c -> isDigit c || c == '-' || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) b
+          -- The card's first link is the site; the second is the GitHub login.
+          site =
+            listToMaybe
+              [ url
+              | r <- occurrences "<a href=\"" b,
+                let url = T.takeWhile (/= '"') r,
+                not ("https://github.com/" `T.isPrefixOf` url)
+              ]
+       in "| "
+            <> T.intercalate
+              " | "
+              [ name,
+                maybe "" (\l -> "[" <> l <> "](https://github.com/" <> l <> ")") login,
+                fromMaybe "" site
               ]
             <> " |"
 
