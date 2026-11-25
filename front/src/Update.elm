@@ -794,7 +794,7 @@ update message model =
             languagePicked model language
 
         PlaylistPressed ->
-            ( { model | playlistOpen = not model.playlistOpen, playerOffset = ( 0, 0 ) }, [ MovePlayer 0 0 ] )
+            ( { model | playlistOpen = not model.playlistOpen, playerOffset = ( 0, 0 ) }, [] )
 
         PlayerDragStarted x y ->
             ( { model | playerDrag = Just { x = x, y = y } }, [] )

@@ -117,7 +117,7 @@
   }
 
   // The picker shows a two-letter code; areas.json is shared with the app, so the codes live here.
-  var AREA_CODES = { floripa: 'FL', rio: 'RJ', salvador: 'BA' };
+  var AREA_CODES = { floripa: 'FL', rio: 'RJ', salvador: 'BA', 'complexo-lagunar': 'CL' };
   function areaCode(a) {
     return AREA_CODES[a.id] || String(a.name).normalize('NFD').replace(/[^A-Za-z]/g, '').slice(0, 2).toUpperCase();
   }

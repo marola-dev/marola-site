@@ -31,5 +31,16 @@
     "tz": "America/Bahia",
     "tiles": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
     "tiles_attribution": "© OpenStreetMap contributors"
+  },
+  {
+    "id": "complexo-lagunar",
+    "name": "Complexo Lagunar Sul Catarinense",
+    "lat": -28.20,
+    "lon": -48.78,
+    "radius_km": 55,
+    "beach_limit": 80,
+    "tz": "America/Sao_Paulo",
+    "tiles": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+    "tiles_attribution": "© OpenStreetMap contributors"
   }
 ]
