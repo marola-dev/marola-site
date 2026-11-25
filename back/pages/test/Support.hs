@@ -125,7 +125,7 @@ membersTable = do
       blocks = drop 1 (T.splitOn "<li class=\"member\">" article)
   pure (T.intercalate "\n" (header <> map one blocks))
   where
-    header = ["| " <> T.intercalate " | " Members.header <> " |", "|---|---|---|---|---|---|---|"]
+    header = ["| " <> T.intercalate " | " Members.header <> " |", "|---|---|---|---|---|---|---|---|"]
     span' c b = maybe "" htmlDecode (listToMaybe [T.takeWhile (/= '<') r | r <- occurrences ("<span class=\"" <> c <> "\">") b, "</span>" `T.isPrefixOf` T.dropWhile (/= '<') r])
     token prefix ok b =
       listToMaybe
@@ -145,8 +145,9 @@ membersTable = do
           not (T.null d),
           "</a>" `T.isPrefixOf` T.drop (T.length d) afterUrl
         ]
-    one b =
-      let name = span' "member-name" b
+    one b0 =
+      let b = fst (T.breakOn "</li>" b0)
+          name = span' "member-name" b
           (given, family) = T.breakOnEnd " " name
           role = span' "member-role" b
           (marola, gh) = case T.breakOn "no marola: " role of
@@ -156,6 +157,15 @@ membersTable = do
                in (m, T.drop (T.length (" · no GitHub: " :: Text)) g)
           orcid = token "ORCID " (\c -> isDigit c || c == 'X' || c == '-') b
           login = token "@" (\c -> isDigit c || c == '-' || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) b
+          -- The card's links come in MEMBERS.md's columns, the sites first; stop at ORCID, GitHub or
+          -- the commit, whose URLs the other cells name. A site may itself be on github.com.
+          stop =
+            [ "https://orcid.org/" <> o
+            | Just o <- [orcid]
+            ]
+              <> ["https://github.com/" <> l | Just l <- [login]]
+              <> [url | Just (url, _) <- [commit b]]
+          websites = takeWhile (`notElem` stop) [T.takeWhile (/= '"') r | r <- occurrences "<a href=\"" b]
        in "| "
             <> T.intercalate
               " | "
@@ -163,6 +173,7 @@ membersTable = do
                 span' "member-aff" b,
                 maybe "" (\o -> "[" <> o <> "](https://orcid.org/" <> o <> ")") orcid,
                 maybe "" (\l -> "[" <> l <> "](https://github.com/" <> l <> ")") login,
+                T.unwords websites,
                 maybe "" (\(url, d) -> "[" <> d <> "](" <> url <> ")") (commit b),
                 marola,
                 gh

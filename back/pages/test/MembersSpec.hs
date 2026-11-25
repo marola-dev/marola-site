@@ -30,6 +30,19 @@ good =
     <> ") |\n"
     <> "| Soares da Silva Junior, Rob Kler | | | | |\n"
 
+-- The header with the Website column (MEMBERS.md, 25 November 2026).
+full :: Text
+full =
+  "# Members\n\n| Name | Affiliation | ORCID | GitHub | Website | First commit | marola role | GitHub role |\n"
+    <> "|---|---|---|---|---|---|---|---|\n"
+    <> "| Hoffmann, Matheus | Poli, UFRJ & co | [0009-0009-1056-7661](https://orcid.org/0009-0009-1056-7661)"
+    <> " | [h0ffmann](https://github.com/h0ffmann)"
+    <> " | https://hffmnn.piabrota.art/ https://www.instagram.com/nader_oficial/"
+    <> " | [2026-09-05](https://github.com/marola-dev/marola/commit/"
+    <> sha
+    <> ") | contributor | owner |\n"
+    <> "| Soares da Silva Junior, Rob Kler | | | | | | ui / mkt | |\n"
+
 avatars :: Map.Map Text Text
 avatars = Map.fromList [("h0ffmann", "h0ffmann.png")]
 
@@ -119,6 +132,22 @@ spec env = describe "members" $ do
   it "an empty GitHub role shows only the marola role" $
     page En roles `shouldSatisfy` has "<span class=\"member-role\">marola: ui / mkt</span>"
   it "the legacy header shows no roles" $ page En good `shouldNotSatisfy` has "member-role"
+  it "the header with the Website column passes" $ isRight (Members.parse full) `shouldBe` True
+  it "one or two websites are links in the card, shown without the scheme" $
+    page En full
+      `shouldSatisfy` has
+        ( "<a href=\"https://hffmnn.piabrota.art/\">hffmnn.piabrota.art</a>"
+            <> " <a href=\"https://www.instagram.com/nader_oficial/\">www.instagram.com/nader_oficial</a>"
+        )
+  it "humans.txt lists the websites" $
+    Members.humans (parsed full)
+      `shouldSatisfy` has
+        ( "GitHub: https://github.com/h0ffmann\nORCID: https://orcid.org/0009-0009-1056-7661\n"
+            <> "Website: https://hffmnn.piabrota.art/\nWebsite: https://www.instagram.com/nader_oficial/\n"
+        )
+  fails "a website that is not https fails" (T.replace "https://hffmnn.piabrota.art/" "http://hffmnn.piabrota.art/" full)
+  fails "a third website fails" (T.replace "https://www.instagram.com/nader_oficial/" "https://a.example/ https://b.example/ https://c.example/" full)
+  fails "a website without a dotted host fails" (T.replace "https://hffmnn.piabrota.art/" "https://localhost/" full)
   fails "an empty marola role fails" (T.replace "| ui / mkt |" "| |" roles)
   fails "a row with five cells under the role header fails" (roles <> "| Oliveira, Elisa | | | | |\n")
   fails "a table with no rows fails" "| Name | Affiliation | ORCID | GitHub | First commit |\n|---|---|---|---|---|\n"

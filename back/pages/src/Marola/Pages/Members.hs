@@ -4,6 +4,7 @@
 module Marola.Pages.Members
   ( Member (..),
     header,
+    rolesOnly,
     legacy,
     zenodo,
     file,
@@ -25,7 +26,7 @@ import Data.Char (isAsciiLower, isAsciiUpper, isDigit, toUpper)
 import Data.List (sort)
 import Data.Map.Strict (Map)
 import Data.Map.Strict qualified as Map
-import Data.Maybe (catMaybes, isJust)
+import Data.Maybe (catMaybes, fromMaybe, isJust)
 import Data.Set qualified as Set
 import Data.Text (Text)
 import Data.Text qualified as T
@@ -44,20 +45,26 @@ data Member = Member
     affiliation :: Text,
     orcid :: Maybe Text,
     gitHub :: Maybe Text,
+    -- | The person's own site or profile, as MEMBERS.md writes it: zero, one or two URLs.
+    websites :: [Text],
     -- | The date and the URL of the first commit.
     first :: Maybe (Text, Text),
-    -- | Empty under the old header, which has no role columns.
+    -- | Empty under the old headers, which have no role columns.
     marolaRole :: Text,
     gitHubRole :: Text
   }
   deriving (Eq, Show)
 
 header :: [Text]
-header = ["Name", "Affiliation", "ORCID", "GitHub", "First commit", "marola role", "GitHub role"]
+header = ["Name", "Affiliation", "ORCID", "GitHub", "Website", "First commit", "marola role", "GitHub role"]
 
--- The header before the two role columns (MEMBERS.md, 14 October 2026): accepted until it moves.
+-- The header before the Website column (MEMBERS.md, 25 November 2026) and the one before the two
+-- role columns (14 October 2026): accepted until the pin moves past them.
+rolesOnly :: [Text]
+rolesOnly = filter (/= "Website") header
+
 legacy :: [Text]
-legacy = take 5 header
+legacy = filter (`notElem` ["Website", "marola role", "GitHub role"]) header
 
 zenodo :: Text
 zenodo = "https://doi.org/10.5281/zenodo.23224155"
@@ -113,6 +120,28 @@ orcidOk s = case T.splitOn "-" s of
 loginOk :: Text -> Bool
 loginOk s = T.length s >= 1 && T.length s <= 39 && T.all (\c -> isAsciiLower c || isAsciiUpper c || isDigit c || c == '-') s
 
+-- A person's own site or profile: https, a host with a dot and an alphabetic last label (it is
+-- not a login or a number), a path without a space or Markdown noise.
+websiteOk :: Text -> Bool
+websiteOk u = case T.stripPrefix "https://" u of
+  Nothing -> False
+  Just rest ->
+    let (host, path) = T.breakOn "/" rest
+        labels = T.splitOn "." host
+        labelOk l =
+          not (T.null l)
+            && T.all (\c -> isAsciiLower c || isAsciiUpper c || isDigit c || c == '-') l
+        top = last labels
+     in length labels >= 2
+          && all labelOk labels
+          && T.length top >= 2
+          && T.all (\c -> isAsciiLower c || isAsciiUpper c) top
+          && T.all (\c -> c > ' ' && c < '\DEL' && c `notElem` ("|<>`\"\\" :: String)) path
+
+-- | A website as the page shows it: no scheme, no trailing slash.
+siteLabel :: Text -> Text
+siteLabel url = T.dropWhileEnd (== '/') (fromMaybe url (T.stripPrefix "https://" url))
+
 -- `[YYYY-MM-DD](https://github.com/marola-dev/<repo>/commit/<40 hex>)`
 commitCell :: Text -> Maybe (Text, Text)
 commitCell cell = do
@@ -132,15 +161,20 @@ commitCell cell = do
           Just (d, url)
     _ -> Nothing
 
-row :: Bool -> [Text] -> Either Text Member
-row full cells =
-  let (nm, aff, orcidCell, gh, firstCell) = (cells !! 0, cells !! 1, cells !! 2, cells !! 3, cells !! 4)
+row :: [Text] -> [Text] -> Either Text Member
+row hdr cells =
+  let withWebsite = hdr == header
+      withRoles = hdr /= legacy
+      (nm, aff, orcidCell, gh) = (cells !! 0, cells !! 1, cells !! 2, cells !! 3)
+      websiteCell = if withWebsite then cells !! 4 else ""
+      sites = T.words websiteCell
+      firstCell = cells !! (if withWebsite then 5 else 4)
       (familyPart, givenPart) = T.breakOn ", " nm
       at = T.length familyPart
       o = selfLink orcidOk "https://orcid.org/" orcidCell
       g = selfLink loginOk "https://github.com/" gh
       c = commitCell firstCell
-   in if full && cells !! 5 == ""
+   in if withRoles && cells !! (length cells - 2) == ""
         then Left (nm <> ": marola role is empty")
         else
           if T.null givenPart || at < 1 || at + 2 >= T.length nm
@@ -152,19 +186,28 @@ row full cells =
                   if gh /= "" && not (isJust g)
                     then Left (nm <> ": GitHub is [login](https://github.com/login) or empty: " <> gh)
                     else
-                      if firstCell /= "" && not (isJust c)
-                        then Left (nm <> ": First commit is [YYYY-MM-DD](commit URL) or empty: " <> firstCell)
+                      if length sites > 2 || not (all websiteOk sites)
+                        then
+                          Left
+                            ( nm
+                                <> ": Website is one or two https:// links separated by a space, or empty: "
+                                <> websiteCell
+                            )
                         else
-                          Right
-                            Member
-                              { name = T.drop 2 givenPart <> " " <> familyPart,
-                                affiliation = aff,
-                                orcid = o,
-                                gitHub = g,
-                                first = c,
-                                marolaRole = if full then cells !! 5 else "",
-                                gitHubRole = if full then cells !! 6 else ""
-                              }
+                          if firstCell /= "" && not (isJust c)
+                            then Left (nm <> ": First commit is [YYYY-MM-DD](commit URL) or empty: " <> firstCell)
+                            else
+                              Right
+                                Member
+                                  { name = T.drop 2 givenPart <> " " <> familyPart,
+                                    affiliation = aff,
+                                    orcid = o,
+                                    gitHub = g,
+                                    websites = sites,
+                                    first = c,
+                                    marolaRole = if withRoles then cells !! (length cells - 2) else "",
+                                    gitHubRole = if withRoles then cells !! (length cells - 1) else ""
+                                  }
 
 -- | MEMBERS.md's table as members, in the file's order.
 parse :: Text -> Either Text [Member]
@@ -177,15 +220,14 @@ parse txt =
       wanted = "MEMBERS.md needs one table headed | " <> T.intercalate " | " header <> " |"
    in case cells of
         hd : rule : rows
-          | (hd == header || hd == legacy)
+          | hd `elem` [header, rolesOnly, legacy]
               && all (T.all (`elem` ("-: " :: String))) rule
               && not (null rows) -> do
-              let full = hd == header
               members <-
                 collect
                   [ if length cs /= length hd
                       then Left ("a row needs " <> T.pack (show (length hd)) <> " cells: " <> T.intercalate " | " cs)
-                      else row full cs
+                      else row hd cs
                   | cs <- rows
                   ]
               let firsts = map (fmap fst . first) members
@@ -327,11 +369,12 @@ item c avatars m =
           []
       Nothing -> H.el "span" [H.cls "member-mark", H.attr "aria-hidden" "true"] [H.text (initials (name m))]
     linkNodes =
-      catMaybes
-        [ (\i -> a ("https://orcid.org/" <> i) [H.text ("ORCID " <> i)]) <$> orcid m,
-          (\l -> a ("https://github.com/" <> l) [H.text ("@" <> l)]) <$> gitHub m,
-          (\(d, url) -> a url [H.text (cCommit c d)]) <$> first m
-        ]
+      [a url [H.text (siteLabel url)] | url <- websites m]
+        <> catMaybes
+          [ (\i -> a ("https://orcid.org/" <> i) [H.text ("ORCID " <> i)]) <$> orcid m,
+            (\l -> a ("https://github.com/" <> l) [H.text ("@" <> l)]) <$> gitHub m,
+            (\(d, url) -> a url [H.text (cCommit c d)]) <$> first m
+          ]
     links = case linkNodes of
       [] -> []
       x : xs -> x : concatMap (\n -> [H.text " ", n]) xs
@@ -376,4 +419,5 @@ humans members =
         <> ["Affiliation: " <> affiliation m | affiliation m /= ""]
         <> maybe [] (\l -> ["GitHub: https://github.com/" <> l]) (gitHub m)
         <> maybe [] (\i -> ["ORCID: https://orcid.org/" <> i]) (orcid m)
+        <> ["Website: " <> u | u <- websites m]
         <> [""]
