@@ -2,6 +2,7 @@
 module Marola.Server.Security
   ( responseHeaders,
     contentSecurityPolicy,
+    contentSecurityPolicyFor,
     addHeaders,
     clientAddress,
     rateKey,
@@ -14,6 +15,7 @@ import Data.ByteString (ByteString)
 import Data.ByteString.Char8 qualified as BC
 import Data.CaseInsensitive qualified as CI
 import Data.IP (IP (..), fromHostAddress, fromHostAddress6, fromIPv4, fromIPv6b, toIPv4, toIPv6b)
+import Data.Text (Text)
 import Data.Text.Encoding qualified as TE
 import Marola.Csp qualified as Csp
 import Network.HTTP.Types (Header, HeaderName)
@@ -25,6 +27,10 @@ import Text.Read (readMaybe)
 -- a form posted to the server.
 contentSecurityPolicy :: ByteString
 contentSecurityPolicy = TE.encodeUtf8 Csp.policy <> "; form-action 'self'"
+
+-- | The CSP of @/embed@: the page's, with @frame-ancestors@ from the box's allowlist (ADR 0008).
+contentSecurityPolicyFor :: [Text] -> ByteString
+contentSecurityPolicyFor ancestors = TE.encodeUtf8 (Csp.embedPolicy ancestors) <> "; form-action 'self'"
 
 -- | Sent on every response.
 responseHeaders :: [Header]

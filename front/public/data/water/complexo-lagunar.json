@@ -1,0 +1,319 @@
+{
+ "schema": 1,
+ "area": "complexo-lagunar",
+ "source": "IMA/SC",
+ "sampled_on": "2026-11-19",
+ "note": "Pontos de coleta do IMA/SC nos municípios do Complexo Lagunar Sul Catarinense (Garopaba, Imbituba, Laguna, Jaguaruna, Paulo Lopes e Palhoça), copiados do boletim de 19 de novembro de 2026: as praias e as lagoas. O IMA não publica contagem de enterococos neste boletim. O boletim seguinte substitui este arquivo; ele é uma cópia, não dado ao vivo.",
+ "points": [
+  {
+   "point": "Ponto 04",
+   "location": "Lagoa da Ferrugem",
+   "lat": -28.08125,
+   "lon": -48.63206,
+   "condition": "proper",
+   "sampled_on": "2026-11-19",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "Ponto 05",
+   "location": "Praia da Vigia",
+   "lat": -28.01958,
+   "lon": -48.6102,
+   "condition": "proper",
+   "sampled_on": "2026-11-19",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "Ponto 01",
+   "location": "Praia de Garopaba",
+   "lat": -28.0235,
+   "lon": -48.6142,
+   "condition": "proper",
+   "sampled_on": "2026-11-19",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "Ponto 02",
+   "location": "Praia de Garopaba",
+   "lat": -28.02284,
+   "lon": -48.61876,
+   "condition": "proper",
+   "sampled_on": "2026-11-19",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "Ponto 03",
+   "location": "Praia do Siriú",
+   "lat": -27.97446,
+   "lon": -48.62872,
+   "condition": "proper",
+   "sampled_on": "2026-11-19",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "Ponto 02",
+   "location": "Lagoa de Ibiraquera",
+   "lat": -28.15302,
+   "lon": -48.65557,
+   "condition": "proper",
+   "sampled_on": "2026-11-19",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "Ponto 03",
+   "location": "Praia da Barra de Ibiraquera",
+   "lat": -28.15503,
+   "lon": -48.65325,
+   "condition": "proper",
+   "sampled_on": "2026-11-19",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "Ponto 04",
+   "location": "Praia da Ribanceira",
+   "lat": -28.19082,
+   "lon": -48.66263,
+   "condition": "proper",
+   "sampled_on": "2026-11-19",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "Ponto 06",
+   "location": "Praia da Vila",
+   "lat": -28.24372,
+   "lon": -48.66154,
+   "condition": "proper",
+   "sampled_on": "2026-11-19",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "Ponto 07",
+   "location": "Praia da Vila",
+   "lat": -28.26619,
+   "lon": -48.6834,
+   "condition": "proper",
+   "sampled_on": "2026-11-19",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "Ponto 05",
+   "location": "Praia do Porto",
+   "lat": -28.21806,
+   "lon": -48.6664,
+   "condition": "proper",
+   "sampled_on": "2026-11-19",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "Ponto 08",
+   "location": "Praia do Porto",
+   "lat": -28.22331,
+   "lon": -48.66385,
+   "condition": "proper",
+   "sampled_on": "2026-11-19",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "Ponto 01",
+   "location": "Praia do Rosa",
+   "lat": -28.13538,
+   "lon": -48.64292,
+   "condition": "proper",
+   "sampled_on": "2026-11-19",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "Ponto 04",
+   "location": "Lagoa de Cabeçuda",
+   "lat": -28.4407,
+   "lon": -48.82011,
+   "condition": "proper",
+   "sampled_on": "2026-11-19",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "Ponto 05",
+   "location": "Praia da Tereza",
+   "lat": -28.5251,
+   "lon": -48.76335,
+   "condition": "proper",
+   "sampled_on": "2026-11-19",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "Ponto 01",
+   "location": "Praia de Itapirubá",
+   "lat": -28.34105,
+   "lon": -48.70798,
+   "condition": "proper",
+   "sampled_on": "2026-11-19",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "Ponto 06",
+   "location": "Praia do Cardoso",
+   "lat": -28.60622,
+   "lon": -48.82336,
+   "condition": "proper",
+   "sampled_on": "2026-11-19",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "Ponto 02",
+   "location": "Praia do Gi",
+   "lat": -28.46621,
+   "lon": -48.76664,
+   "condition": "proper",
+   "sampled_on": "2026-11-19",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "Ponto 03",
+   "location": "Praia do Mar Grosso",
+   "lat": -28.48137,
+   "lon": -48.76657,
+   "condition": "proper",
+   "sampled_on": "2026-11-19",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "Ponto 07",
+   "location": "Prainha do Farol",
+   "lat": -28.60221,
+   "lon": -48.81656,
+   "condition": "proper",
+   "sampled_on": "2026-11-19",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "Ponto 03",
+   "location": "Canal do Camacho",
+   "lat": -28.60934,
+   "lon": -48.86082,
+   "condition": "proper",
+   "sampled_on": "2026-11-19",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "Ponto 02",
+   "location": "Lagoa do Arroio Corrente",
+   "lat": -28.69203,
+   "lon": -49.0186,
+   "condition": "proper",
+   "sampled_on": "2026-11-19",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "Ponto 01",
+   "location": "Praia do Arroio Corrente",
+   "lat": -28.69583,
+   "lon": -49.01694,
+   "condition": "proper",
+   "sampled_on": "2026-11-19",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "Ponto 01",
+   "location": "Praia da Guarda do Embaú",
+   "lat": -27.90546,
+   "lon": -48.5896,
+   "condition": "proper",
+   "sampled_on": "2026-11-19",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "Ponto 03",
+   "location": "Guarda do Embaú",
+   "lat": -27.90325,
+   "lon": -48.59123,
+   "condition": "improper",
+   "sampled_on": "2026-11-19",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "Ponto 02",
+   "location": "Praia da Pinheira",
+   "lat": -27.88451,
+   "lon": -48.58825,
+   "condition": "proper",
+   "sampled_on": "2026-11-19",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "Ponto 05",
+   "location": "Praia da Pinheira",
+   "lat": -27.84984,
+   "lon": -48.59599,
+   "condition": "improper",
+   "sampled_on": "2026-11-19",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "Ponto 06",
+   "location": "Praia da Pinheira",
+   "lat": -27.85993,
+   "lon": -48.60214,
+   "condition": "proper",
+   "sampled_on": "2026-11-19",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "Ponto 04",
+   "location": "Praia de Fora",
+   "lat": -27.73763,
+   "lon": -48.63452,
+   "condition": "proper",
+   "sampled_on": "2026-11-19",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "Ponto 07",
+   "location": "Praia de Fora",
+   "lat": -27.74651,
+   "lon": -48.62754,
+   "condition": "proper",
+   "sampled_on": "2026-11-19",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "Ponto 01",
+   "location": "Praia do Sonho",
+   "lat": -27.83628,
+   "lon": -48.58783,
+   "condition": "proper",
+   "sampled_on": "2026-11-19",
+   "enterococci_per_100ml": null,
+   "rain": null
+  }
+ ]
+}

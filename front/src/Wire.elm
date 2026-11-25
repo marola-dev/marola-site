@@ -21,6 +21,7 @@ type Request
     | Latest String
     | BoardFile String String String
     | TrailsFile String
+    | WaterFile String
 
 
 {-| Every URL starts with "./", so the page works from any path it is served under.
@@ -42,6 +43,9 @@ requestUrl request =
 
         TrailsFile area ->
             "./data/trails/" ++ area ++ ".json"
+
+        WaterFile area ->
+            "./data/water/" ++ area ++ ".json"
 
 
 {-| `status` is 0 for a body, -1 for a network failure, else the HTTP status.

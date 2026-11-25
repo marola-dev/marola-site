@@ -8,6 +8,7 @@ import DateFmt
 import Html exposing (Html)
 import Html.Events
 import Html.Keyed
+import Icu
 import Json.Decode as D
 import Layer exposing (Layer)
 import Model exposing (Model, Panel(..))
@@ -220,6 +221,25 @@ note model k =
     Html.span [] [ Html.text (Words.t model k) ]
 
 
+{-| The area's own file, when it has one: who sampled and when, so a dot never reads as today's.
+-}
+waterFileKey : Model -> List (Html Msg)
+waterFileKey model =
+    case model.waterFile of
+        Model.WaterFileLoaded file ->
+            [ Html.span []
+                [ Html.text
+                    (Words.ta model
+                        "flow.key_water_file"
+                        [ ( "when", Icu.Text (DateFmt.short file.sampledOn model.loc.language) ) ]
+                    )
+                ]
+            ]
+
+        _ ->
+            []
+
+
 {-| The key under the rail: what the colours mean, for the layer on show.
 -}
 key : Model -> Html Msg
@@ -237,7 +257,7 @@ key model =
                     [ ramp "waves", ends "0" "3 m", note model "flow.key_waves" ]
 
                 Layer.Water ->
-                    [ note model "flow.key_water" ]
+                    note model "flow.key_water" :: waterFileKey model
 
                 Layer.Clouds ->
                     [ dated model "flow.key_clouds" Layer.Clouds ]

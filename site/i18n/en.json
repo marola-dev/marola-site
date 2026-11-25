@@ -76,6 +76,7 @@
   "flow.key_elnino": "the box is the Niño 3.4 region: warm there for months is El Niño, cold is La Niña",
   "flow.key_sst": "sea surface temperature (MUR, NASA), day",
   "flow.key_water": "sampling points, latest bulletin",
+  "flow.key_water_file": "and IMA/SC's in the lagoons, from {when}",
   "flow.key_waves": "waves, estimated between beaches",
   "flow.key_wind": "wind, estimated between beaches",
   "flow.label": "map layers",

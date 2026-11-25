@@ -4,6 +4,7 @@ module UpdateTests exposing (suite)
 -}
 
 import Beach exposing (Selection(..))
+import Config
 import Effect exposing (Camera(..), Effect(..))
 import Expect
 import I18n
@@ -145,7 +146,8 @@ suite =
                     [ Expect.equal model.area (Just (areaNamed "rio"))
                     , Expect.equal (has effects (FetchLatest "rio")) True
                     , Expect.equal (has effects (FetchTrails "rio")) True
-                    , Expect.equal (has effects (InitMap -48.5 -27.6)) True
+                    , Expect.equal (has effects (InitMap -48.5 -27.6 Config.areaZoom)) True
+                    , Expect.equal (has effects (FetchWater "rio")) True
                     , Expect.equal model.map MapLoading
                     , Expect.equal (Params.get model.query "area") (Just "rio")
                     ]
@@ -205,6 +207,61 @@ suite =
                     -- The second board of the same area keeps the view the visitor has.
                     , Expect.equal (List.any isFit more) False
                     , Expect.equal again.fitted True
+                    ]
+        , test "?embed=1 is the chrome-less page, off by default" <|
+            \_ ->
+                all
+                    [ Expect.equal (Tuple.first (Update.init (browser "?embed=1" []))).embed True
+                    , Expect.equal (Tuple.first (Update.init (browser "" []))).embed False
+                    ]
+        , test "the area's own layer is the one it opens on" <|
+            \_ ->
+                let
+                    base =
+                        areaNamed "complexo-lagunar"
+
+                    area =
+                        { base | layer = Just "water" }
+
+                    ( start, _ ) =
+                        Update.init (browser "?area=complexo-lagunar" [])
+
+                    ( model, _ ) =
+                        Update.update (AreasLoaded (Ok [ area ])) start
+                in
+                Expect.equal model.layer Layer.Water
+        , test "a bounded, pinned area enters at its pin, frames its bounds and keeps them" <|
+            \_ ->
+                let
+                    base =
+                        areaNamed "complexo-lagunar"
+
+                    pinned =
+                        { base
+                            | lat = -28.3287
+                            , lon = -48.7973
+                            , zoom = Just 9
+                            , bounds = Just { west = -48.95, south = -28.63, east = -48.61, north = -28.07 }
+                            , pin = Just { name = "Canto das Águas", lat = -28.3287, lon = -48.7973, url = Nothing }
+                        }
+
+                    ( start, _ ) =
+                        Update.init (browser "?area=complexo-lagunar" [])
+
+                    ( areaModel, areaEffects ) =
+                        Update.update (AreasLoaded (Ok [ pinned ])) start
+
+                    ( model, boardEffects ) =
+                        run areaModel
+                            [ LatestLoaded "complexo-lagunar" (Ok [ { date = fixture.day, file = "x.json" } ])
+                            , BoardLoaded "complexo-lagunar" fixture.day "x.json" (Ok (Read fixture))
+                            ]
+                in
+                all
+                    [ Expect.equal (has areaEffects (InitMap -48.7973 -28.3287 9)) True
+                    , Expect.equal (has areaEffects (MoveCamera (Fit -48.95 -28.63 -48.61 -28.07 40 12 True))) True
+                    , Expect.equal (List.any isFit boardEffects) False
+                    , Expect.equal model.fitted False
                     ]
         , test "a beach in the link opens its card" <|
             \_ ->
@@ -477,7 +534,7 @@ suite =
                         (any
                             (\e ->
                                 case e of
-                                    InitMap _ _ ->
+                                    InitMap _ _ _ ->
                                         True
 
                                     _ ->

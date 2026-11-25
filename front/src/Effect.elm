@@ -23,10 +23,11 @@ type Effect
     | FetchLatest String
     | FetchBoard String String String
     | FetchTrails String
+    | FetchWater String
     | ReplaceUrl String String
     | SetDocument String String
     | StoreLanguage Language
-    | InitMap Float Float
+    | InitMap Float Float Float
       -- The markers, raster and visibility of the map, as one JSON text.
     | SyncMap String
       -- The GeoJSON of the trail routes.

@@ -1,4 +1,4 @@
-module View.Nav exposing (eye, github, linkedin, svgIcon, view)
+module View.Nav exposing (eye, github, languageToggle, linkedin, svgIcon, view)
 
 import Config
 import Html exposing (Html)

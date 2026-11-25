@@ -6,6 +6,7 @@ import Data.Text qualified as T
 import Data.Text.Encoding qualified as TE
 import Harness
 import Marola.Csp qualified as Csp
+import Marola.Server.Config (Config (..))
 import Marola.Server.Http (Route (..))
 import Network.HTTP.Types (HeaderName)
 import Test.Hspec
@@ -62,6 +63,21 @@ spec = describe "headers" $ do
       $ \(p, cache) -> do
         res <- send site (get p)
         (p, header res "Cache-Control") `shouldBe` (p, Just cache)
+
+  it "/embed serves the map page and refuses framing by default" $ withSite $ \site -> do
+    res <- send site (get "/embed")
+    res.status `shouldBe` 200
+    header res "Content-Type" `shouldBe` Just "text/html; charset=utf-8"
+    header res "Content-Security-Policy"
+      `shouldBe` Just (TE.encodeUtf8 (Csp.embedPolicy []) <> "; form-action 'self'")
+
+  it "/embed lets in the MAROLA_EMBED_FROM origins, and every other page keeps 'none'" $
+    withSiteWith (\c -> c {embedFrom = ["https://cantodasaguas.org", "https://www.cantodasaguas.org"]}) [] $ \site -> do
+      res <- send site (get "/embed")
+      header res "Content-Security-Policy"
+        `shouldBe` Just (TE.encodeUtf8 (Csp.embedPolicy ["https://cantodasaguas.org", "https://www.cantodasaguas.org"]) <> "; form-action 'self'")
+      home <- send site (get "/")
+      header home "Content-Security-Policy" `shouldBe` Just (TE.encodeUtf8 Csp.policy <> "; form-action 'self'")
 
   it "a repeat request with the ETag gets 304 and the headers" $ withSite $ \site -> do
     first <- send site (get "/app.js")

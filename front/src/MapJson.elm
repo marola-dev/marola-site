@@ -8,12 +8,12 @@ import Effect exposing (Camera(..))
 import Json.Encode as E
 
 
-mapConfig : Float -> Float -> String
-mapConfig lon lat =
+mapConfig : Float -> Float -> Float -> String
+mapConfig lon lat zoom =
     E.object
         [ ( "lon", E.float lon )
         , ( "lat", E.float lat )
-        , ( "zoom", E.float Config.areaZoom )
+        , ( "zoom", E.float zoom )
         , ( "minZoom", E.int Config.areaMinZoom )
         , ( "maxZoom", E.int Config.maxZoom )
         , ( "style", E.string Config.styleUrl )

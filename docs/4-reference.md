@@ -17,6 +17,10 @@ requires; a malformed entry is silently dropped there rather than failing.
 | `tz` | string, a valid IANA zone | The area's local timezone (`America/Sao_Paulo`, `America/Bahia`), for "today"/"tomorrow" labelling |
 | `tiles` | string | A tile-server URL template. Read by the app side, not by this repo's own map any more: since the Mapbox GL switch ([libraries](2-libraries.md#what-mapbox-replaced)), `app.js` builds its base map from `mapbox-config.js` instead |
 | `tiles_attribution` | string | Pairs with `tiles`, same app-side status |
+| `zoom` | number, optional | Where the map enters when the area is picked and has no `bounds`; without it, `Config.areaZoom` (10) |
+| `layer` | string, optional | The map layer the area opens on, when the link names none (`water` for the Complexo Lagunar, whose subject is the lagoon's water quality). A `?layer=` in the link wins |
+| `bounds` | `[west, south, east, north]`, optional | The box the camera frames when the area is picked, instead of a point zoom, and the beaches' bounds no longer refit it. The Complexo Lagunar frames its lagoons (`-48.95, -28.63, -48.61, -28.07`): Imaruí, Mirim, Santo Antônio, Cabeçuda, Camacho, Arroio Corrente |
+| `pin` | object, optional | `{name, lat, lon, url}`: a partner's place, drawn as a named pin inside the camera's frame; `url` makes it a link, opened in a new tab. The Complexo Lagunar is pinned to Canto das Águas in Taquaraçatuba, Imaruí, linking to `https://cantodasaguas.org/`; it is the institute's published location, not a surveyed gate |
 
 ## Tile policy
 
@@ -94,6 +98,53 @@ board carries the points for the offline preview (the `fixtures boards` command)
 board shows the points the app matches. An unmatched lagoon point needs an app-side change (an
 inland-water beach, or a name alias), not an edit here.
 
+### The area's own water file
+
+`front/public/data/water/<area>.json` is the page's fallback for exactly that case: the official
+points the board cannot draw because the app matches a provider point to a beach by name. The map
+page fetches `data/water/<area>.json` for the area on show and draws its points on the water layer,
+next to the board's, once per place (a point within about a metre of one the board already carries
+is the same sample). Only the Complexo Lagunar has one:
+
+| Field | Notes |
+|---|---|
+| `schema` | The number 1 |
+| `area` | The area id |
+| `source` | The agency: `IMA/SC` |
+| `sampled_on` | The bulletin's day. The key's line under the rail prints it, so a dot never reads as today's |
+| `note` | Text for whoever refreshes it |
+| `points` | `{point, location, lat, lon, condition, sampled_on, enterococci_per_100ml, rain}`, the board's own point shape (`proper`, `improper`, `unknown`) |
+
+The Complexo Lagunar file is a copy of IMA/SC's bulletin of 19 November 2026: 31 points, the beaches
+and the lagoons of Garopaba, Imbituba, Laguna, Jaguaruna, Paulo Lopes and Palhoça, two of them
+`improper`. The IMA publishes no enterococci count in that bulletin. **The next bulletin replaces the
+file**; it is a copy, not live data, and no job refreshes it. The agency's site is
+<https://balneabilidade.ima.sc.gov.br/> (`/municipio/getMunicipios` and the two POSTs its page
+makes).
+
+## Embedding the map
+
+`/embed` serves the map page with the chrome off (ADR 0008): no navigation, no tool row, no footer;
+the map, the layer rail, the panels and the card, the trails panel, the emergency button and the
+notice stay, and so do the attribution and a slim strip with the language switch. It is the same Elm
+bundle, not a second build; only `/embed` is served frameable, and by the origins
+`MAROLA_EMBED_FROM` lists ([hosting](5-hosting.md#variables)). With the list empty, or for any other
+page, the server sends `frame-ancestors 'none'`.
+
+The embed sets what the URL carries: `area`, `layer`, `lang`, `day`, `beaches=0` and `trails=0`
+(the page's other parameters). With no `day`, it is today's board. The Complexo Lagunar frames its
+lagoons from the first frame — its `bounds` — with Canto das Águas pinned inside, because an area
+with `bounds` or a `pin` skips the fit to the beaches' bounds:
+
+```html
+<iframe src="https://marola.dev/embed?area=complexo-lagunar&lang=pt-BR"
+        title="marola: as condições da lagoa hoje"
+        width="100%" height="600" loading="lazy"></iframe>
+```
+
+The page reads its size from the iframe and sends nothing back: no cookies, no account, no message
+to the embedding page (ADR 0008). Each embed is one visitor's map load.
+
 ## Trail files
 
 `front/public/data/trails/<area>.json` holds the hiking routes of an area. The map page fetches
@@ -115,6 +166,13 @@ Catarinense has 31 routes in seven groups (Imbituba, Garopaba, Paulo Lopes, Palh
 Embaú, Florianópolis, Laguna and Serra do Tabuleiro), from the same query over the lagoons and the
 Serra do Tabuleiro. Salvador has an empty list and a note: the panel shows the note, never an empty
 panel. When an area has no file, the board's own optional `trails` array stands in.
+
+**Why no route lies on the lagoon shore.** The 31 routes are the coastal ones (Rosa, Ferrugem,
+Ouvidor, Itapirubá) and the Serra do Tabuleiro. A query over the lagoon margins themselves — the
+Imaruí, Mirim and Santo Antônio shores, inside the area's 55 km circle — finds no named route there:
+OpenStreetMap has a single named highway way in Imaruí (a `highway=steps` street), and the filter
+keeps named `path`/`track` ways only. A lagoon route appears when the map has one; the file does not
+invent it.
 
 **Provenance.** One query on the Overpass API made the files. The files are a one-off copy: no job
 refreshes them. The query takes every `way` with `highway` in `path|footway|track|steps` and a
