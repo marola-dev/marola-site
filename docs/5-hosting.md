@@ -61,8 +61,10 @@ The package holds:
   `MAROLA_STATIC` points here.
 
 There is no `data-seed`. `MAROLA_DATA` is the board data folder, `<area>/latest.json` and the boards, which the board
-pipeline writes; the server reads `/data/<x>` there first and then under `dist/data` (`areas.json` and `trails/`,
-which the package already holds). An empty or missing `MAROLA_DATA` is valid: the boards answer 404 until the
+pipeline writes; the server reads `/data/<x>` there first and then under `dist/data` (`trails/`, which the package
+already holds). The one exception is `/data/areas.json`, the picker's list: it is always the build's, because the
+board pipeline writes a copy of its own from the areas file of the commit it runs, and an older board folder must not
+hide an area the deployed site ships. An empty or missing `MAROLA_DATA` is valid: the boards answer 404 until the
 pipeline writes them.
 
 The package does not hold the base map's tiles either. `MAROLA_TILES` is their folder, and the file must be there
@@ -96,7 +98,7 @@ before this version runs ([The base map](#the-base-map)).
 |---|---|---|
 | `MAROLA_PORT` | `8080` | The port on `127.0.0.1`. The server never listens on another address. |
 | `MAROLA_STATIC` | `dist` | The built page. Served at `/`. Read-only. |
-| `MAROLA_DATA` | `data` | The board data. `/data/<x>` is read here first, then under `MAROLA_STATIC`. Read-only. |
+| `MAROLA_DATA` | `data` | The board data. `/data/<x>` is read here first, then under `MAROLA_STATIC`, except `/data/areas.json` (the picker's list, always the build's). Read-only. |
 | `MAROLA_DB` | `data/marola.db` | The SQLite file: the contact messages, and the accounts, API keys, studies and reports of [ADR 0004](adr/0004-study-submission.md). The server creates it and its folder at start, and moves its tables to the current version (`PRAGMA user_version`). |
 | `MAROLA_STUDIES` | `data/studies` | The PDFs of the studies, as `<sha256>.pdf`, mode 0640, in a folder of mode 0750 with a `.incoming` folder for uploads in progress. Outside `MAROLA_STATIC` and never served as a file tree. |
 | `MAROLA_TILES` | `data/tiles` | The folder of the base map's file, `marola.pmtiles`. `/tiles/<name>.pmtiles` is read here first, then under `MAROLA_STATIC/tiles` (the fixture of an offline build). Read-only. Without the file the map page shows its list and the note "the map did not load". |
