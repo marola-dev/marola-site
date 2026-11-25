@@ -139,6 +139,9 @@ areaCode id name =
         "salvador" ->
             "BA"
 
+        "complexo-lagunar" ->
+            "CL"
+
         _ ->
             String.filter Char.isAlpha name |> String.left 2 |> String.toUpper
 

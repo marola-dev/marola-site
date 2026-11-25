@@ -137,6 +137,7 @@
   "nav.contact": "section nav: contact section, not built yet",
   "nav.docs": "section nav: link to the published documentation",
   "nav.donate": "section nav: link to the support (donations) page",
+  "nav.ecomonitoramento": "section nav: link to the participatory ecomonitoring platform page for the Southern Santa Catarina Lagoon Complex",
   "nav.label": "accessible name of the section nav",
   "nav.members": "section nav: link to the members page (the people who build marola)",
   "nav.studies": "section nav: link to the list of studies that scientists submitted; hidden on a 390 px phone, where about links it",
