@@ -70,3 +70,9 @@ before it is merged (the phase discipline of AGENTS.md).
 | 8 | The pin: piabrota/nix-os's `marola-site.nix` passes `MAROLA_EMBED_FROM` from the box's file to the unit | `piabrota/nix-os` `marola-site.nix` (its own PR there) | nix-os's deploy build |
 
 A task may fail on a detail of the one before it; that is a fix to that task's PR, not a ninth.
+
+**Deviation, 2026-11-25.** Tasks 1–4 and 6 shipped together in one pull request, for the first
+partner (Canto das Águas), which needed the embed in one piece rather than after four merges: the Elm
+flag and the chrome-less view, the CSS, the `front_check.js` scenario, `/embed` with
+`MAROLA_EMBED_FROM`, and the docs in `README.md` and `docs/4-reference.md`. Tasks 5 (the OpenAPI
+description), 7 (the smoke) and 8 (the nix-os pin) follow the table as written.

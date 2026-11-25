@@ -87,12 +87,21 @@ stage model =
 
 
 {-| The root keeps the id of the `div` it replaces, which `style.css` reads as `display: contents`.
+In an embed (`?embed=1`, ADR 0008) the nav, the tool row and the footer go, and the stage keeps the
+map, the rail, the panels, the card, the emergency button and the language switch.
 -}
 view : Model -> Html Msg
 view model =
     Html.div [ idAttr "app" ]
         (if model.catalogsPending > 0 then
             [ Html.p [ cls "nojs" ] [ Html.text "…" ] ]
+
+         else if model.embed then
+            [ Html.div [ cls "embed" ]
+                [ Html.div [ cls "embedbar" ] [ View.Nav.languageToggle model ]
+                , stage model
+                ]
+            ]
 
          else
             [ View.Nav.view model, View.Bar.tools model, stage model, View.Footer.view model ]

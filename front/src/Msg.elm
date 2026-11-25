@@ -8,6 +8,7 @@ import Language exposing (Language)
 import Layer exposing (Layer)
 import Model exposing (DayEntry)
 import Trails exposing (Trails)
+import WaterFile exposing (WaterFile)
 
 
 {-| Why a request gave no data, as the footer words it (`Update.describe`).
@@ -37,6 +38,7 @@ type Msg
     | LatestLoaded String (Result FetchError (List DayEntry))
     | BoardLoaded String String String (Result FetchError Loaded)
     | TrailsFileLoaded String (Result FetchError Trails)
+    | WaterFileLoaded String (Result FetchError WaterFile)
     | AreaPicked String
     | DayPicked String
       -- The slider's position: -1 is each beach at its own best hour.

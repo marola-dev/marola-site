@@ -76,6 +76,7 @@
   "flow.key_elnino": "枠はニーニョ3.4海域: 数か月高温が続けばエルニーニョ、低温ならラニーニャ",
   "flow.key_sst": "海面水温（MUR、NASA）、当日",
   "flow.key_water": "採水地点、最新の公表値",
+  "flow.key_water_file": "ほか、潟湖複合体の IMA/SC 採水点（{when}）",
   "flow.key_waves": "ビーチ間で推定した波",
   "flow.key_wind": "ビーチ間で推定した風",
   "flow.label": "地図レイヤー",

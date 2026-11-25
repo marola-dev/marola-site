@@ -78,6 +78,11 @@ drawn with the umbrella's Archify pin and `scripts/figure.sh` (in a marola check
   [`site/fixtures/board.json`](site/fixtures/board.json) for an offline preview.
 - **Trails.** `front/public/data/trails/<area>.json` holds the hiking routes, from OpenStreetMap
   (ODbL). The map page fetches the file of the area on show. See [the reference](docs/4-reference.md#trail-files).
+- **Water points.** `front/public/data/water/<area>.json` holds an area's official sampling points
+  when the board cannot draw them: the app matches a point to a beach by name and never falls back
+  to distance for an inland name, so a lagoon point reaches no beach. The page draws the file's
+  points on the water layer, once per place. Only the Complexo Lagunar has one (IMA/SC, beaches and
+  lagoons). See [the reference](docs/4-reference.md#the-areas-own-water-file).
 - **Studies.** The server keeps the accounts, the API keys, the study rows and the reports in SQLite
   (`MAROLA_DB`) and the PDFs in a folder (`MAROLA_STUDIES`). The study pages and the Atom feed are
   rendered by the server from those rows.
@@ -90,6 +95,37 @@ fonts, the board and trail JSON, and the pages from Markdown. Dynamic, in the se
 `/submit`, `/studies`, `/studies/<id>`, `/studies.atom`, `/account`, `/report/<id>`, `/auth/github/*`
 and `/api/v1/*`. Every page is served with a Content-Security-Policy that allows scripts and styles
 from the site itself only, so a content page has no inline script and no inline style.
+
+## Embed the map
+
+Any site can frame marola's map with one `<iframe>`, no script of ours and no key: `/embed` is the
+same page with the navigation, the tool row and the footer off (ADR 0008). The map, the layers, the
+trails, the beach card, the emergency button and the "not a lifeguard" notice stay, with marola's
+attribution and a slim strip for the language.
+
+```html
+<iframe src="https://marola.dev/embed?area=complexo-lagunar&lang=pt-BR"
+        title="marola: as condições da lagoa hoje"
+        width="100%" height="600" loading="lazy"></iframe>
+```
+
+- `area` is an id from [`site/areas.json`](site/areas.json) (`floripa`, `rio`, `salvador`,
+  `complexo-lagunar`). With no `day`, the embed shows today's board; `day=YYYY-MM-DD` pins a past one.
+- `layer` picks the layer on show (`water`, `wind`, `waves`, …), `lang` the language (`pt-BR`, `en`,
+  `ja`, `zh-Hant`), and `beaches=0` / `trails=0` start with those hidden.
+- A bounded area frames its own waters: the Complexo Lagunar opens on the lagoons (Imaruí, Mirim,
+  Santo Antônio, Cabeçuda, Camacho, Arroio Corrente) with **Canto das Águas**, in Taquaraçatuba,
+  Imaruí, pinned inside and linked to the institute's site, opens on the bathing-water layer, and
+  stays there instead of fitting all the beaches. That is the first
+  embed: the institute's [ecomonitoring platform](https://cantodasaguas.org/) shows the lagoon on
+  today's date, in Portuguese.
+- The server frames `/embed` only for the origins in `MAROLA_EMBED_FROM`, one per line, a file on the
+  host ([hosting](docs/5-hosting.md#variables)). Every other page, and an empty list, keeps
+  `frame-ancestors 'none'`: a partner asks to be added, and nobody else can frame marola. No origin
+  is added by an agent.
+
+The embed needs no JavaScript on the partner's page and sends nothing back: the iframe reads its
+size from its own CSS, and what it shows is public on marola.dev too.
 
 ## Run it
 
