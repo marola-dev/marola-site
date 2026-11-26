@@ -1,0 +1,299 @@
+{
+ "version": 1,
+ "beaches": [
+  {
+   "name": "Praia Belo Jardim",
+   "lat": -22.8203,
+   "lon": -43.22562,
+   "distance_km": 18.95
+  },
+  {
+   "name": "Praia da Bica",
+   "lat": -22.81933,
+   "lon": -43.19614,
+   "distance_km": 18.74
+  },
+  {
+   "name": "Praia da Engenhoca",
+   "lat": -22.82112,
+   "lon": -43.17179,
+   "distance_km": 18.64
+  },
+  {
+   "name": "Praia Grande",
+   "lat": -22.89491,
+   "lon": -43.12488,
+   "distance_km": 12.37
+  },
+  {
+   "name": "Praia Vermelha",
+   "lat": -22.95523,
+   "lon": -43.16453,
+   "distance_km": 4.54
+  },
+  {
+   "name": "Praia da Barra de Piratininga",
+   "lat": -22.95347,
+   "lon": -43.09856,
+   "distance_km": 10.23
+  },
+  {
+   "name": "Praia da Esplanada Verde",
+   "lat": -22.9196,
+   "lon": -43.16774,
+   "distance_km": 7.96
+  },
+  {
+   "name": "Praia de Camboinhas",
+   "lat": -22.96308,
+   "lon": -43.05813,
+   "distance_km": 13.91
+  },
+  {
+   "name": "Praia de Dentro",
+   "lat": -22.94348,
+   "lon": -43.15822,
+   "distance_km": 5.98
+  },
+  {
+   "name": "Praia de Fora",
+   "lat": -22.94534,
+   "lon": -43.15549,
+   "distance_km": 5.98
+  },
+  {
+   "name": "Praia de Piratininga",
+   "lat": -22.95535,
+   "lon": -43.08462,
+   "distance_km": 11.5
+  },
+  {
+   "name": "Praia de Ramos",
+   "lat": -22.83895,
+   "lon": -43.25034,
+   "distance_km": 17.62
+  },
+  {
+   "name": "Praia do Havaizinho",
+   "lat": -22.953,
+   "lon": -43.10134,
+   "distance_km": 9.99
+  },
+  {
+   "name": "Praia do Imbuí",
+   "lat": -22.94748,
+   "lon": -43.11262,
+   "distance_km": 9.22
+  },
+  {
+   "name": "Praia do Leme",
+   "lat": -22.96448,
+   "lon": -43.16876,
+   "distance_km": 3.47
+  },
+  {
+   "name": "Praia do Sossego",
+   "lat": -22.95814,
+   "lon": -43.07006,
+   "distance_km": 12.84
+  },
+  {
+   "name": "Praia da Ponta da Ilha",
+   "lat": -22.92906,
+   "lon": -43.1122,
+   "distance_km": 10.4
+  },
+  {
+   "name": "Praia da Várzea",
+   "lat": -22.93467,
+   "lon": -43.11254,
+   "distance_km": 10.0
+  },
+  {
+   "name": "Praia de Samangu",
+   "lat": -22.93464,
+   "lon": -43.11056,
+   "distance_km": 10.16
+  },
+  {
+   "name": "Praia do Cais",
+   "lat": -22.93117,
+   "lon": -43.11636,
+   "distance_km": 9.93
+  },
+  {
+   "name": "Praia do Canto",
+   "lat": -22.92519,
+   "lon": -43.11988,
+   "distance_km": 10.1
+  },
+  {
+   "name": "Praia do Curvo",
+   "lat": -22.92267,
+   "lon": -43.11993,
+   "distance_km": 10.29
+  },
+  {
+   "name": "Praia de Copacabana",
+   "lat": -22.97569,
+   "lon": -43.181,
+   "distance_km": 1.71
+  },
+  {
+   "name": "Praia da Joatinga",
+   "lat": -23.01469,
+   "lon": -43.29053,
+   "distance_km": 10.59
+  },
+  {
+   "name": "Praia de Itaipuaçu",
+   "lat": -22.96528,
+   "lon": -42.85442,
+   "distance_km": 34.58
+  },
+  {
+   "name": "Praia do Arpoador",
+   "lat": -22.98899,
+   "lon": -43.19297,
+   "distance_km": 0.22
+  },
+  {
+   "name": "Praia do Diabo",
+   "lat": -22.98953,
+   "lon": -43.19067,
+   "distance_km": 0.2
+  },
+  {
+   "name": "Praia do Forte",
+   "lat": -22.98839,
+   "lon": -43.18932,
+   "distance_km": 0.21
+  },
+  {
+   "name": "Praia dos Amores",
+   "lat": -23.01303,
+   "lon": -43.29549,
+   "distance_km": 11.03
+  },
+  {
+   "name": "Praia da Reserva",
+   "lat": -23.01739,
+   "lon": -43.41113,
+   "distance_km": 22.74
+  },
+  {
+   "name": "Praia da Barra da Tijuca",
+   "lat": -23.01321,
+   "lon": -43.33635,
+   "distance_km": 15.11
+  },
+  {
+   "name": "Praia de Itacoatiara",
+   "lat": -22.97487,
+   "lon": -43.03439,
+   "distance_km": 16.13
+  },
+  {
+   "name": "Praia de Itaipu",
+   "lat": -22.9707,
+   "lon": -43.04657,
+   "distance_km": 14.94
+  },
+  {
+   "name": "Praia do Pepino",
+   "lat": -23.00062,
+   "lon": -43.26468,
+   "distance_km": 7.65
+  },
+  {
+   "name": "Praia da Boa Viagem",
+   "lat": -22.90858,
+   "lon": -43.12825,
+   "distance_km": 10.92
+  },
+  {
+   "name": "Praia da Eva",
+   "lat": -22.92965,
+   "lon": -43.12285,
+   "distance_km": 9.54
+  },
+  {
+   "name": "Praia da Urca",
+   "lat": -22.94794,
+   "lon": -43.16326,
+   "distance_km": 5.28
+  },
+  {
+   "name": "Praia das Flechas",
+   "lat": -22.90545,
+   "lon": -43.1227,
+   "distance_km": 11.54
+  },
+  {
+   "name": "Praia de Adão",
+   "lat": -22.92756,
+   "lon": -43.12287,
+   "distance_km": 9.69
+  },
+  {
+   "name": "Praia de Botafogo",
+   "lat": -22.9454,
+   "lon": -43.17992,
+   "distance_km": 4.86
+  },
+  {
+   "name": "Praia de Icaraí",
+   "lat": -22.90888,
+   "lon": -43.11386,
+   "distance_km": 11.83
+  },
+  {
+   "name": "Praia de Ipanema",
+   "lat": -22.98731,
+   "lon": -43.20507,
+   "distance_km": 1.41
+  },
+  {
+   "name": "Praia de Jurujuba",
+   "lat": -22.92668,
+   "lon": -43.1191,
+   "distance_km": 10.04
+  },
+  {
+   "name": "Praia de São Francisco",
+   "lat": -22.9181,
+   "lon": -43.09521,
+   "distance_km": 12.52
+  },
+  {
+   "name": "Praia do Flamengo",
+   "lat": -22.928,
+   "lon": -43.16965,
+   "distance_km": 7.01
+  },
+  {
+   "name": "Praia do Gragoatá",
+   "lat": -22.90215,
+   "lon": -43.13617,
+   "distance_km": 11.07
+  },
+  {
+   "name": "Praia do Leblon",
+   "lat": -22.98789,
+   "lon": -43.22137,
+   "distance_km": 3.08
+  },
+  {
+   "name": "Praia do Vidigal",
+   "lat": -22.99224,
+   "lon": -43.23194,
+   "distance_km": 4.19
+  },
+  {
+   "name": "Prainha da Glória",
+   "lat": -22.92166,
+   "lon": -43.16825,
+   "distance_km": 7.72
+  }
+ ]
+}

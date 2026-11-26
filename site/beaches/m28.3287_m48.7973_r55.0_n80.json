@@ -1,0 +1,329 @@
+{
+ "version": 1,
+ "beaches": [
+  {
+   "name": "Praia Barra do Ibiraquera",
+   "lat": -28.17242,
+   "lon": -48.65787,
+   "distance_km": 22.1
+  },
+  {
+   "name": "Praia Canto da Baleia",
+   "lat": -28.41438,
+   "lon": -48.74583,
+   "distance_km": 10.78
+  },
+  {
+   "name": "Praia Vermelha",
+   "lat": -28.11697,
+   "lon": -48.6351,
+   "distance_km": 28.41
+  },
+  {
+   "name": "Praia d'Água",
+   "lat": -28.20523,
+   "lon": -48.66528,
+   "distance_km": 18.86
+  },
+  {
+   "name": "Praia da Ferrugem",
+   "lat": -28.07829,
+   "lon": -48.62844,
+   "distance_km": 32.39
+  },
+  {
+   "name": "Praia da Gamboa",
+   "lat": -27.95314,
+   "lon": -48.62406,
+   "distance_km": 45.08
+  },
+  {
+   "name": "Praia da Guarda do Embaú",
+   "lat": -27.92484,
+   "lon": -48.60454,
+   "distance_km": 48.72
+  },
+  {
+   "name": "Praia da Ribanceira",
+   "lat": -28.19165,
+   "lon": -48.66168,
+   "distance_km": 20.22
+  },
+  {
+   "name": "Praia da Rosa",
+   "lat": -28.35145,
+   "lon": -48.81639,
+   "distance_km": 3.14
+  },
+  {
+   "name": "Praia da Vigia",
+   "lat": -28.01918,
+   "lon": -48.61017,
+   "distance_km": 39.0
+  },
+  {
+   "name": "Praia da Vila",
+   "lat": -28.28103,
+   "lon": -48.68151,
+   "distance_km": 12.51
+  },
+  {
+   "name": "Praia de Cima",
+   "lat": -27.88276,
+   "lon": -48.58184,
+   "distance_km": 53.9
+  },
+  {
+   "name": "Praia de Garopaba",
+   "lat": -28.01778,
+   "lon": -48.62132,
+   "distance_km": 38.64
+  },
+  {
+   "name": "Praia de Itapirubá Norte",
+   "lat": -28.33082,
+   "lon": -48.7066,
+   "distance_km": 8.88
+  },
+  {
+   "name": "Praia de Itapirubá Sul",
+   "lat": -28.36684,
+   "lon": -48.72459,
+   "distance_km": 8.28
+  },
+  {
+   "name": "Praia do Cavalinho",
+   "lat": -28.42556,
+   "lon": -48.744,
+   "distance_km": 11.97
+  },
+  {
+   "name": "Praia do Gi",
+   "lat": -28.44787,
+   "lon": -48.75619,
+   "distance_km": 13.85
+  },
+  {
+   "name": "Praia do Iró",
+   "lat": -28.46939,
+   "lon": -48.76607,
+   "distance_km": 15.94
+  },
+  {
+   "name": "Praia do Luz",
+   "lat": -28.14848,
+   "lon": -48.64933,
+   "distance_km": 24.73
+  },
+  {
+   "name": "Praia do Mar Grosso",
+   "lat": -28.48267,
+   "lon": -48.76377,
+   "distance_km": 17.43
+  },
+  {
+   "name": "Praia do Maço",
+   "lat": -27.88444,
+   "lon": -48.57556,
+   "distance_km": 53.97
+  },
+  {
+   "name": "Praia do Ouvidor",
+   "lat": -28.10493,
+   "lon": -48.63617,
+   "distance_km": 29.47
+  },
+  {
+   "name": "Praia do Porto",
+   "lat": -28.22087,
+   "lon": -48.66137,
+   "distance_km": 17.92
+  },
+  {
+   "name": "Praia do Rosa",
+   "lat": -28.12931,
+   "lon": -48.64019,
+   "distance_km": 26.99
+  },
+  {
+   "name": "Praia do Seis",
+   "lat": -28.49677,
+   "lon": -48.7564,
+   "distance_km": 19.11
+  },
+  {
+   "name": "Praia do Silveira",
+   "lat": -28.03959,
+   "lon": -48.6065,
+   "distance_km": 37.19
+  },
+  {
+   "name": "Praia do Siriú",
+   "lat": -27.99222,
+   "lon": -48.6302,
+   "distance_km": 40.84
+  },
+  {
+   "name": "Praia do Sol",
+   "lat": -28.39942,
+   "lon": -48.74466,
+   "distance_km": 9.4
+  },
+  {
+   "name": "Praia do Tamborete",
+   "lat": -28.49761,
+   "lon": -48.74879,
+   "distance_km": 19.37
+  },
+  {
+   "name": "Praia dos Amores",
+   "lat": -28.19351,
+   "lon": -48.6584,
+   "distance_km": 20.27
+  },
+  {
+   "name": "Praia dos Botos",
+   "lat": -28.49582,
+   "lon": -48.76217,
+   "distance_km": 18.9
+  },
+  {
+   "name": "Praia dos Molhes",
+   "lat": -28.49517,
+   "lon": -48.76097,
+   "distance_km": 18.85
+  },
+  {
+   "name": "Prainha do Joaquim Martins",
+   "lat": -27.89884,
+   "lon": -48.58178,
+   "distance_km": 52.26
+  },
+  {
+   "name": "Praia da Barra",
+   "lat": -28.08626,
+   "lon": -48.63104,
+   "distance_km": 31.5
+  },
+  {
+   "name": "Praia da Pinheira",
+   "lat": -27.86756,
+   "lon": -48.59541,
+   "distance_km": 54.97
+  },
+  {
+   "name": "Prainha da Guarda do Embaú",
+   "lat": -27.90411,
+   "lon": -48.58678,
+   "distance_km": 51.53
+  },
+  {
+   "name": "Praia Arroio Corrente",
+   "lat": -28.69359,
+   "lon": -49.01211,
+   "distance_km": 45.68
+  },
+  {
+   "name": "Praia Dunas do Sul",
+   "lat": -28.65071,
+   "lon": -48.93391,
+   "distance_km": 38.21
+  },
+  {
+   "name": "Praia Grande",
+   "lat": -28.57926,
+   "lon": -48.80413,
+   "distance_km": 27.87
+  },
+  {
+   "name": "Praia Nova Camboriú",
+   "lat": -28.66763,
+   "lon": -48.9668,
+   "distance_km": 41.17
+  },
+  {
+   "name": "Praia Paraíso",
+   "lat": -28.66232,
+   "lon": -48.95663,
+   "distance_km": 40.23
+  },
+  {
+   "name": "Praia da Cigana",
+   "lat": -28.61254,
+   "lon": -48.84844,
+   "distance_km": 31.95
+  },
+  {
+   "name": "Praia da Esplanada",
+   "lat": -28.76504,
+   "lon": -49.12966,
+   "distance_km": 58.38
+  },
+  {
+   "name": "Praia da Figueirinha",
+   "lat": -28.67452,
+   "lon": -48.97918,
+   "distance_km": 42.36
+  },
+  {
+   "name": "Praia da Galheta",
+   "lat": -28.56317,
+   "lon": -48.78848,
+   "distance_km": 26.09
+  },
+  {
+   "name": "Praia da Tereza",
+   "lat": -28.52476,
+   "lon": -48.7628,
+   "distance_km": 22.06
+  },
+  {
+   "name": "Praia de Ypuã",
+   "lat": -28.5491,
+   "lon": -48.77605,
+   "distance_km": 24.59
+  },
+  {
+   "name": "Praia do Camacho",
+   "lat": -28.62856,
+   "lon": -48.88737,
+   "distance_km": 34.49
+  },
+  {
+   "name": "Praia do Campo Bom",
+   "lat": -28.7258,
+   "lon": -49.06682,
+   "distance_km": 51.41
+  },
+  {
+   "name": "Praia do Cardoso",
+   "lat": -28.6084,
+   "lon": -48.82868,
+   "distance_km": 31.25
+  },
+  {
+   "name": "Praia do Gravatá",
+   "lat": -28.50736,
+   "lon": -48.75223,
+   "distance_km": 20.35
+  },
+  {
+   "name": "Praia do Mané Lome",
+   "lat": -28.51481,
+   "lon": -48.7595,
+   "distance_km": 21.02
+  },
+  {
+   "name": "Prainha do Farol",
+   "lat": -28.60169,
+   "lon": -48.81655,
+   "distance_km": 30.41
+  },
+  {
+   "name": "Praia da Ilhota",
+   "lat": -28.53661,
+   "lon": -48.76248,
+   "distance_km": 23.37
+  }
+ ]
+}

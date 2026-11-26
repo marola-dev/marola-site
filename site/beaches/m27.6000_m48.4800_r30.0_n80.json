@@ -1,0 +1,485 @@
+{
+ "version": 1,
+ "beaches": [
+  {
+   "name": "Praia Caieira do Norte",
+   "lat": -27.42861,
+   "lon": -48.59186,
+   "distance_km": 22.02
+  },
+  {
+   "name": "Praia Comprida",
+   "lat": -27.51477,
+   "lon": -48.51599,
+   "distance_km": 10.12
+  },
+  {
+   "name": "Praia Saquinho",
+   "lat": -27.80392,
+   "lon": -48.53692,
+   "distance_km": 23.36
+  },
+  {
+   "name": "Praia Xanahi",
+   "lat": -27.43144,
+   "lon": -48.57843,
+   "distance_km": 21.11
+  },
+  {
+   "name": "Praia da Armação da Piedade",
+   "lat": -27.37973,
+   "lon": -48.53464,
+   "distance_km": 25.08
+  },
+  {
+   "name": "Praia da Barra do Sambaqui",
+   "lat": -27.48835,
+   "lon": -48.53851,
+   "distance_km": 13.69
+  },
+  {
+   "name": "Praia da Caiacanga-Açu Sul",
+   "lat": -27.7659,
+   "lon": -48.57662,
+   "distance_km": 20.76
+  },
+  {
+   "name": "Praia da Caiacanga-Açú Norte",
+   "lat": -27.76015,
+   "lon": -48.57438,
+   "distance_km": 20.09
+  },
+  {
+   "name": "Praia da Caieira da Barra do Sul",
+   "lat": -27.81698,
+   "lon": -48.56389,
+   "distance_km": 25.5
+  },
+  {
+   "name": "Praia da Costeira da Armação",
+   "lat": -27.40545,
+   "lon": -48.56279,
+   "distance_km": 23.12
+  },
+  {
+   "name": "Praia da Daniela",
+   "lat": -27.44887,
+   "lon": -48.53308,
+   "distance_km": 17.6
+  },
+  {
+   "name": "Praia da Figueira",
+   "lat": -27.37918,
+   "lon": -48.52959,
+   "distance_km": 25.04
+  },
+  {
+   "name": "Praia da Galheta",
+   "lat": -27.59348,
+   "lon": -48.42451,
+   "distance_km": 5.52
+  },
+  {
+   "name": "Praia da Joaquina",
+   "lat": -27.63447,
+   "lon": -48.4532,
+   "distance_km": 4.65
+  },
+  {
+   "name": "Praia da Lagoinha",
+   "lat": -27.38894,
+   "lon": -48.4249,
+   "distance_km": 24.09
+  },
+  {
+   "name": "Praia da Lagoinha do Leste",
+   "lat": -27.7739,
+   "lon": -48.48549,
+   "distance_km": 19.34
+  },
+  {
+   "name": "Praia das Bananeiras",
+   "lat": -27.36964,
+   "lon": -48.53273,
+   "distance_km": 26.14
+  },
+  {
+   "name": "Praia das Cordas",
+   "lat": -27.37568,
+   "lon": -48.52986,
+   "distance_km": 25.42
+  },
+  {
+   "name": "Praia de Antônio Corrêa",
+   "lat": -27.38478,
+   "lon": -48.56246,
+   "distance_km": 25.28
+  },
+  {
+   "name": "Praia de Baixo",
+   "lat": -27.47012,
+   "lon": -48.63878,
+   "distance_km": 21.3
+  },
+  {
+   "name": "Praia de Fora",
+   "lat": -27.47493,
+   "lon": -48.64009,
+   "distance_km": 21.04
+  },
+  {
+   "name": "Praia de Henrique Costa",
+   "lat": -27.37769,
+   "lon": -48.5588,
+   "distance_km": 25.91
+  },
+  {
+   "name": "Praia de Pedras Altas",
+   "lat": -27.79412,
+   "lon": -48.61724,
+   "distance_km": 25.47
+  },
+  {
+   "name": "Praia de Pedras Altas (Área Nudista)",
+   "lat": -27.795,
+   "lon": -48.61726,
+   "distance_km": 25.55
+  },
+  {
+   "name": "Praia de Tinguá",
+   "lat": -27.37409,
+   "lon": -48.53961,
+   "distance_km": 25.8
+  },
+  {
+   "name": "Praia do Barcela",
+   "lat": -27.55711,
+   "lon": -48.51518,
+   "distance_km": 5.9
+  },
+  {
+   "name": "Praia do Cachorro Louco",
+   "lat": -27.43201,
+   "lon": -48.58491,
+   "distance_km": 21.35
+  },
+  {
+   "name": "Praia do Cedro",
+   "lat": -27.7568,
+   "lon": -48.61799,
+   "distance_km": 22.1
+  },
+  {
+   "name": "Praia do Chico Serafim",
+   "lat": -27.43027,
+   "lon": -48.57762,
+   "distance_km": 21.19
+  },
+  {
+   "name": "Praia do Defunto",
+   "lat": -27.37259,
+   "lon": -48.53181,
+   "distance_km": 25.8
+  },
+  {
+   "name": "Praia do Fayet",
+   "lat": -27.38204,
+   "lon": -48.56161,
+   "distance_km": 25.54
+  },
+  {
+   "name": "Praia do Forte",
+   "lat": -27.43508,
+   "lon": -48.51991,
+   "distance_km": 18.76
+  },
+  {
+   "name": "Praia do Gravatá",
+   "lat": -27.61342,
+   "lon": -48.43361,
+   "distance_km": 4.81
+  },
+  {
+   "name": "Praia do Hipólito",
+   "lat": -27.53233,
+   "lon": -48.52555,
+   "distance_km": 8.76
+  },
+  {
+   "name": "Praia do Matadeiro",
+   "lat": -27.75445,
+   "lon": -48.49807,
+   "distance_km": 17.27
+  },
+  {
+   "name": "Praia do Morro das Pedras",
+   "lat": -27.7107,
+   "lon": -48.4995,
+   "distance_km": 12.46
+  },
+  {
+   "name": "Praia do Moçambique",
+   "lat": -27.52415,
+   "lon": -48.40533,
+   "distance_km": 11.19
+  },
+  {
+   "name": "Praia do Pontal",
+   "lat": -27.45649,
+   "lon": -48.5446,
+   "distance_km": 17.18
+  },
+  {
+   "name": "Praia do Pântano do Sul",
+   "lat": -27.7858,
+   "lon": -48.51879,
+   "distance_km": 21.01
+  },
+  {
+   "name": "Praia do Rio Tavares",
+   "lat": -27.65437,
+   "lon": -48.46779,
+   "distance_km": 6.16
+  },
+  {
+   "name": "Praia do Rio das Pacas",
+   "lat": -27.79431,
+   "lon": -48.53344,
+   "distance_km": 22.24
+  },
+  {
+   "name": "Praia do Sabiá",
+   "lat": -27.38893,
+   "lon": -48.56312,
+   "distance_km": 24.86
+  },
+  {
+   "name": "Praia do Sambaqui",
+   "lat": -27.49119,
+   "lon": -48.53132,
+   "distance_km": 13.11
+  },
+  {
+   "name": "Praia do Santinho",
+   "lat": -27.45802,
+   "lon": -48.37399,
+   "distance_km": 18.93
+  },
+  {
+   "name": "Praia do Sinal",
+   "lat": -27.42707,
+   "lon": -48.57117,
+   "distance_km": 21.23
+  },
+  {
+   "name": "Praia do Teodoro",
+   "lat": -27.53713,
+   "lon": -48.52866,
+   "distance_km": 8.48
+  },
+  {
+   "name": "Praia do Zé André",
+   "lat": -27.39337,
+   "lon": -48.5639,
+   "distance_km": 24.42
+  },
+  {
+   "name": "Praia do Zé da Benta",
+   "lat": -27.53394,
+   "lon": -48.52631,
+   "distance_km": 8.65
+  },
+  {
+   "name": "Praia dos Currais",
+   "lat": -27.41125,
+   "lon": -48.56665,
+   "distance_km": 22.66
+  },
+  {
+   "name": "Praia dos Magalhães",
+   "lat": -27.39983,
+   "lon": -48.56199,
+   "distance_km": 23.68
+  },
+  {
+   "name": "Prainha Xanahi",
+   "lat": -27.42912,
+   "lon": -48.57634,
+   "distance_km": 21.24
+  },
+  {
+   "name": "Prainha da Concha",
+   "lat": -27.42391,
+   "lon": -48.56863,
+   "distance_km": 21.44
+  },
+  {
+   "name": "Praia da Freguesia do Ribeirão da Ilha",
+   "lat": -27.71999,
+   "lon": -48.56456,
+   "distance_km": 15.73
+  },
+  {
+   "name": "Praia do Rita",
+   "lat": -27.72296,
+   "lon": -48.56414,
+   "distance_km": 15.99
+  },
+  {
+   "name": "Praia da Barra da Lagoa",
+   "lat": -27.57132,
+   "lon": -48.42578,
+   "distance_km": 6.22
+  },
+  {
+   "name": "Praia da Cachoeira do Bom Jesus",
+   "lat": -27.41892,
+   "lon": -48.43863,
+   "distance_km": 20.54
+  },
+  {
+   "name": "Praia de Canajurê",
+   "lat": -27.43336,
+   "lon": -48.48031,
+   "distance_km": 18.53
+  },
+  {
+   "name": "Praia de Canasvieiras",
+   "lat": -27.42682,
+   "lon": -48.46114,
+   "distance_km": 19.35
+  },
+  {
+   "name": "Praia do Saquinho",
+   "lat": -27.51864,
+   "lon": -48.44229,
+   "distance_km": 9.78
+  },
+  {
+   "name": "Praia do Tomé",
+   "lat": -27.67077,
+   "lon": -48.63676,
+   "distance_km": 17.33
+  },
+  {
+   "name": "Prainha do Leste",
+   "lat": -27.57416,
+   "lon": -48.42107,
+   "distance_km": 6.48
+  },
+  {
+   "name": "Praia Brava",
+   "lat": -27.39928,
+   "lon": -48.41291,
+   "distance_km": 23.28
+  },
+  {
+   "name": "Praia da Fazenda da Armação",
+   "lat": -27.36787,
+   "lon": -48.5547,
+   "distance_km": 26.84
+  },
+  {
+   "name": "Praia de Ponta das Canas",
+   "lat": -27.40291,
+   "lon": -48.43186,
+   "distance_km": 22.42
+  },
+  {
+   "name": "Praia do Antenor",
+   "lat": -27.42678,
+   "lon": -48.57368,
+   "distance_km": 21.36
+  },
+  {
+   "name": "Praia do Cacupé Grande",
+   "lat": -27.54254,
+   "lon": -48.52556,
+   "distance_km": 7.81
+  },
+  {
+   "name": "Praia do Campeche",
+   "lat": -27.68598,
+   "lon": -48.48582,
+   "distance_km": 9.58
+  },
+  {
+   "name": "Praia do Itaguaçu",
+   "lat": -27.61687,
+   "lon": -48.59067,
+   "distance_km": 11.06
+  },
+  {
+   "name": "Praia dos Ingleses",
+   "lat": -27.42948,
+   "lon": -48.38691,
+   "distance_km": 21.07
+  },
+  {
+   "name": "Praia da Armação",
+   "lat": -27.73602,
+   "lon": -48.50664,
+   "distance_km": 15.35
+  },
+  {
+   "name": "Jurerê",
+   "lat": -27.4349,
+   "lon": -48.49818,
+   "distance_km": 18.45
+  },
+  {
+   "name": "Prainha da Barra",
+   "lat": -27.67539,
+   "lon": -48.63642,
+   "distance_km": 17.54
+  },
+  {
+   "name": "Ponta da Ilhota",
+   "lat": -27.606,
+   "lon": -48.57251,
+   "distance_km": 9.14
+  },
+  {
+   "name": "Praia da Camboa",
+   "lat": -27.36648,
+   "lon": -48.5462,
+   "distance_km": 26.77
+  },
+  {
+   "name": "Praia da Saudade",
+   "lat": -27.61164,
+   "lon": -48.57963,
+   "distance_km": 9.9
+  },
+  {
+   "name": "Praia da Tapera",
+   "lat": -27.68861,
+   "lon": -48.56887,
+   "distance_km": 13.18
+  },
+  {
+   "name": "Praia das Palmeiras",
+   "lat": -27.61604,
+   "lon": -48.59573,
+   "distance_km": 11.54
+  },
+  {
+   "name": "Praia do Bom Abrigo",
+   "lat": -27.61183,
+   "lon": -48.59747,
+   "distance_km": 11.65
+  },
+  {
+   "name": "Praia do Meio",
+   "lat": -27.61385,
+   "lon": -48.58488,
+   "distance_km": 10.45
+  },
+  {
+   "name": "Prainha da Fortaleza",
+   "lat": -27.42293,
+   "lon": -48.56772,
+   "distance_km": 21.51
+  }
+ ]
+}
