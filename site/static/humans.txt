@@ -69,6 +69,7 @@ Website: https://www.instagram.com/yogacomgui/
 Name: Dhirendra Hélder
 Role: advisor
 Affiliation: Dhidrone
+State: Rio Grande do Sul / Santa Catarina
 Website: https://dhidrone.com.br/
 
 /* SITE */
