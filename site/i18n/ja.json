@@ -235,5 +235,6 @@
   "metric.water": "水質",
   "player.drag": "プレーヤーを地図の上でドラッグ",
   "flow.scuba": "ダイビング",
-  "flow.key_scuba": "ダイビングポイント"
+  "flow.key_scuba": "ダイビングポイント",
+  "flow.key_water_next": "次の速報 {when}"
 }

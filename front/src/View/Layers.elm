@@ -240,6 +240,20 @@ waterFileKey model =
                     )
                 ]
             ]
+                ++ (case file.nextBulletin of
+                        Just day ->
+                            [ Html.span []
+                                [ Html.text
+                                    (Words.ta model
+                                        "flow.key_water_next"
+                                        [ ( "when", Icu.Text (DateFmt.short day model.loc.language) ) ]
+                                    )
+                                ]
+                            ]
+
+                        Nothing ->
+                            []
+                   )
 
         _ ->
             []

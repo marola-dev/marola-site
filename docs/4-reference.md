@@ -125,6 +125,7 @@ Paraná has another:
 | `area` | The area id |
 | `source` | The agency: `IMA/SC` or `IAT/PR` |
 | `sampled_on` | The bulletin's day. The key's line under the rail prints it, so a dot never reads as today's |
+| `next_bulletin` | Optional. The next bulletin's day, when the agency has announced it (Paraná's is 18 December 2026). The key prints it under the sampling day, so an old file reads as old, not as today's |
 | `note` | Text for whoever refreshes it |
 | `points` | `{point, location, lat, lon, condition, sampled_on, enterococci_per_100ml, rain}`, the board's own point shape (`proper`, `improper`, `unknown`) |
 

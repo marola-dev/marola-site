@@ -235,5 +235,6 @@
   "metric.water": "beach card metric row: label under the sea water temperature in °C",
   "player.drag": "aria-label and tooltip of the player's drag grip",
   "flow.scuba": "layer button that shows the diving sites on the map",
-  "flow.key_scuba": "caption under the rail when the scuba layer is on: the diving sites"
+  "flow.key_scuba": "caption under the rail when the scuba layer is on: the diving sites",
+  "flow.key_water_next": "caption under the water key when the file names the next bulletin date; {when} is a short date"
 }
