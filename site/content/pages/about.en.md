@@ -102,6 +102,14 @@ Aleksei Vesnin ([@aleskiontherun](https://github.com/aleskiontherun)), of [OpenD
 
 Pedro Veras Guimarães ([@pvguima](https://github.com/pvguima)) gave his time, kindness and attention to explain wave physics to marola's founder.
 
+Fabio Nascimento, for his friendship and for putting up with marola's founder for two years at LIOC — the Oceanographic Instrumentation Laboratory, where he learned to program more than ten years ago, alongside Luiz Felipe ([@lfelipem](https://github.com/lfelipem)); the code from that time is in [legacy-CSUB](https://github.com/h0ffmann/legacy-CSUB).
+
+to my other colleagues at UFSC in the [ondaseventos.ufsc.br](https://ondaseventos.ufsc.br/) project, and for their patience: Alicia, Carla and Ricardo.
+
+
+
+
+
 ## How to help
 
 Use the map and tell us when it is wrong. Tell us what you see in the water, like jellyfish or a missing beach. Open an [issue](https://github.com/marola-dev/marola/issues), in Portuguese or English. The code, the plans and every decision are on [GitHub](https://github.com/marola-dev/marola), and [the docs](https://docs.marola.dev/) show what works today and what is still a plan.

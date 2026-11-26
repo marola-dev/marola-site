@@ -103,6 +103,14 @@ Aleksei Vesnin ([@aleskiontherun](https://github.com/aleskiontherun)), do [OpenD
 
 Pedro Veras Guimarães ([@pvguima](https://github.com/pvguima)) dedicou tempo, gentileza e atenção para explicar física de ondas ao fundador do marola.
 
+Fabio Nascimento, pela amizade e por ter aturado o fundador do marola por dois anos no LIOC — Laboratório de Instrumentação Oceanográfica, onde ele aprendeu a programar há mais de dez anos, junto com Luiz Felipe ([@lfelipem](https://github.com/lfelipem)); o código daquela época está no [legacy-CSUB](https://github.com/h0ffmann/legacy-CSUB).
+
+aos meus outros colegas da UFSC no projeto [ondaseventos.ufsc.br](https://ondaseventos.ufsc.br/) e por sua paciência: Alicia, Carla e Ricardo.
+
+
+
+
+
 ## como ajudar
 
 use o mapa e avise quando ele errar. conte também o que você vê na água, como água-viva, ou se está faltando alguma praia. abra uma [issue](https://github.com/marola-dev/marola/issues), em português ou em inglês. o código, os planos e cada decisão estão no [GitHub](https://github.com/marola-dev/marola). [a documentação](https://docs.marola.dev/) mostra o que já funciona e o que ainda é plano.

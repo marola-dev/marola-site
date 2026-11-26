@@ -103,6 +103,14 @@ marola の研究は [marola-research](https://github.com/marola-dev/marola-resea
 
 Pedro Veras Guimarães（[@pvguima](https://github.com/pvguima)）は、marola の創設者に波の物理を教えるために時間と親切さを注ぎました。
 
+Fabio Nascimento には、友情と、LIOC（海洋計測機器研究所）で2年間 marola の創設者に付き合ってくれたことに感謝します。そこで10年以上前に、Luiz Felipe（[@lfelipem](https://github.com/lfelipem)）と一緒にプログラミングを学びました。当時のコードは [legacy-CSUB](https://github.com/h0ffmann/legacy-CSUB) にあります。
+
+UFSC の [ondaseventos.ufsc.br](https://ondaseventos.ufsc.br/) プロジェクトの他の同僚、そしてその忍耐に感謝します: Alicia、Carla、Ricardo。
+
+
+
+
+
 ## 協力の方法
 
 地図を使い、間違っていたら教えてください。クラゲなど海で見たものや、足りないビーチも知らせてください。[issue](https://github.com/marola-dev/marola/issues)を、日本語でも英語でも開いてください。コード、計画、それぞれの決定はすべて[GitHub](https://github.com/marola-dev)にあります。[ドキュメント](https://docs.marola.dev/)に、動いているものとまだ計画のものが書かれています。

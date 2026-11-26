@@ -103,6 +103,13 @@ marola 的研究在 [marola-research](https://github.com/marola-dev/marola-resea
 
 Pedro Veras Guimarães（[@pvguima](https://github.com/pvguima)）花了時間、善意與耐心，向 marola 的創辦人講解波浪物理。
 
+感謝 Fabio Nascimento 的友誼，以及在 LIOC（海洋儀器實驗室）忍受 marola 創辦人兩年；十多年前，創辦人在那裡與 Luiz Felipe（[@lfelipem](https://github.com/lfelipem)）一起學會了寫程式。當時的程式碼在 [legacy-CSUB](https://github.com/h0ffmann/legacy-CSUB)。
+
+感謝 UFSC 的 [ondaseventos.ufsc.br](https://ondaseventos.ufsc.br/) 計畫其他同事，以及他們的耐心：Alicia、Carla 和 Ricardo。
+
+
+
+
 ## 如何幫忙
 
 使用地圖，發現錯誤就告訴我們。也請告訴我們你在海裡看到的東西，例如水母，或缺少的海灘。請開 [issue](https://github.com/marola-dev/marola/issues)，中文或英文皆可。程式碼、計畫與每個決定都在 [GitHub](https://github.com/marola-dev)。[文件](https://docs.marola.dev/)寫明哪些已經能運作、哪些還是計畫。
