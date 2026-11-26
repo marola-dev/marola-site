@@ -19,7 +19,7 @@ no commit yet follow, in the Zenodo record's order.
 | Kuzniecow, Yuri | Canto das Aguas SC | Santa Catarina | | | https://cantodasaguas.org/ | | advisor | |
 | Nader, Joao Victor | @oseuprofessordefisica | Rio de Janeiro | | | https://www.instagram.com/nader_oficial/ https://www.instagram.com/oseuprofessordefisica/ | | advisor | |
 | Costa, Guilherme | @yoga com gui | Rio de Janeiro | | | https://www.instagram.com/yogacomgui/ | | advisor | |
-| Hélder, Dhirendra | Dhidrone | | | | https://dhidrone.com.br/ | | advisor | |
+| Hélder, Dhirendra | Dhidrone | Rio Grande do Sul / Santa Catarina | | | https://dhidrone.com.br/ | | advisor | |
 
 ## Non-human
 
