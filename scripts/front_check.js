@@ -582,9 +582,9 @@ async function parana() {
   const areas = distJson('data/areas.json');
   const pr = (areas.areas || areas).find((a) => a.id === 'parana');
   ok(pr && pr.pin && pr.pin.name === 'Ilha do Mel' && !pr.pin.url, 'areas.json pins Paraná at Ilha do Mel', JSON.stringify(pr && pr.pin));
-  ok(map.opts.center[0] === -48.3107 && map.opts.center[1] === -25.5345 && map.opts.zoom === 7, 'the map enters at the island, then frames the state', JSON.stringify(map.opts.center.concat(map.opts.zoom)));
+  ok(map.opts.center[0] === -48.3107 && map.opts.center[1] === -25.5345 && map.opts.zoom === 9, 'the map enters at the island, then frames the Litoral', JSON.stringify(map.opts.center.concat(map.opts.zoom)));
   const fits = map.calls.filter((c) => c.name === 'fitBounds');
-  ok(fits.length === 1 && JSON.stringify(fits[0].args[0]) === JSON.stringify([[-54.65, -26.75], [-47.98, -22.48]]) && fits[0].args[1].maxZoom === 12, 'the camera frames the whole state, and the beaches never refit it', JSON.stringify(fits));
+  ok(fits.length === 1 && JSON.stringify(fits[0].args[0]) === JSON.stringify([[-49.1, -25.95], [-48, -25.15]]) && fits[0].args[1].maxZoom === 12, 'the camera frames the Litoral, and the beaches never refit it', JSON.stringify(fits));
   const pin = live().find((m) => cls(m.el).includes('pin'));
   ok(pin && $('.pin-label', pin.el).textContent === 'Ilha do Mel' && !pin.el.getAttribute('href'), 'the island is named on the map, with no link');
   const feats = trailCollection(map).features, file = trailFile('parana');

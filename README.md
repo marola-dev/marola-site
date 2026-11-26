@@ -126,9 +126,11 @@ attribution and a slim strip for the language.
   stays there instead of fitting all the beaches. That is the first
   embed: the institute's [ecomonitoring platform](https://cantodasaguas.org/) shows the lagoon on
   today's date, in Portuguese.
-- Paraná frames the whole state, from the coast and the Serra do Mar to the Costa Oeste and the
-  Norte, with the **Ilha do Mel** pinned inside, opens on the bathing-water layer, and draws
-  IAT/PR's 76 points from the Ilha do Mel to Foz do Iguaçu and Primeiro de Maio.
+- Paraná carries the whole state's data — the coast, the Costa Oeste and the Norte — but its map
+  stays on the Litoral, at the **Ilha do Mel**, with the coast and the Serra do Mar in frame. It
+  opens on the bathing-water layer and draws IAT/PR's 76 points from the Ilha do Mel to Foz do
+  Iguaçu and Primeiro de Maio; the interior is in the data and in the trail and water panels, not
+  in the first frame.
 - Florianópolis frames the island and the three offshore islands, with the **Ilha do Xavier**, the
   **Ilha do Arvoredo** and the **Ilha do Campeche** pinned inside. Every pin's label and its hover
   description follow the page language (`pt-BR`, `en`, `ja`, `zh-Hant`). Xavier and Arvoredo are

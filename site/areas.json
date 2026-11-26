@@ -141,12 +141,12 @@
     "tz": "America/Sao_Paulo",
     "tiles": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
     "tiles_attribution": "© OpenStreetMap contributors",
-    "zoom": 7,
+    "zoom": 9,
     "bounds": [
-      -54.65,
-      -26.75,
-      -47.98,
-      -22.48
+      -49.1,
+      -25.95,
+      -48.0,
+      -25.15
     ],
     "layer": "water",
     "pin": {
