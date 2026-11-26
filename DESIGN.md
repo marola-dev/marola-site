@@ -486,7 +486,7 @@ pages](#no-inline-style-no-script-on-content-pages)). Each layout mirrors `View/
 
 - **Top bar** (`header.top`): the same as the map page's. The wordmark is a link to the map
   (`.brand h1 a`). The language switch is four plain links to the same page in each language, each
-  with its flag emoji: 🇧🇷 PT-BR, 🇺🇸 EN, 🇯🇵 JA, 🇹🇼 繁.
+  with its flag emoji: 🇧🇷 PT-BR, 🇺🇸 EN, 🇯🇵 JA, 🇨🇳 繁.
 - **Page bar** (`div.bar.pagebar`): where the map page has its tool row. One pill, "back to the
   map", with a mono arrow drawn by CSS, and the tagline at the right (hidden to the eye under
   900 px, like on the map page). There is no area picker and no day buttons.
