@@ -15,6 +15,8 @@ type alias WaterFile =
     { area : String
     , source : String
     , sampledOn : String
+    , season : Maybe String
+    , nextBulletin : Maybe String
     , note : Maybe String
     , points : List WaterPoint
     }
@@ -26,6 +28,8 @@ decoder =
         |> required "area" D.string
         |> required "source" D.string
         |> required "sampled_on" D.string
+        |> Dec.andMap (Dec.optional "season" D.string)
+        |> Dec.andMap (Dec.optional "next_bulletin" D.string)
         |> required "note" (Dec.nullable D.string)
         |> required "points" (D.list Water.pointDecoder)
 
