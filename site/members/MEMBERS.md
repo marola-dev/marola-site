@@ -20,6 +20,7 @@ no commit yet follow, in the Zenodo record's order.
 | Nader, Joao Victor | @oseuprofessordefisica | Rio de Janeiro | | | https://www.instagram.com/nader_oficial/ https://www.instagram.com/oseuprofessordefisica/ | | advisor | |
 | Costa, Guilherme | @yoga com gui | Rio de Janeiro | | | https://www.instagram.com/yogacomgui/ | | advisor | |
 | Hélder, Dhirendra | Dhidrone | Rio Grande do Sul / Santa Catarina | | | https://dhidrone.com.br/ | | advisor | |
+| Almeida, Bárbara | TV Integração | Minas Gerais | | | https://www.instagram.com/barbaraalmeidajn/ | | advisor | |
 
 ## Non-human
 
@@ -50,6 +51,10 @@ contributes without a role in the organization, or empty. Adding a creator of th
 Zenodo record goes with the same change to `.zenodo.json` in [marola-dev/marola](https://github.com/marola-dev/marola), so
 the next release credits them. marola-site's `members.yml` opens a PR with the updated page the
 next day.
+
+A person with no GitHub login may have a photo at `profile/avatars/<given>-<family>.<png|jpg>`
+(lowercase ASCII, accents folded, hyphens for spaces), which the members page shows instead of
+initials. The file is optional; without it the page shows the person's initials.
 
 The `## Non-human` table is the same idea for what is not a person: one row per agent or software
 fabric, with `Name`, `GitHub` and `Website`, the site never empty and the GitHub login naming the
