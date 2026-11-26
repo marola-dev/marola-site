@@ -107,6 +107,8 @@ Fabio Nascimento, pela amizade e por ter aturado o fundador do marola por dois a
 
 aos meus outros colegas da UFSC no projeto [ondaseventos.ufsc.br](https://ondaseventos.ufsc.br/) e por sua paciência: Alicia, Carla e Ricardo.
 
+e um agradecimento ao [@brunogbv](https://github.com/brunogbv) por ser um amigo que exigiu menos esforço para poder contribuir e ajudar a melhorar. e à [@aracyla](https://github.com/aracyla) por tolerar minhas horas de monólogos; sempre ao lado dela me senti como Pink e Cérebro — deixo para os leitores decidirem quem é quem.
+
 
 
 

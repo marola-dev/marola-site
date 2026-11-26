@@ -107,6 +107,8 @@ Fabio Nascimento には、友情と、LIOC（海洋計測機器研究所）で2�
 
 UFSC の [ondaseventos.ufsc.br](https://ondaseventos.ufsc.br/) プロジェクトの他の同僚、そしてその忍耐に感謝します: Alicia、Carla、Ricardo。
 
+また、[@brunogbv](https://github.com/brunogbv) には、貢献して改善を手伝うための負担が少なくて済む友人でいてくれたことに感謝します。そして [@aracyla](https://github.com/aracyla) には、私の何時間もの独白に耐えてくれたことに。彼女のそばではいつもピンキーとブレインのような気分でした — どちらがどちらかは読者に任せます。
+
 
 
 

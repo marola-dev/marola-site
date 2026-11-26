@@ -106,6 +106,8 @@ Fabio Nascimento, for his friendship and for putting up with marola's founder fo
 
 to my other colleagues at UFSC in the [ondaseventos.ufsc.br](https://ondaseventos.ufsc.br/) project, and for their patience: Alicia, Carla and Ricardo.
 
+And thanks to [@brunogbv](https://github.com/brunogbv) for being a friend who asked for less effort to contribute and help improve things. And to [@aracyla](https://github.com/aracyla) for tolerating my hours of monologues; beside her I always felt like Pinky and the Brain — I leave it to the readers to decide who is who.
+
 
 
 

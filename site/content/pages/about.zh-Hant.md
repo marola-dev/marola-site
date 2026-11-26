@@ -107,6 +107,8 @@ Pedro Veras Guimarães（[@pvguima](https://github.com/pvguima)）花了時間�
 
 感謝 UFSC 的 [ondaseventos.ufsc.br](https://ondaseventos.ufsc.br/) 計畫其他同事，以及他們的耐心：Alicia、Carla 和 Ricardo。
 
+也感謝 [@brunogbv](https://github.com/brunogbv) 這位朋友，讓貢獻和協助改善變得更輕鬆。也感謝 [@aracyla](https://github.com/aracyla) 忍受我數小時的獨白；在她身邊我總覺得像 Pinky 和 Brain——誰是誰就留給讀者決定。
+
 
 
 
