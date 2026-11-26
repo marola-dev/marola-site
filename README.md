@@ -67,7 +67,10 @@ behind an allowlist the server owns; the plan of eight tasks is in the ADR).
 How to read it: each row is a group of repos or services, and an arrow is what one hands to the
 next. Orange boxes are outside marola. Not shown: marola-oods' opt-in
 water cache to marola-app. Source: [`docs/archify/architecture.json`](docs/archify/architecture.json),
-drawn with the umbrella's Archify pin and `scripts/figure.sh` (in a marola checkout).
+drawn with the umbrella's Archify pin and `scripts/figure.sh` (in a marola checkout). The live site
+serves the same drawing as HTML at [`/architecture`](https://marola.dev/architecture), with the data
+flow at `/data-flow`, a study's way at `/studies-flow`, the deploy at `/deploy-flow` and the
+development flow at `/develop-flow`; `just figures` regenerates them.
 
 ### Data flow
 
@@ -81,8 +84,10 @@ drawn with the umbrella's Archify pin and `scripts/figure.sh` (in a marola check
 - **Water points.** `front/public/data/water/<area>.json` holds an area's official sampling points
   when the board cannot draw them: the app matches a point to a beach by name and never falls back
   to distance for an inland name, so a lagoon point reaches no beach. The page draws the file's
-  points on the water layer, once per place. The Complexo Lagunar (IMA/SC, beaches and lagoons) and
-  the Litoral do Paraná (IAT/PR, the coast and its rivers) have one. See
+  points on the water layer, once per sample: the same agency code near the same place, or the same
+  coordinates, is one dot. A beach the board leaves without water takes the file's point, so its
+  card and marker carry the agency's verdict. The Complexo Lagunar (IMA/SC, beaches and lagoons) and
+  Paraná (IAT/PR, the coast, the Costa Oeste and the Norte) have one. See
   [the reference](docs/4-reference.md#the-areas-own-water-file).
 - **Studies.** The server keeps the accounts, the API keys, the study rows and the reports in SQLite
   (`MAROLA_DB`) and the PDFs in a folder (`MAROLA_STUDIES`). The study pages and the Atom feed are
@@ -116,14 +121,20 @@ attribution and a slim strip for the language.
 - `layer` picks the layer on show (`water`, `wind`, `waves`, …), `lang` the language (`pt-BR`, `en`,
   `ja`, `zh-Hant`), and `beaches=0` / `trails=0` start with those hidden.
 - A bounded area frames its own waters: the Complexo Lagunar opens on the lagoons (Imaruí, Mirim,
-  Santo Antônio, Cabeçuda, Camacho, Arroio Corrente) with **Canto das Águas**, in Taquaraçatuba,
+  Santo Antônio, Cabeçuda, Camacho, Arroio Corrente) with the **Instituto Canto das Águas SC**, in Taquaraçatuba,
   Imaruí, pinned inside and linked to the institute's site, opens on the bathing-water layer, and
   stays there instead of fitting all the beaches. That is the first
   embed: the institute's [ecomonitoring platform](https://cantodasaguas.org/) shows the lagoon on
   today's date, in Portuguese.
-- The Litoral do Paraná frames the coast and the Serra do Mar (Guaratuba to Superagui, the bay and
-  the Pico Paraná), with the **Ilha do Mel** pinned inside, opens on the bathing-water layer, and
-  draws IAT/PR's 59 points from the Ilha do Mel to the rivers of Morretes and Antonina.
+- Paraná carries the whole state's data — the coast, the Costa Oeste and the Norte — but its map
+  stays on the Litoral, at the **Ilha do Mel**, with the coast and the Serra do Mar in frame. It
+  opens on the bathing-water layer and draws IAT/PR's 76 points from the Ilha do Mel to Foz do
+  Iguaçu and Primeiro de Maio; the interior is in the data and in the trail and water panels, not
+  in the first frame.
+- Florianópolis frames the island and the three offshore islands, with the **Ilha do Xavier**, the
+  **Ilha do Arvoredo** and the **Ilha do Campeche** pinned inside. Every pin's label and its hover
+  description follow the page language (`pt-BR`, `en`, `ja`, `zh-Hant`). Xavier and Arvoredo are
+  dive sites: the **scuba layer** shows them with a mask marker, and Campeche stays a place pin.
 - The server frames `/embed` only for the origins in `MAROLA_EMBED_FROM`, one per line, a file on the
   host ([hosting](docs/5-hosting.md#variables)). Every other page, and an empty list, keeps
   `frame-ancestors 'none'`: a partner asks to be added, and nobody else can frame marola. No origin

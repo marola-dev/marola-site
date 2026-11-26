@@ -50,12 +50,43 @@ intersperse sep items =
             first :: List.concatMap (\item -> [ sep, item ]) rest
 
 
-sources : Board -> List (Html Msg)
-sources board =
-    [ Just board.sources.beaches, Just board.sources.forecast, board.sources.water ]
+{-| The board's own sources, plus the area's water file when the board has no water source (the
+app has no provider there): the footer still links the agency whose points the map draws.
+-}
+sources : Model -> Board -> List (Html Msg)
+sources model board =
+    let
+        fileSource =
+            if board.sources.water == Nothing then
+                case model.waterFile of
+                    Model.WaterFileLoaded file ->
+                        Just file.source
+
+                    _ ->
+                        Nothing
+
+            else
+                Nothing
+    in
+    [ Just board.sources.beaches, Just board.sources.forecast, board.sources.water, fileSource ]
         |> List.filterMap identity
+        |> unique
         |> List.map source
         |> intersperse (Html.text " · ")
+
+
+unique : List String -> List String
+unique names =
+    List.foldl
+        (\name kept ->
+            if List.member name kept then
+                kept
+
+            else
+                kept ++ [ name ]
+        )
+        []
+        names
 
 
 {-| The generation time as `YYYY-MM-DD HH:MM`.
@@ -79,7 +110,7 @@ provenance model board =
         , I18n.numberArg "n" (toFloat (List.length board.beaches))
         ]
         "sources"
-        (sources board)
+        (sources model board)
 
 
 {-| What the status line says: a load in progress or failed, else the board.

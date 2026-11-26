@@ -10,7 +10,7 @@ requires; a malformed entry is silently dropped there rather than failing.
 | Field | Type | Notes |
 |---|---|---|
 | `id` | string, `^[a-z0-9-]+$` | The area's slug (`floripa`, `rio`, `salvador`, `complexo-lagunar`, `parana`); used in `data/<id>/…` paths and the `?area=` param |
-| `name` | string | The full display name (`Florianópolis`, `Rio de Janeiro`, `Salvador, BA`, `Complexo Lagunar Sul Catarinense`, `Litoral do Paraná`) |
+| `name` | string | The full display name (`Florianópolis`, `Rio de Janeiro`, `Salvador, BA`, `Complexo Lagunar Sul Catarinense`, `Paraná`) |
 | `lat`, `lon` | number | The area's centre point, for the Overpass query the app runs to find beaches |
 | `radius_km` | number | How far out from `lat`/`lon` the app looks for beaches |
 | `beach_limit` | number | The most beaches the app keeps for this area |
@@ -18,9 +18,10 @@ requires; a malformed entry is silently dropped there rather than failing.
 | `tiles` | string | A tile-server URL template. Read by the app side, not by this repo's own map any more: since the Mapbox GL switch ([libraries](2-libraries.md#what-mapbox-replaced)), `app.js` builds its base map from `mapbox-config.js` instead |
 | `tiles_attribution` | string | Pairs with `tiles`, same app-side status |
 | `zoom` | number, optional | Where the map enters when the area is picked and has no `bounds`; without it, `Config.areaZoom` (10) |
-| `layer` | string, optional | The map layer the area opens on, when the link names none (`water` for the Complexo Lagunar, whose subject is the lagoon's water quality, and for the Litoral do Paraná, whose points are IAT/PR's). A `?layer=` in the link wins |
-| `bounds` | `[west, south, east, north]`, optional | The box the camera frames when the area is picked, instead of a point zoom, and the beaches' bounds no longer refit it. The Complexo Lagunar frames its lagoons (`-48.95, -28.63, -48.61, -28.07`): Imaruí, Mirim, Santo Antônio, Cabeçuda, Camacho, Arroio Corrente. The Litoral do Paraná frames the coast and the Serra do Mar (`-49.10, -25.95, -48.00, -25.15`), from Guaratuba to Superagui and inland to the Pico Paraná |
-| `pin` | object, optional | `{name, lat, lon, url}`: the area's named place, drawn as a pin inside the camera's frame; `url` makes it a link, opened in a new tab. The Complexo Lagunar is pinned to Canto das Águas in Taquaraçatuba, Imaruí, linking to `https://cantodasaguas.org/`; it is the institute's published location, not a surveyed gate. The Litoral do Paraná is pinned to the Ilha do Mel, the state's most visited point, with no link: marola has no partner there yet |
+| `layer` | string, optional | The map layer the area opens on, when the link names none (`water` for the Complexo Lagunar, whose subject is the lagoon's water quality, and for Paraná, whose points are IAT/PR's). A `?layer=` in the link wins. An area without a layer opens on the plain map and never inherits the previous area's layer |
+| `bounds` | `[west, south, east, north]`, optional | The box the camera frames when the area is picked, instead of a point zoom, and the beaches' bounds no longer refit it. Florianópolis frames the island and the three offshore islands (`-48.62, -27.85, -48.30, -27.24`). The Complexo Lagunar frames its lagoons (`-48.95, -28.63, -48.61, -28.07`): Imaruí, Mirim, Santo Antônio, Cabeçuda, Camacho, Arroio Corrente. Paraná frames the Litoral (`-49.10, -25.95, -48.00, -25.15`), from Guaratuba to Superagui and inland to the Pico Paraná; its data is state-wide, but the first frame is the coast |
+| `pin` | object, optional | `{name, names, descriptions, lat, lon, url}`: the area's named place, drawn as a pin inside the camera's frame; `url` makes it a link, opened in a new tab. `names` and `descriptions` are objects keyed by locale (`pt-BR`, `en`, `ja`, `zh-Hant`); a missing translation falls back to `name`, and a pin with no description opens no hover bubble. The Complexo Lagunar is pinned to the Instituto Canto das Águas SC in Taquaraçatuba, Imaruí, linking to `https://cantodasaguas.org/`; it is the institute's published location, not a surveyed gate. Paraná is pinned to the Ilha do Mel, the state's most visited point, with no link: marola has no partner there yet |
+| `pins` | array, optional | The area's other named places, each the same shape as `pin` plus an optional `kind`: `place` (the default, always drawn) or `dive` (drawn only on the scuba layer). Florianópolis pins the Ilha do Xavier and the Ilha do Arvoredo as `dive` and the Ilha do Campeche as a place; every label follows the page language and the hover bubble is the localized description. The page draws the `pin` and every `pins` entry once |
 
 ## Tile policy
 
@@ -40,8 +41,8 @@ this is the cost and provenance side:
   ([Base map pin](#base-map-pin), [5-hosting](5-hosting.md#the-base-map)).
 - **NASA GIBS** (the four satellite raster layers): free, keyless, public tiles, fetched only when
   a visitor turns one of those layers on. No account and no cost.
-- **Spotify** (the new site's playlist player): the embed of GREAT RESET, the playlist
-  room.piabrota.art plays (`Config.playlistEmbed`), loaded in an iframe only when a visitor presses
+- **Spotify** (the new site's playlist player): the embed of GREAT RESET, the playlist Piabrota ART
+  features (`Config.playlistEmbed`), loaded in an iframe only when a visitor presses
   the Spotify button. No account and no cost for marola; playing in full needs the visitor's own login.
 
 ## Base map pin
@@ -61,12 +62,16 @@ does not hash the build itself, which it never downloads whole.
 
 An area's box is its centre plus and minus `radius_km + 50` km. A new area in `site/areas.json` needs the
 file cut again: the `complexo-lagunar` area (the Southern Santa Catarina Lagoon Complex) and the
-`parana` area (the Litoral do Paraná) are in the list, so the host's `MAROLA_TILES` file needs a new
-`scripts/basemap_extract.sh` run before the live map shows streets there. The fixture preview still
-cuts only the first area to zoom 11 (`--fixture`). Outside it, at an area's zoom, the file has no
-tile: the page draws its overlays over the background, not the base map, unless a lower zoom was
-loaded first. That is a stand-in, not a missing build step; the host's file covers Brazil to zoom 9
-and each area's box to zoom 15, so the live map has land and streets there.
+`parana` area are in the list, so the host's `MAROLA_TILES` file needs a new
+`scripts/basemap_extract.sh` run before the live map shows streets there. Paraná's centre and
+`radius_km` stay on the coast (`70`), so its deep box is the Litoral and the Serra do Mar; the state's
+interior at zoom 10 and closer uses the Brazil tiles (zoom 7 to 9), because a box over the whole
+state at zoom 15 would be a second file the size of a continent. The camera stays on the Litoral,
+from `bounds`; the data is state-wide, but the first frame is not. The fixture preview still cuts only the first area to zoom 11
+(`--fixture`). Outside it, at an area's zoom, the file has no tile: the page draws its overlays over
+the background, not the base map, unless a lower zoom was loaded first. That is a stand-in, not a
+missing build step; the host's file covers Brazil to zoom 9 and each area's box to zoom 15, so the
+live map has land and streets there.
 
 ## Board schema pin
 
@@ -89,7 +94,7 @@ then this repo's `marola-image`/`board-schema.sh --update` pair — see
 The schema (`$schema`: `https://json-schema.org/draft/2020-12/schema`) requires `schema`, `area`,
 `day`, `today`, `generated_at`, `sources`, `lore` and `beaches`; `trails` is optional.
 
-## Water quality in the Complexo Lagunar and the Litoral do Paraná
+## Water quality in the Complexo Lagunar and in Paraná
 
 The `complexo-lagunar` boards use the usual pipeline: OpenStreetMap beaches and IMA/SC's
 bathing-water points. IMA publishes points in the lagoons (Lagoa de Ibiraquera, Lagoa da Ferrugem,
@@ -105,8 +110,14 @@ inland-water beach, or a name alias), not an edit here.
 `front/public/data/water/<area>.json` is the page's fallback for exactly that case: the official
 points the board cannot draw because the app matches a provider point to a beach by name. The map
 page fetches `data/water/<area>.json` for the area on show and draws its points on the water layer,
-next to the board's, once per place (a point within about a metre of one the board already carries
-is the same sample). The Complexo Lagunar has one; the Litoral do Paraná has another:
+next to the board's, once per sample. Two points are the same sample when their coordinates are
+within about a metre, or when they carry the same agency code within about two kilometres. The
+distance matters: IMA/SC reuses `Ponto 04` for different lagoons, and the code alone would merge
+them. The board's own list is deduplicated too, so a sample the app attaches to two beaches is one
+dot. A beach whose board carries no water point takes the file's point for it — by the agency's
+place name, else within about a kilometre — so its card and its marker's band read the agency's
+verdict, not "no data"; the board's own points always win. The Complexo Lagunar has one file;
+Paraná has another:
 
 | Field | Notes |
 |---|---|
@@ -124,10 +135,13 @@ file**; it is a copy, not live data, and no job refreshes it. The agency's site 
 <https://balneabilidade.ima.sc.gov.br/> (`/municipio/getMunicipios` and the two POSTs its page
 makes).
 
-The Litoral do Paraná file is a copy of IAT/PR's *Balneabilidade Atual* service
+The Paraná file is a copy of IAT/PR's *Balneabilidade Atual* service
 (<https://geopr.iat.pr.gov.br/server/rest/services/Geoprocessamento/balneabilidade/FeatureServer/0>,
-the layer the agency's own map reads), taken on 26 November 2026: 59 points from the Ilha do Mel to
-Guaratuba and the rivers of Morretes and Antonina, 19 of them `improper`. The service's last complete
+the layer the agency's own map reads), taken on 26 November 2026: 76 points, 22 of them `improper`.
+59 are in the Litoral, from the Ilha do Mel to Guaratuba and the rivers of Morretes and Antonina; 16
+are in the Costa Oeste, the river and Itaipu-lake beaches of the west; 1 is in the
+Norte, on the Rio Paranapanema at Primeiro de Maio. Curitiba, the Campos Gerais and the rest of the
+interior have no IAT balneability point, so the file does not invent one. The service's last complete
 week is the 9th bulletin of the 2025/2026 season (samples from 12 January to 9 February 2026,
 published for the week of 13–19 February); the 2026/2027 season's first bulletin is due on 18 December
 2026, and it replaces the file. The service lists 10 river-mouth points that the printed bulletin
@@ -135,7 +149,7 @@ does not; they are in the file too, because the agency samples them. The IAT use
 publishes no count in the bulletin, so `enterococci_per_100ml` is null for every point. The `source` is
 `IAT/PR`; the key under the layer prints that name and the sampling day, not "today". The file is the
 page's fallback: it draws these points whether or not the board's provider matches any of them, and
-the map draws each place once.
+the map draws each sample once.
 
 ## Embedding the map
 
@@ -148,7 +162,7 @@ page, the server sends `frame-ancestors 'none'`.
 
 The embed sets what the URL carries: `area`, `layer`, `lang`, `day`, `beaches=0` and `trails=0`
 (the page's other parameters). With no `day`, it is today's board. The Complexo Lagunar frames its
-lagoons from the first frame — its `bounds` — with Canto das Águas pinned inside, because an area
+lagoons from the first frame — its `bounds` — with the Instituto Canto das Águas SC pinned inside, because an area
 with `bounds` or a `pin` skips the fit to the beaches' bounds:
 
 ```html
@@ -179,8 +193,11 @@ The id of a route is its position in the bairros, in order. The map and the pane
 Rio de Janeiro has 113 routes in 17 bairros. Florianópolis has 44 routes. The Complexo Lagunar Sul
 Catarinense has 31 routes in seven groups (Imbituba, Garopaba, Paulo Lopes, Palhoça e Guarda do
 Embaú, Florianópolis, Laguna and Serra do Tabuleiro), from the same query over the lagoons and the
-Serra do Tabuleiro. The Litoral do Paraná has 67 routes in nine groups (Ilha do Mel, Guaraqueçaba,
-Antonina, Morretes, Serra do Mar, Pontal do Paraná, Matinhos, Guaratuba and the Grandes travessias).
+Serra do Tabuleiro. Paraná has 247 routes in 18 groups: the nine Litoral groups (Ilha do Mel,
+Guaraqueçaba, Antonina, Morretes, Serra do Mar, Pontal do Paraná, Matinhos, Guaratuba and the Grandes
+travessias), a Litoral e Serra do Mar group for the routes the original file did not carry, and eight
+IBGE mesoregions for the interior (Centro Oriental, Curitiba e Região Metropolitana, Noroeste, Norte
+Central, Norte Pioneiro, Oeste, Sudeste and Sudoeste Paranaense).
 Salvador has an empty list and a note: the panel shows the note, never an empty
 panel. When an area has no file, the board's own optional `trails` array stands in.
 
@@ -191,22 +208,28 @@ OpenStreetMap has a single named highway way in Imaruí (a `highway=steps` stree
 keeps named `path`/`track` ways only. A lagoon route appears when the map has one; the file does not
 invent it.
 
-**Provenance.** One query on the Overpass API made the files, except the Litoral do Paraná's: its
-file combines two queries, one 55 km around the Ilha do Mel and one 20 km around the Pico Paraná,
-because the area is two landscapes (the coast and the Serra do Mar). The files are a one-off copy: no
-job refreshes them. The query takes every `way` with `highway` in `path|footway|track|steps` and a
-`name`, and every `relation` with `route` in `hiking|foot`. Both use
-`around:<radius_m>,<lat>,<lon>`, and the radius and the centre come from `site/areas.json`. The
-bairro of a route comes from the OSM relations with `boundary=administrative` and `admin_level` 9 or
-10 (or `place=suburb`, `neighbourhood` or `quarter`) inside the municipality that has the OSM tag
-`IBGE:GEOCODIGO`; the Litoral do Paraná's file groups by municipality or landscape instead, from a
-reverse lookup of each route's midpoint, because its routes cross several municipalities. Its lines
-are simplified to about 10 m for the map (the length stays the full OSM geometry).
+**Provenance.** One query on the Overpass API made the files, except Paraná's: its file combines
+the two Litoral queries (55 km around the Ilha do Mel and 20 km around the Pico Paraná, because the
+area is two landscapes, the coast and the Serra do Mar) with one query over the state
+(`area["ISO3166-2"="BR-PR"]`), added on 26 November 2026. The files are a one-off copy: no job
+refreshes them. The query takes every `way` with `highway` in `path|footway|track|steps` and a
+`name`, and every `relation` with `route` in `hiking|foot`. The Litoral queries use
+`around:<radius_m>,<lat>,<lon>`; the interior query uses the state's OSM area. The bairro of a route
+comes from the OSM relations with `boundary=administrative` and `admin_level` 9 or 10 (or
+`place=suburb`, `neighbourhood` or `quarter`) inside the municipality that has the OSM tag
+`IBGE:GEOCODIGO`; Paraná's file keeps the Litoral groups and gives each interior route the IBGE
+mesoregion of its midpoint (the municipality polygon from the IBGE malha, then the mesoregion from
+the localidades API). Its lines are simplified to about 10 m for the map (30 m on the long
+travessias; the length stays the full OSM geometry).
 
 **Filter.** A way stays when `sac_scale` is set, or when it is a `highway=path` whose name does not
-start with a street word. The Litoral do Paraná's file also keeps named `footway`, `track` and
+start with a street word. The Litoral part of Paraná's file also keeps named `footway`, `track` and
 `steps` ways: its coastal routes are mapped that way, and keeping only `path` ways would leave the
-island and the bay nearly empty.
+island and the bay nearly empty. The state query also adds the Litoral routes the original two-query
+file did not carry, in a Litoral e Serra do Mar group. The interior part keeps named ways with a trail or landscape word
+(`trilha`, `caminho`, `travessia`, `cachoeira`, `salto`, `pico`, `morro`, `serra`, `parque`,
+`reserva`, `lagoa`, `rio`, …) and drops urban streets, accesses, driveways and park paths with no
+such word, so the state list is not every named sidewalk in Curitiba.
 
 **Licence.** The data is OpenStreetMap data under the ODbL 1.0. The page shows the credit in the
 map's attribution control and in the panel footer. Do not edit the files by hand: make them again

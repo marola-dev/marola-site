@@ -2,9 +2,11 @@ module DecoderTests exposing (suite)
 
 import Area
 import Board
+import Dict
 import Expect
 import Fixtures
 import Json.Decode as D
+import Language
 import Msg exposing (Loaded(..))
 import Support exposing (trailsSample)
 import Test exposing (Test, describe, test)
@@ -57,6 +59,33 @@ suite =
                 Expect.all
                     [ \_ -> Expect.equal (Result.map (List.member "floripa") list) (Ok True)
                     , \_ -> Expect.equal wrapped list
+                    ]
+                    ()
+        , test "a pin's label follows the page language" <|
+            \_ ->
+                let
+                    pin =
+                        { name = "Ilha do Xavier"
+                        , names = Dict.fromList [ ( "pt-BR", "Ilha do Xavier" ), ( "en", "Xavier Island" ) ]
+                        , descriptions = Dict.fromList [ ( "en", "Rocky island off Praia Mole." ) ]
+                        , kind = "dive"
+                        , lat = -27.6099
+                        , lon = -48.3852
+                        , url = Nothing
+                        }
+
+                    loc language =
+                        { catalog = Dict.empty, language = language }
+                in
+                Expect.all
+                    [ \_ ->
+                        Expect.equal
+                            ( Area.pinLabel (loc Language.En) pin, Area.pinLabel (loc Language.Ja) pin )
+                            ( "Xavier Island", "Ilha do Xavier" )
+                    , \_ ->
+                        Expect.equal
+                            ( Area.pinDescription (loc Language.En) pin, Area.isDive pin )
+                            ( Just "Rocky island off Praia Mole.", True )
                     ]
                     ()
         , test "a trails file reads its routes in order and drops the lines it cannot draw" <|

@@ -224,7 +224,7 @@
   "contact.send": "send",
   "brand.piabrota": "piabrota",
   "controls.playlist": "spotify",
-  "controls.playlist_title": "open GREAT RESET, the Spotify playlist of room.piabrota.art",
+  "controls.playlist_title": "open GREAT RESET, the Spotify playlist featured by Piabrota ART",
   "player.label": "GREAT RESET, a playlist on Spotify",
   "credit.made": "made in rio de janeiro by",
   "credit.crew": "marola-dev",
@@ -233,5 +233,7 @@
   "metric.wind": "wind",
   "metric.waves": "waves",
   "metric.water": "water",
-  "player.drag": "drag the player over the map"
+  "player.drag": "drag the player over the map",
+  "flow.scuba": "dive",
+  "flow.key_scuba": "dive sites"
 }

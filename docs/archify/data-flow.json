@@ -1,0 +1,159 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "where the map's data comes from",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "legend": {
+      "mode": "hidden"
+    },
+    "output": "data-flow.html"
+  },
+  "lanes": [
+    {
+      "id": "sources",
+      "label": "public sources"
+    },
+    {
+      "id": "app",
+      "label": "marola-app"
+    },
+    {
+      "id": "site",
+      "label": "marola-site"
+    },
+    {
+      "id": "you",
+      "label": "visitor"
+    }
+  ],
+  "mainPath": [
+    "osm",
+    "app",
+    "boards",
+    "map",
+    "visitor"
+  ],
+  "nodes": [
+    {
+      "id": "osm",
+      "lane": "sources",
+      "col": 0,
+      "type": "database",
+      "label": "OpenStreetMap",
+      "sublabel": "beaches, trails",
+      "width": 136
+    },
+    {
+      "id": "agencies",
+      "lane": "sources",
+      "col": 1,
+      "type": "database",
+      "label": "state agencies",
+      "sublabel": "IAT/PR, IMA/SC, INEA, INEMA",
+      "width": 136
+    },
+    {
+      "id": "meteo",
+      "lane": "sources",
+      "col": 2,
+      "type": "external",
+      "label": "Open-Meteo",
+      "sublabel": "sea and weather",
+      "width": 136
+    },
+    {
+      "id": "app",
+      "lane": "app",
+      "col": 3,
+      "type": "backend",
+      "label": "marola-app",
+      "sublabel": "matches, scores, trails",
+      "width": 136
+    },
+    {
+      "id": "boards",
+      "lane": "app",
+      "col": 4,
+      "type": "database",
+      "label": "board JSON",
+      "sublabel": "one file per day and area",
+      "width": 136
+    },
+    {
+      "id": "files",
+      "lane": "site",
+      "col": 4,
+      "type": "database",
+      "label": "water + trails",
+      "sublabel": "data/water, data/trails",
+      "width": 136
+    },
+    {
+      "id": "map",
+      "lane": "site",
+      "col": 5,
+      "type": "frontend",
+      "label": "map client",
+      "sublabel": "Elm, MapLibre",
+      "width": 136
+    },
+    {
+      "id": "visitor",
+      "lane": "you",
+      "col": 5,
+      "type": "external",
+      "label": "visitor",
+      "sublabel": "the beach, the hour",
+      "width": 136
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "osm",
+      "to": "app",
+      "label": "beaches, trails"
+    },
+    {
+      "id": "e2",
+      "from": "agencies",
+      "to": "app",
+      "label": "water points",
+      "role": "branch"
+    },
+    {
+      "id": "e3",
+      "from": "meteo",
+      "to": "app",
+      "label": "forecast",
+      "role": "branch"
+    },
+    {
+      "id": "e4",
+      "from": "app",
+      "to": "boards",
+      "label": "board JSON"
+    },
+    {
+      "id": "e5",
+      "from": "boards",
+      "to": "map",
+      "label": "fetched by the page"
+    },
+    {
+      "id": "e6",
+      "from": "files",
+      "to": "map",
+      "label": "fallback points",
+      "role": "branch"
+    },
+    {
+      "id": "e7",
+      "from": "map",
+      "to": "visitor",
+      "label": "score, water, trails"
+    }
+  ]
+}

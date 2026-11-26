@@ -73,8 +73,8 @@ maxZoom =
     17
 
 
-{-| GREAT RESET, the playlist room.piabrota.art plays (its `assets/config-*.js`). Loaded only once
-the visitor opens the player; the CSP's `frame-src` names this origin alone.
+{-| GREAT RESET, the playlist Piabrota ART features. Loaded only once the visitor opens the
+player; the CSP's `frame-src` names this origin alone.
 -}
 playlistEmbed : String
 playlistEmbed =
@@ -91,7 +91,7 @@ ignored. The wind, wave and satellite layers are built; adding one here turns it
 -}
 enabledLayers : List String
 enabledLayers =
-    [ "water" ]
+    [ "water", "scuba" ]
 
 
 bandColour : Band -> String

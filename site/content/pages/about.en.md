@@ -56,7 +56,10 @@ marola is a set of code repositories, each with one job:
 - **marola-devkit** is the set of tools every repository uses.
 - **marola**, the umbrella, holds the plans and the rules, and brings in every other repository as a git submodule.
 
-![How the marola repos fit together: marola, the umbrella, brings in every repo as a git submodule; marola-corpus hands a release tarball to marola-app and marola-ml; marola-app's image builds marola-site's map and brings image and resources to marola-ml, which returns compiled prompts in a PR; ETL jobs write marola-oods' data lake; every repo pins marola-devkit by tag; marola-skills reads every SKILL.md, marola-agents indexes every agent, and marola-research holds the science](/img/umbrella.svg 1000x712)
+[open the architecture diagram](/architecture) — marola's repositories and what each hands to the next.
+
+
+More diagrams: [where the data comes from](/data-flow), [a study's way](/studies-flow), [from a merge to marola.dev](/deploy-flow), [how a change reaches marola](/develop-flow).
 marola's repositories and what each hands to the next. The picture is the one on the [organization's GitHub page](https://github.com/marola-dev) (source: [marola-dev/.github](https://github.com/marola-dev/.github/blob/main/profile/README.en.md)).
 
 We call this a distributed monolith. It is one project, with one plan, one way of working and versions that move together, as if it were a single system. But each part lives in its own repository, with its own tests and releases.
@@ -98,6 +101,16 @@ The wave sound is a recording by Luftrum ([freesound](https://freesound.org/s/48
 Aleksei Vesnin ([@aleskiontherun](https://github.com/aleskiontherun)), of [OpenDiving](https://github.com/opendiving/opendiving), welcomed marola as a partner app.
 
 Pedro Veras Guimarães ([@pvguima](https://github.com/pvguima)) gave his time, kindness and attention to explain wave physics to marola's founder.
+
+Fabio Nascimento, for his friendship and for putting up with marola's founder for two years at LIOC — the Oceanographic Instrumentation Laboratory, where he learned to program more than ten years ago, alongside Luiz Felipe ([@lfelipem](https://github.com/lfelipem)); the code from that time is in [legacy-CSUB](https://github.com/h0ffmann/legacy-CSUB).
+
+to my other colleagues at UFSC in the [ondaseventos.ufsc.br](https://ondaseventos.ufsc.br/) project, and for their patience: Alicia, Carla and Ricardo.
+
+And thanks to [@brunogbv](https://github.com/brunogbv) for being a friend who asked for less effort to contribute and help improve things. And to [@aracyla](https://github.com/aracyla) for tolerating my hours of monologues; beside her I always felt like Pinky and the Brain — I leave it to the readers to decide who is who.
+
+
+
+
 
 ## How to help
 

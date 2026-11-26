@@ -38,7 +38,28 @@ but a failure there only leaves them off the board. A list refreshes when its ar
 `radius_km` or `beach_limit` changes (that is the file name). OSM beaches change over years, not
 hours.
 
+Paraná's list is committed: `site/beaches/m25.5345_m48.3107_r70.0_n80.json` carries the 46 named
+beaches of the whole state, from the coast to Foz do Iguaçu and Primeiro de Maio. The area's centre
+and `radius_km` stay on the coast so its deep base-map box is the Litoral, not a 900 km square at
+zoom 15; the committed list is what puts the interior's beaches on the board. The file is a
+snapshot, not a radius query: a later `just beaches-refresh` in a marola-app checkout for this key
+would replace it with a 70 km list, so refresh it by hand with a state-wide Overpass `natural=beach` query or keep the
+committed one.
+
 `just site-build` builds the same boards on any machine in Brazil.
+
+### Figures
+
+`docs/archify/*.json` are the sources of the HTML diagrams the about page links: the repository map
+(`/architecture`), the data flow (`/data-flow`), a study's way (`/studies-flow`), the deploy
+(`/deploy-flow`) and the development flow (`/develop-flow`). `just figures` fetches the pinned
+Archify (`v3.0.1`, never a submodule), draws each source into `.tmp/figures/`, and runs
+`scripts/archify_figures.py`, which removes Archify's toolbar and scripts, moves its styles to
+`site/figures/archify.css` and writes the pages to `site/figures/`. The pages are committed; the
+site build copies them to `dist/`, and the server's static fallback serves `/architecture` from
+`architecture.html` on both marola.dev and piabrota.art. The pages carry no script and no inline
+style, so the site's CSP applies to them unchanged. Edit the JSON, not the HTML; `just figures`
+needs the network and is never part of the Nix build.
 
 ### Crawl files and metadata
 

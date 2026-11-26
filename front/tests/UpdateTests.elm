@@ -5,6 +5,7 @@ module UpdateTests exposing (suite)
 
 import Beach exposing (Selection(..))
 import Config
+import Dict
 import Effect exposing (Camera(..), Effect(..))
 import Expect
 import I18n
@@ -230,6 +231,29 @@ suite =
                         Update.update (AreasLoaded (Ok [ area ])) start
                 in
                 Expect.equal model.layer Layer.Water
+        , test "an area without a layer starts on the plain map, not the previous area's layer" <|
+            \_ ->
+                let
+                    base =
+                        areaNamed "complexo-lagunar"
+
+                    areas =
+                        [ { base | layer = Just "water" }, areaNamed "rio" ]
+
+                    switch search =
+                        let
+                            ( start, _ ) =
+                                Update.init (browser search [])
+
+                            ( water, _ ) =
+                                Update.update (AreasLoaded (Ok areas)) start
+                        in
+                        Tuple.first (Update.update (AreaPicked "rio") water)
+                in
+                all
+                    [ Expect.equal (switch "?area=complexo-lagunar").layer Layer.Off
+                    , Expect.equal (switch "?area=complexo-lagunar&layer=water").layer Layer.Water
+                    ]
         , test "a bounded, pinned area enters at its pin, frames its bounds and keeps them" <|
             \_ ->
                 let
@@ -242,7 +266,7 @@ suite =
                             , lon = -48.7973
                             , zoom = Just 9
                             , bounds = Just { west = -48.95, south = -28.63, east = -48.61, north = -28.07 }
-                            , pin = Just { name = "Canto das Águas", lat = -28.3287, lon = -48.7973, url = Nothing }
+                            , pin = Just { name = "Instituto Canto das Águas SC", names = Dict.empty, descriptions = Dict.empty, kind = "place", lat = -28.3287, lon = -48.7973, url = Nothing }
                         }
 
                     ( start, _ ) =

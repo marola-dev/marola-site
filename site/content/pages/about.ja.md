@@ -57,7 +57,10 @@ marolaはコードのリポジトリの集まりで、それぞれに役割が�
 - **marola-devkit** は全リポジトリが使う道具箱です。
 - **marola** は傘のリポジトリで、計画とルールを持ち、他のすべてをgitサブモジュールとして引き込みます。
 
-![marolaのリポジトリがどう噛み合うか。傘のmarolaがすべてをgitサブモジュールとして引き込む。marola-corpusはリリースのtarballをmarola-appとmarola-mlに渡す。marola-appのイメージはmarola-siteの地図を組み立て、イメージとリソースをmarola-mlに渡し、marola-mlはコンパイル済みプロンプトをPRで返す。ETLジョブはmarola-oodsのデータレイクに書き込む。すべてのリポジトリはmarola-devkitをタグで固定する。marola-skillsは各SKILL.mdを読み、marola-agentsは各エージェントを索引化し、marola-researchは研究を保存する。](/img/umbrella.svg 1000x712)
+[アーキテクチャ図を開く](/architecture) — marola のリポジトリと、それぞれが次に渡すもの。
+
+
+その他の図: [データの出所](/data-flow)、[研究の流れ](/studies-flow)、[マージから marola.dev まで](/deploy-flow)、[変更が届くまで](/develop-flow)。
 marolaのリポジトリと、それぞれが他に渡すもの。図は[GitHubの組織ページ](https://github.com/marola-dev)のものと同じです（出典: [marola-dev/.github](https://github.com/marola-dev/.github/blob/main/profile/README.md)）。
 
 これを分散モノリスと呼びます。モノリスなのは、1つの部品のように動くからです: 1つのプロジェクト、1つの計画、1つの働き方で、各部のバージョンはそろって進みます。分散しているのは、各部が自分のリポジトリに、自分のテストとともにあり、独自のバージョンをリリースするからです。
@@ -99,6 +102,16 @@ marola の研究は [marola-research](https://github.com/marola-dev/marola-resea
 [OpenDiving](https://github.com/opendiving/opendiving) の Aleksei Vesnin（[@aleskiontherun](https://github.com/aleskiontherun)）が、marola をパートナーアプリとして迎え入れました。
 
 Pedro Veras Guimarães（[@pvguima](https://github.com/pvguima)）は、marola の創設者に波の物理を教えるために時間と親切さを注ぎました。
+
+Fabio Nascimento には、友情と、LIOC（海洋計測機器研究所）で2年間 marola の創設者に付き合ってくれたことに感謝します。そこで10年以上前に、Luiz Felipe（[@lfelipem](https://github.com/lfelipem)）と一緒にプログラミングを学びました。当時のコードは [legacy-CSUB](https://github.com/h0ffmann/legacy-CSUB) にあります。
+
+UFSC の [ondaseventos.ufsc.br](https://ondaseventos.ufsc.br/) プロジェクトの他の同僚、そしてその忍耐に感謝します: Alicia、Carla、Ricardo。
+
+また、[@brunogbv](https://github.com/brunogbv) には、貢献して改善を手伝うための負担が少なくて済む友人でいてくれたことに感謝します。そして [@aracyla](https://github.com/aracyla) には、私の何時間もの独白に耐えてくれたことに。彼女のそばではいつもピンキーとブレインのような気分でした — どちらがどちらかは読者に任せます。
+
+
+
+
 
 ## 協力の方法
 

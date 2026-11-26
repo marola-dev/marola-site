@@ -440,9 +440,10 @@ Fjalla name or numeral is what the eye lands on, Inter explains it, mono dates a
   readings, up to 22 rem wide. In the beach card the same grid shows without its head.
 - **Layer rail** (`.flow`): at the top right of the map, in glass, scrolls on a map too short for
   it. Order: two toggles (beaches, trails), the trail-list button, a 1 px rule, then one round
-  36 px icon button per layer (wind, waves, bathing water, clouds, sea temperature, anomaly,
+  36 px icon button per layer (wind, waves, bathing water, scuba, clouds, sea temperature, anomaly,
   El Niño) and bathymetry. No button shows text: the word is the button's `title` and its hidden
-  label. In the current build only the bathing-water layer is enabled (`Config.enabledLayers`).
+  label. In the current build the bathing-water and scuba layers are enabled
+  (`Config.enabledLayers`).
   The other layer buttons are disabled at 50% opacity and titled "em breve". The map opens with no
   layer on, and a pressed layer button turns it off. The pressed button is a solid `--bg` circle
   with an `--accent` ring and icon.
@@ -452,18 +453,24 @@ Fjalla name or numeral is what the eye lands on, Inter explains it, mono dates a
   caption. On the bathing-water layer an area with its own `data/water/<area>.json` adds one caption:
   the agency's points, its name from the file (`IMA/SC`, `IAT/PR`) and the bulletin's day in the
   page's short date. On a phone it sits 72 px up, above the attribution that MapLibre opens on load.
-- **Pin** (`.pin`): the area's named place on the map, from `site/areas.json`'s `pin`: a 14 px
-  `--accent` teardrop with an `--on-fill` ring and the `--bg` rim of a marker, and the place's name
-  in a glass pill 15 px above it, mono 11 px. With a `url` it is a link (the partner's site, in a
-  new tab, `--accent` focus ring); without one it takes no tap. The Complexo Lagunar is pinned to
-  Canto das Águas, linked to the institute; the Litoral do Paraná to the Ilha do Mel, with no link.
+- **Pin** (`.pin`): the area's named places on the map, from `site/areas.json`'s `pin` and `pins`: a
+  14 px `--accent` teardrop with an `--on-fill` ring and the `--bg` rim of a marker, and the place's
+  name in a glass pill 15 px above it, mono 11 px. The name and the hover description are localized
+  (`.pin-tip`), so the bubble never repeats the visible label. With a `url` it is a link (the
+  partner's site, in a new tab, `--accent` focus ring); without one it takes no tap. The Complexo
+  Lagunar is pinned to the Instituto Canto das Águas SC, linked to the institute; Paraná to the
+  Ilha do Mel, with no link; Florianópolis to the Ilha do Xavier, the Ilha do Arvoredo and the Ilha
+  do Campeche, with no links. A pin whose `kind` is `dive` (Xavier and Arvoredo) is a 24 px round
+  accent scuba-mask marker, shown only on the scuba layer; its label and description are localized
+  like every pin's.
 - **Embed** (`.embed`, `.embedbar`; ADR 0008): `/embed` is the map page with the top bar, the tool
   row and the footer off. A 36 px `--bg` strip with a `--line` bottom edge holds the language
   switch, right-aligned, and `.embed` fills the viewport so the map takes what is left. The map, the
   rail, the key, the panels, the card, the watermark, the attribution and the emergency button stay.
-  An area may name the layer it opens on (`site/areas.json`'s `layer`): the Complexo Lagunar and the
-  Litoral do Paraná open on bathing water, so their agencies' points are the first thing a visitor
-  sees.
+  An area may name the layer it opens on (`site/areas.json`'s `layer`): the Complexo Lagunar and
+  Paraná open on bathing water, so their agencies' points are the first thing a visitor sees. An
+  area without a layer starts on the plain map; it never inherits the layer of the area the visitor
+  left.
 - **Flow layer** (wind and waves, `flow_layer_ffi.mjs`): a WebGL layer. The field is drawn at 65%
   opacity, so the light base map shows through, and particles run over it. Its edge fades. Under
   `prefers-reduced-motion: reduce` the particles are drawn once as still streaks. It is built, but

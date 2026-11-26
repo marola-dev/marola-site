@@ -74,11 +74,14 @@ function onMapClick(e) {
 
 function popupFor(m, node) {
   const tip = build(m.tip);
+  // A marker whose tip is empty (the pins, whose visible label already names them) opens nothing.
+  if (!tip.textContent && !tip.childElementCount) return () => {};
   let popup = null;
   const show = () => {
     if (popup) return;
     const opts = { closeButton: false, closeOnClick: false, offset: m.offset };
     if (m.tip_class) opts.className = m.tip_class;
+    if (m.tip_anchor) opts.anchor = m.tip_anchor;
     popup = new lib.Popup(opts).setLngLat([m.lon, m.lat]).setDOMContent(tip).addTo(map);
   };
   const hide = () => { if (popup) popup.remove(); popup = null; };

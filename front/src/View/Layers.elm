@@ -63,6 +63,9 @@ iconOf layer =
         Layer.Water ->
             "droplet"
 
+        Layer.Scuba ->
+            "scuba"
+
         Layer.Clouds ->
             "cloud"
 
@@ -260,6 +263,9 @@ key model =
 
                 Layer.Water ->
                     note model "flow.key_water" :: waterFileKey model
+
+                Layer.Scuba ->
+                    [ note model "flow.key_scuba" ]
 
                 Layer.Clouds ->
                     [ dated model "flow.key_clouds" Layer.Clouds ]

@@ -90,7 +90,12 @@ fixtureBeaches =
         Place "Balneário Brejatuba" (-25.89981) (-48.56613) (sampleIat "GN5" "Balneário Brejatuba" True),
         Place "Barra do Saí" (-25.97484) (-48.59518) (sampleIat "GN1" "Barra do Saí" True),
         Place "Rio Nhundiaquara" (-25.47542) (-48.83303) (sampleIat "MR03" "Rio Nhundiaquara" True),
-        Place "Ponta da Pita" (-25.45125) (-48.68476) (sampleIat "AT01" "Ponta da Pita" True)
+        Place "Ponta da Pita" (-25.45125) (-48.68476) (sampleIat "AT01" "Ponta da Pita" True),
+        -- The state outside the coast: the west's river and Itaipu-lake beaches and the north's
+        -- Rio Paranapanema, so the offline preview shows the whole area, not only the Litoral.
+        Place "Balneário de Santa Helena" (-24.83788) (-54.33453) (sampleIat "SH2" "Santa Helena" False),
+        Place "Balneário Alvorada" (-25.36589) (-54.50176) (sampleIat "STI2" "Santa Terezinha de Itaipu" False),
+        Place "Rio Paranapanema (Primeiro de Maio)" (-22.84704) (-51.00468) (sampleIat "PMT01" "Rio Paranapanema (Primeiro de Maio)" False)
       ]
     )
   ]

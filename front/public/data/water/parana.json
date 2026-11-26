@@ -3,7 +3,7 @@
  "area": "parana",
  "source": "IAT/PR",
  "sampled_on": "2026-02-09",
- "note": "Pontos de coleta do IAT/PR no Litoral do Paraná, copiados do serviço Balneabilidade Atual (geopr.iat.pr.gov.br) em 26 de novembro de 2026. A última semana completa do serviço é a 9ª do boletim da temporada 2025/2026: amostras de 12 de janeiro a 9 de fevereiro de 2026 e boletim da semana de 13 a 19 de fevereiro. O IAT usa E. coli como indicador e não publica a contagem no boletim; o serviço traz os 59 pontos do litoral, inclusive os 10 pontos de foz de rio que o boletim impresso não lista. O primeiro boletim da temporada 2026/2027 sai em 18 de dezembro de 2026 e substitui este arquivo; ele é uma cópia, não dado ao vivo.",
+ "note": "Pontos de coleta do IAT/PR no Paraná, copiados do serviço Balneabilidade Atual (geopr.iat.pr.gov.br) em 26 de novembro de 2026. O serviço traz 76 pontos: 59 no Litoral, 16 na Costa Oeste (as praias de rio e do lago de Itaipu, no oeste do estado) e 1 no Norte (Rio Paranapanema, em Primeiro de Maio); 22 estão impróprios. A última semana completa do serviço é a 9ª do boletim da temporada 2025/2026: amostras de 12 de janeiro a 9 de fevereiro de 2026 e boletim da semana de 13 a 19 de fevereiro. O IAT usa E. coli como indicador e não publica a contagem no boletim; o serviço traz os 10 pontos de foz de rio do Litoral que o boletim impresso não lista. Curitiba, os Campos Gerais e o interior não têm ponto de balneabilidade do IAT: o serviço cobre só o Litoral, a Costa Oeste e o Norte. O primeiro boletim da temporada 2026/2027 sai em 18 de dezembro de 2026 e substitui este arquivo; ele é uma cópia, não dado ao vivo.",
  "points": [
   {
    "point": "AT02",
@@ -591,6 +591,176 @@
    "lat": -25.97484,
    "lon": -48.59518,
    "condition": "improper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "FI1",
+   "location": "Foz do Iguaçu",
+   "lat": -25.44403,
+   "lon": -54.50282,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "PM3",
+   "location": "Porto Mendes",
+   "lat": -24.49163,
+   "lon": -54.31631,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "SH3",
+   "location": "Santa Helena",
+   "lat": -24.83939,
+   "lon": -54.33628,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "FI3",
+   "location": "Foz do Iguaçu",
+   "lat": -25.44455,
+   "lon": -54.50438,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "STI3",
+   "location": "Santa Terezinha de Itaipu",
+   "lat": -25.36609,
+   "lon": -54.50191,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "SH2",
+   "location": "Santa Helena",
+   "lat": -24.8382,
+   "lon": -54.3346,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "PMT01",
+   "location": "Rio Paranapanema (Primeiro de Maio)",
+   "lat": -22.84704,
+   "lon": -51.00468,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "STI2",
+   "location": "Santa Terezinha de Itaipu",
+   "lat": -25.36531,
+   "lon": -54.50163,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "SH1",
+   "location": "Santa Helena",
+   "lat": -24.83652,
+   "lon": -54.33437,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "STI1",
+   "location": "Santa Terezinha de Itaipu",
+   "lat": -25.36461,
+   "lon": -54.50138,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "SMI3",
+   "location": "São Miguel do Iguaçu",
+   "lat": -25.2329,
+   "lon": -54.22984,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "M2",
+   "location": "Missal",
+   "lat": -25.04712,
+   "lon": -54.344,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "ER2",
+   "location": "Entre Rios do Oeste",
+   "lat": -24.68256,
+   "lon": -54.24693,
+   "condition": "improper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "SMI1",
+   "location": "São Miguel do Iguaçu",
+   "lat": -25.2324,
+   "lon": -54.22864,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "ER1",
+   "location": "Entre Rios do Oeste",
+   "lat": -24.68248,
+   "lon": -54.24591,
+   "condition": "improper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "I2",
+   "location": "Itaipulândia",
+   "lat": -25.18295,
+   "lon": -54.29372,
+   "condition": "improper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "PM1",
+   "location": "Porto Mendes",
+   "lat": -24.49004,
+   "lon": -54.31638,
+   "condition": "proper",
    "sampled_on": "2026-02-09",
    "enterococci_per_100ml": null,
    "rain": null

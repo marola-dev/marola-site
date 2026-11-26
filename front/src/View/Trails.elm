@@ -3,6 +3,7 @@ module View.Trails exposing (card, panel, picked)
 {-| The trails panel (routes grouped by bairro) and the card of a picked route.
 -}
 
+import Band
 import Difficulty exposing (Difficulty(..))
 import Fmt
 import Href
@@ -20,10 +21,22 @@ difficultyText : Model -> Route -> String
 difficultyText model route =
     case route.difficulty of
         Hiking ->
-            Words.t model "trails.hiking"
+            "T1"
 
         MountainHiking ->
-            Words.t model "trails.mountain_hiking"
+            "T2"
+
+        DemandingMountainHiking ->
+            "T3"
+
+        AlpineHiking ->
+            "T4"
+
+        DemandingAlpineHiking ->
+            "T5"
+
+        DifficultAlpineHiking ->
+            "T6"
 
         Unrated ->
             Words.t model "trails.unrated"
@@ -39,15 +52,7 @@ lengthText model route =
 
 difficultyBand : Route -> String
 difficultyBand route =
-    case route.difficulty of
-        Hiking ->
-            "c70"
-
-        MountainHiking ->
-            "c40"
-
-        _ ->
-            "cna"
+    Band.cssClass (Difficulty.band route.difficulty)
 
 
 routeItem : Model -> Int -> Route -> ( String, Html Msg )

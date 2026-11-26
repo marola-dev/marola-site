@@ -1,0 +1,38 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "a study's way through marola",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "legend": { "mode": "hidden" },
+    "output": "studies-flow.html"
+  },
+  "lanes": [
+    { "id": "you", "label": "visitor" },
+    { "id": "server", "label": "marola-server" },
+    { "id": "storage", "label": "the server's own files" },
+    { "id": "board", "label": "the board" }
+  ],
+  "mainPath": ["visitor", "submit", "api", "store", "studies"],
+  "nodes": [
+    { "id": "visitor", "lane": "you", "col": 0, "type": "external", "label": "visitor", "sublabel": "a PDF and its metadata", "width": 136 },
+    { "id": "submit", "lane": "server", "col": 1, "type": "frontend", "label": "/submit", "sublabel": "form or /api/v1/studies", "width": 136 },
+    { "id": "api", "lane": "server", "col": 2, "type": "backend", "label": "StudyApi", "sublabel": "intake, checks, hash", "width": 136 },
+    { "id": "store", "lane": "storage", "col": 3, "type": "database", "label": "SQLite", "sublabel": "study rows, accounts", "width": 136 },
+    { "id": "pdfs", "lane": "storage", "col": 4, "type": "database", "label": "PDF folder", "sublabel": "the file itself", "width": 136 },
+    { "id": "studies", "lane": "server", "col": 4, "type": "frontend", "label": "/studies", "sublabel": "list, page, Atom", "width": 136 },
+    { "id": "report", "lane": "board", "col": 4, "type": "backend", "label": "report", "sublabel": "a visitor flags a study", "width": 136 },
+    { "id": "board", "lane": "board", "col": 5, "type": "backend", "label": "the board", "sublabel": "hide, unhide, purge", "width": 136 }
+  ],
+  "edges": [
+    { "id": "e1", "from": "visitor", "to": "submit", "label": "sends" },
+    { "id": "e2", "from": "submit", "to": "api", "label": "POST" },
+    { "id": "e3", "from": "api", "to": "store", "label": "row" },
+    { "id": "e4", "from": "api", "to": "pdfs", "label": "file", "role": "branch" },
+    { "id": "e5", "from": "store", "to": "studies", "label": "read" },
+    { "id": "e6", "from": "visitor", "to": "studies", "label": "reads", "role": "branch" },
+    { "id": "e7", "from": "visitor", "to": "report", "label": "reports", "role": "branch" },
+    { "id": "e8", "from": "report", "to": "board", "label": "the board decides" }
+  ]
+}

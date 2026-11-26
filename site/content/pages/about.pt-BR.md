@@ -57,7 +57,10 @@ o marola é um conjunto de repositórios de código, cada um com uma tarefa:
 - **marola-devkit** reúne as ferramentas que todos os repositórios usam.
 - **marola**, o repositório guarda-chuva, tem os planos e as regras, e traz cada um dos outros como submódulo git.
 
-![como os repositórios do marola se encaixam. o marola, o guarda-chuva, traz todos como submódulo git. o marola-corpus entrega um tarball de release ao marola-app e ao marola-ml. a imagem do marola-app monta o mapa do marola-site e leva imagem e recursos ao marola-ml, que devolve prompts compilados num PR. jobs de ETL gravam no lago de dados do marola-oods. todos fixam o marola-devkit por tag. o marola-skills lê cada SKILL.md, o marola-agents indexa cada agente, e o marola-research guarda a pesquisa.](/img/umbrella.pt-BR.svg 1000x712)
+[abrir o diagrama da arquitetura](/architecture) — os repositórios do marola e o que cada um entrega ao seguinte.
+
+
+mais diagramas: [de onde vêm os dados](/data-flow), [o caminho de um estudo](/studies-flow), [do merge ao marola.dev](/deploy-flow), [como uma mudança chega](/develop-flow).
 os repositórios do marola e o que cada um entrega aos outros. a figura é a mesma da [página da organização no GitHub](https://github.com/marola-dev) (fonte: [marola-dev/.github](https://github.com/marola-dev/.github/blob/main/profile/README.md)).
 
 o nome disso é monólito distribuído. monólito porque funciona como uma peça só: um projeto, um plano, um jeito de trabalhar, e as versões das partes andam juntas. distribuído porque cada parte fica no seu próprio repositório, com os seus testes, e lança as suas próprias versões.
@@ -99,6 +102,16 @@ o som das ondas é uma gravação de Luftrum ([freesound](https://freesound.org/
 Aleksei Vesnin ([@aleskiontherun](https://github.com/aleskiontherun)), do [OpenDiving](https://github.com/opendiving/opendiving), recebeu o marola como app parceiro.
 
 Pedro Veras Guimarães ([@pvguima](https://github.com/pvguima)) dedicou tempo, gentileza e atenção para explicar física de ondas ao fundador do marola.
+
+Fabio Nascimento, pela amizade e por ter aturado o fundador do marola por dois anos no LIOC — Laboratório de Instrumentação Oceanográfica, onde ele aprendeu a programar há mais de dez anos, junto com Luiz Felipe ([@lfelipem](https://github.com/lfelipem)); o código daquela época está no [legacy-CSUB](https://github.com/h0ffmann/legacy-CSUB).
+
+aos meus outros colegas da UFSC no projeto [ondaseventos.ufsc.br](https://ondaseventos.ufsc.br/) e por sua paciência: Alicia, Carla e Ricardo.
+
+e um agradecimento ao [@brunogbv](https://github.com/brunogbv) por ser um amigo que exigiu menos esforço para poder contribuir e ajudar a melhorar. e à [@aracyla](https://github.com/aracyla) por tolerar minhas horas de monólogos; sempre ao lado dela me senti como Pink e Cérebro — deixo para os leitores decidirem quem é quem.
+
+
+
+
 
 ## como ajudar
 

@@ -1,17 +1,27 @@
-module Area exposing (Area, Bounds, Pin, decoder, listDecoder)
+module Area exposing (Area, Bounds, Pin, decoder, isDive, isPeak, listDecoder, pinDescription, pinLabel)
 
 {-| An area of the picker: `data/areas.json` carries more, the page reads these. `bounds`, `zoom`
 and `pin` are the area's own: what the camera frames, where it enters without bounds, the layer it
-opens on, and the named place it carries (the Complexo Lagunar frames its lagoons and pins Canto das
-Águas; the Litoral do Paraná pins the Ilha do Mel).
+opens on, and the named places it carries (the Complexo Lagunar frames its lagoons and pins the
+Instituto Canto das Águas; Paraná pins the Ilha do Mel; Florianópolis pins three islands).
 -}
 
 import Dec exposing (required)
+import Dict exposing (Dict)
+import I18n exposing (Locale)
 import Json.Decode as D exposing (Decoder)
+import Language
 
 
 type alias Pin =
-    { name : String, lat : Float, lon : Float, url : Maybe String }
+    { name : String
+    , names : Dict String String
+    , descriptions : Dict String String
+    , kind : String
+    , lat : Float
+    , lon : Float
+    , url : Maybe String
+    }
 
 
 {-| West, south, east and north: the box the camera frames.
@@ -29,6 +39,7 @@ type alias Area =
     , bounds : Maybe Bounds
     , layer : Maybe String
     , pin : Maybe Pin
+    , pins : List Pin
     }
 
 
@@ -36,6 +47,9 @@ pinDecoder : Decoder Pin
 pinDecoder =
     D.succeed Pin
         |> required "name" D.string
+        |> Dec.andMap (Dec.optional "names" (D.dict D.string) |> D.map (Maybe.withDefault Dict.empty))
+        |> Dec.andMap (Dec.optional "descriptions" (D.dict D.string) |> D.map (Maybe.withDefault Dict.empty))
+        |> Dec.andMap (Dec.optional "kind" D.string |> D.map (Maybe.withDefault "place"))
         |> required "lat" Dec.number
         |> required "lon" Dec.number
         |> Dec.andMap (Dec.optional "url" D.string)
@@ -66,6 +80,7 @@ decoder =
         |> Dec.andMap (Dec.optional "bounds" boundsDecoder)
         |> Dec.andMap (Dec.optional "layer" D.string)
         |> Dec.andMap (Dec.optional "pin" pinDecoder)
+        |> Dec.andMap (Dec.optional "pins" (D.list pinDecoder) |> D.map (Maybe.withDefault []))
 
 
 {-| `{"areas": [...]}` on the site and a bare list in `site/areas.json`.
@@ -73,3 +88,34 @@ decoder =
 listDecoder : Decoder (List Area)
 listDecoder =
     D.oneOf [ D.list decoder, D.field "areas" (D.list decoder) ]
+
+
+{-| The pin's name in the page language, falling back to its Portuguese name when the area names
+no translation.
+-}
+pinLabel : Locale -> Pin -> String
+pinLabel loc pin =
+    Dict.get (Language.tag loc.language) pin.names
+        |> Maybe.withDefault pin.name
+
+
+{-| The pin's one-line description in the page language, when the area carries one.
+-}
+pinDescription : Locale -> Pin -> Maybe String
+pinDescription loc pin =
+    Dict.get (Language.tag loc.language) pin.descriptions
+
+
+{-| A diving site: the pin belongs to the scuba layer, not to the plain map.
+-}
+isDive : Pin -> Bool
+isDive pin =
+    pin.kind == "dive"
+
+
+{-| A peak: a place pin with a mountain marker and no permanent label, so the three highest
+points of a state do not stack their names on top of each other at a wide zoom.
+-}
+isPeak : Pin -> Bool
+isPeak pin =
+    pin.kind == "peak"

@@ -1,0 +1,37 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "how a change reaches marola",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "legend": { "mode": "hidden" },
+    "output": "develop-flow.html"
+  },
+  "lanes": [
+    { "id": "person", "label": "a person" },
+    { "id": "agent", "label": "the agent" },
+    { "id": "github", "label": "GitHub" },
+    { "id": "host", "label": "the host" }
+  ],
+  "mainPath": ["issue", "branch", "pr", "ci", "review", "merge", "deploy"],
+  "nodes": [
+    { "id": "issue", "lane": "person", "col": 0, "type": "backend", "label": "agent-ready issue", "sublabel": "the one gate", "width": 136 },
+    { "id": "skills", "lane": "agent", "col": 1, "type": "database", "label": "skills, devkit", "sublabel": "the recipe for the change", "width": 136 },
+    { "id": "branch", "lane": "agent", "col": 2, "type": "backend", "label": "branch", "sublabel": "small, one task", "width": 136 },
+    { "id": "pr", "lane": "github", "col": 3, "type": "backend", "label": "pull request", "sublabel": "body, screenshots, trailers", "width": 136 },
+    { "id": "ci", "lane": "github", "col": 4, "type": "backend", "label": "CI", "sublabel": "back, front, static, smoke", "width": 136 },
+    { "id": "review", "lane": "person", "col": 4, "type": "backend", "label": "review", "sublabel": "a person reads it", "width": 136 },
+    { "id": "merge", "lane": "github", "col": 5, "type": "backend", "label": "merge", "sublabel": "one commit, two trailers", "width": 136 },
+    { "id": "deploy", "lane": "host", "col": 5, "type": "cloud", "label": "nix-os pin", "sublabel": "the deploy is a merge", "width": 136 }
+  ],
+  "edges": [
+    { "id": "e1", "from": "issue", "to": "branch", "label": "starts" },
+    { "id": "e2", "from": "skills", "to": "branch", "label": "guides", "role": "branch" },
+    { "id": "e3", "from": "branch", "to": "pr", "label": "opens" },
+    { "id": "e4", "from": "pr", "to": "ci", "label": "runs" },
+    { "id": "e5", "from": "ci", "to": "review", "label": "green" },
+    { "id": "e6", "from": "review", "to": "merge", "label": "approves" },
+    { "id": "e7", "from": "merge", "to": "deploy", "label": "pin moves" }
+  ]
+}

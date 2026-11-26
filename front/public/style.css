@@ -619,6 +619,7 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
 .maplibregl-popup { font-size: var(--fs-13); letter-spacing: var(--tr-13); font-variant-numeric: tabular-nums; pointer-events: none; }
 .maplibregl-popup-content { padding: 8px 12px; color: var(--glass-ink); background: var(--glass); border: 1px solid var(--glass-line);
   border-radius: var(--r-panel); box-shadow: var(--shadow-float); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.maplibregl-popup .pin-tip { display: block; width: max-content; max-width: 18rem; white-space: normal; line-height: 1.4; text-transform: none; }
 .maplibregl-popup .unfit, .maplibregl-popup .improper { color: var(--glass-unfit); }
 .maplibregl-popup .facilities, .maplibregl-popup .past { color: var(--glass-muted); }
 .maplibregl-popup-tip { display: none; }
@@ -647,12 +648,30 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
 .maplibregl-marker.pin { z-index: 3; width: 14px; height: 14px; line-height: 0; cursor: default; }
 .pin[href] { display: block; text-decoration: none; color: inherit; cursor: pointer; }
 .pin[href]:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 50%; }
-.pin .pin-label { position: absolute; left: 50%; bottom: 15px; transform: translateX(-50%); white-space: nowrap;
+.pin .pin-label, .dive .pin-label { position: absolute; left: 50%; bottom: 15px; transform: translateX(-50%); white-space: nowrap;
   padding: 3px 8px; border: 1px solid var(--glass-line); border-radius: var(--r-control);
   background: var(--glass); color: var(--glass-ink); font: 500 var(--fs-11)/1.2 var(--mono);
-  letter-spacing: var(--tr-mono); box-shadow: var(--shadow-float); }
+  letter-spacing: var(--tr-mono); box-shadow: var(--shadow-float); text-transform: none; }
 .pin .pin-dot { display: block; width: 14px; height: 14px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg);
   background: var(--accent); border: 2px solid var(--on-fill); box-shadow: 0 0 0 1.5px var(--bg); }
+/* a diving site: the scuba layer's round mask marker, with the same glass label as a pin */
+.maplibregl-marker.dive { z-index: 4; width: 24px; height: 24px; line-height: 0; cursor: default; }
+.dive svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.dive .rim { fill: none; stroke: var(--bg); stroke-width: 3; }
+.dive .fill { fill: var(--accent); }
+.dive .mask { fill: var(--on-fill); }
+.dive .lens { fill: var(--accent); }
+.dive .pin-label { bottom: 20px; }
+/* a peak: a round mountain marker, no permanent label; the name is in the tooltip */
+.maplibregl-marker.peak { z-index: 4; width: 24px; height: 24px; line-height: 0; cursor: default; }
+.peak svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.peak .rim { fill: none; stroke: var(--bg); stroke-width: 3; }
+.peak .fill { fill: var(--accent); }
+.peak .peak-shape { fill: var(--on-fill); }
+/* the three highest peaks sit within a few pixels at a wide zoom: fan their icons out */
+.peak-0 svg { transform: translate(-7px, -4px); }
+.peak-1 svg { transform: translate(7px, -4px); }
+.peak-2 svg { transform: translate(0, 7px); }
 /* on the water layer the sampling points are the data: the beach dots step back */
 .layer-water .maplibregl-marker.wave { opacity: .4; }
 .no-beaches .maplibregl-marker.wave { display: none; }

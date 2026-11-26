@@ -214,9 +214,11 @@ selectArea model area =
                             Nothing
                     )
 
+        -- The area's own layer, or the plain map: an area without one must not inherit the layer
+        -- the previous area opened on. A `?layer=` in the link still wins.
         layer =
             if Params.get model.query "layer" == Nothing then
-                Maybe.withDefault model.layer areaLayer
+                Maybe.withDefault Layer.Off areaLayer
 
             else
                 model.layer
@@ -355,11 +357,11 @@ dayPicked model day =
 
 {-| An area that frames itself (bounded, or pinned to a partner's place) keeps that view: the
 beaches' bounds would pull the camera away from it (the Complexo Lagunar frames its lagoons around
-Canto das Águas).
+Instituto Canto das Águas SC).
 -}
 pinned : Model -> Bool
 pinned model =
-    Maybe.map (\area -> area.pin /= Nothing || area.bounds /= Nothing) model.area
+    Maybe.map (\area -> area.pin /= Nothing || not (List.isEmpty area.pins) || area.bounds /= Nothing) model.area
         |> Maybe.withDefault False
 
 
