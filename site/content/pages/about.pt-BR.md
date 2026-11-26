@@ -57,7 +57,10 @@ o marola é um conjunto de repositórios de código, cada um com uma tarefa:
 - **marola-devkit** reúne as ferramentas que todos os repositórios usam.
 - **marola**, o repositório guarda-chuva, tem os planos e as regras, e traz cada um dos outros como submódulo git.
 
-![como os repositórios do marola se encaixam. o marola, o guarda-chuva, traz todos como submódulo git. o marola-corpus entrega um tarball de release ao marola-app e ao marola-ml. a imagem do marola-app monta o mapa do marola-site e leva imagem e recursos ao marola-ml, que devolve prompts compilados num PR. jobs de ETL gravam no lago de dados do marola-oods. todos fixam o marola-devkit por tag. o marola-skills lê cada SKILL.md, o marola-agents indexa cada agente, e o marola-research guarda a pesquisa.](/img/umbrella.pt-BR.svg 1000x712)
+[abrir o diagrama da arquitetura](/architecture) — os repositórios do marola e o que cada um entrega ao seguinte.
+
+
+mais diagramas: [de onde vêm os dados](/data-flow), [o caminho de um estudo](/studies-flow), [do merge ao marola.dev](/deploy-flow), [como uma mudança chega](/develop-flow).
 os repositórios do marola e o que cada um entrega aos outros. a figura é a mesma da [página da organização no GitHub](https://github.com/marola-dev) (fonte: [marola-dev/.github](https://github.com/marola-dev/.github/blob/main/profile/README.md)).
 
 o nome disso é monólito distribuído. monólito porque funciona como uma peça só: um projeto, um plano, um jeito de trabalhar, e as versões das partes andam juntas. distribuído porque cada parte fica no seu próprio repositório, com os seus testes, e lança as suas próprias versões.

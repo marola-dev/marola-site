@@ -266,7 +266,7 @@ suite =
                             , lon = -48.7973
                             , zoom = Just 9
                             , bounds = Just { west = -48.95, south = -28.63, east = -48.61, north = -28.07 }
-                            , pin = Just { name = "Instituto Canto das Águas SC", names = Dict.empty, descriptions = Dict.empty, lat = -28.3287, lon = -48.7973, url = Nothing }
+                            , pin = Just { name = "Instituto Canto das Águas SC", names = Dict.empty, descriptions = Dict.empty, kind = "place", lat = -28.3287, lon = -48.7973, url = Nothing }
                         }
 
                     ( start, _ ) =

@@ -233,5 +233,7 @@
   "metric.wind": "風",
   "metric.waves": "波",
   "metric.water": "水質",
-  "player.drag": "プレーヤーを地図の上でドラッグ"
+  "player.drag": "プレーヤーを地図の上でドラッグ",
+  "flow.scuba": "ダイビング",
+  "flow.key_scuba": "ダイビングポイント"
 }

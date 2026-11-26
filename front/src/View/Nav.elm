@@ -143,7 +143,7 @@ sections model =
         , link model "/studies" "nav.studies"
         , link model "ecomonitoramento.html" "nav.ecomonitoramento"
         , link model "about.html" "nav.about"
-        , link model "contact.html" "nav.contact"
+        , link model "mailto:admin@marola.dev" "nav.contact"
         , link model "https://github.com/marola-dev/marola-research/blob/main/README.md" "nav.research"
         , link model "partners.html" "nav.partners"
         , link model "members.html" "nav.members"

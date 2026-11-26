@@ -353,14 +353,20 @@ async function floripa() {
   ok(map.calls.some((c) => c.name === 'fitBounds'), 'the first board fits the map to the beaches');
   ok(document.documentElement.lang === 'pt-BR' && $('a[href=news.html]').textContent === 'notícias', 'default language is pt-BR');
   ok($('#watermark .lnt') && $('#watermark .lnt').getAttribute('role') === 'img' && $('#watermark .lnt').getAttribute('aria-label') === 'Leave No Trace, Proud Partner (marola é parceira oficial)' && $('#watermark svg').getAttribute('aria-hidden') === 'true', 'the map carries the watermark: the Leave No Trace logo with its name, the eye hidden from screen readers');
-  ok(beachMarkers().length === 2 && live().length === 5, 'one marker per beach and the three pinned islands, no water points yet', live().length);
+  ok(beachMarkers().length === 2 && live().length === 3, 'one marker per beach and the place pin, no water points yet', live().length);
   ok(beachMarkers().every((m) => cls(m.el).includes('wave')), 'beach marker nodes carry class wave');
-  const pins = () => live().filter((m) => cls(m.el).includes('pin'));
+  const pins = () => live().filter((m) => cls(m.el).includes('pin') || cls(m.el).includes('dive'));
   const pinLabels = () => pins().map((m) => $('.pin-label', m.el).textContent).sort().join('|');
-  ok(pins().length === 3 && pinLabels() === ['Ilha do Arvoredo', 'Ilha do Campeche', 'Ilha do Xavier'].sort().join('|'), 'the three islands are pinned', pinLabels());
+  ok(pins().length === 1 && pinLabels() === 'Ilha do Campeche', 'the place pin is on the plain map; the dive sites wait for the scuba layer', pinLabels());
+  const scuba = () => $('button[data-layer=scuba]');
+  await click(scuba());
+  ok(scuba().getAttribute('aria-pressed') === 'true' && live().length === 5 && pins().length === 3 && live().filter((m) => cls(m.el).includes('dive')).length === 2, 'the scuba layer adds the two dive sites', live().length);
+  ok($('#flowkeys').textContent.includes('pontos de mergulho'), 'the scuba key names the dive sites', $('#flowkeys').textContent);
   await click($('button[lang=en]'));
   ok(pinLabels() === ['Arvoredo Island', 'Campeche Island', 'Xavier Island'].sort().join('|'), 'the pin labels follow the page language', pinLabels());
   await click($('button[lang=pt-BR]'));
+  await click(scuba());
+  ok(scuba().getAttribute('aria-pressed') === 'false' && live().length === 3, 'pressing scuba again is the plain map', live().length);
   const best = markerOf(byScore[0].name);
   ok(best && $('circle.dot', best.el).getAttribute('class') === 'dot f-' + bandOf(byScore[0]), 'the best beach dot has its band class', byScore[0].best.score);
   ok(markerOf(byScore[1].name) && $('circle.dot', markerOf(byScore[1].name).el).getAttribute('class') === 'dot f-' + bandOf(byScore[1]), 'the unfit beach dot is f-c0');
@@ -392,16 +398,16 @@ async function floripa() {
   ok(!shown($('#card')), 'a click on the empty map closes the card');
 
   const layers = $$('button[data-layer]');
-  ok(layers.length === 7, 'seven layer buttons', layers.length);
+  ok(layers.length === 8, 'eight layer buttons', layers.length);
   const enabled = layers.filter((b) => !b.hasAttribute('disabled'));
-  ok(enabled.length === 1 && enabled[0].getAttribute('data-layer') === 'water', 'only the water layer is enabled');
+  ok(enabled.length === 2 && enabled.map((b) => b.getAttribute('data-layer')).join('|') === 'water|scuba', 'the water and scuba layers are enabled', enabled.map((b) => b.getAttribute('data-layer')).join('|'));
   ok(layers.every((b) => b.getAttribute('aria-pressed') === 'false'), 'no layer starts pressed');
   const before = live().length;
   await click(enabled[0]);
   ok($('button[data-layer=water]').getAttribute('aria-pressed') === 'true', 'pressing water sets aria-pressed');
   ok(lastUrl().searchParams.get('layer') === 'water', 'the URL carries layer=water');
   ok(cls($('main')).includes('layer-water'), 'main gets class layer-water');
-  ok(before === 5 && live().length === 7 && live().filter((m) => cls(m.el).includes('wpoint')).length === 2, 'the water layer adds the sampling points', live().length);
+  ok(before === 3 && live().length === 5 && live().filter((m) => cls(m.el).includes('wpoint')).length === 2, 'the water layer adds the sampling points', live().length);
 
   const feats = trailCollection(map).features, file = trailFile('floripa');
   ok(feats.length === routesOf(file).filter((r) => r.lines.some((l) => l.length > 1)).length && feats.length > 0, 'floripa trails reach the map as features', feats.length);
@@ -432,12 +438,12 @@ async function english() {
 
 async function layerWater() {
   ok($('button[data-layer=water]').getAttribute('aria-pressed') === 'true', '?layer=water starts pressed');
-  ok(cls($('main')).includes('layer-water') && live().length === 7, '?layer=water draws the sampling points from the start', live().length);
+  ok(cls($('main')).includes('layer-water') && live().length === 5, '?layer=water draws the sampling points from the start', live().length);
 }
 
 async function layerWind() {
   ok($$('button[data-layer]').every((b) => b.getAttribute('aria-pressed') === 'false'), '?layer=wind is ignored: nothing pressed');
-  ok(!cls($('main')).includes('layer-water') && live().length === 5, '?layer=wind leaves the plain map', live().length);
+  ok(!cls($('main')).includes('layer-water') && live().length === 3, '?layer=wind leaves the plain map', live().length);
 }
 
 async function rio() {
@@ -539,7 +545,7 @@ async function nearDenied() {
 async function embed() {
   ok(!$('.top') && !$('.bar') && !$('.footer'), 'an embed has no nav, tool row or footer');
   ok($('.embed') && $('.embedbar') && $('.embedbar button[lang=pt-BR]'), 'the embed strip carries the language switch');
-  ok($('#map') && $('#watermark') && $('#sos') && $$('button[data-layer]').length === 7, 'the map, the watermark, the layer rail and the emergency button stay');
+  ok($('#map') && $('#watermark') && $('#sos') && $$('button[data-layer]').length === 8, 'the map, the watermark, the layer rail and the emergency button stay');
   ok($$('a[href=news.html]').length === 0, 'no site navigation leaks into the embed');
 }
 
@@ -557,6 +563,7 @@ async function complexoLagunar() {
   fire(pin.el, 'pointerenter');
   const pinTip = ml.popups[ml.popups.length - 1];
   ok(pinTip && pinTip.open && pinTip.content.textContent.includes('Taquaraçatuba'), 'hovering a pin shows its description, not its name again', pinTip && pinTip.content.textContent);
+  ok(pinTip && pinTip.opts.anchor === 'top', 'the pin description opens below the pin, clear of the label above', pinTip && pinTip.opts.anchor);
   fire(pin.el, 'pointerleave');
   const feats = trailCollection(map).features, file = trailFile('complexo-lagunar');
   ok(feats.length === routesOf(file).filter((r) => r.lines.some((l) => l.length > 1)).length && feats.length > 0, 'the lagoon complex trails reach the map', feats.length);

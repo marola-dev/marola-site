@@ -81,6 +81,7 @@ function popupFor(m, node) {
     if (popup) return;
     const opts = { closeButton: false, closeOnClick: false, offset: m.offset };
     if (m.tip_class) opts.className = m.tip_class;
+    if (m.tip_anchor) opts.anchor = m.tip_anchor;
     popup = new lib.Popup(opts).setLngLat([m.lon, m.lat]).setDOMContent(tip).addTo(map);
   };
   const hide = () => { if (popup) popup.remove(); popup = null; };

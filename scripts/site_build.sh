@@ -47,6 +47,7 @@ cp site/i18n/pt-BR.json site/i18n/en.json site/i18n/ja.json site/i18n/zh-Hant.js
 cp site/static/img/umbrella.svg site/static/img/umbrella.pt-BR.svg "$dist/img/"
 cp -r site/static/img/members "$dist/img/members"
 cp site/board.schema.json "$dist/"
+cp site/figures/*.html site/figures/archify.css "$dist/"
 "$server" csp > "$dist/csp.txt"
 
 "$pages" fixtures areas "$dist"

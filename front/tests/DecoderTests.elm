@@ -68,6 +68,7 @@ suite =
                         { name = "Ilha do Xavier"
                         , names = Dict.fromList [ ( "pt-BR", "Ilha do Xavier" ), ( "en", "Xavier Island" ) ]
                         , descriptions = Dict.fromList [ ( "en", "Rocky island off Praia Mole." ) ]
+                        , kind = "dive"
                         , lat = -27.6099
                         , lon = -48.3852
                         , url = Nothing
@@ -76,9 +77,17 @@ suite =
                     loc language =
                         { catalog = Dict.empty, language = language }
                 in
-                Expect.equal
-                    ( Area.pinLabel (loc Language.En) pin, Area.pinLabel (loc Language.Ja) pin, Area.pinDescription (loc Language.En) pin )
-                    ( "Xavier Island", "Ilha do Xavier", Just "Rocky island off Praia Mole." )
+                Expect.all
+                    [ \_ ->
+                        Expect.equal
+                            ( Area.pinLabel (loc Language.En) pin, Area.pinLabel (loc Language.Ja) pin )
+                            ( "Xavier Island", "Ilha do Xavier" )
+                    , \_ ->
+                        Expect.equal
+                            ( Area.pinDescription (loc Language.En) pin, Area.isDive pin )
+                            ( Just "Rocky island off Praia Mole.", True )
+                    ]
+                    ()
         , test "a trails file reads its routes in order and drops the lines it cannot draw" <|
             \_ ->
                 Expect.equal

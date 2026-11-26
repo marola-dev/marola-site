@@ -32,7 +32,8 @@
           "en": "Rocky island off Praia Mole, known for diving.",
           "ja": "プラヤ・モレ沖の岩の島。ダイビングで知られています。",
           "zh-Hant": "莫萊海灘外海的岩石島，以潛水聞名。"
-        }
+        },
+        "kind": "dive"
       },
       {
         "name": "Ilha do Arvoredo",
@@ -49,7 +50,8 @@
           "en": "Island of the Arvoredo Marine Biological Reserve, north of Florianópolis.",
           "ja": "フロリアノーポリス北方、アルヴォレド海洋生物保護区の島。",
           "zh-Hant": "弗洛里亞諾波利斯北方的阿爾沃雷多海洋生物保護區島嶼。"
-        }
+        },
+        "kind": "dive"
       },
       {
         "name": "Ilha do Campeche",

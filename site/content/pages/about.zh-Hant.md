@@ -57,7 +57,10 @@ marola 是一組程式碼儲存庫，各司其職:
 - **marola-devkit** 是所有儲存庫共用的工具箱。
 - **marola** 是傘狀儲存庫，持有計畫與規則，並把其他每一個以 git 子模組帶進來。
 
-![marola 的儲存庫如何彼此接合。傘狀的 marola 把所有儲存庫作為 git 子模組帶入。marola-corpus 將發布的 tarball 交給 marola-app 與 marola-ml。marola-app 的映像檔組建 marola-site 的地圖，並把映像與資源帶給 marola-ml，後者以合併請求交回編譯好的提示。ETL 任務寫入 marola-oods 的資料湖。每個儲存庫以標籤固定 marola-devkit。marola-skills 讀取每個 SKILL.md，marola-agents 索引每個代理，marola-research 保存研究。](/img/umbrella.svg 1000x712)
+[開啟架構圖](/architecture) — marola 的儲存庫，以及每個儲存庫交給下一個的內容。
+
+
+更多圖表: [資料來源](/data-flow)、[研究的流程](/studies-flow)、[從合併到 marola.dev](/deploy-flow)、[變更如何送達](/develop-flow)。
 marola 的儲存庫，以及各自交給其他部分的東西。圖片與 [GitHub 組織頁面](https://github.com/marola-dev)上的相同（出處: [marola-dev/.github](https://github.com/marola-dev/.github/blob/main/profile/README.md)）。
 
 這稱為分散式單體。說它是單體，因為它像一個零件般運作: 一個專案、一份計畫、一套做法，各部分的版本一起前進。說它分散，因為每個部分住在自己的儲存庫裡，有自己的測試，發布自己的版本。

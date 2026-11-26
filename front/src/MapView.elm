@@ -44,6 +44,7 @@ type alias Marker =
     , node : Tree
     , tip : Tree
     , tipClass : String
+    , tipAnchor : String
     , offset : Int
     , click : Maybe String
     }
@@ -64,6 +65,7 @@ markerJson m =
         , ( "node", Tree.toJson m.node )
         , ( "tip", Tree.toJson m.tip )
         , ( "tip_class", E.string m.tipClass )
+        , ( "tip_anchor", E.string m.tipAnchor )
         , ( "offset", E.int m.offset )
         , ( "click", nullable E.string m.click )
         ]
@@ -180,6 +182,7 @@ beachMarker model b =
     , node = Tree.el "div" [ ( "class", cls ) ] [ waveIcon bandClass selected score ]
     , tip = Tree.el "div" [] (AspectsView.children (Aspects.ofBeach b shown model.loc))
     , tipClass = "aspects"
+    , tipAnchor = ""
     , offset =
         if selected then
             18
@@ -218,6 +221,7 @@ waterMarker model p =
     , node = Tree.el "div" [ ( "class", "wpoint " ++ Band.cssClass (Water.conditionBand p.condition) ) ] [ drop ]
     , tip = Tree.el "span" [ ( "class", "water" ) ] [ Tree.text text ]
     , tipClass = ""
+    , tipAnchor = ""
     , offset = 8
     , click = Nothing
     }
@@ -229,7 +233,14 @@ language; the area's camera enters the first and the beaches' bounds do not pull
 -}
 pinMarker : Model -> List Marker
 pinMarker model =
-    List.indexedMap (pinMarkerAt model) (areaPins model)
+    List.indexedMap (pinMarkerAt model) (List.filter (visiblePin model) (areaPins model))
+
+
+{-| A place pin is always on the map; a diving site belongs to the scuba layer.
+-}
+visiblePin : Model -> Area.Pin -> Bool
+visiblePin model pin =
+    not (Area.isDive pin) || model.layer == Layer.Scuba
 
 
 areaPins : Model -> List Area.Pin
@@ -251,6 +262,27 @@ areaPins model =
 
 pinMarkerAt : Model -> Int -> Area.Pin -> Marker
 pinMarkerAt model index pin =
+    if Area.isDive pin then
+        diveMarker model index pin
+
+    else
+        placeMarker model index pin
+
+
+{-| The visible label names it; the hover bubble describes it, so the two never read the same.
+-}
+pinTip : Model -> Area.Pin -> Tree
+pinTip model pin =
+    case Area.pinDescription model.loc pin of
+        Just description ->
+            Tree.el "span" [ ( "class", "pin-tip" ) ] [ Tree.text description ]
+
+        Nothing ->
+            Tree.el "span" [] []
+
+
+placeMarker : Model -> Int -> Area.Pin -> Marker
+placeMarker model index pin =
     let
         label =
             Area.pinLabel model.loc pin
@@ -281,19 +313,54 @@ pinMarkerAt model index pin =
             [ Tree.el "span" [ ( "class", "pin-label" ) ] [ Tree.text label ]
             , Tree.el "span" [ ( "class", "pin-dot" ) ] []
             ]
-
-    -- The visible label names it; the hover bubble describes it, so the two never read the same.
-    , tip =
-        case Area.pinDescription model.loc pin of
-            Just description ->
-                Tree.el "span" [ ( "class", "pin-tip" ) ] [ Tree.text description ]
-
-            Nothing ->
-                Tree.el "span" [] []
+    , tip = pinTip model pin
     , tipClass = ""
+    , tipAnchor = "top"
     , offset = 10
     , click = Nothing
     }
+
+
+{-| A diving site: a round mask marker, drawn only on the scuba layer.
+-}
+diveMarker : Model -> Int -> Area.Pin -> Marker
+diveMarker model index pin =
+    let
+        label =
+            Area.pinLabel model.loc pin
+    in
+    { key = "dive-" ++ String.fromInt index ++ "-" ++ pin.name
+    , lon = pin.lon
+    , lat = pin.lat
+    , label = Just label
+    , node =
+        Tree.el "div"
+            [ ( "class", "dive" ), ( "role", "img" ), ( "aria-label", label ) ]
+            [ diveIcon, Tree.el "span" [ ( "class", "pin-label" ) ] [ Tree.text label ] ]
+    , tip = pinTip model pin
+    , tipClass = ""
+    , tipAnchor = "top"
+    , offset = 14
+    , click = Nothing
+    }
+
+
+{-| A scuba mask: two lenses, a strap and a regulator, on the accent dot.
+-}
+diveIcon : Tree
+diveIcon =
+    Tree.svg "svg"
+        [ ( "viewBox", "0 0 24 24" ), ( "aria-hidden", "true" ), ( "focusable", "false" ) ]
+        [ Tree.svg "circle" [ ( "class", "rim" ), ( "cx", "12" ), ( "cy", "12" ), ( "r", "11" ) ] []
+        , Tree.svg "circle" [ ( "class", "fill" ), ( "cx", "12" ), ( "cy", "12" ), ( "r", "9" ) ] []
+        , Tree.svg "path"
+            [ ( "class", "mask" )
+            , ( "d", "M4.5 8.5h15a1 1 0 0 1 1 1v3.5a2 2 0 0 1-2 2h-3.5L12 17l-3-2H5.5a2 2 0 0 1-2-2V9.5a1 1 0 0 1 1-1Z" )
+            ]
+            []
+        , Tree.svg "circle" [ ( "class", "lens" ), ( "cx", "9" ), ( "cy", "11.5" ), ( "r", "1.5" ) ] []
+        , Tree.svg "circle" [ ( "class", "lens" ), ( "cx", "15" ), ( "cy", "11.5" ), ( "r", "1.5" ) ] []
+        ]
 
 
 selectedBeach : Model -> Maybe Beach
@@ -364,6 +431,7 @@ hereMarker model =
               , node = Tree.el "div" [ ( "class", "here" ) ] []
               , tip = Tree.el "span" [] [ Tree.text (I18n.t model.loc "near.you" []) ]
               , tipClass = ""
+              , tipAnchor = ""
               , offset = 8
               , click = Nothing
               }

@@ -31,6 +31,7 @@ linkOk :: Text -> Bool
 linkOk url =
   ( "https://" `T.isPrefixOf` url
       || "http://" `T.isPrefixOf` url
+      || "mailto:" `T.isPrefixOf` url
       || ("/" `T.isPrefixOf` url && not ("//" `T.isPrefixOf` url))
       || "#" `T.isPrefixOf` url
       || sibling url

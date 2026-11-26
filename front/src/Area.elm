@@ -1,4 +1,4 @@
-module Area exposing (Area, Bounds, Pin, decoder, listDecoder, pinDescription, pinLabel)
+module Area exposing (Area, Bounds, Pin, decoder, isDive, listDecoder, pinDescription, pinLabel)
 
 {-| An area of the picker: `data/areas.json` carries more, the page reads these. `bounds`, `zoom`
 and `pin` are the area's own: what the camera frames, where it enters without bounds, the layer it
@@ -17,6 +17,7 @@ type alias Pin =
     { name : String
     , names : Dict String String
     , descriptions : Dict String String
+    , kind : String
     , lat : Float
     , lon : Float
     , url : Maybe String
@@ -48,6 +49,7 @@ pinDecoder =
         |> required "name" D.string
         |> Dec.andMap (Dec.optional "names" (D.dict D.string) |> D.map (Maybe.withDefault Dict.empty))
         |> Dec.andMap (Dec.optional "descriptions" (D.dict D.string) |> D.map (Maybe.withDefault Dict.empty))
+        |> Dec.andMap (Dec.optional "kind" D.string |> D.map (Maybe.withDefault "place"))
         |> required "lat" Dec.number
         |> required "lon" Dec.number
         |> Dec.andMap (Dec.optional "url" D.string)
@@ -102,3 +104,10 @@ pinLabel loc pin =
 pinDescription : Locale -> Pin -> Maybe String
 pinDescription loc pin =
     Dict.get (Language.tag loc.language) pin.descriptions
+
+
+{-| A diving site: the pin belongs to the scuba layer, not to the plain map.
+-}
+isDive : Pin -> Bool
+isDive pin =
+    pin.kind == "dive"

@@ -48,6 +48,19 @@ committed one.
 
 `just site-build` builds the same boards on any machine in Brazil.
 
+### Figures
+
+`docs/archify/*.json` are the sources of the HTML diagrams the about page links: the repository map
+(`/architecture`), the data flow (`/data-flow`), a study's way (`/studies-flow`), the deploy
+(`/deploy-flow`) and the development flow (`/develop-flow`). `just figures` fetches the pinned
+Archify (`v3.0.1`, never a submodule), draws each source into `.tmp/figures/`, and runs
+`scripts/archify_figures.py`, which removes Archify's toolbar and scripts, moves its styles to
+`site/figures/archify.css` and writes the pages to `site/figures/`. The pages are committed; the
+site build copies them to `dist/`, and the server's static fallback serves `/architecture` from
+`architecture.html` on both marola.dev and piabrota.art. The pages carry no script and no inline
+style, so the site's CSP applies to them unchanged. Edit the JSON, not the HTML; `just figures`
+needs the network and is never part of the Nix build.
+
 ### Crawl files and metadata
 
 `site/static/robots.txt` (everyone allowed, names the sitemap) and `humans.txt` (written by

@@ -49,7 +49,12 @@ spec env = describe "pages" $ do
   forEach env "the language switch is four plain links to this page in each language" $ \s _ html -> do
     mapM_ (\la -> html `shouldSatisfy` has ("<a href=\"" <> Layout.path la s <> "\" lang=\"" <> Language.tag la <> "\"")) allLanguages
   forEach env "the nav links go to the page's own language" $ \_ l html ->
-    mapM_ (\n -> allHrefs html `shouldContain` [Layout.path l n]) Layout.navSlugs
+    mapM_
+      ( \n ->
+          allHrefs html
+            `shouldContain` [if n == "contact" then "mailto:admin@marola.dev" else Layout.path l n]
+      )
+      Layout.navSlugs
   forEach env "the section nav has no docs link and no alerts placeholder" $ \_ _ html -> do
     let nav = T.concat (betweenAll "<nav class=\"sitenav\"" "</nav>" html)
     nav `shouldNotSatisfy` has "https://docs.marola.dev/"

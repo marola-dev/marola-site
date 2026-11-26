@@ -56,7 +56,10 @@ marola is a set of code repositories, each with one job:
 - **marola-devkit** is the set of tools every repository uses.
 - **marola**, the umbrella, holds the plans and the rules, and brings in every other repository as a git submodule.
 
-![How the marola repos fit together: marola, the umbrella, brings in every repo as a git submodule; marola-corpus hands a release tarball to marola-app and marola-ml; marola-app's image builds marola-site's map and brings image and resources to marola-ml, which returns compiled prompts in a PR; ETL jobs write marola-oods' data lake; every repo pins marola-devkit by tag; marola-skills reads every SKILL.md, marola-agents indexes every agent, and marola-research holds the science](/img/umbrella.svg 1000x712)
+[open the architecture diagram](/architecture) — marola's repositories and what each hands to the next.
+
+
+More diagrams: [where the data comes from](/data-flow), [a study's way](/studies-flow), [from a merge to marola.dev](/deploy-flow), [how a change reaches marola](/develop-flow).
 marola's repositories and what each hands to the next. The picture is the one on the [organization's GitHub page](https://github.com/marola-dev) (source: [marola-dev/.github](https://github.com/marola-dev/.github/blob/main/profile/README.en.md)).
 
 We call this a distributed monolith. It is one project, with one plan, one way of working and versions that move together, as if it were a single system. But each part lives in its own repository, with its own tests and releases.

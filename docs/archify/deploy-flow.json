@@ -1,0 +1,37 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "from a merge to marola.dev",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "legend": { "mode": "hidden" },
+    "output": "deploy-flow.html"
+  },
+  "lanes": [
+    { "id": "repo", "label": "the repository" },
+    { "id": "ci", "label": "CI and the package" },
+    { "id": "host", "label": "piabrota2 (nix-os)" },
+    { "id": "you", "label": "the visitor" }
+  ],
+  "mainPath": ["commit", "ci", "pkg", "pin", "host", "site"],
+  "nodes": [
+    { "id": "commit", "lane": "repo", "col": 0, "type": "backend", "label": "commit", "sublabel": "a pull request merged", "width": 136 },
+    { "id": "ci", "lane": "ci", "col": 1, "type": "backend", "label": "CI", "sublabel": "back, front, static, smoke", "width": 136 },
+    { "id": "pkg", "lane": "ci", "col": 2, "type": "backend", "label": "nix package", "sublabel": "server + dist, no network", "width": 136 },
+    { "id": "pin", "lane": "repo", "col": 3, "type": "backend", "label": "nix-os pin", "sublabel": "scripts/pins.py one", "width": 136 },
+    { "id": "boards", "lane": "host", "col": 3, "type": "database", "label": "boards job", "sublabel": "4x a day, app image", "width": 136 },
+    { "id": "tiles", "lane": "host", "col": 4, "type": "database", "label": "tiles job", "sublabel": "PMTiles on the host", "width": 136 },
+    { "id": "host", "lane": "host", "col": 5, "type": "cloud", "label": "piabrota2", "sublabel": "systemd, nginx, :8080", "width": 136 },
+    { "id": "site", "lane": "you", "col": 5, "type": "external", "label": "marola.dev", "sublabel": "and piabrota.art", "width": 136 }
+  ],
+  "edges": [
+    { "id": "e1", "from": "commit", "to": "ci", "label": "runs" },
+    { "id": "e2", "from": "ci", "to": "pkg", "label": "builds" },
+    { "id": "e3", "from": "pkg", "to": "pin", "label": "flake input" },
+    { "id": "e4", "from": "pin", "to": "host", "label": "deploys" },
+    { "id": "e5", "from": "boards", "to": "host", "label": "board data", "role": "branch" },
+    { "id": "e6", "from": "tiles", "to": "host", "label": "base map", "role": "branch" },
+    { "id": "e7", "from": "host", "to": "site", "label": "HTTPS" }
+  ]
+}

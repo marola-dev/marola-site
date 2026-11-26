@@ -269,7 +269,7 @@ nav loc p =
         [H.text (I18n.t loc "nav.studies")],
       navLink loc p "ecomonitoramento" "nav.ecomonitoramento",
       navLink loc p "about" "nav.about",
-      navLink loc p "contact" "nav.contact",
+      external loc "mailto:admin@marola.dev" "nav.contact",
       external loc "https://github.com/marola-dev/marola-research/blob/main/README.md" "nav.research",
       navLink loc p "partners" "nav.partners",
       navLink loc p "members" "nav.members",

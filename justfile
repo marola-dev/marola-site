@@ -189,3 +189,29 @@ nix-build:
 # Start the Nix package's server on a free port with its state in a temp dir and check four URLs for 200 and the CSP header.
 package-smoke *args:
     scripts/package_smoke.sh {{ args }}
+
+# The Archify that draws docs/archify/*.json, pinned (v3.0.1), the same one the umbrella uses.
+archify_rev := "2ab3cae7ac2c2a55d7386ca789d03c4fcd31816c"
+
+# Fetch the pinned Archify into .tmp/ (network; never a submodule).
+figure-init:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    d=.tmp/archify
+    if [ "$(git -C "$d" rev-parse HEAD 2>/dev/null)" != "{{ archify_rev }}" ]; then
+        rm -rf "$d" && git init -q "$d"
+        git -C "$d" fetch -q --depth 1 https://github.com/tt-a1i/archify.git "{{ archify_rev }}"
+        git -C "$d" checkout -q FETCH_HEAD
+    fi
+    echo "figure-init: $(git -C "$d" rev-parse --short HEAD)"
+
+# Draw every docs/archify/*.json as a static HTML page in site/figures/ (network: fetches Archify; the pages are committed).
+figures: figure-init
+    #!/usr/bin/env bash
+    set -euo pipefail
+    mkdir -p .tmp/figures
+    for src in docs/archify/*.json; do
+        slug="$(basename "$src" .json)"
+        node .tmp/archify/archify/bin/archify.mjs deliver workflow "$src" ".tmp/figures/$slug.html" --quality standard --json >/dev/null
+    done
+    python3 scripts/archify_figures.py

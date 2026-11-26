@@ -10,6 +10,7 @@ type Layer
     | Wind
     | Waves
     | Water
+    | Scuba
     | Clouds
     | Sst
     | Anomaly
@@ -20,7 +21,7 @@ type Layer
 -}
 all : List Layer
 all =
-    [ Wind, Waves, Water, Clouds, Sst, Anomaly, Elnino ]
+    [ Wind, Waves, Water, Scuba, Clouds, Sst, Anomaly, Elnino ]
 
 
 key : Layer -> String
@@ -37,6 +38,9 @@ key layer =
 
         Water ->
             "water"
+
+        Scuba ->
+            "scuba"
 
         Clouds ->
             "clouds"

@@ -57,7 +57,10 @@ marolaはコードのリポジトリの集まりで、それぞれに役割が�
 - **marola-devkit** は全リポジトリが使う道具箱です。
 - **marola** は傘のリポジトリで、計画とルールを持ち、他のすべてをgitサブモジュールとして引き込みます。
 
-![marolaのリポジトリがどう噛み合うか。傘のmarolaがすべてをgitサブモジュールとして引き込む。marola-corpusはリリースのtarballをmarola-appとmarola-mlに渡す。marola-appのイメージはmarola-siteの地図を組み立て、イメージとリソースをmarola-mlに渡し、marola-mlはコンパイル済みプロンプトをPRで返す。ETLジョブはmarola-oodsのデータレイクに書き込む。すべてのリポジトリはmarola-devkitをタグで固定する。marola-skillsは各SKILL.mdを読み、marola-agentsは各エージェントを索引化し、marola-researchは研究を保存する。](/img/umbrella.svg 1000x712)
+[アーキテクチャ図を開く](/architecture) — marola のリポジトリと、それぞれが次に渡すもの。
+
+
+その他の図: [データの出所](/data-flow)、[研究の流れ](/studies-flow)、[マージから marola.dev まで](/deploy-flow)、[変更が届くまで](/develop-flow)。
 marolaのリポジトリと、それぞれが他に渡すもの。図は[GitHubの組織ページ](https://github.com/marola-dev)のものと同じです（出典: [marola-dev/.github](https://github.com/marola-dev/.github/blob/main/profile/README.md)）。
 
 これを分散モノリスと呼びます。モノリスなのは、1つの部品のように動くからです: 1つのプロジェクト、1つの計画、1つの働き方で、各部のバージョンはそろって進みます。分散しているのは、各部が自分のリポジトリに、自分のテストとともにあり、独自のバージョンをリリースするからです。

@@ -233,5 +233,7 @@
   "metric.wind": "wind",
   "metric.waves": "waves",
   "metric.water": "water",
-  "player.drag": "drag the player over the map"
+  "player.drag": "drag the player over the map",
+  "flow.scuba": "dive",
+  "flow.key_scuba": "dive sites"
 }

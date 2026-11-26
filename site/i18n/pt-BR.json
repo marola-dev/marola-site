@@ -233,5 +233,7 @@
   "metric.wind": "vento",
   "metric.waves": "ondas",
   "metric.water": "água",
-  "player.drag": "arraste o tocador pelo mapa"
+  "player.drag": "arraste o tocador pelo mapa",
+  "flow.scuba": "mergulho",
+  "flow.key_scuba": "pontos de mergulho"
 }
