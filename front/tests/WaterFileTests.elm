@@ -22,7 +22,7 @@ import WaterFile exposing (WaterFile)
 sample : String
 sample =
     """
-{"schema":1,"area":"floripa","source":"IMA/SC","sampled_on":"2026-11-19","next_bulletin":"2026-12-18","note":null,
+{"schema":1,"area":"floripa","source":"IMA/SC","sampled_on":"2026-11-19","season":"2025/2026","next_bulletin":"2026-12-18","note":null,
  "points":[
   {"point":"Ponto 33","location":"Joaquina","lat":-27.6301,"lon":-48.4479,"condition":"proper","sampled_on":"2026-11-19","enterococci_per_100ml":null,"rain":null},
   {"point":"Ponto 04","location":"Lagoa da Ferrugem","lat":-28.08125,"lon":-48.63206,"condition":"improper","sampled_on":"2026-11-19","enterococci_per_100ml":12,"rain":"Ausente"}
@@ -56,8 +56,8 @@ suite =
         [ describe "decoder"
             [ test "reads the file's place and its points" <|
                 \_ ->
-                    { area = decoded.area, source = decoded.source, sampledOn = decoded.sampledOn, nextBulletin = decoded.nextBulletin, points = List.length decoded.points }
-                        |> Expect.equal { area = "floripa", source = "IMA/SC", sampledOn = "2026-11-19", nextBulletin = Just "2026-12-18", points = 2 }
+                    { area = decoded.area, source = decoded.source, sampledOn = decoded.sampledOn, season = decoded.season, nextBulletin = decoded.nextBulletin, points = List.length decoded.points }
+                        |> Expect.equal { area = "floripa", source = "IMA/SC", sampledOn = "2026-11-19", season = Just "2025/2026", nextBulletin = Just "2026-12-18", points = 2 }
             , test "a point keeps its verdict and its number" <|
                 \_ ->
                     case List.drop 1 decoded.points of

@@ -236,5 +236,6 @@
   "player.drag": "在地圖上拖曳播放器",
   "flow.scuba": "潛水",
   "flow.key_scuba": "潛水點",
-  "flow.key_water_next": "下一期公告 {when}"
+  "flow.key_water_next": "下一期公告 {when}",
+  "flow.key_water_season": "以及 {source} 在該地區的 {season} 季公告，{when}"
 }

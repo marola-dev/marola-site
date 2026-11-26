@@ -236,5 +236,6 @@
   "player.drag": "drag the player over the map",
   "flow.scuba": "dive",
   "flow.key_scuba": "dive sites",
-  "flow.key_water_next": "next bulletin {when}"
+  "flow.key_water_next": "next bulletin {when}",
+  "flow.key_water_season": "and {source}'s in the area, from the {season} season, on {when}"
 }

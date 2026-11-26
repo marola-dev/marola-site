@@ -236,5 +236,6 @@
   "player.drag": "aria-label and tooltip of the player's drag grip",
   "flow.scuba": "layer button that shows the diving sites on the map",
   "flow.key_scuba": "caption under the rail when the scuba layer is on: the diving sites",
-  "flow.key_water_next": "caption under the water key when the file names the next bulletin date; {when} is a short date"
+  "flow.key_water_next": "caption under the water key when the file names the next bulletin date; {when} is a short date",
+  "flow.key_water_season": "continuation of flow.key_water under the water key when the file names its season; {source} is the agency, {season} is 2025/2026, {when} is a short date"
 }

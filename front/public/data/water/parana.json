@@ -3,6 +3,7 @@
  "area": "parana",
  "source": "IAT/PR",
  "sampled_on": "2026-02-09",
+ "season": "2025/2026",
  "next_bulletin": "2026-12-18",
  "note": "Pontos de coleta do IAT/PR no Paraná, copiados do serviço Balneabilidade Atual (geopr.iat.pr.gov.br) em 26 de novembro de 2026. O serviço traz 76 pontos: 59 no Litoral, 16 na Costa Oeste (as praias de rio e do lago de Itaipu, no oeste do estado) e 1 no Norte (Rio Paranapanema, em Primeiro de Maio); 22 estão impróprios. A última semana completa do serviço é a 9ª do boletim da temporada 2025/2026: amostras de 12 de janeiro a 9 de fevereiro de 2026 e boletim da semana de 13 a 19 de fevereiro. O IAT usa E. coli como indicador e não publica a contagem no boletim; o serviço traz os 10 pontos de foz de rio do Litoral que o boletim impresso não lista. Curitiba, os Campos Gerais e o interior não têm ponto de balneabilidade do IAT: o serviço cobre só o Litoral, a Costa Oeste e o Norte. O primeiro boletim da temporada 2026/2027 sai em 18 de dezembro de 2026 e substitui este arquivo; ele é uma cópia, não dado ao vivo.",
  "points": [

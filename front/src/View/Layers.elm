@@ -232,11 +232,21 @@ waterFileKey model =
         Model.WaterFileLoaded file ->
             [ Html.span []
                 [ Html.text
-                    (Words.ta model
-                        "flow.key_water_file"
-                        [ ( "source", Icu.Text file.source )
-                        , ( "when", Icu.Text (DateFmt.short file.sampledOn model.loc.language) )
-                        ]
+                    (case file.season of
+                        Just season ->
+                            Words.ta model
+                                "flow.key_water_season"
+                                [ ( "source", Icu.Text file.source )
+                                , ( "season", Icu.Text season )
+                                , ( "when", Icu.Text (DateFmt.short file.sampledOn model.loc.language) )
+                                ]
+
+                        Nothing ->
+                            Words.ta model
+                                "flow.key_water_file"
+                                [ ( "source", Icu.Text file.source )
+                                , ( "when", Icu.Text (DateFmt.short file.sampledOn model.loc.language) )
+                                ]
                     )
                 ]
             ]

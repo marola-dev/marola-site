@@ -236,5 +236,6 @@
   "player.drag": "arraste o tocador pelo mapa",
   "flow.scuba": "mergulho",
   "flow.key_scuba": "pontos de mergulho",
-  "flow.key_water_next": "próximo boletim {when}"
+  "flow.key_water_next": "próximo boletim {when}",
+  "flow.key_water_season": "e os do {source} na área, da temporada {season}, de {when}"
 }
