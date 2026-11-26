@@ -28,7 +28,7 @@
   --sea: #0B5FA5;         /* the one primary fill, and the header's glow */
   --sea-hover: #0E6DBB;
   --on-fill: #ffffff;     /* text on --sea and on --c0; the white ring of a marker on the map */
-  --map-sea: #cfe6f1;     /* the map before its tiles load: the base map's water */
+  --map-sea: #5bb8d8;     /* the map before its tiles load: the base map's water */
   --emergency: #FF6B5E;   /* the phone icon, and unfit text on ink */
   --ok: #3FB950;          /* "proper" water text on ink */
   --warn: #E3B341;        /* the dot and the edge of "not reviewed"; never a score */

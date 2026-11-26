@@ -63,8 +63,10 @@ An area's box is its centre plus and minus `radius_km + 50` km. A new area in `s
 file cut again: the `complexo-lagunar` area (the Southern Santa Catarina Lagoon Complex) and the
 `parana` area (the Litoral do Paraná) are in the list, so the host's `MAROLA_TILES` file needs a new
 `scripts/basemap_extract.sh` run before the live map shows streets there. The fixture preview still
-cuts only the first area to zoom 11 (`--fixture`), so it shows the CL and PR areas on the world and
-country tiles; that is a stand-in, not a missing build step.
+cuts only the first area to zoom 11 (`--fixture`). Outside it, at an area's zoom, the file has no
+tile: the page draws its overlays over the background, not the base map, unless a lower zoom was
+loaded first. That is a stand-in, not a missing build step; the host's file covers Brazil to zoom 9
+and each area's box to zoom 15, so the live map has land and streets there.
 
 ## Board schema pin
 

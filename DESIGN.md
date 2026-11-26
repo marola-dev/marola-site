@@ -75,7 +75,7 @@ these rows. Do not change a row without the same change in `:root`.
 | `--sea` | `#0B5FA5` | the one primary fill (chat toggle and send, the release tag, a reading page's primary pill and submit button), and the header's glow |
 | `--sea-hover` | `#0E6DBB` | hover on the primary fill |
 | `--on-fill` | `#ffffff` | text on `--sea` and on `--c0`; the white ring of a marker on the map |
-| `--map-sea` | `#cfe6f1` | the map before the base map loads |
+| `--map-sea` | `#5bb8d8` | the map before the base map loads |
 | `--emergency` | `#FF6B5E` | the emergency button's phone icon, and unfit or improper water text on ink |
 | `--ok` | `#3FB950` | the "proper" water text on ink |
 | `--warn` | `#E3B341` | the dot of the "not reviewed" status pill and the edge of its banner; never text, never a score |
@@ -191,27 +191,28 @@ the check does not read them.
 
 ### The base map
 
-The map is light under the ink chrome, and quiet, so that the beach dots, the flow ramps and the
-satellite keys carry the colour. Its style is generated (`node scripts/basemap_style.mjs`) from
-Protomaps' light flavor with the values below; change them there, never in `style.json`.
+The map is light under the ink chrome, and saturated: a vivid blue sea and warm sand let the beach
+dots, the flow ramps and the satellite keys sit on a map that reads as a coast, not a blank page. Its
+style is generated (`node scripts/basemap_style.mjs`) from Protomaps' light flavor with the values
+below; change them there, never in `style.json`.
 
 | Part | Value | Job |
 |---|---|---|
-| water, background | `#cfe6f1` | the sea, lakes and the ground behind every tile: `--map-sea`, so a tile that is still loading reads as water |
-| earth | `#f4f2ec` | land |
-| beach | `#f1dc98` | sand of a beach, the strongest fill on the map after the roads: this is a beach map |
-| sand | `#f1e4b4` | dunes and other sand |
-| park, wood, scrub | `#dcead3` to `#c3dfb9` | green, in two steps by zoom |
-| buildings | `#e4e0d8` | building footprints, from zoom 14 |
-| roads | `#ffffff` on a `#d6d0c3` or `#dcd7cc` casing | every road but a motorway |
-| motorway | `#fbe7b0` on `#dfc98c` | the one coloured road |
-| boundaries | `#9aa3ad` | country and state lines |
-| city label | `#1d2733` with an earth halo | 13.5:1 on earth; the same ink as the marker rim |
-| neighbourhood label | `#5b6672` with an earth halo | 5.2:1 on earth |
-| road label | `#59626e`, `#6b7480` with a white halo | 6.2:1 and 4.7:1 on white |
-| state, country label | `#7d8792`, `#59626e` | large upper-case text; the state name is 3.3:1 on earth |
-| sea label | `#4d7a9c` italic | 3.5:1 on water; large, spaced text |
-| beach label | `#7a5c12` italic with a white halo | a beach's name, from zoom 12; 5.6:1 on earth |
+| water, background | `#5bb8d8` | the sea, lakes and the ground behind every tile: `--map-sea`, so a tile that is still loading reads as water |
+| earth | `#f7efd8` | land |
+| beach | `#f4c65a` | sand of a beach, the strongest fill on the map after the roads: this is a beach map |
+| sand | `#f2d88f` | dunes and other sand |
+| park, wood, scrub | `#c7e6a2` to `#84c47a` | green, in two steps by zoom |
+| buildings | `#e8deca` | building footprints, from zoom 14 |
+| roads | `#fffdf7` on a `#d2c8b2` or `#d8cfb8` casing | every road but a motorway |
+| motorway | `#f9d56f` on `#d9b85c` | the one coloured road |
+| boundaries | `#4f7088` | country and state lines |
+| city label | `#0f2433` with an earth halo | 13.5:1 on earth; the same ink as the marker rim |
+| neighbourhood label | `#3f5668` with an earth halo | 6.7:1 on earth |
+| road label | `#3f4c59`, `#46535f` with a white halo | 8.8:1 and 7.9:1 on white |
+| state, country label | `#5f7182`, `#3f5668` | large upper-case text; the state name is 4.4:1 on earth |
+| sea label | `#0a4d66` italic | 4.1:1 on water; large, spaced text |
+| beach label | `#7a4a00` italic with a white halo | a beach's name, from zoom 12; 4.7:1 on beach |
 
 The labels are Noto Sans (Regular, Medium, Italic), drawn by MapLibre from glyph files, not Inter:
 a map label is the map's voice, not the page's. A name is shown in Portuguese when the data has
@@ -257,7 +258,7 @@ least 3:1.
 | `--bg` | `--cna` (a score chip) | 5.78:1 | pass |
 | `--on-fill` | `--c0` (a score chip) | 5.19:1 | pass |
 | `--line-strong` | `--surface` (a control border) | 1.78:1 | fail |
-| `--accent` | `--map-sea` (the "you" marker with no ring) | 1.34:1 | fail |
+| `--accent` | `--map-sea` (the "you" marker with no ring) | 1.31:1 | fail |
 
 A score chip prints its number in ink (`--bg`) on its band colour, and in white on the red, so all
 five pass. The "404" numeral is decoration behind the sentence "not found", which is the h2 in
