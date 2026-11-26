@@ -353,11 +353,13 @@ async function floripa() {
   ok(map.calls.some((c) => c.name === 'fitBounds'), 'the first board fits the map to the beaches');
   ok(document.documentElement.lang === 'pt-BR' && $('a[href=news.html]').textContent === 'notícias', 'default language is pt-BR');
   ok($('#watermark .lnt') && $('#watermark .lnt').getAttribute('role') === 'img' && $('#watermark .lnt').getAttribute('aria-label') === 'Leave No Trace, Proud Partner (marola é parceira oficial)' && $('#watermark svg').getAttribute('aria-hidden') === 'true', 'the map carries the watermark: the Leave No Trace logo with its name, the eye hidden from screen readers');
-  ok(beachMarkers().length === 2 && live().length === 3, 'one marker per beach and the place pin, no water points yet', live().length);
+  ok(beachMarkers().length === 2 && live().length === 4, 'one marker per beach and the two place pins, no water points yet', live().length);
   ok(beachMarkers().every((m) => cls(m.el).includes('wave')), 'beach marker nodes carry class wave');
-  const pins = () => live().filter((m) => cls(m.el).includes('pin') || cls(m.el).includes('dive'));
+  const pins = () => live().filter((m) => cls(m.el).includes('pin') || cls(m.el).includes('dive') || cls(m.el).includes('women'));
   const pinLabels = () => pins().map((m) => $('.pin-label', m.el).textContent).sort().join('|');
-  ok(pins().length === 1 && pinLabels() === 'Ilha do Campeche', 'the place pin is on the plain map; the dive sites wait for the scuba layer', pinLabels());
+  ok(pins().length === 2 && pinLabels() === 'Casa Örüm|Ilha do Campeche', 'the place pins are on the plain map; the dive sites wait for the scuba layer', pinLabels());
+  const women = live().find((m) => cls(m.el).includes('women'));
+  ok(women && cls(women.el).includes('label-below') && $('.pin-label', women.el).textContent === 'Casa Örüm' && $('.venus-ring', women.el) && $('.venus-cross', women.el), 'Casa Örüm is a women marker with the Venus symbol and its label', women && $('.pin-label', women.el).textContent);
   const scuba = () => $('button[data-toggle=scuba]');
   await click(scuba());
   ok(scuba().getAttribute('aria-pressed') === 'true' && live().length === 4 && pins().length === 2 && live().filter((m) => cls(m.el).includes('dive')).length === 2, 'the scuba layer shows only the two dive sites', live().length);
@@ -366,7 +368,7 @@ async function floripa() {
   ok(pinLabels() === ['Arvoredo Island', 'Xavier Island'].sort().join('|'), 'the dive labels follow the page language', pinLabels());
   await click($('button[lang=pt-BR]'));
   await click(scuba());
-  ok(scuba().getAttribute('aria-pressed') === 'false' && live().length === 3, 'pressing scuba again is the plain map', live().length);
+  ok(scuba().getAttribute('aria-pressed') === 'false' && live().length === 4, 'pressing scuba again is the plain map', live().length);
   const best = markerOf(byScore[0].name);
   ok(best && $('circle.dot', best.el).getAttribute('class') === 'dot f-' + bandOf(byScore[0]), 'the best beach dot has its band class', byScore[0].best.score);
   ok(markerOf(byScore[1].name) && $('circle.dot', markerOf(byScore[1].name).el).getAttribute('class') === 'dot f-' + bandOf(byScore[1]), 'the unfit beach dot is f-c0');
@@ -400,19 +402,19 @@ async function floripa() {
   const layers = $$('button[data-layer]');
   ok(layers.length === 7, 'seven layer buttons', layers.length);
   const enabled = layers.filter((b) => !b.hasAttribute('disabled'));
-  ok(enabled.length === 1 && enabled[0].getAttribute('data-layer') === 'water', 'the water layer is enabled; scuba is its own toggle');
+  ok(enabled.length === 2 && enabled.map((b) => b.getAttribute('data-layer')).join() === 'water,clouds', 'the water and satellite layers are enabled; scuba is its own toggle');
   ok(layers.every((b) => b.getAttribute('aria-pressed') === 'false'), 'no layer starts pressed');
   const before = live().length;
   await click(enabled[0]);
   ok($('button[data-layer=water]').getAttribute('aria-pressed') === 'true', 'pressing water sets aria-pressed');
   ok(lastUrl().searchParams.get('layer') === 'water', 'the URL carries layer=water');
   ok(cls($('main')).includes('layer-water'), 'main gets class layer-water');
-  ok(before === 3 && live().length === 5 && live().filter((m) => cls(m.el).includes('wpoint')).length === 2, 'the water layer adds the sampling points', live().length);
+  ok(before === 4 && live().length === 6 && live().filter((m) => cls(m.el).includes('wpoint')).length === 2, 'the water layer adds the sampling points', live().length);
   await click(scuba());
   ok(live().length === 6 && live().filter((m) => cls(m.el).includes('wpoint')).length === 2, 'water and scuba are on together', live().length);
   ok($('#flowkeys').textContent.includes('pontos de mergulho'), 'the key keeps both the water file and the dive sites', $('#flowkeys').textContent);
   await click(scuba());
-  ok(live().length === 5 && live().filter((m) => cls(m.el).includes('wpoint')).length === 2, 'turning scuba off keeps the water layer', live().length);
+  ok(live().length === 6 && live().filter((m) => cls(m.el).includes('wpoint')).length === 2, 'turning scuba off keeps the water layer', live().length);
 
   const feats = trailCollection(map).features, file = trailFile('floripa');
   ok(feats.length === routesOf(file).filter((r) => r.lines.some((l) => l.length > 1)).length && feats.length > 0, 'floripa trails reach the map as features', feats.length);
@@ -443,12 +445,20 @@ async function english() {
 
 async function layerWater() {
   ok($('button[data-layer=water]').getAttribute('aria-pressed') === 'true', '?layer=water starts pressed');
-  ok(cls($('main')).includes('layer-water') && live().length === 5, '?layer=water draws the sampling points from the start', live().length);
+  ok(cls($('main')).includes('layer-water') && live().length === 6, '?layer=water draws the sampling points from the start', live().length);
 }
 
 async function layerWind() {
   ok($$('button[data-layer]').every((b) => b.getAttribute('aria-pressed') === 'false'), '?layer=wind is ignored: nothing pressed');
-  ok(!cls($('main')).includes('layer-water') && live().length === 3, '?layer=wind leaves the plain map', live().length);
+  ok(!cls($('main')).includes('layer-water') && live().length === 4, '?layer=wind leaves the plain map', live().length);
+}
+
+async function layerClouds() {
+  ok($('button[data-layer=clouds]').getAttribute('aria-pressed') === 'true', '?layer=clouds starts pressed');
+  const map = ml.maps[0];
+  ok(map.sources.gibs && [].concat(map.sources.gibs.spec.tiles).join().includes('VIIRS_SNPP_CorrectedReflectance_TrueColor'), 'the satellite layer adds the NASA GIBS raster', JSON.stringify(map.sources.gibs && map.sources.gibs.spec));
+  ok(map.layers.some((l) => l.id === 'gibs' && l.type === 'raster'), 'the satellite is a raster layer over the base map');
+  ok($('#flowkeys').textContent.includes('VIIRS'), 'the key names the satellite source', $('#flowkeys').textContent);
 }
 
 async function rio() {
@@ -624,6 +634,23 @@ async function minasGerais() {
   ok(pin && $('.pin-label', pin.el).textContent === 'Wberdiver' && pin.el.getAttribute('href') === 'https://www.instagram.com/wberdiver/' && pin.el.getAttribute('target') === '_blank', 'the dive school is pinned and links to its Instagram', pin && pin.el.getAttribute('href'));
   const mgPins = live().filter((m) => cls(m.el).includes('pin'));
   ok(mgPins.length === 2 && $('.pin-label', mgPins[1].el).textContent === 'Nascente do Rio São Francisco' && !mgPins[1].el.getAttribute('href'), 'the source is pinned as well, with no link', mgPins.map((m) => $('.pin-label', m.el).textContent).join(', '));
+  ok(cls(mgPins[1].el).includes('label-below'), 'the source label sits below its dot, clear of the region pins');
+  const mgRegions = ['Serra da Canastra', 'Capitólio', 'Lapinha da Serra', 'Ibitipoca'];
+  const mgPeaks = live().filter((m) => cls(m.el).includes('peak'));
+  ok(mgPeaks.length === 4 && mgRegions.every((n, i) => mgPeaks[i].el.getAttribute('aria-label') === n), 'the four MG regions are pinned, with the name in the tooltip', mgPeaks.map((m) => m.el.getAttribute('aria-label')).join(', '));
+  ok(mg && mg.pins && mg.pins.some((p) => p.name === 'Ponte Velha do Rio Araguari' && p.kind === 'dive' && p.lat === -18.7594 && p.lon === -48.2628), 'areas.json also pins the old Araguari bridge as a dive site', JSON.stringify(mg && mg.pins));
+  await click($('button[data-toggle=scuba]'));
+  const mgDives = live().filter((m) => cls(m.el).includes('dive'));
+  ok(mgDives.length === 1 && $('.pin-label', mgDives[0].el).textContent === 'Ponte Velha do Rio Araguari', 'the scuba layer shows the old Araguari bridge', mgDives.map((m) => $('.pin-label', m.el).textContent).join(', '));
+  const file = trailFile('minas-gerais');
+  ok(file.bairros.length === 3 && routesOf(file).length === 139, 'the Minas Gerais file groups 139 routes in three regions', `${file.bairros.length} groups, ${routesOf(file).length} routes`);
+  ok(file.bairros[0].bairro === 'Serra da Canastra' && file.bairros[0].trails.length === 8, 'the first group is the Serra da Canastra', JSON.stringify(file.bairros.map((g) => [g.bairro, g.trails.length])));
+  const feats = trailCollection(map).features;
+  ok(feats.length === routesOf(file).filter((r) => r.lines.some((l) => l.length > 1)).length && feats.length > 0, 'the Minas Gerais trails reach the map', feats.length);
+  await openTrailPanel();
+  ok($$('[data-trail]').length === routesOf(file).length && $('.trail-foot').textContent.includes('3170206'), 'the panel lists every route and the IBGE code', $$('[data-trail]').length);
+  ok($$('.trail-group h3').some((h) => h.textContent === 'Serra da Canastra'), 'the panel names the Serra da Canastra', $$('.trail-group h3').map((h) => h.textContent).join(', '));
+  ok($('.trail-note').textContent.includes('4x4'), 'the note suggests a 4x4 for the dirt access', $('.trail-note').textContent);
   const mgOption = $$('#area option').find((o) => o.getAttribute('value') === 'minas-gerais');
   ok(mgOption && mgOption.textContent === 'MG', 'the picker shows MG', JSON.stringify($$('#area option').map((o) => [o.getAttribute('value'), o.textContent])));
 }
@@ -651,6 +678,7 @@ const SCENARIOS = {
   english: { search: '?lang=en', run: english },
   'layer-water': { search: '?layer=water', run: layerWater },
   'layer-wind': { search: '?layer=wind', run: layerWind },
+  'layer-clouds': { search: '?layer=clouds', run: layerClouds },
   rio: { search: '?area=rio', run: rio },
   salvador: { search: '?area=salvador', run: salvador },
   'board-trails': { search: '?area=floripa', run: boardTrails, overrides: () => ({ 'data/trails/floripa.json': 404, [dayFile('floripa')]: fallbackBoard() }) },

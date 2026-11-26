@@ -69,6 +69,25 @@
           "ja": "フロリアノーポリス南東の島。遺跡と透明な海があります。",
           "zh-Hant": "弗洛里亞諾波利斯東南的島嶼，有考古遺址和清澈海水。"
         }
+      },
+      {
+        "name": "Casa Örüm",
+        "names": {
+          "pt-BR": "Casa Örüm",
+          "en": "Casa Örüm",
+          "ja": "カーザ・オルム",
+          "zh-Hant": "奧魯姆之家"
+        },
+        "lat": -27.6764,
+        "lon": -48.4871,
+        "label_below": true,
+        "descriptions": {
+          "pt-BR": "coliving só para mulheres e espaço de transição, no Campeche.",
+          "en": "a women-only coliving and transition space in Campeche.",
+          "ja": "カンペチェにある女性専用のコリビング兼トランジションスペース。",
+          "zh-Hant": "位於坎佩切的女性專用共居與過渡空間。"
+        },
+        "kind": "women"
       }
     ]
   },
@@ -274,7 +293,98 @@
           "en": "the historic source of the São Francisco River, in Serra da Canastra National Park, São Roque de Minas.",
           "ja": "サン・ロケ・デ・ミナスのセラ・ダ・カナストラ国立公園にある、サン・フランシスコ川の歴史的な源流。",
           "zh-Hant": "聖弗朗西斯科河的歷史源頭，位於聖羅克迪米納斯的卡納斯特拉山國家公園。"
-        }
+        },
+        "label_below": true
+      },
+      {
+        "name": "Serra da Canastra",
+        "names": {
+          "pt-BR": "Serra da Canastra",
+          "en": "Serra da Canastra",
+          "ja": "セラ・ダ・カナストラ",
+          "zh-Hant": "卡納斯特拉山"
+        },
+        "lat": -20.3695,
+        "lon": -46.6094,
+        "descriptions": {
+          "pt-BR": "o Parque Nacional da Serra da Canastra, com a portaria em São Roque de Minas; as estradas de terra pedem carro 4x4, principalmente na chuva.",
+          "en": "the Serra da Canastra National Park, with its entrance in São Roque de Minas; the dirt roads call for a 4x4, especially in the rain.",
+          "ja": "サン・ロケ・デ・ミナスに入口があるセラ・ダ・カナストラ国立公園。未舗装路のため、特に雨の日は4WD車が必要です。",
+          "zh-Hant": "卡納斯特拉山國家公園，入口位於聖羅克迪米納斯；土路建議使用四輪驅動車，雨天尤甚。"
+        },
+        "kind": "peak"
+      },
+      {
+        "name": "Capitólio",
+        "names": {
+          "pt-BR": "Capitólio",
+          "en": "Capitólio",
+          "ja": "カピトリオ",
+          "zh-Hant": "卡皮托利奧"
+        },
+        "lat": -20.6144,
+        "lon": -46.0488,
+        "descriptions": {
+          "pt-BR": "o município dos cânions do rio Grande e do lago de Furnas, no sudoeste de Minas.",
+          "en": "the municipality of the Rio Grande canyons and the Furnas lake, in southwestern Minas Gerais.",
+          "ja": "ミナスジェライス州南西部、リオ・グランデ川の峡谷とフルナス湖の町。",
+          "zh-Hant": "米納斯吉拉斯州西南部、格蘭德河峽谷與富爾納斯湖所在的市鎮。"
+        },
+        "kind": "peak"
+      },
+      {
+        "name": "Lapinha da Serra",
+        "names": {
+          "pt-BR": "Lapinha da Serra",
+          "en": "Lapinha da Serra",
+          "ja": "ラピーニャ・ダ・セラ",
+          "zh-Hant": "拉皮尼亞達塞拉"
+        },
+        "lat": -19.1188,
+        "lon": -43.68,
+        "descriptions": {
+          "pt-BR": "o distrito de Santana do Riacho na Serra do Cipó, com as cachoeiras e as trilhas da serra.",
+          "en": "the Santana do Riacho district in the Serra do Cipó, with the waterfalls and trails of the range.",
+          "ja": "セラ・ド・シポーのサンタナ・ド・リアシュ郡にある地区。滝と山のトレイルがあります。",
+          "zh-Hant": "西波山中聖安娜杜里亞舒的區，有瀑布和山徑。"
+        },
+        "kind": "peak"
+      },
+      {
+        "name": "Ibitipoca",
+        "names": {
+          "pt-BR": "Ibitipoca",
+          "en": "Ibitipoca",
+          "ja": "イビチポカ",
+          "zh-Hant": "伊比蒂波卡"
+        },
+        "lat": -21.6961,
+        "lon": -43.8861,
+        "descriptions": {
+          "pt-BR": "o Parque Estadual do Ibitipoca, em Lima Duarte, com as grutas, as cachoeiras e a travessia da serra.",
+          "en": "the state park in Lima Duarte, with its caves, waterfalls and the traverse of the range.",
+          "ja": "リマ・ドゥアルテにある州立公園。洞窟、滝、山の縦走があります。",
+          "zh-Hant": "位於利馬杜阿爾特的州立公園，有洞穴、瀑布和山脊縱走。"
+        },
+        "kind": "peak"
+      },
+      {
+        "name": "Ponte Velha do Rio Araguari",
+        "names": {
+          "pt-BR": "Ponte Velha do Rio Araguari",
+          "en": "Old Araguari River Bridge",
+          "ja": "アラグアリ川の旧橋",
+          "zh-Hant": "阿拉瓜里河舊橋"
+        },
+        "lat": -18.7594,
+        "lon": -48.2628,
+        "descriptions": {
+          "pt-BR": "os pilares da antiga ponte da Mogiana sobre o rio Araguari, entre Uberlândia e Araguari, submersos pela represa de Capim Branco; um ponto de mergulho do Wberdiver.",
+          "en": "the pillars of the old Mogiana bridge over the Araguari River, between Uberlândia and Araguari, submerged by the Capim Branco reservoir; a Wberdiver dive site.",
+          "ja": "ウベルランジアとアラグアリの間、アラグアリ川に架かっていたモジアナ鉄道の旧橋の橋脚。カピン・ブランコ貯水池に沈み、Wberdiver のダイビングポイントになっています。",
+          "zh-Hant": "烏貝蘭迪亞與阿拉瓜里之間、阿拉瓜里河上莫吉亞納鐵路舊橋的橋墩，淹沒於卡平布蘭科水庫，是 Wberdiver 的潛水點。"
+        },
+        "kind": "dive"
       }
     ]
   }
