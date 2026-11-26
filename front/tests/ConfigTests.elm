@@ -16,6 +16,9 @@ suite =
             [ test "Paraná is PR" <|
                 \_ ->
                     Expect.equal (Config.areaCode "parana" "Paraná") "PR"
+            , test "Minas Gerais is MG" <|
+                \_ ->
+                    Expect.equal (Config.areaCode "minas-gerais" "Minas Gerais") "MG"
             , test "the Complexo Lagunar is CL" <|
                 \_ ->
                     Expect.equal (Config.areaCode "complexo-lagunar" "Complexo Lagunar Sul Catarinense") "CL"

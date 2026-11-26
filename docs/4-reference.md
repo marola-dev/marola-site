@@ -9,8 +9,8 @@ requires; a malformed entry is silently dropped there rather than failing.
 
 | Field | Type | Notes |
 |---|---|---|
-| `id` | string, `^[a-z0-9-]+$` | The area's slug (`floripa`, `rio`, `salvador`, `complexo-lagunar`, `parana`); used in `data/<id>/…` paths and the `?area=` param |
-| `name` | string | The full display name (`Florianópolis`, `Rio de Janeiro`, `Salvador, BA`, `Complexo Lagunar Sul Catarinense`, `Paraná`) |
+| `id` | string, `^[a-z0-9-]+$` | The area's slug (`floripa`, `rio`, `salvador`, `complexo-lagunar`, `parana`, `minas-gerais`); used in `data/<id>/…` paths and the `?area=` param |
+| `name` | string | The full display name (`Florianópolis`, `Rio de Janeiro`, `Salvador, BA`, `Complexo Lagunar Sul Catarinense`, `Paraná`, `Minas Gerais`) |
 | `lat`, `lon` | number | The area's centre point, for the Overpass query the app runs to find beaches |
 | `radius_km` | number | How far out from `lat`/`lon` the app looks for beaches |
 | `beach_limit` | number | The most beaches the app keeps for this area |
@@ -19,9 +19,9 @@ requires; a malformed entry is silently dropped there rather than failing.
 | `tiles_attribution` | string | Pairs with `tiles`, same app-side status |
 | `zoom` | number, optional | Where the map enters when the area is picked and has no `bounds`; without it, `Config.areaZoom` (10) |
 | `layer` | string, optional | The map layer the area opens on, when the link names none (`water` for the Complexo Lagunar, whose subject is the lagoon's water quality, and for Paraná, whose points are IAT/PR's). A `?layer=` in the link wins. An area without a layer opens on the plain map and never inherits the previous area's layer |
-| `bounds` | `[west, south, east, north]`, optional | The box the camera frames when the area is picked, instead of a point zoom, and the beaches' bounds no longer refit it. Florianópolis frames the island and the three offshore islands (`-48.62, -27.85, -48.30, -27.24`). The Complexo Lagunar frames its lagoons (`-48.95, -28.63, -48.61, -28.07`): Imaruí, Mirim, Santo Antônio, Cabeçuda, Camacho, Arroio Corrente. Paraná frames the Litoral (`-49.10, -25.95, -48.00, -25.15`), from Guaratuba to Superagui and inland to the Pico Paraná; its data is state-wide, but the first frame is the coast |
-| `pin` | object, optional | `{name, names, descriptions, lat, lon, url}`: the area's named place, drawn as a pin inside the camera's frame; `url` makes it a link, opened in a new tab. `names` and `descriptions` are objects keyed by locale (`pt-BR`, `en`, `ja`, `zh-Hant`); a missing translation falls back to `name`, and a pin with no description opens no hover bubble. The Complexo Lagunar is pinned to the Instituto Canto das Águas SC in Taquaraçatuba, Imaruí, linking to `https://cantodasaguas.org/`; it is the institute's published location, not a surveyed gate. Paraná is pinned to the Ilha do Mel, the state's most visited point, with no link: marola has no partner there yet |
-| `pins` | array, optional | The area's other named places, each the same shape as `pin` plus an optional `kind`: `place` (the default, always drawn) or `dive` (drawn only on the scuba layer). Florianópolis pins the Ilha do Xavier and the Ilha do Arvoredo as `dive` and the Ilha do Campeche as a place; every label follows the page language and the hover bubble is the localized description. The page draws the `pin` and every `pins` entry once |
+| `bounds` | `[west, south, east, north]`, optional | The box the camera frames when the area is picked, instead of a point zoom, and the beaches' bounds no longer refit it. Florianópolis frames the island and the three offshore islands (`-48.62, -27.85, -48.30, -27.24`). The Complexo Lagunar frames its lagoons (`-48.95, -28.63, -48.61, -28.07`): Imaruí, Mirim, Santo Antônio, Cabeçuda, Camacho, Arroio Corrente. Paraná frames the Litoral (`-49.10, -25.95, -48.00, -25.15`), from Guaratuba to Superagui and inland to the Pico Paraná; its data is state-wide, but the first frame is the coast. Minas Gerais frames the state (`-51.05, -22.92, -39.85, -14.23`) |
+| `pin` | object, optional | `{name, names, descriptions, lat, lon, url}`: the area's named place, drawn as a pin inside the camera's frame; `url` makes it a link, opened in a new tab. `names` and `descriptions` are objects keyed by locale (`pt-BR`, `en`, `ja`, `zh-Hant`); a missing translation falls back to `name`, and a pin with no description opens no hover bubble. The Complexo Lagunar is pinned to the Instituto Canto das Águas SC in Taquaraçatuba, Imaruí, linking to `https://cantodasaguas.org/`; it is the institute's published location, not a surveyed gate. Paraná is pinned to the Ilha do Mel, the state's most visited point, with no link: marola has no partner there yet. Minas Gerais is pinned to Wberdiver, a dive school in Uberlândia, linking to its Instagram; its `pins` add the historical source of the São Francisco, in the Serra da Canastra |
+| `pins` | array, optional | The area's other named places, each the same shape as `pin` plus an optional `kind`: `place` (the default, always drawn) or `dive` (drawn only when the scuba toggle is on). Florianópolis pins the Ilha do Xavier and the Ilha do Arvoredo as `dive` and the Ilha do Campeche as a place; Minas Gerais pins the source of the São Francisco as a place; every label follows the page language and the hover bubble is the localized description. The page draws the `pin` and every `pins` entry once |
 
 ## Tile policy
 
@@ -152,6 +152,12 @@ publishes no count in the bulletin, so `enterococci_per_100ml` is null for every
 `IAT/PR`; the key under the layer prints that name and the sampling day, not "today". The file is the
 page's fallback: it draws these points whether or not the board's provider matches any of them, and
 the map draws each sample once.
+
+Minas Gerais has no file: IGAM, the state's water agency, publishes ambient water-quality data and
+its open-data portal has no bathing-water dataset, but no per-point bulletin classifies a beach as
+`proper` or `improper`. The page shows the state's inland beaches without a water verdict rather
+than turning an ambient index into one. An official bulletin, state or municipal, would become a
+file like the two above.
 
 ## Embedding the map
 

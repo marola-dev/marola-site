@@ -91,7 +91,7 @@ ignored. The wind, wave and satellite layers are built; adding one here turns it
 -}
 enabledLayers : List String
 enabledLayers =
-    [ "water", "scuba" ]
+    [ "water" ]
 
 
 bandColour : Band -> String
@@ -144,6 +144,9 @@ areaCode id name =
 
         "parana" ->
             "PR"
+
+        "minas-gerais" ->
+            "MG"
 
         _ ->
             String.filter Char.isAlpha name |> String.left 2 |> String.toUpper

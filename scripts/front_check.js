@@ -358,7 +358,7 @@ async function floripa() {
   const pins = () => live().filter((m) => cls(m.el).includes('pin') || cls(m.el).includes('dive'));
   const pinLabels = () => pins().map((m) => $('.pin-label', m.el).textContent).sort().join('|');
   ok(pins().length === 1 && pinLabels() === 'Ilha do Campeche', 'the place pin is on the plain map; the dive sites wait for the scuba layer', pinLabels());
-  const scuba = () => $('button[data-layer=scuba]');
+  const scuba = () => $('button[data-toggle=scuba]');
   await click(scuba());
   ok(scuba().getAttribute('aria-pressed') === 'true' && live().length === 4 && pins().length === 2 && live().filter((m) => cls(m.el).includes('dive')).length === 2, 'the scuba layer shows only the two dive sites', live().length);
   ok($('#flowkeys').textContent.includes('pontos de mergulho'), 'the scuba key names the dive sites', $('#flowkeys').textContent);
@@ -398,9 +398,9 @@ async function floripa() {
   ok(!shown($('#card')), 'a click on the empty map closes the card');
 
   const layers = $$('button[data-layer]');
-  ok(layers.length === 8, 'eight layer buttons', layers.length);
+  ok(layers.length === 7, 'seven layer buttons', layers.length);
   const enabled = layers.filter((b) => !b.hasAttribute('disabled'));
-  ok(enabled.length === 2 && enabled.map((b) => b.getAttribute('data-layer')).join('|') === 'water|scuba', 'the water and scuba layers are enabled', enabled.map((b) => b.getAttribute('data-layer')).join('|'));
+  ok(enabled.length === 1 && enabled[0].getAttribute('data-layer') === 'water', 'the water layer is enabled; scuba is its own toggle');
   ok(layers.every((b) => b.getAttribute('aria-pressed') === 'false'), 'no layer starts pressed');
   const before = live().length;
   await click(enabled[0]);
@@ -408,6 +408,11 @@ async function floripa() {
   ok(lastUrl().searchParams.get('layer') === 'water', 'the URL carries layer=water');
   ok(cls($('main')).includes('layer-water'), 'main gets class layer-water');
   ok(before === 3 && live().length === 5 && live().filter((m) => cls(m.el).includes('wpoint')).length === 2, 'the water layer adds the sampling points', live().length);
+  await click(scuba());
+  ok(live().length === 6 && live().filter((m) => cls(m.el).includes('wpoint')).length === 2, 'water and scuba are on together', live().length);
+  ok($('#flowkeys').textContent.includes('pontos de mergulho'), 'the key keeps both the water file and the dive sites', $('#flowkeys').textContent);
+  await click(scuba());
+  ok(live().length === 5 && live().filter((m) => cls(m.el).includes('wpoint')).length === 2, 'turning scuba off keeps the water layer', live().length);
 
   const feats = trailCollection(map).features, file = trailFile('floripa');
   ok(feats.length === routesOf(file).filter((r) => r.lines.some((l) => l.length > 1)).length && feats.length > 0, 'floripa trails reach the map as features', feats.length);
@@ -545,7 +550,7 @@ async function nearDenied() {
 async function embed() {
   ok(!$('.top') && !$('.bar') && !$('.footer'), 'an embed has no nav, tool row or footer');
   ok($('.embed') && $('.embedbar') && $('.embedbar button[lang=pt-BR]'), 'the embed strip carries the language switch');
-  ok($('#map') && $('#watermark') && $('#sos') && $$('button[data-layer]').length === 8, 'the map, the watermark, the layer rail and the emergency button stay');
+  ok($('#map') && $('#watermark') && $('#sos') && $$('button[data-layer]').length === 7, 'the map, the watermark, the layer rail and the emergency button stay');
   ok($$('a[href=news.html]').length === 0, 'no site navigation leaks into the embed');
 }
 
@@ -599,11 +604,28 @@ async function parana() {
   ok(points.length === 76, "every IAT/PR point is drawn once, the board's twelve among the file's seventy-six", points.length);
   ok($('#flowkeys').textContent.includes('IAT/PR'), 'the water key names the agency', $('#flowkeys').textContent);
   ok($('a[href=https://www.iat.pr.gov.br/Pagina/Balneabilidade]'), 'the footer links IAT/PR', $$('#footer a').map((a) => a.getAttribute('href')).join(','));
-  await click($('button[data-layer=scuba]'));
+  await click($('button[data-toggle=scuba]'));
   const prPin = live().find((m) => cls(m.el).includes('pin'));
   ok(prPin && $('.pin-label', prPin.el).textContent === 'Ilha do Mel' && live().filter((m) => cls(m.el).includes('dive')).length === 0, 'an area without dive sites keeps its place pin on the scuba layer', prPin && $('.pin-label', prPin.el).textContent);
   const prOption = $$('#area option').find((o) => o.getAttribute('value') === 'parana');
   ok(prOption && prOption.textContent === 'PR', 'the picker shows PR', JSON.stringify($$('#area option').map((o) => [o.getAttribute('value'), o.textContent])));
+}
+
+async function minasGerais() {
+  const map = ml.maps[0];
+  const areas = distJson('data/areas.json');
+  const mg = (areas.areas || areas).find((a) => a.id === 'minas-gerais');
+  ok(mg && mg.pin && mg.pin.name === 'Wberdiver' && mg.pin.url === 'https://www.instagram.com/wberdiver/', 'areas.json pins Minas Gerais at Wberdiver', JSON.stringify(mg && mg.pin));
+  ok(mg && mg.pins && mg.pins.some((p) => p.name === 'Nascente do Rio São Francisco' && p.lat === -20.2429 && p.lon === -46.4465), 'areas.json also pins the source of the São Francisco', JSON.stringify(mg && mg.pins));
+  ok(map.opts.center[0] === -48.2495 && map.opts.center[1] === -18.9537 && map.opts.zoom === 6, 'the map enters at Uberlândia, then frames Minas Gerais', JSON.stringify(map.opts.center.concat(map.opts.zoom)));
+  const fits = map.calls.filter((c) => c.name === 'fitBounds');
+  ok(fits.length === 1 && JSON.stringify(fits[0].args[0]) === JSON.stringify([[-51.05, -22.92], [-39.85, -14.23]]) && fits[0].args[1].maxZoom === 12, 'the camera frames Minas Gerais, and the beaches never refit it', JSON.stringify(fits));
+  const pin = live().find((m) => cls(m.el).includes('pin'));
+  ok(pin && $('.pin-label', pin.el).textContent === 'Wberdiver' && pin.el.getAttribute('href') === 'https://www.instagram.com/wberdiver/' && pin.el.getAttribute('target') === '_blank', 'the dive school is pinned and links to its Instagram', pin && pin.el.getAttribute('href'));
+  const mgPins = live().filter((m) => cls(m.el).includes('pin'));
+  ok(mgPins.length === 2 && $('.pin-label', mgPins[1].el).textContent === 'Nascente do Rio São Francisco' && !mgPins[1].el.getAttribute('href'), 'the source is pinned as well, with no link', mgPins.map((m) => $('.pin-label', m.el).textContent).join(', '));
+  const mgOption = $$('#area option').find((o) => o.getAttribute('value') === 'minas-gerais');
+  ok(mgOption && mgOption.textContent === 'MG', 'the picker shows MG', JSON.stringify($$('#area option').map((o) => [o.getAttribute('value'), o.textContent])));
 }
 
 async function playlist() {
@@ -642,6 +664,7 @@ const SCENARIOS = {
   embed: { search: '?embed=1&area=complexo-lagunar', run: embed },
   'complexo-lagunar': { search: '?area=complexo-lagunar', run: complexoLagunar },
   parana: { search: '?area=parana', run: parana },
+  'minas-gerais': { search: '?area=minas-gerais', run: minasGerais },
   playlist: { search: '?area=floripa', run: playlist },
 };
 

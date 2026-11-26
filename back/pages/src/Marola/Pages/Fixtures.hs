@@ -78,6 +78,14 @@ fixtureBeaches =
         Place "Lagoa do Arroio Corrente" (-28.6920252) (-49.0185997) (sample "Ponto 02" "Lagoa do Arroio Corrente")
       ]
     ),
+    ( "minas-gerais",
+      [ Place "Prainha das Capivaras" (-18.91114) (-48.24026) Nothing,
+        Place "Prainha do Praia Clube" (-18.93417) (-48.29267) Nothing,
+        Place "praia do parque do sabia" (-18.90827) (-48.23976) Nothing,
+        Place "Prainha" (-19.16369) (-47.65235) Nothing,
+        Place "Praia do Seleiro" (-21.07822) (-45.57107) Nothing
+      ]
+    ),
     ( "parana",
       [ Place "Praia do Farol" (-25.54039) (-48.30247) (sampleIat "IM01" "Farol (Praia do Farol)" False),
         Place "Praia Grande" (-25.54692) (-48.29421) (sampleIat "IM11" "Farol (Praia Grande)" False),
@@ -105,11 +113,11 @@ boardFor template area = case lookup area fixtureBeaches of
   Nothing -> template
   Just places ->
     let boardSource = case [sampleSource s | Place _ _ _ (Just s) <- places] of
-          source : _ -> source
-          [] -> "IMA/SC"
+          source : _ -> A.toJSON source
+          [] -> A.Null
      in overKey
           "sources"
-          (overKey "water" (const (A.toJSON boardSource)))
+          (overKey "water" (const boardSource))
           (overKey "beaches" (const (A.Array (V.fromList (zipWith build [0 ..] places)))) template)
   where
     templateBeaches = case template of

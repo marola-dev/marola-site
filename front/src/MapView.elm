@@ -246,7 +246,7 @@ visiblePin model pin =
         hasDives =
             List.any Area.isDive (areaPins model)
     in
-    if model.layer == Layer.Scuba && hasDives then
+    if model.scuba && hasDives then
         Area.isDive pin
 
     else

@@ -116,7 +116,7 @@ attribution and a slim strip for the language.
 ```
 
 - `area` is an id from [`site/areas.json`](site/areas.json) (`floripa`, `rio`, `salvador`,
-  `complexo-lagunar`, `parana`). With no `day`, the embed shows today's board; `day=YYYY-MM-DD` pins a
+  `complexo-lagunar`, `parana`, `minas-gerais`). With no `day`, the embed shows today's board; `day=YYYY-MM-DD` pins a
   past one.
 - `layer` picks the layer on show (`water`, `wind`, `waves`, …), `lang` the language (`pt-BR`, `en`,
   `ja`, `zh-Hant`), and `beaches=0` / `trails=0` start with those hidden.
@@ -131,10 +131,14 @@ attribution and a slim strip for the language.
   opens on the bathing-water layer and draws IAT/PR's 76 points from the Ilha do Mel to Foz do
   Iguaçu and Primeiro de Maio; the interior is in the data and in the trail and water panels, not
   in the first frame.
+- Minas Gerais frames the state, with **Wberdiver** pinned in Uberlândia (linked to the dive
+  school's Instagram) and the **Nascente do Rio São Francisco** pinned in the Serra da Canastra.
+  The inland river and lake beaches are the board's; IGAM, the state's water agency, publishes
+  ambient water-quality data but no per-point bathing-water bulletin, so there is no water file.
 - Florianópolis frames the island and the three offshore islands, with the **Ilha do Xavier**, the
   **Ilha do Arvoredo** and the **Ilha do Campeche** pinned inside. Every pin's label and its hover
   description follow the page language (`pt-BR`, `en`, `ja`, `zh-Hant`). Xavier and Arvoredo are
-  dive sites: the **scuba layer** shows them with a mask marker, and Campeche stays a place pin.
+  dive sites: the **scuba toggle** shows them with a mask marker, and Campeche stays a place pin.
 - The server frames `/embed` only for the origins in `MAROLA_EMBED_FROM`, one per line, a file on the
   host ([hosting](docs/5-hosting.md#variables)). Every other page, and an empty list, keeps
   `frame-ancestors 'none'`: a partner asks to be added, and nobody else can frame marola. No origin
