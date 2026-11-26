@@ -179,7 +179,7 @@ languageSwitch loc p =
       langLink loc p PtBr "🇧🇷 PT-BR" "português (Brasil)",
       langLink loc p En "🇺🇸 EN" "English",
       langLink loc p Ja "🇯🇵 JA" "日本語",
-      langLink loc p ZhHant "🇹🇼 繁" "繁體中文"
+      langLink loc p ZhHant "🇨🇳 繁" "繁體中文"
     ]
 
 linkedin :: Locale -> Node

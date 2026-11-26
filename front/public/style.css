@@ -521,7 +521,7 @@ img.member-mark { display: block; object-fit: cover; border: 1px solid var(--lin
 .member-links a { color: var(--ink); text-decoration: none; }
 .member-links a:hover { color: var(--accent); text-decoration: underline; }
 .member-name { font: 400 var(--fs-20)/1.2 var(--display); letter-spacing: var(--tr-fjalla); }
-.member-aff { font-size: var(--fs-14); line-height: 1.45; letter-spacing: var(--tr-14); color: var(--muted); }
+.member-aff, .member-state { font-size: var(--fs-14); line-height: 1.45; letter-spacing: var(--tr-14); color: var(--muted); }
 .member-role, .member-links { color: var(--muted); font: 400 var(--fs-11)/1.6 var(--mono); letter-spacing: var(--tr-mono); }
 .member-links { display: flex; flex-wrap: wrap; gap: 0 12px; margin-top: 4px; font-variant-numeric: tabular-nums; }
 

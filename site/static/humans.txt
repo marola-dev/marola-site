@@ -3,43 +3,73 @@
 
 Name: Matheus Hoffmann
 Role: contributor
-Affiliation: Universidade Federal do Rio de Janeiro
+Affiliation: Piabrota ART
+State: Rio de Janeiro / Santa Catarina
 GitHub: https://github.com/h0ffmann
 ORCID: https://orcid.org/0009-0009-1056-7661
+Website: https://hffmnn.piabrota.art/
 
 Name: William Barbosa Macedo
 Role: contributor
 Affiliation: Universidade Federal do Rio de Janeiro
+State: Rio de Janeiro
 GitHub: https://github.com/wbm99
 
 Name: Bruno Valério
 Role: contributor
+Affiliation: Ouroboric DEV
+State: Rio de Janeiro
 GitHub: https://github.com/brunogbv
 ORCID: https://orcid.org/0009-0002-9778-953X
+Website: https://github.com/ouroboric-dev
 
 Name: Pablo Ribeiro
 Role: contributor
+Affiliation: Social Sport
+State: Minas Gerais
 GitHub: https://github.com/Bleenho
 ORCID: https://orcid.org/0009-0005-3553-8323
+Website: https://socialsport.com.br/new-home
 
 Name: Rob Kler Soares da Silva Junior
 Role: contributor
+Affiliation: Piabrota ART
+State: Minas Gerais / Rio de Janeiro
 GitHub: https://github.com/robkler
 ORCID: https://orcid.org/0009-0003-3102-4996
+Website: https://treinala.com.br/
 
 Name: Leonardo Ramos Almeida
 Role: contributor
-Affiliation: Universidade Federal do Rio de Janeiro
+Affiliation: Piabrota ART
+State: Rio de Janeiro
 GitHub: https://github.com/aracyla
 ORCID: https://orcid.org/0009-0004-8570-4601
-
-Name: Tiago Shin-Iti Kuniyoshi
-Role: contributor
-ORCID: https://orcid.org/0009-0004-3742-2861
+Website: https://aracyla.xyz/
 
 Name: Yuri Kuzniecow
 Role: advisor
 Affiliation: Canto das Aguas SC
+State: Santa Catarina
+Website: https://cantodasaguas.org/
+
+Name: Joao Victor Nader
+Role: advisor
+Affiliation: @oseuprofessordefisica
+State: Rio de Janeiro
+Website: https://www.instagram.com/nader_oficial/
+Website: https://www.instagram.com/oseuprofessordefisica/
+
+Name: Guilherme Costa
+Role: advisor
+Affiliation: @yoga com gui
+State: Rio de Janeiro
+Website: https://www.instagram.com/yogacomgui/
+
+Name: Dhirendra Hélder
+Role: advisor
+Affiliation: Dhidrone
+Website: https://dhidrone.com.br/
 
 /* SITE */
 Members: https://github.com/marola-dev/.github/blob/main/MEMBERS.md

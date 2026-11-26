@@ -3,14 +3,17 @@
 -- of the build, never a silent skip.
 module Marola.Pages.Members
   ( Member (..),
+    Entity (..),
     header,
-    legacy,
+    columns,
+    entityHeader,
     zenodo,
     file,
     blobId,
     pinnedBlob,
     vendored,
     parse,
+    parseEntities,
     initials,
     checkAvatars,
     article,
@@ -25,7 +28,7 @@ import Data.Char (isAsciiLower, isAsciiUpper, isDigit, toUpper)
 import Data.List (sort)
 import Data.Map.Strict (Map)
 import Data.Map.Strict qualified as Map
-import Data.Maybe (catMaybes, isJust)
+import Data.Maybe (catMaybes, fromMaybe, isJust)
 import Data.Set qualified as Set
 import Data.Text (Text)
 import Data.Text qualified as T
@@ -42,22 +45,93 @@ data Member = Member
   { -- | @Given Family@, from Zenodo's @Family, Given@.
     name :: Text,
     affiliation :: Text,
+    -- | The Brazilian state, or the two, the person comes from, as MEMBERS.md spells them; empty
+    -- under a header without the column or for a person who did not say.
+    state :: Text,
     orcid :: Maybe Text,
     gitHub :: Maybe Text,
+    -- | The person's own site or profile, as MEMBERS.md writes it: zero, one or two URLs.
+    websites :: [Text],
     -- | The date and the URL of the first commit.
     first :: Maybe (Text, Text),
-    -- | Empty under the old header, which has no role columns.
+    -- | Empty under the old headers, which have no role columns.
     marolaRole :: Text,
     gitHubRole :: Text
   }
   deriving (Eq, Show)
 
-header :: [Text]
-header = ["Name", "Affiliation", "ORCID", "GitHub", "First commit", "marola role", "GitHub role"]
+-- | The columns in the order MEMBERS.md has them. A header may leave one out (the file had none of
+-- State, Website or the roles at some point) but never reorder them: it must be a subsequence.
+columns :: [Text]
+columns = ["Name", "Affiliation", "State", "ORCID", "GitHub", "Website", "First commit", "marola role", "GitHub role"]
 
--- The header before the two role columns (MEMBERS.md, 14 October 2026): accepted until it moves.
-legacy :: [Text]
-legacy = take 5 header
+header :: [Text]
+header = columns
+
+-- The columns no header may leave out.
+required :: [Text]
+required = ["Name", "Affiliation", "ORCID", "GitHub", "First commit"]
+
+-- | A people header: every column known, no repeat, the required ones present, and the order
+-- @columns@ has them.
+headerOk :: [Text] -> Bool
+headerOk hd =
+  length (Set.toList (Set.fromList hd)) == length hd
+    && all (`elem` columns) hd
+    && all (`elem` hd) required
+    && hd == filter (`elem` hd) columns
+
+-- The 27 states of Brazil, spelled out, as MEMBERS.md writes them.
+brazilianStates :: Set.Set Text
+brazilianStates =
+  Set.fromList
+    [ "Acre",
+      "Alagoas",
+      "Amapá",
+      "Amazonas",
+      "Bahia",
+      "Ceará",
+      "Distrito Federal",
+      "Espírito Santo",
+      "Goiás",
+      "Maranhão",
+      "Mato Grosso",
+      "Mato Grosso do Sul",
+      "Minas Gerais",
+      "Pará",
+      "Paraíba",
+      "Paraná",
+      "Pernambuco",
+      "Piauí",
+      "Rio de Janeiro",
+      "Rio Grande do Norte",
+      "Rio Grande do Sul",
+      "Rondônia",
+      "Roraima",
+      "Santa Catarina",
+      "São Paulo",
+      "Sergipe",
+      "Tocantins"
+    ]
+
+-- | One or two Brazilian states, separated by @ / @.
+stateOk :: Text -> Bool
+stateOk s = case T.splitOn " / " s of
+  [one] -> one `Set.member` brazilianStates
+  [one, two] -> one `Set.member` brazilianStates && two `Set.member` brazilianStates
+  _ -> False
+
+-- | Not a person: an agent or a software fabric, with the site it is known by and the GitHub
+-- login whose avatar the card shows.
+data Entity = Entity
+  { entityName :: Text,
+    entityGitHub :: Text,
+    entityWebsite :: Text
+  }
+  deriving (Eq, Show)
+
+entityHeader :: [Text]
+entityHeader = ["Name", "GitHub", "Website"]
 
 zenodo :: Text
 zenodo = "https://doi.org/10.5281/zenodo.23224155"
@@ -113,6 +187,28 @@ orcidOk s = case T.splitOn "-" s of
 loginOk :: Text -> Bool
 loginOk s = T.length s >= 1 && T.length s <= 39 && T.all (\c -> isAsciiLower c || isAsciiUpper c || isDigit c || c == '-') s
 
+-- A person's own site or profile: https, a host with a dot and an alphabetic last label (it is
+-- not a login or a number), a path without a space or Markdown noise.
+websiteOk :: Text -> Bool
+websiteOk u = case T.stripPrefix "https://" u of
+  Nothing -> False
+  Just rest ->
+    let (host, path) = T.breakOn "/" rest
+        labels = T.splitOn "." host
+        labelOk l =
+          not (T.null l)
+            && T.all (\c -> isAsciiLower c || isAsciiUpper c || isDigit c || c == '-') l
+        top = last labels
+     in length labels >= 2
+          && all labelOk labels
+          && T.length top >= 2
+          && T.all (\c -> isAsciiLower c || isAsciiUpper c) top
+          && T.all (\c -> c > ' ' && c < '\DEL' && c `notElem` ("|<>`\"\\" :: String)) path
+
+-- | A website as the page shows it: no scheme, no trailing slash.
+siteLabel :: Text -> Text
+siteLabel url = T.dropWhileEnd (== '/') (fromMaybe url (T.stripPrefix "https://" url))
+
 -- `[YYYY-MM-DD](https://github.com/marola-dev/<repo>/commit/<40 hex>)`
 commitCell :: Text -> Maybe (Text, Text)
 commitCell cell = do
@@ -132,18 +228,27 @@ commitCell cell = do
           Just (d, url)
     _ -> Nothing
 
-row :: Bool -> [Text] -> Either Text Member
-row full cells =
-  let (nm, aff, orcidCell, gh, firstCell) = (cells !! 0, cells !! 1, cells !! 2, cells !! 3, cells !! 4)
+row :: Map Text Int -> [Text] -> Either Text Member
+row ix cells =
+  let at n = maybe "" (cells !!) (Map.lookup n ix)
+      nm = at "Name"
+      aff = at "Affiliation"
+      st = at "State"
+      orcidCell = at "ORCID"
+      gh = at "GitHub"
+      siteCell = at "Website"
+      sites = T.words siteCell
+      firstCell = at "First commit"
+      withRoles = Map.member "marola role" ix
       (familyPart, givenPart) = T.breakOn ", " nm
-      at = T.length familyPart
+      at' = T.length familyPart
       o = selfLink orcidOk "https://orcid.org/" orcidCell
       g = selfLink loginOk "https://github.com/" gh
       c = commitCell firstCell
-   in if full && cells !! 5 == ""
+   in if withRoles && at "marola role" == ""
         then Left (nm <> ": marola role is empty")
         else
-          if T.null givenPart || at < 1 || at + 2 >= T.length nm
+          if T.null givenPart || at' < 1 || at' + 2 >= T.length nm
             then Left ("Name is 'Family, Given', as Zenodo writes it: " <> nm)
             else
               if orcidCell /= "" && not (isJust o)
@@ -152,48 +257,97 @@ row full cells =
                   if gh /= "" && not (isJust g)
                     then Left (nm <> ": GitHub is [login](https://github.com/login) or empty: " <> gh)
                     else
-                      if firstCell /= "" && not (isJust c)
-                        then Left (nm <> ": First commit is [YYYY-MM-DD](commit URL) or empty: " <> firstCell)
+                      if st /= "" && not (stateOk st)
+                        then Left (nm <> ": State is one or two Brazilian state names separated by ' / ', or empty: " <> st)
                         else
-                          Right
-                            Member
-                              { name = T.drop 2 givenPart <> " " <> familyPart,
-                                affiliation = aff,
-                                orcid = o,
-                                gitHub = g,
-                                first = c,
-                                marolaRole = if full then cells !! 5 else "",
-                                gitHubRole = if full then cells !! 6 else ""
-                              }
+                          if length sites > 2 || not (all websiteOk sites)
+                            then
+                              Left
+                                ( nm
+                                    <> ": Website is one or two https:// links separated by a space, or empty: "
+                                    <> siteCell
+                                )
+                            else
+                              if firstCell /= "" && not (isJust c)
+                                then Left (nm <> ": First commit is [YYYY-MM-DD](commit URL) or empty: " <> firstCell)
+                                else
+                                  Right
+                                    Member
+                                      { name = T.drop 2 givenPart <> " " <> familyPart,
+                                        affiliation = aff,
+                                        state = st,
+                                        orcid = o,
+                                        gitHub = g,
+                                        websites = sites,
+                                        first = c,
+                                        marolaRole = at "marola role",
+                                        gitHubRole = at "GitHub role"
+                                      }
+
+-- | MEMBERS.md's tables, each its rows of stripped cells, in the file's order.
+tables :: Text -> [[[Text]]]
+tables txt = filter (not . null) (reverse (map reverse (finish rows [] [])))
+  where
+    rows = map T.strip (T.splitOn "\n" txt)
+    cells l = map T.strip (T.splitOn "|" (T.dropAround (== '|') l))
+    finish [] cur acc = cur : acc
+    finish (l : ls) cur acc
+      | "|" `T.isPrefixOf` l = finish ls (cells l : cur) acc
+      | otherwise = finish ls [] (cur : acc)
 
 -- | MEMBERS.md's table as members, in the file's order.
 parse :: Text -> Either Text [Member]
 parse txt =
-  let cells =
-        [ map T.strip (T.splitOn "|" (T.dropAround (== '|') l))
-        | l <- map T.strip (T.splitOn "\n" txt),
-          "|" `T.isPrefixOf` l
-        ]
-      wanted = "MEMBERS.md needs one table headed | " <> T.intercalate " | " header <> " |"
-   in case cells of
-        hd : rule : rows
-          | (hd == header || hd == legacy)
-              && all (T.all (`elem` ("-: " :: String))) rule
-              && not (null rows) -> do
-              let full = hd == header
-              members <-
-                collect
-                  [ if length cs /= length hd
-                      then Left ("a row needs " <> T.pack (show (length hd)) <> " cells: " <> T.intercalate " | " cs)
-                      else row full cs
-                  | cs <- rows
-                  ]
-              let firsts = map (fmap fst . first) members
-                  dated = catMaybes firsts
-              if dated /= sort dated || take (length dated) firsts /= map Just dated
-                then Left "rows go by first commit, oldest first, then those with none"
-                else Right members
-        _ -> Left wanted
+  let wanted = "MEMBERS.md needs one table headed | " <> T.intercalate " | " columns <> " |"
+      people = [cs | cs <- tables txt, headerOk (head cs)]
+   in case people of
+        [] -> Left wanted
+        cells : _ -> case cells of
+          hd : rule : rows
+            | all (T.all (`elem` ("-: " :: String))) rule
+                && not (null rows) -> do
+                let ix = Map.fromList (zip hd [0 ..])
+                members <-
+                  collect
+                    [ if length cs /= length hd
+                        then Left ("a row needs " <> T.pack (show (length hd)) <> " cells: " <> T.intercalate " | " cs)
+                        else row ix cs
+                    | cs <- rows
+                    ]
+                let firsts = map (fmap fst . first) members
+                    dated = catMaybes firsts
+                if dated /= sort dated || take (length dated) firsts /= map Just dated
+                  then Left "rows go by first commit, oldest first, then those with none"
+                  else Right members
+          _ -> Left wanted
+
+-- | MEMBERS.md's @## Non-human@ table as entities, in the file's order; empty when the file has
+-- no such table. Each row is an agent or a software fabric, so both the site and the GitHub login
+-- (the card's avatar) are required.
+parseEntities :: Text -> Either Text [Entity]
+parseEntities txt =
+  case [cs | cs <- tables txt, head cs == entityHeader] of
+    [] -> Right []
+    cells : _ -> case cells of
+      _ : rule : rows
+        | all (T.all (`elem` ("-: " :: String))) rule
+            && not (null rows) ->
+            collect (map entityRow rows)
+      _ -> Left wanted
+  where
+    wanted = "MEMBERS.md's ## Non-human table needs | " <> T.intercalate " | " entityHeader <> " |"
+
+entityRow :: [Text] -> Either Text Entity
+entityRow [nm, gh, site]
+  | T.null nm = Left "a non-human row has no name"
+  | otherwise = case selfLink loginOk "https://github.com/" gh of
+      Nothing ->
+        Left (nm <> ": GitHub is [login](https://github.com/login), never empty: " <> gh)
+      Just login
+        | not (websiteOk site) ->
+            Left (nm <> ": Website is one https:// link, never empty: " <> site)
+        | otherwise -> Right (Entity nm login site)
+entityRow cells = Left ("a non-human row needs three cells: " <> T.intercalate " | " cells)
 
 initials :: Text -> Text
 initials nm =
@@ -201,9 +355,9 @@ initials nm =
    in T.map toUpper (T.take 1 (head parts) <> T.take 1 (last parts))
 
 -- | The avatar file of each login must be in the folder, and no other: the page never asks GitHub.
-checkAvatars :: Map Text Text -> [Member] -> Either Text ()
-checkAvatars avatars members =
-  let logins = Set.fromList (catMaybes (map gitHub members))
+checkAvatars :: Map Text Text -> [Member] -> [Entity] -> Either Text ()
+checkAvatars avatars members entities =
+  let logins = Set.fromList (catMaybes (map gitHub members) <> map entityGitHub entities)
       have = Map.keysSet avatars
    in if logins == have
         then Right ()
@@ -222,6 +376,8 @@ data Copy = Copy
     cCommit :: Text -> Text,
     cRole :: Text -> Text,
     cGitHubRole :: Text -> Text,
+    cNonHuman :: Text,
+    cNonHumanLede :: [Node],
     cFoot :: [Node]
   }
 
@@ -240,6 +396,8 @@ copy PtBr =
       cCommit = ("primeiro commit em " <>),
       cRole = ("no marola: " <>),
       cGitHubRole = ("no GitHub: " <>),
+      cNonHuman = "não humanos",
+      cNonHumanLede = [H.text "não são pessoas: os agentes e as fábricas de software com que o marola é feito."],
       cFoot =
         [ H.text "a lista vem do arquivo ",
           a file [H.el "code" [] [H.text "MEMBERS.md"]],
@@ -257,6 +415,8 @@ copy En =
       cCommit = ("first commit on " <>),
       cRole = ("marola: " <>),
       cGitHubRole = ("GitHub: " <>),
+      cNonHuman = "non-human",
+      cNonHumanLede = [H.text "Not people: the agents and software fabrics marola is built with."],
       cFoot =
         [ H.text "The list comes from the organization's ",
           a file [H.el "code" [] [H.text "MEMBERS.md"]],
@@ -274,6 +434,8 @@ copy Ja =
       cCommit = ("最初のコミット: " <>),
       cRole = ("marolaでの役割: " <>),
       cGitHubRole = ("GitHubでの役割: " <>),
+      cNonHuman = "人間以外",
+      cNonHumanLede = [H.text "人ではありません。marolaを作るエージェントとソフトウェアファクトリーです。"],
       cFoot =
         [ H.text "この一覧はGitHubの組織の ",
           a file [H.el "code" [] [H.text "MEMBERS.md"]],
@@ -291,6 +453,8 @@ copy ZhHant =
       cCommit = ("首次提交於 " <>),
       cRole = ("marola 的角色: " <>),
       cGitHubRole = ("GitHub 的角色: " <>),
+      cNonHuman = "非人類",
+      cNonHumanLede = [H.text "不是人：打造 marola 的代理與軟體工廠。"],
       cFoot =
         [ H.text "這份名單來自 GitHub 組織的 ",
           a file [H.el "code" [] [H.text "MEMBERS.md"]],
@@ -301,6 +465,25 @@ copy ZhHant =
 span' :: Text -> [Node] -> Node
 span' c = H.el "span" [H.cls c]
 
+-- Absolute, so /en/members.html reaches the same files as /members.html.
+avatarNode :: Text -> Node
+avatarNode f =
+  H.el
+    "img"
+    [ H.cls "member-mark",
+      H.attr "src" ("/img/members/" <> f),
+      H.attr "width" "48",
+      H.attr "height" "48",
+      H.attr "alt" "",
+      H.attr "loading" "lazy"
+    ]
+    []
+
+-- | The links of a card, separated by a space.
+joined :: [Node] -> [Node]
+joined [] = []
+joined (x : xs) = x : concatMap (\n -> [H.text " ", n]) xs
+
 item :: Copy -> Map Text Text -> Member -> Node
 item c avatars m =
   H.el
@@ -308,48 +491,65 @@ item c avatars m =
     [H.cls "member"]
     ( [mark, span' "member-name" [H.text (name m)]]
         <> [span' "member-aff" [H.text (affiliation m)] | affiliation m /= ""]
+        <> [span' "member-state" [H.text (state m)] | state m /= ""]
         <> [span' "member-role" [H.text (T.intercalate " · " roles)] | not (null roles)]
         <> [span' "member-links" links | not (null links)]
     )
   where
     mark = case gitHub m >>= (`Map.lookup` avatars) of
-      -- Absolute, so /en/members.html reaches the same files as /members.html.
-      Just f ->
-        H.el
-          "img"
-          [ H.cls "member-mark",
-            H.attr "src" ("/img/members/" <> f),
-            H.attr "width" "48",
-            H.attr "height" "48",
-            H.attr "alt" "",
-            H.attr "loading" "lazy"
-          ]
-          []
+      Just f -> avatarNode f
       Nothing -> H.el "span" [H.cls "member-mark", H.attr "aria-hidden" "true"] [H.text (initials (name m))]
     linkNodes =
-      catMaybes
-        [ (\i -> a ("https://orcid.org/" <> i) [H.text ("ORCID " <> i)]) <$> orcid m,
-          (\l -> a ("https://github.com/" <> l) [H.text ("@" <> l)]) <$> gitHub m,
-          (\(d, url) -> a url [H.text (cCommit c d)]) <$> first m
-        ]
-    links = case linkNodes of
-      [] -> []
-      x : xs -> x : concatMap (\n -> [H.text " ", n]) xs
+      [a url [H.text (siteLabel url)] | url <- websites m]
+        <> catMaybes
+          [ (\i -> a ("https://orcid.org/" <> i) [H.text ("ORCID " <> i)]) <$> orcid m,
+            (\l -> a ("https://github.com/" <> l) [H.text ("@" <> l)]) <$> gitHub m,
+            (\(d, url) -> a url [H.text (cCommit c d)]) <$> first m
+          ]
+    links = joined linkNodes
     -- The roles are MEMBERS.md's words, shown as they are written there.
     roles = [cRole c (marolaRole m) | marolaRole m /= ""] <> [cGitHubRole c (gitHubRole m) | gitHubRole m /= ""]
 
+-- | The card of an entity: its GitHub avatar, its name, then its site and its GitHub login.
+entityItem :: Map Text Text -> Entity -> Node
+entityItem avatars e =
+  H.el
+    "li"
+    [H.cls "member"]
+    [ mark,
+      span' "member-name" [H.text (entityName e)],
+      span' "member-links" links
+    ]
+  where
+    mark = case Map.lookup (entityGitHub e) avatars of
+      Just f -> avatarNode f
+      Nothing -> H.el "span" [H.cls "member-mark", H.attr "aria-hidden" "true"] [H.text (T.take 1 (entityName e))]
+    links =
+      joined
+        [ a (entityWebsite e) [H.text (siteLabel (entityWebsite e))],
+          a ("https://github.com/" <> entityGitHub e) [H.text ("@" <> entityGitHub e)]
+        ]
+
 -- | The @<article>@ of the page in one language.
-article :: Language -> Map Text Text -> [Member] -> Node
-article l avatars members =
+article :: Language -> Map Text Text -> [Member] -> [Entity] -> Node
+article l avatars members entities =
   let c = copy l
+      nonHuman =
+        [ H.el "h2" [] [H.text (cNonHuman c)],
+          H.el "p" [H.cls "lede"] (cNonHumanLede c),
+          H.el "ul" [H.cls "members"] (map (entityItem avatars) entities)
+        ]
+      section = if null entities then [] else nonHuman
    in H.el
         "article"
         [H.cls "about-body", H.attr "lang" (Language.tag l)]
-        [ H.el "h2" [] [H.text (cTitle c)],
-          H.el "p" [H.cls "lede"] (cLede c),
-          H.el "ul" [H.cls "members"] (map (item c avatars) members),
-          H.el "p" [] (cFoot c)
-        ]
+        ( [ H.el "h2" [] [H.text (cTitle c)],
+            H.el "p" [H.cls "lede"] (cLede c),
+            H.el "ul" [H.cls "members"] (map (item c avatars) members)
+          ]
+            <> section
+            <> [H.el "p" [] (cFoot c)]
+        )
 
 -- | humanstxt.org's plain format, one block per member in MEMBERS.md's order.
 humans :: [Member] -> Text
@@ -374,6 +574,8 @@ humans members =
       ["Name: " <> name m]
         <> ["Role: " <> marolaRole m | marolaRole m /= ""]
         <> ["Affiliation: " <> affiliation m | affiliation m /= ""]
+        <> ["State: " <> state m | state m /= ""]
         <> maybe [] (\l -> ["GitHub: https://github.com/" <> l]) (gitHub m)
         <> maybe [] (\i -> ["ORCID: https://orcid.org/" <> i]) (orcid m)
+        <> ["Website: " <> u | u <- websites m]
         <> [""]

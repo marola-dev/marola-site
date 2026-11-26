@@ -486,7 +486,7 @@ pages](#no-inline-style-no-script-on-content-pages)). Each layout mirrors `View/
 
 - **Top bar** (`header.top`): the same as the map page's. The wordmark is a link to the map
   (`.brand h1 a`). The language switch is four plain links to the same page in each language, each
-  with its flag emoji: 🇧🇷 PT-BR, 🇺🇸 EN, 🇯🇵 JA, 🇹🇼 繁.
+  with its flag emoji: 🇧🇷 PT-BR, 🇺🇸 EN, 🇯🇵 JA, 🇨🇳 繁.
 - **Page bar** (`div.bar.pagebar`): where the map page has its tool row. One pill, "back to the
   map", with a mono arrow drawn by CSS, and the tagline at the right (hidden to the eye under
   900 px, like on the map page). There is no area picker and no day buttons.
@@ -523,8 +523,9 @@ pages](#no-inline-style-no-script-on-content-pages)). Each layout mirrors `View/
   prompt of `/submit`) and the account's "logged in as" row (`.who`).
 - **Member card** (`ul.members > li.member`): a grid of cards, two across in the column and one on
   a phone. A 48 px circle (the avatar, or the initials in Fjalla, `--accent` on `--accent-soft`),
-  the name in Fjalla 20 px, the affiliation in `--muted` 14 px, the roles and the links in mono
-  11 px. The links are `--ink` with no underline until hovered. Names wrap anywhere.
+  the name in Fjalla 20 px, the affiliation and the state of origin in `--muted` 14 px, the roles
+  and the links in mono 11 px. The links are `--ink` with no underline until hovered. Names wrap
+  anywhere.
 - **Funding channel** (`.p-support .about-body li`): the channel's name in Fjalla 22 px across the
   whole card, with a mono arrow at the right; a channel that is not open yet is `--muted` with its
   "soon" in mono.

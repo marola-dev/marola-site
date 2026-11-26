@@ -52,7 +52,7 @@ languageToggle model =
         , langButton model PtBr "🇧🇷 PT-BR" "português (Brasil)"
         , langButton model En "🇺🇸 EN" "English"
         , langButton model Ja "🇯🇵 JA" "日本語"
-        , langButton model ZhHant "🇹🇼 繁" "繁體中文"
+        , langButton model ZhHant "🇨🇳 繁" "繁體中文"
         ]
 
 

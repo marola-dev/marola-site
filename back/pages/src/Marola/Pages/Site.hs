@@ -135,8 +135,9 @@ render env s l =
           page (map News.article (News.forLanguage l posts))
         "members" -> do
           members <- Members.parse (envMembers env)
-          Members.checkAvatars (envAvatars env) members
-          page [Members.article l (envAvatars env) members]
+          entities <- Members.parseEntities (envMembers env)
+          Members.checkAvatars (envAvatars env) members entities
+          page [Members.article l (envAvatars env) members entities]
         "contact" -> page [article, form loc]
         _ -> page [article]
   where
