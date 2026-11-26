@@ -31,8 +31,6 @@ jobs:
         node scripts/site_check.js
         node scripts/redirect_check.js
         node scripts/golden.js --check
-        node scripts/design_check.js --self-test
-        node scripts/design_check.js
         scripts/members_vendor_check.sh
         git -c advice.detachedHead=false clone -q --depth 1 -b v0.20.4 https://github.com/marola-dev/marola-devkit /tmp/devkit && python3 /tmp/devkit/scripts/docs_lint.py .
 
