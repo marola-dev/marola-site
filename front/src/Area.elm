@@ -22,6 +22,7 @@ type alias Pin =
     , lat : Float
     , lon : Float
     , url : Maybe String
+    , labelBelow : Bool
     }
 
 
@@ -54,6 +55,7 @@ pinDecoder =
         |> required "lat" Dec.number
         |> required "lon" Dec.number
         |> Dec.andMap (Dec.optional "url" D.string)
+        |> Dec.andMap (Dec.optional "label_below" D.bool |> D.map (Maybe.withDefault False))
 
 
 boundsDecoder : Decoder Bounds

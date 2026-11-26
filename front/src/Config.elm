@@ -91,7 +91,7 @@ ignored. The wind, wave and satellite layers are built; adding one here turns it
 -}
 enabledLayers : List String
 enabledLayers =
-    [ "water" ]
+    [ "water", "clouds" ]
 
 
 bandColour : Band -> String

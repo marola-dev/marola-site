@@ -18,10 +18,10 @@ requires; a malformed entry is silently dropped there rather than failing.
 | `tiles` | string | A tile-server URL template. Read by the app side, not by this repo's own map any more: since the Mapbox GL switch ([libraries](2-libraries.md#what-mapbox-replaced)), `app.js` builds its base map from `mapbox-config.js` instead |
 | `tiles_attribution` | string | Pairs with `tiles`, same app-side status |
 | `zoom` | number, optional | Where the map enters when the area is picked and has no `bounds`; without it, `Config.areaZoom` (10) |
-| `layer` | string, optional | The map layer the area opens on, when the link names none (`water` for the Complexo Lagunar, whose subject is the lagoon's water quality, and for Paraná, whose points are IAT/PR's). A `?layer=` in the link wins. An area without a layer opens on the plain map and never inherits the previous area's layer |
+| `layer` | string, optional | The map layer the area opens on, when the link names none (`water` for the Complexo Lagunar, whose subject is the lagoon's water quality, and for Paraná, whose points are IAT/PR's). A `?layer=` in the link wins. An area without a layer opens on the plain map and never inherits the previous area's layer. Of the rail's buttons, bathing water (`water`) and the NASA GIBS satellite (`clouds`) are live; the others show as soon |
 | `bounds` | `[west, south, east, north]`, optional | The box the camera frames when the area is picked, instead of a point zoom, and the beaches' bounds no longer refit it. Florianópolis frames the island and the three offshore islands (`-48.62, -27.85, -48.30, -27.24`). The Complexo Lagunar frames its lagoons (`-48.95, -28.63, -48.61, -28.07`): Imaruí, Mirim, Santo Antônio, Cabeçuda, Camacho, Arroio Corrente. Paraná frames the Litoral (`-49.10, -25.95, -48.00, -25.15`), from Guaratuba to Superagui and inland to the Pico Paraná; its data is state-wide, but the first frame is the coast. Minas Gerais frames the state (`-51.05, -22.92, -39.85, -14.23`) |
-| `pin` | object, optional | `{name, names, descriptions, lat, lon, url}`: the area's named place, drawn as a pin inside the camera's frame; `url` makes it a link, opened in a new tab. `names` and `descriptions` are objects keyed by locale (`pt-BR`, `en`, `ja`, `zh-Hant`); a missing translation falls back to `name`, and a pin with no description opens no hover bubble. The Complexo Lagunar is pinned to the Instituto Canto das Águas SC in Taquaraçatuba, Imaruí, linking to `https://cantodasaguas.org/`; it is the institute's published location, not a surveyed gate. Paraná is pinned to the Ilha do Mel, the state's most visited point, with no link: marola has no partner there yet. Minas Gerais is pinned to Wberdiver, a dive school in Uberlândia, linking to its Instagram; its `pins` add the historical source of the São Francisco, in the Serra da Canastra |
-| `pins` | array, optional | The area's other named places, each the same shape as `pin` plus an optional `kind`: `place` (the default, always drawn) or `dive` (drawn only when the scuba toggle is on). Florianópolis pins the Ilha do Xavier and the Ilha do Arvoredo as `dive` and the Ilha do Campeche as a place; Minas Gerais pins the source of the São Francisco as a place and the Ponte Velha do Rio Araguari as a `dive`, the old Mogiana bridge between Uberlândia and Araguari whose pillars the Capim Branco reservoir submerged; every label follows the page language and the hover bubble is the localized description. The page draws the `pin` and every `pins` entry once |
+| `pin` | object, optional | `{name, names, descriptions, lat, lon, url}`: the area's named place, drawn as a pin inside the camera's frame; `url` makes it a link, opened in a new tab. `names` and `descriptions` are objects keyed by locale (`pt-BR`, `en`, `ja`, `zh-Hant`); a missing translation falls back to `name`, and a pin with no description opens no hover bubble. The Complexo Lagunar is pinned to the Instituto Canto das Águas SC in Taquaraçatuba, Imaruí, linking to `https://cantodasaguas.org/`; it is the institute's published location, not a surveyed gate. Paraná is pinned to the Ilha do Mel, the state's most visited point, with no link: marola has no partner there yet. Minas Gerais is pinned to Wberdiver, a dive school in Uberlândia, linking to its Instagram; its `pins` add the historical source of the São Francisco, the four starting regions (Serra da Canastra, Capitólio, Lapinha da Serra and Ibitipoca) and, as a `dive`, the Ponte Velha do Rio Araguari |
+| `pins` | array, optional | The area's other named places, each the same shape as `pin` plus an optional `kind`: `place` (the default, always drawn), `peak` (a round marker with no permanent label, the name in the tooltip: Paraná's three highest points and, at the state-wide zoom, Minas Gerais's four starting regions) or `dive` (drawn only when the scuba toggle is on), and an optional `label_below` (a boolean that puts the label under the dot, for a pin whose neighbour is a few pixels away: Minas Gerais's São Francisco source). Florianópolis pins the Ilha do Xavier and the Ilha do Arvoredo as `dive` and the Ilha do Campeche as a place; Minas Gerais pins the source of the São Francisco as a place and the Ponte Velha do Rio Araguari as a `dive`, the old Mogiana bridge between Uberlândia and Araguari whose pillars the Capim Branco reservoir submerged; every label follows the page language and the hover bubble is the localized description. The page draws the `pin` and every `pins` entry once |
 
 ## Tile policy
 
@@ -205,7 +205,10 @@ Serra do Tabuleiro. Paraná has 247 routes in 18 groups: the nine Litoral groups
 Guaraqueçaba, Antonina, Morretes, Serra do Mar, Pontal do Paraná, Matinhos, Guaratuba and the Grandes
 travessias), a Litoral e Serra do Mar group for the routes the original file did not carry, and eight
 IBGE mesoregions for the interior (Centro Oriental, Curitiba e Região Metropolitana, Noroeste, Norte
-Central, Norte Pioneiro, Oeste, Sudeste and Sudoeste Paranaense).
+Central, Norte Pioneiro, Oeste, Sudeste and Sudoeste Paranaense). Minas Gerais has 139 routes in three
+groups: the Serra da Canastra (8), Lapinha da Serra (130) and Ibitipoca (1), from the three regional
+queries below; Capitólio returned only streets and stairs, so it has a pin and no trail group. Its
+note names the park's portaria and says the dirt access calls for a 4x4, mostly in the rain.
 Salvador has an empty list and a note: the panel shows the note, never an empty
 panel. When an area has no file, the board's own optional `trails` array stands in.
 
@@ -216,11 +219,13 @@ OpenStreetMap has a single named highway way in Imaruí (a `highway=steps` stree
 keeps named `path`/`track` ways only. A lagoon route appears when the map has one; the file does not
 invent it.
 
-**Provenance.** One query on the Overpass API made the files, except Paraná's: its file combines
-the two Litoral queries (55 km around the Ilha do Mel and 20 km around the Pico Paraná, because the
-area is two landscapes, the coast and the Serra do Mar) with one query over the state
-(`area["ISO3166-2"="BR-PR"]`), added on 26 November 2026. The files are a one-off copy: no job
-refreshes them. The query takes every `way` with `highway` in `path|footway|track|steps` and a
+**Provenance.** One query on the Overpass API made the files, except Paraná's and Minas Gerais's:
+Paraná's combines the two Litoral queries (55 km around the Ilha do Mel and 20 km around the Pico
+Paraná, because the area is two landscapes, the coast and the Serra do Mar) with one query over the
+state (`area["ISO3166-2"="BR-PR"]`), added on 26 November 2026; Minas Gerais's combines three regional
+queries (50 km around the Serra da Canastra, 40 km around the Serra do Cipó and 25 km around
+Ibitipoca; a fourth, 35 km around Capitólio, found no named route), added the same day. The files are
+a one-off copy: no job refreshes them. The query takes every `way` with `highway` in `path|footway|track|steps` and a
 `name`, and every `relation` with `route` in `hiking|foot`. The Litoral queries use
 `around:<radius_m>,<lat>,<lon>`; the interior query uses the state's OSM area. The bairro of a route
 comes from the OSM relations with `boundary=administrative` and `admin_level` 9 or 10 (or
@@ -237,7 +242,9 @@ island and the bay nearly empty. The state query also adds the Litoral routes th
 file did not carry, in a Litoral e Serra do Mar group. The interior part keeps named ways with a trail or landscape word
 (`trilha`, `caminho`, `travessia`, `cachoeira`, `salto`, `pico`, `morro`, `serra`, `parque`,
 `reserva`, `lagoa`, `rio`, …) and drops urban streets, accesses, driveways and park paths with no
-such word, so the state list is not every named sidewalk in Curitiba.
+such word, so the state list is not every named sidewalk in Curitiba. Minas Gerais uses that
+interior filter for its whole state-wide file, so the Serra da Canastra's named tracks are in the
+list beside its paths.
 
 **Licence.** The data is OpenStreetMap data under the ODbL 1.0. The page shows the credit in the
 map's attribution control and in the panel footer. Do not edit the files by hand: make them again

@@ -118,8 +118,9 @@ attribution and a slim strip for the language.
 - `area` is an id from [`site/areas.json`](site/areas.json) (`floripa`, `rio`, `salvador`,
   `complexo-lagunar`, `parana`, `minas-gerais`). With no `day`, the embed shows today's board; `day=YYYY-MM-DD` pins a
   past one.
-- `layer` picks the layer on show (`water`, `wind`, `waves`, …), `lang` the language (`pt-BR`, `en`,
-  `ja`, `zh-Hant`), and `beaches=0` / `trails=0` start with those hidden.
+- `layer` picks the layer on show (`water`, `clouds`, …), `lang` the language (`pt-BR`, `en`,
+  `ja`, `zh-Hant`), and `beaches=0` / `trails=0` start with those hidden. Bathing water and the
+  NASA GIBS satellite are the live layers; the other rail buttons still read as soon.
 - A bounded area frames its own waters: the Complexo Lagunar opens on the lagoons (Imaruí, Mirim,
   Santo Antônio, Cabeçuda, Camacho, Arroio Corrente) with the **Instituto Canto das Águas SC**, in Taquaraçatuba,
   Imaruí, pinned inside and linked to the institute's site, opens on the bathing-water layer, and
@@ -132,11 +133,15 @@ attribution and a slim strip for the language.
   Iguaçu and Primeiro de Maio; the interior is in the data and in the trail and water panels, not
   in the first frame.
 - Minas Gerais frames the state, with **Wberdiver** pinned in Uberlândia (linked to the dive
-  school's Instagram), the **Nascente do Rio São Francisco** pinned in the Serra da Canastra and,
-  on the scuba layer, the **Ponte Velha do Rio Araguari** between Uberlândia and Araguari, whose
-  old Mogiana pillars sit under the Capim Branco reservoir. The inland river and lake beaches are
-  the board's; IGAM, the state's water agency, publishes ambient water-quality data but no
-  per-point bathing-water bulletin, so there is no water file.
+  school's Instagram), the **Nascente do Rio São Francisco** pinned in the Serra da Canastra, the
+  four starting regions — **Serra da Canastra**, **Capitólio**, **Lapinha da Serra** and
+  **Ibitipoca** — pinned inside, and, on the scuba layer, the **Ponte Velha do Rio Araguari**
+  between Uberlândia and Araguari, whose old Mogiana pillars sit under the Capim Branco reservoir.
+  The trails panel carries 139 OpenStreetMap routes in three groups: the Serra da Canastra,
+  Lapinha da Serra and Ibitipoca; Capitólio has a pin and no named trail yet. The note names the
+  Serra da Canastra portaria and recommends a 4x4 for the dirt access. The inland river and lake
+  beaches are the board's; IGAM, the state's water agency, publishes ambient water-quality data but
+  no per-point bathing-water bulletin, so there is no water file.
 - Florianópolis frames the island and the three offshore islands, with the **Ilha do Xavier**, the
   **Ilha do Arvoredo** and the **Ilha do Campeche** pinned inside. Every pin's label and its hover
   description follow the page language (`pt-BR`, `en`, `ja`, `zh-Hant`). Xavier and Arvoredo are

@@ -331,7 +331,16 @@ placeMarker model index pin =
              else
                 "a"
             )
-            (( "class", "pin" ) :: ( "aria-label", label ) :: link)
+            (( "class"
+             , if pin.labelBelow then
+                "pin label-below"
+
+               else
+                "pin"
+             )
+                :: ( "aria-label", label )
+                :: link
+            )
             [ Tree.el "span" [ ( "class", "pin-label" ) ] [ Tree.text label ]
             , Tree.el "span" [ ( "class", "pin-dot" ) ] []
             ]
