@@ -78,6 +78,7 @@ type alias Model =
     , layer : Layer
     , showBeaches : Bool
     , showTrails : Bool
+    , scuba : Bool
     , panel : Panel
     , trailSelected : Maybe Int
     , trailsFile : TrailsFile
@@ -130,6 +131,7 @@ initial loc path query reducedMotion =
     , layer = Layer.Off
     , showBeaches = True
     , showTrails = True
+    , scuba = False
     , panel = Closed
     , trailSelected = Nothing
     , trailsFile = TrailsPending

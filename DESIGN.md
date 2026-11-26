@@ -439,11 +439,12 @@ Fjalla name or numeral is what the eye lands on, Inter explains it, mono dates a
   events. The beach popup (`.aspects`) has its head in Fjalla 17 px over a two-column grid of
   readings, up to 22 rem wide. In the beach card the same grid shows without its head.
 - **Layer rail** (`.flow`): at the top right of the map, in glass, scrolls on a map too short for
-  it. Order: two toggles (beaches, trails), the trail-list button, a 1 px rule, then one round
-  36 px icon button per layer (wind, waves, bathing water, scuba, clouds, sea temperature, anomaly,
+  it. Order: three toggles (beaches, trails, scuba), the trail-list button, a 1 px rule, then one round
+  36 px icon button per layer (wind, waves, bathing water, clouds, sea temperature, anomaly,
   El Niño) and bathymetry. No button shows text: the word is the button's `title` and its hidden
-  label. In the current build the bathing-water and scuba layers are enabled
-  (`Config.enabledLayers`).
+  label. In the current build the bathing-water layer is enabled
+  (`Config.enabledLayers`); scuba is its own toggle, so the bathing water and the dive sites can be
+  on together.
   The other layer buttons are disabled at 50% opacity and titled "em breve". The map opens with no
   layer on, and a pressed layer button turns it off. The pressed button is a solid `--bg` circle
   with an `--accent` ring and icon.
@@ -461,7 +462,7 @@ Fjalla name or numeral is what the eye lands on, Inter explains it, mono dates a
   Lagunar is pinned to the Instituto Canto das Águas SC, linked to the institute; Paraná to the
   Ilha do Mel, with no link; Florianópolis to the Ilha do Xavier, the Ilha do Arvoredo and the Ilha
   do Campeche, with no links. A pin whose `kind` is `dive` (Xavier and Arvoredo) is a 24 px round
-  accent scuba-mask marker, shown only on the scuba layer; its label and description are localized
+  accent scuba-mask marker, shown when the scuba toggle is on; its label and description are localized
   like every pin's.
 - **Embed** (`.embed`, `.embedbar`; ADR 0008): `/embed` is the map page with the top bar, the tool
   row and the footer off. A 36 px `--bg` strip with a `--line` bottom edge holds the language

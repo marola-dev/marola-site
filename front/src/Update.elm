@@ -599,11 +599,15 @@ toggled model key on =
                 "0"
 
         next0 =
-            if key == "beaches" then
-                { model | showBeaches = on }
+            case key of
+                "beaches" ->
+                    { model | showBeaches = on }
 
-            else
-                { model | showTrails = on }
+                "trails" ->
+                    { model | showTrails = on }
+
+                _ ->
+                    { model | scuba = on }
 
         next =
             setParam next0 key flag
@@ -775,6 +779,7 @@ init env =
         | layer = layer
         , showBeaches = Params.get env.query "beaches" /= Just "0"
         , showTrails = Params.get env.query "trails" /= Just "0"
+        , scuba = Params.get env.query "scuba" == Just "1"
         , embed = Params.get env.query "embed" == Just "1"
         , zoomedOut = layer == Layer.Elnino
       }
@@ -832,6 +837,9 @@ update message model =
 
         TrailsToggled ->
             toggled model "trails" (not model.showTrails)
+
+        ScubaToggled ->
+            toggled model "scuba" (not model.scuba)
 
         ListToggled ->
             panelToggled model BeachList

@@ -137,7 +137,7 @@ attribution and a slim strip for the language.
 - Florianópolis frames the island and the three offshore islands, with the **Ilha do Xavier**, the
   **Ilha do Arvoredo** and the **Ilha do Campeche** pinned inside. Every pin's label and its hover
   description follow the page language (`pt-BR`, `en`, `ja`, `zh-Hant`). Xavier and Arvoredo are
-  dive sites: the **scuba layer** shows them with a mask marker, and Campeche stays a place pin.
+  dive sites: the **scuba toggle** shows them with a mask marker, and Campeche stays a place pin.
 - The server frames `/embed` only for the origins in `MAROLA_EMBED_FROM`, one per line, a file on the
   host ([hosting](docs/5-hosting.md#variables)). Every other page, and an empty list, keeps
   `frame-ancestors 'none'`: a partner asks to be added, and nobody else can frame marola. No origin

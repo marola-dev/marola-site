@@ -326,6 +326,24 @@ suite =
                     , Expect.equal (Tuple.first (Update.update (HourMoved -1) moved)).selection BestHour
                     , Expect.equal (Tuple.first (Update.update (HourMoved 999) moved)).selection BestHour
                     ]
+        , test "scuba toggles without turning the water layer off" <|
+            \_ ->
+                let
+                    ( on, _ ) =
+                        Update.update ScubaToggled (page "")
+
+                    ( water, _ ) =
+                        Update.update (LayerPressed Layer.Water) on
+
+                    ( off, _ ) =
+                        Update.update ScubaToggled water
+                in
+                Expect.all
+                    [ \_ -> Expect.equal on.scuba True
+                    , \_ -> Expect.equal ( water.layer, water.scuba ) ( Layer.Water, True )
+                    , \_ -> Expect.equal ( off.scuba, Params.get off.query "scuba" ) ( False, Just "0" )
+                    ]
+                    ()
         , test "a layer button that is off does nothing" <|
             \_ -> unchanged (page "") (LayerPressed Layer.Wind)
         , test "pressing the water layer twice turns it off" <|

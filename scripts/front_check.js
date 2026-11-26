@@ -358,7 +358,7 @@ async function floripa() {
   const pins = () => live().filter((m) => cls(m.el).includes('pin') || cls(m.el).includes('dive'));
   const pinLabels = () => pins().map((m) => $('.pin-label', m.el).textContent).sort().join('|');
   ok(pins().length === 1 && pinLabels() === 'Ilha do Campeche', 'the place pin is on the plain map; the dive sites wait for the scuba layer', pinLabels());
-  const scuba = () => $('button[data-layer=scuba]');
+  const scuba = () => $('button[data-toggle=scuba]');
   await click(scuba());
   ok(scuba().getAttribute('aria-pressed') === 'true' && live().length === 4 && pins().length === 2 && live().filter((m) => cls(m.el).includes('dive')).length === 2, 'the scuba layer shows only the two dive sites', live().length);
   ok($('#flowkeys').textContent.includes('pontos de mergulho'), 'the scuba key names the dive sites', $('#flowkeys').textContent);
@@ -398,9 +398,9 @@ async function floripa() {
   ok(!shown($('#card')), 'a click on the empty map closes the card');
 
   const layers = $$('button[data-layer]');
-  ok(layers.length === 8, 'eight layer buttons', layers.length);
+  ok(layers.length === 7, 'seven layer buttons', layers.length);
   const enabled = layers.filter((b) => !b.hasAttribute('disabled'));
-  ok(enabled.length === 2 && enabled.map((b) => b.getAttribute('data-layer')).join('|') === 'water|scuba', 'the water and scuba layers are enabled', enabled.map((b) => b.getAttribute('data-layer')).join('|'));
+  ok(enabled.length === 1 && enabled[0].getAttribute('data-layer') === 'water', 'the water layer is enabled; scuba is its own toggle');
   ok(layers.every((b) => b.getAttribute('aria-pressed') === 'false'), 'no layer starts pressed');
   const before = live().length;
   await click(enabled[0]);
@@ -408,6 +408,11 @@ async function floripa() {
   ok(lastUrl().searchParams.get('layer') === 'water', 'the URL carries layer=water');
   ok(cls($('main')).includes('layer-water'), 'main gets class layer-water');
   ok(before === 3 && live().length === 5 && live().filter((m) => cls(m.el).includes('wpoint')).length === 2, 'the water layer adds the sampling points', live().length);
+  await click(scuba());
+  ok(live().length === 6 && live().filter((m) => cls(m.el).includes('wpoint')).length === 2, 'water and scuba are on together', live().length);
+  ok($('#flowkeys').textContent.includes('pontos de mergulho'), 'the key keeps both the water file and the dive sites', $('#flowkeys').textContent);
+  await click(scuba());
+  ok(live().length === 5 && live().filter((m) => cls(m.el).includes('wpoint')).length === 2, 'turning scuba off keeps the water layer', live().length);
 
   const feats = trailCollection(map).features, file = trailFile('floripa');
   ok(feats.length === routesOf(file).filter((r) => r.lines.some((l) => l.length > 1)).length && feats.length > 0, 'floripa trails reach the map as features', feats.length);
@@ -545,7 +550,7 @@ async function nearDenied() {
 async function embed() {
   ok(!$('.top') && !$('.bar') && !$('.footer'), 'an embed has no nav, tool row or footer');
   ok($('.embed') && $('.embedbar') && $('.embedbar button[lang=pt-BR]'), 'the embed strip carries the language switch');
-  ok($('#map') && $('#watermark') && $('#sos') && $$('button[data-layer]').length === 8, 'the map, the watermark, the layer rail and the emergency button stay');
+  ok($('#map') && $('#watermark') && $('#sos') && $$('button[data-layer]').length === 7, 'the map, the watermark, the layer rail and the emergency button stay');
   ok($$('a[href=news.html]').length === 0, 'no site navigation leaks into the embed');
 }
 
@@ -599,7 +604,7 @@ async function parana() {
   ok(points.length === 76, "every IAT/PR point is drawn once, the board's twelve among the file's seventy-six", points.length);
   ok($('#flowkeys').textContent.includes('IAT/PR'), 'the water key names the agency', $('#flowkeys').textContent);
   ok($('a[href=https://www.iat.pr.gov.br/Pagina/Balneabilidade]'), 'the footer links IAT/PR', $$('#footer a').map((a) => a.getAttribute('href')).join(','));
-  await click($('button[data-layer=scuba]'));
+  await click($('button[data-toggle=scuba]'));
   const prPin = live().find((m) => cls(m.el).includes('pin'));
   ok(prPin && $('.pin-label', prPin.el).textContent === 'Ilha do Mel' && live().filter((m) => cls(m.el).includes('dive')).length === 0, 'an area without dive sites keeps its place pin on the scuba layer', prPin && $('.pin-label', prPin.el).textContent);
   const prOption = $$('#area option').find((o) => o.getAttribute('value') === 'parana');

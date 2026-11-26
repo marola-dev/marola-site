@@ -63,9 +63,6 @@ iconOf layer =
         Layer.Water ->
             "droplet"
 
-        Layer.Scuba ->
-            "scuba"
-
         Layer.Clouds ->
             "cloud"
 
@@ -148,6 +145,9 @@ rail model =
                 [ Words.icon "mountain", Html.span [] [ Html.text (Words.t model "flow.bathymetry_soon") ] ]
             )
 
+        scuba =
+            toggle model "scuba" "scuba" model.scuba ScubaToggled
+
         playlist =
             ( "playlist"
             , Html.button
@@ -172,7 +172,7 @@ rail model =
              , ( "sep", Html.span [ cls "sep", attr "aria-hidden" "true" ] [] )
              ]
                 ++ List.map (layerButton model) Layer.all
-                ++ [ bathymetry ]
+                ++ [ scuba, bathymetry ]
             )
         ]
 
@@ -264,9 +264,6 @@ key model =
                 Layer.Water ->
                     note model "flow.key_water" :: waterFileKey model
 
-                Layer.Scuba ->
-                    [ note model "flow.key_scuba" ]
-
                 Layer.Clouds ->
                     [ dated model "flow.key_clouds" Layer.Clouds ]
 
@@ -278,12 +275,21 @@ key model =
 
                 Layer.Elnino ->
                     [ ramp "anomaly", ends (Words.t model "flow.colder") (Words.t model "flow.warmer"), note model "flow.key_elnino" ]
+
+        parts =
+            shown
+                ++ (if model.scuba then
+                        [ note model "flow.key_scuba" ]
+
+                    else
+                        []
+                   )
     in
     Html.div [ idAttr "flowkeys", cls "flowkeys" ]
-        (case shown of
+        (case parts of
             [] ->
                 []
 
-            parts ->
-                [ Html.p [ cls "flowkey", attr "data-key" (Layer.key model.layer) ] parts ]
+            shownParts ->
+                [ Html.p [ cls "flowkey", attr "data-key" (Layer.key model.layer) ] shownParts ]
         )

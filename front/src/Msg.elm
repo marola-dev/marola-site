@@ -49,6 +49,7 @@ type Msg
     | LayerPressed Layer
     | BeachesToggled
     | TrailsToggled
+    | ScubaToggled
     | ListToggled
     | TrailPanelToggled
       -- `fit` is true from the panel, which names a route the map may not show.
