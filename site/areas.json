@@ -165,6 +165,62 @@
         "ja": "パラナ州沿岸の島。ビーチ、灯台、生態保護区があります。",
         "zh-Hant": "巴拉那州海岸的島嶼，有海灘、燈塔和生態保護區。"
       }
-    }
+    },
+    "pins": [
+      {
+        "name": "Pico Paraná",
+        "names": {
+          "pt-BR": "Pico Paraná",
+          "en": "Pico Paraná",
+          "ja": "ピコ・パラナ",
+          "zh-Hant": "巴拉那峰"
+        },
+        "lat": -25.2527,
+        "lon": -48.8088,
+        "descriptions": {
+          "pt-BR": "o ponto mais alto do Paraná, 1.877 m.",
+          "en": "the highest point in Paraná, 1,877 m.",
+          "ja": "パラナ州最高峰、1,877 m。",
+          "zh-Hant": "巴拉那州最高峰，1,877 公尺。"
+        },
+        "kind": "peak"
+      },
+      {
+        "name": "Pico Caratuva",
+        "names": {
+          "pt-BR": "Pico Caratuva",
+          "en": "Caratuva Peak",
+          "ja": "カラトゥバ峰",
+          "zh-Hant": "卡拉圖瓦峰"
+        },
+        "lat": -25.2412,
+        "lon": -48.8298,
+        "descriptions": {
+          "pt-BR": "o segundo mais alto do Paraná, 1.860 m.",
+          "en": "the second highest in Paraná, 1,860 m.",
+          "ja": "パラナ州で2番目に高い山、1,860 m。",
+          "zh-Hant": "巴拉那州第二高峰，1,860 公尺。"
+        },
+        "kind": "peak"
+      },
+      {
+        "name": "Pico Itapiroca",
+        "names": {
+          "pt-BR": "Pico Itapiroca",
+          "en": "Itapiroca Peak",
+          "ja": "イタピロカ峰",
+          "zh-Hant": "伊塔皮羅卡峰"
+        },
+        "lat": -25.2472,
+        "lon": -48.8358,
+        "descriptions": {
+          "pt-BR": "o terceiro mais alto do Paraná, 1.805 m.",
+          "en": "the third highest in Paraná, 1,805 m.",
+          "ja": "パラナ州で3番目に高い山、1,805 m。",
+          "zh-Hant": "巴拉那州第三高峰，1,805 公尺。"
+        },
+        "kind": "peak"
+      }
+    ]
   }
 ]

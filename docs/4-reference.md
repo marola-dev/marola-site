@@ -193,10 +193,11 @@ The id of a route is its position in the bairros, in order. The map and the pane
 Rio de Janeiro has 113 routes in 17 bairros. Florianópolis has 44 routes. The Complexo Lagunar Sul
 Catarinense has 31 routes in seven groups (Imbituba, Garopaba, Paulo Lopes, Palhoça e Guarda do
 Embaú, Florianópolis, Laguna and Serra do Tabuleiro), from the same query over the lagoons and the
-Serra do Tabuleiro. Paraná has 147 routes in 17 groups: the nine Litoral groups (Ilha do Mel,
+Serra do Tabuleiro. Paraná has 247 routes in 18 groups: the nine Litoral groups (Ilha do Mel,
 Guaraqueçaba, Antonina, Morretes, Serra do Mar, Pontal do Paraná, Matinhos, Guaratuba and the Grandes
-travessias) and eight IBGE mesoregions for the interior (Centro Oriental, Curitiba e Região
-Metropolitana, Noroeste, Norte Central, Norte Pioneiro, Oeste, Sudeste and Sudoeste Paranaense).
+travessias), a Litoral e Serra do Mar group for the routes the original file did not carry, and eight
+IBGE mesoregions for the interior (Centro Oriental, Curitiba e Região Metropolitana, Noroeste, Norte
+Central, Norte Pioneiro, Oeste, Sudeste and Sudoeste Paranaense).
 Salvador has an empty list and a note: the panel shows the note, never an empty
 panel. When an area has no file, the board's own optional `trails` array stands in.
 
@@ -224,7 +225,8 @@ travessias; the length stays the full OSM geometry).
 **Filter.** A way stays when `sac_scale` is set, or when it is a `highway=path` whose name does not
 start with a street word. The Litoral part of Paraná's file also keeps named `footway`, `track` and
 `steps` ways: its coastal routes are mapped that way, and keeping only `path` ways would leave the
-island and the bay nearly empty. The interior part keeps named ways with a trail or landscape word
+island and the bay nearly empty. The state query also adds the Litoral routes the original two-query
+file did not carry, in a Litoral e Serra do Mar group. The interior part keeps named ways with a trail or landscape word
 (`trilha`, `caminho`, `travessia`, `cachoeira`, `salto`, `pico`, `morro`, `serra`, `parque`,
 `reserva`, `lagoa`, `rio`, …) and drops urban streets, accesses, driveways and park paths with no
 such word, so the state list is not every named sidewalk in Curitiba.

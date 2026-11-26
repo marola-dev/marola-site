@@ -662,6 +662,16 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
 .dive .mask { fill: var(--on-fill); }
 .dive .lens { fill: var(--accent); }
 .dive .pin-label { bottom: 20px; }
+/* a peak: a round mountain marker, no permanent label; the name is in the tooltip */
+.maplibregl-marker.peak { z-index: 4; width: 24px; height: 24px; line-height: 0; cursor: default; }
+.peak svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.peak .rim { fill: none; stroke: var(--bg); stroke-width: 3; }
+.peak .fill { fill: var(--accent); }
+.peak .peak-shape { fill: var(--on-fill); }
+/* the three highest peaks sit within a few pixels at a wide zoom: fan their icons out */
+.peak-0 svg { transform: translate(-7px, -4px); }
+.peak-1 svg { transform: translate(7px, -4px); }
+.peak-2 svg { transform: translate(0, 7px); }
 /* on the water layer the sampling points are the data: the beach dots step back */
 .layer-water .maplibregl-marker.wave { opacity: .4; }
 .no-beaches .maplibregl-marker.wave { display: none; }

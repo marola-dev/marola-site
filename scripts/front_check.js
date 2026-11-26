@@ -360,10 +360,10 @@ async function floripa() {
   ok(pins().length === 1 && pinLabels() === 'Ilha do Campeche', 'the place pin is on the plain map; the dive sites wait for the scuba layer', pinLabels());
   const scuba = () => $('button[data-layer=scuba]');
   await click(scuba());
-  ok(scuba().getAttribute('aria-pressed') === 'true' && live().length === 5 && pins().length === 3 && live().filter((m) => cls(m.el).includes('dive')).length === 2, 'the scuba layer adds the two dive sites', live().length);
+  ok(scuba().getAttribute('aria-pressed') === 'true' && live().length === 4 && pins().length === 2 && live().filter((m) => cls(m.el).includes('dive')).length === 2, 'the scuba layer shows only the two dive sites', live().length);
   ok($('#flowkeys').textContent.includes('pontos de mergulho'), 'the scuba key names the dive sites', $('#flowkeys').textContent);
   await click($('button[lang=en]'));
-  ok(pinLabels() === ['Arvoredo Island', 'Campeche Island', 'Xavier Island'].sort().join('|'), 'the pin labels follow the page language', pinLabels());
+  ok(pinLabels() === ['Arvoredo Island', 'Xavier Island'].sort().join('|'), 'the dive labels follow the page language', pinLabels());
   await click($('button[lang=pt-BR]'));
   await click(scuba());
   ok(scuba().getAttribute('aria-pressed') === 'false' && live().length === 3, 'pressing scuba again is the plain map', live().length);
@@ -588,7 +588,7 @@ async function parana() {
   const pin = live().find((m) => cls(m.el).includes('pin'));
   ok(pin && $('.pin-label', pin.el).textContent === 'Ilha do Mel' && !pin.el.getAttribute('href'), 'the island is named on the map, with no link');
   const feats = trailCollection(map).features, file = trailFile('parana');
-  ok(file.bairros.length === 17 && routesOf(file).length === 147, 'the Paraná file groups 147 routes in 17 regions', `${file.bairros.length} groups, ${routesOf(file).length} routes`);
+  ok(file.bairros.length === 18 && routesOf(file).length === 247, 'the Paraná file groups 247 routes in 18 regions', `${file.bairros.length} groups, ${routesOf(file).length} routes`);
   ok(feats.length === routesOf(file).filter((r) => r.lines.some((l) => l.length > 1)).length && feats.length > 0, 'the Paraná trails reach the map', feats.length);
   await openTrailPanel();
   ok($$('[data-trail]').length === routesOf(file).length && $('.trail-foot').textContent.includes('4118204'), 'the panel lists every route and the IBGE code');
@@ -599,6 +599,9 @@ async function parana() {
   ok(points.length === 76, "every IAT/PR point is drawn once, the board's twelve among the file's seventy-six", points.length);
   ok($('#flowkeys').textContent.includes('IAT/PR'), 'the water key names the agency', $('#flowkeys').textContent);
   ok($('a[href=https://www.iat.pr.gov.br/Pagina/Balneabilidade]'), 'the footer links IAT/PR', $$('#footer a').map((a) => a.getAttribute('href')).join(','));
+  await click($('button[data-layer=scuba]'));
+  const prPin = live().find((m) => cls(m.el).includes('pin'));
+  ok(prPin && $('.pin-label', prPin.el).textContent === 'Ilha do Mel' && live().filter((m) => cls(m.el).includes('dive')).length === 0, 'an area without dive sites keeps its place pin on the scuba layer', prPin && $('.pin-label', prPin.el).textContent);
   const prOption = $$('#area option').find((o) => o.getAttribute('value') === 'parana');
   ok(prOption && prOption.textContent === 'PR', 'the picker shows PR', JSON.stringify($$('#area option').map((o) => [o.getAttribute('value'), o.textContent])));
 }

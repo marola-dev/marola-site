@@ -1,4 +1,4 @@
-module Area exposing (Area, Bounds, Pin, decoder, isDive, listDecoder, pinDescription, pinLabel)
+module Area exposing (Area, Bounds, Pin, decoder, isDive, isPeak, listDecoder, pinDescription, pinLabel)
 
 {-| An area of the picker: `data/areas.json` carries more, the page reads these. `bounds`, `zoom`
 and `pin` are the area's own: what the camera frames, where it enters without bounds, the layer it
@@ -111,3 +111,11 @@ pinDescription loc pin =
 isDive : Pin -> Bool
 isDive pin =
     pin.kind == "dive"
+
+
+{-| A peak: a place pin with a mountain marker and no permanent label, so the three highest
+points of a state do not stack their names on top of each other at a wide zoom.
+-}
+isPeak : Pin -> Bool
+isPeak pin =
+    pin.kind == "peak"

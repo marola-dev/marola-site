@@ -236,11 +236,21 @@ pinMarker model =
     List.indexedMap (pinMarkerAt model) (List.filter (visiblePin model) (areaPins model))
 
 
-{-| A place pin is always on the map; a diving site belongs to the scuba layer.
+{-| A place pin is always on the map; a diving site belongs to the scuba layer. An area with
+dive sites shows only those on the scuba layer; an area without them keeps its place pins, so the
+layer never empties a map that has nothing to put in its place.
 -}
 visiblePin : Model -> Area.Pin -> Bool
 visiblePin model pin =
-    not (Area.isDive pin) || model.layer == Layer.Scuba
+    let
+        hasDives =
+            List.any Area.isDive (areaPins model)
+    in
+    if model.layer == Layer.Scuba && hasDives then
+        Area.isDive pin
+
+    else
+        not (Area.isDive pin)
 
 
 areaPins : Model -> List Area.Pin
@@ -265,6 +275,9 @@ pinMarkerAt model index pin =
     if Area.isDive pin then
         diveMarker model index pin
 
+    else if Area.isPeak pin then
+        peakMarker model index pin
+
     else
         placeMarker model index pin
 
@@ -275,7 +288,16 @@ pinTip : Model -> Area.Pin -> Tree
 pinTip model pin =
     case Area.pinDescription model.loc pin of
         Just description ->
-            Tree.el "span" [ ( "class", "pin-tip" ) ] [ Tree.text description ]
+            Tree.el "span"
+                [ ( "class", "pin-tip" ) ]
+                [ Tree.text
+                    (if Area.isPeak pin then
+                        Area.pinLabel model.loc pin ++ " — " ++ description
+
+                     else
+                        description
+                    )
+                ]
 
         Nothing ->
             Tree.el "span" [] []
@@ -360,6 +382,44 @@ diveIcon =
             []
         , Tree.svg "circle" [ ( "class", "lens" ), ( "cx", "9" ), ( "cy", "11.5" ), ( "r", "1.5" ) ] []
         , Tree.svg "circle" [ ( "class", "lens" ), ( "cx", "15" ), ( "cy", "11.5" ), ( "r", "1.5" ) ] []
+        ]
+
+
+{-| A peak: a round mountain marker with no permanent label; the name is in its tooltip.
+-}
+peakMarker : Model -> Int -> Area.Pin -> Marker
+peakMarker model index pin =
+    let
+        label =
+            Area.pinLabel model.loc pin
+    in
+    { key = "peak-" ++ String.fromInt index ++ "-" ++ pin.name
+    , lon = pin.lon
+    , lat = pin.lat
+    , label = Just label
+    , node =
+        Tree.el "div"
+            [ ( "class", "peak peak-" ++ String.fromInt (modBy 3 index) ), ( "role", "img" ), ( "aria-label", label ) ]
+            [ peakIcon ]
+    , tip = pinTip model pin
+    , tipClass = ""
+    , tipAnchor = "top"
+    , offset = 14
+    , click = Nothing
+    }
+
+
+peakIcon : Tree
+peakIcon =
+    Tree.svg "svg"
+        [ ( "viewBox", "0 0 24 24" ), ( "aria-hidden", "true" ), ( "focusable", "false" ) ]
+        [ Tree.svg "circle" [ ( "class", "rim" ), ( "cx", "12" ), ( "cy", "12" ), ( "r", "11" ) ] []
+        , Tree.svg "circle" [ ( "class", "fill" ), ( "cx", "12" ), ( "cy", "12" ), ( "r", "9" ) ] []
+        , Tree.svg "path"
+            [ ( "class", "peak-shape" )
+            , ( "d", "M4 18.5 10 7l3.2 5.8 1.6-2.6 5.2 8.3H4Z" )
+            ]
+            []
         ]
 
 
