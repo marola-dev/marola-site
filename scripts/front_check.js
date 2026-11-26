@@ -456,7 +456,7 @@ async function layerWind() {
 async function layerClouds() {
   ok($('button[data-layer=clouds]').getAttribute('aria-pressed') === 'true', '?layer=clouds starts pressed');
   const map = ml.maps[0];
-  ok(map.sources.gibs && [].concat(map.sources.gibs.spec.tiles).join().includes('VIIRS_SNPP_CorrectedReflectance_TrueColor'), 'the satellite layer adds the NASA GIBS raster', JSON.stringify(map.sources.gibs && map.sources.gibs.spec));
+  ok(map.sources.gibs && [].concat(map.sources.gibs.spec.tiles).join().includes('VIIRS_NOAA20_CorrectedReflectance_TrueColor'), 'the satellite layer adds the NASA GIBS raster', JSON.stringify(map.sources.gibs && map.sources.gibs.spec));
   ok(map.layers.some((l) => l.id === 'gibs' && l.type === 'raster'), 'the satellite is a raster layer over the base map');
   ok($('#flowkeys').textContent.includes('VIIRS'), 'the key names the satellite source', $('#flowkeys').textContent);
 }
