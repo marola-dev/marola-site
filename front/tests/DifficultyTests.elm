@@ -14,7 +14,7 @@ suite =
         [ test "every sac_scale value has its T grade" <|
             \_ ->
                 Expect.equal
-                    ( List.map Difficulty.parse
+                    (List.map Difficulty.parse
                         [ Just "hiking"
                         , Just "mountain_hiking"
                         , Just "demanding_mountain_hiking"
@@ -33,7 +33,7 @@ suite =
         , test "the T1–T6 aliases read the same" <|
             \_ ->
                 Expect.equal
-                    ( List.map Difficulty.parse [ Just "T1", Just "T2", Just "T3", Just "T4", Just "T5", Just "T6" ] )
+                    (List.map Difficulty.parse [ Just "T1", Just "T2", Just "T3", Just "T4", Just "T5", Just "T6" ])
                     [ Hiking
                     , MountainHiking
                     , DemandingMountainHiking
