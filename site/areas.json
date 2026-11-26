@@ -222,5 +222,41 @@
         "kind": "peak"
       }
     ]
+  },
+  {
+    "id": "minas-gerais",
+    "name": "Minas Gerais",
+    "lat": -18.9537,
+    "lon": -48.2495,
+    "radius_km": 80,
+    "beach_limit": 80,
+    "tz": "America/Sao_Paulo",
+    "tiles": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+    "tiles_attribution": "© OpenStreetMap contributors",
+    "zoom": 6,
+    "bounds": [
+      -51.05,
+      -22.92,
+      -39.85,
+      -14.23
+    ],
+    "pin": {
+      "name": "Wberdiver",
+      "names": {
+        "pt-BR": "Wberdiver",
+        "en": "Wberdiver",
+        "ja": "Wberdiver",
+        "zh-Hant": "Wberdiver"
+      },
+      "lat": -18.9537,
+      "lon": -48.2495,
+      "url": "https://www.instagram.com/wberdiver/",
+      "descriptions": {
+        "pt-BR": "escola de mergulho SDI/TDI e PADI em Uberlândia, Minas Gerais.",
+        "en": "SDI/TDI and PADI dive school in Uberlândia, Minas Gerais.",
+        "ja": "ミナスジェライス州ウベルランジアの SDI/TDI・PADI ダイビングスクール。",
+        "zh-Hant": "位於米納斯吉拉斯州烏貝蘭迪亞的 SDI/TDI 與 PADI 潛水學校。"
+      }
+    }
   }
 ]

@@ -116,7 +116,7 @@ attribution and a slim strip for the language.
 ```
 
 - `area` is an id from [`site/areas.json`](site/areas.json) (`floripa`, `rio`, `salvador`,
-  `complexo-lagunar`, `parana`). With no `day`, the embed shows today's board; `day=YYYY-MM-DD` pins a
+  `complexo-lagunar`, `parana`, `minas-gerais`). With no `day`, the embed shows today's board; `day=YYYY-MM-DD` pins a
   past one.
 - `layer` picks the layer on show (`water`, `wind`, `waves`, …), `lang` the language (`pt-BR`, `en`,
   `ja`, `zh-Hant`), and `beaches=0` / `trails=0` start with those hidden.
@@ -131,6 +131,9 @@ attribution and a slim strip for the language.
   opens on the bathing-water layer and draws IAT/PR's 76 points from the Ilha do Mel to Foz do
   Iguaçu and Primeiro de Maio; the interior is in the data and in the trail and water panels, not
   in the first frame.
+- Minas Gerais frames the state, with **Wberdiver** pinned in Uberlândia (linked to the dive
+  school's Instagram). The inland river and lake beaches are the board's; the state has no coastal
+  water agency, so there is no water file.
 - Florianópolis frames the island and the three offshore islands, with the **Ilha do Xavier**, the
   **Ilha do Arvoredo** and the **Ilha do Campeche** pinned inside. Every pin's label and its hover
   description follow the page language (`pt-BR`, `en`, `ja`, `zh-Hant`). Xavier and Arvoredo are

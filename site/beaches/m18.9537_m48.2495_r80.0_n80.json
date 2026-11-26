@@ -1,0 +1,197 @@
+{
+ "version": 1,
+ "beaches": [
+  {
+   "name": "Prainha das Capivaras",
+   "lat": -18.91114,
+   "lon": -48.24026,
+   "distance_km": 4.83
+  },
+  {
+   "name": "beira lago sabia",
+   "lat": -18.90989,
+   "lon": -48.24139,
+   "distance_km": 4.95
+  },
+  {
+   "name": "Prainha do Praia Clube",
+   "lat": -18.93417,
+   "lon": -48.29267,
+   "distance_km": 5.03
+  },
+  {
+   "name": "praia do parque do sabia",
+   "lat": -18.90827,
+   "lon": -48.23976,
+   "distance_km": 5.15
+  },
+  {
+   "name": "Prainha",
+   "lat": -19.16369,
+   "lon": -47.65235,
+   "distance_km": 66.96
+  },
+  {
+   "name": "Praia do Seleiro",
+   "lat": -21.07822,
+   "lon": -45.57107,
+   "distance_km": 366.2
+  },
+  {
+   "name": "Praia do Bicano",
+   "lat": -21.08824,
+   "lon": -45.56139,
+   "distance_km": 367.69
+  },
+  {
+   "name": "Prainha do Moinho",
+   "lat": -20.68848,
+   "lon": -45.20117,
+   "distance_km": 372.67
+  },
+  {
+   "name": "Ilha do Areão",
+   "lat": -17.34817,
+   "lon": -44.95465,
+   "distance_km": 391.23
+  },
+  {
+   "name": "Balneário das Duchas",
+   "lat": -17.35421,
+   "lon": -44.94989,
+   "distance_km": 391.37
+  },
+  {
+   "name": "chamas",
+   "lat": -22.2319,
+   "lon": -45.93421,
+   "distance_km": 436.96
+  },
+  {
+   "name": "Praia Moreninha",
+   "lat": -22.22222,
+   "lon": -45.91773,
+   "distance_km": 437.01
+  },
+  {
+   "name": "Prainha do Ribeirão da mata São Geraldo",
+   "lat": -19.61115,
+   "lon": -44.04587,
+   "distance_km": 447.2
+  },
+  {
+   "name": "Praia da lagoinha fechada da pampulha",
+   "lat": -19.84653,
+   "lon": -43.99815,
+   "distance_km": 456.79
+  },
+  {
+   "name": "Prainha dos Euclides",
+   "lat": -22.41944,
+   "lon": -45.78821,
+   "distance_km": 462.64
+  },
+  {
+   "name": "Orla da Lagoa Santa",
+   "lat": -19.63912,
+   "lon": -43.89682,
+   "distance_km": 463.1
+  },
+  {
+   "name": "Prainha do Maracujá",
+   "lat": -19.63144,
+   "lon": -43.88808,
+   "distance_km": 463.88
+  },
+  {
+   "name": "Areião",
+   "lat": -19.63701,
+   "lon": -43.88825,
+   "distance_km": 463.96
+  },
+  {
+   "name": "Pier de Lagoa Santa",
+   "lat": -19.64346,
+   "lon": -43.88697,
+   "distance_km": 464.2
+  },
+  {
+   "name": "Prainha da Lagoa Santa 1",
+   "lat": -19.64488,
+   "lon": -43.88582,
+   "distance_km": 464.34
+  },
+  {
+   "name": "Praia de Minas",
+   "lat": -22.11023,
+   "lon": -45.07094,
+   "distance_km": 482.39
+  },
+  {
+   "name": "Poço do Santo Antônio",
+   "lat": -18.06476,
+   "lon": -43.34171,
+   "distance_km": 526.83
+  },
+  {
+   "name": "Praia",
+   "lat": -19.77841,
+   "lon": -42.59472,
+   "distance_km": 600.22
+  },
+  {
+   "name": "Praião do São Miguel",
+   "lat": -17.23989,
+   "lon": -42.7781,
+   "distance_km": 608.84
+  },
+  {
+   "name": "Praia de Cima",
+   "lat": -19.2251,
+   "lon": -42.3508,
+   "distance_km": 620.54
+  },
+  {
+   "name": "Praia da Baixa",
+   "lat": -19.23117,
+   "lon": -42.3319,
+   "distance_km": 622.55
+  },
+  {
+   "name": "Praia do Meio",
+   "lat": -19.23345,
+   "lon": -42.32331,
+   "distance_km": 623.46
+  },
+  {
+   "name": "Praia dos Coqueiros",
+   "lat": -19.23953,
+   "lon": -42.31768,
+   "distance_km": 624.07
+  },
+  {
+   "name": "Praia do Copo Sujo",
+   "lat": -15.81421,
+   "lon": -43.29902,
+   "distance_km": 630.66
+  },
+  {
+   "name": "Praia do Ferreira",
+   "lat": -16.56831,
+   "lon": -41.51332,
+   "distance_km": 760.95
+  },
+  {
+   "name": "Praia do Lajedinho",
+   "lat": -16.56951,
+   "lon": -41.50244,
+   "distance_km": 761.98
+  },
+  {
+   "name": "Praia dos Canoeiros",
+   "lat": -16.56442,
+   "lon": -41.49414,
+   "distance_km": 763.01
+  }
+ ]
+}

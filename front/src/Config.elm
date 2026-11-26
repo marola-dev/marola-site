@@ -145,6 +145,9 @@ areaCode id name =
         "parana" ->
             "PR"
 
+        "minas-gerais" ->
+            "MG"
+
         _ ->
             String.filter Char.isAlpha name |> String.left 2 |> String.toUpper
 

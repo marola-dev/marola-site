@@ -606,6 +606,20 @@ async function parana() {
   ok(prOption && prOption.textContent === 'PR', 'the picker shows PR', JSON.stringify($$('#area option').map((o) => [o.getAttribute('value'), o.textContent])));
 }
 
+async function minasGerais() {
+  const map = ml.maps[0];
+  const areas = distJson('data/areas.json');
+  const mg = (areas.areas || areas).find((a) => a.id === 'minas-gerais');
+  ok(mg && mg.pin && mg.pin.name === 'Wberdiver' && mg.pin.url === 'https://www.instagram.com/wberdiver/', 'areas.json pins Minas Gerais at Wberdiver', JSON.stringify(mg && mg.pin));
+  ok(map.opts.center[0] === -48.2495 && map.opts.center[1] === -18.9537 && map.opts.zoom === 6, 'the map enters at Uberlândia, then frames Minas Gerais', JSON.stringify(map.opts.center.concat(map.opts.zoom)));
+  const fits = map.calls.filter((c) => c.name === 'fitBounds');
+  ok(fits.length === 1 && JSON.stringify(fits[0].args[0]) === JSON.stringify([[-51.05, -22.92], [-39.85, -14.23]]) && fits[0].args[1].maxZoom === 12, 'the camera frames Minas Gerais, and the beaches never refit it', JSON.stringify(fits));
+  const pin = live().find((m) => cls(m.el).includes('pin'));
+  ok(pin && $('.pin-label', pin.el).textContent === 'Wberdiver' && pin.el.getAttribute('href') === 'https://www.instagram.com/wberdiver/' && pin.el.getAttribute('target') === '_blank', 'the dive school is pinned and links to its Instagram', pin && pin.el.getAttribute('href'));
+  const mgOption = $$('#area option').find((o) => o.getAttribute('value') === 'minas-gerais');
+  ok(mgOption && mgOption.textContent === 'MG', 'the picker shows MG', JSON.stringify($$('#area option').map((o) => [o.getAttribute('value'), o.textContent])));
+}
+
 async function playlist() {
   const embed = 'https://open.spotify.com/embed/playlist/2hsuqvhCouatM8DtmKKl7U?theme=0';
   const btn = () => document.querySelector('[data-toggle=playlist]');
@@ -642,6 +656,7 @@ const SCENARIOS = {
   embed: { search: '?embed=1&area=complexo-lagunar', run: embed },
   'complexo-lagunar': { search: '?area=complexo-lagunar', run: complexoLagunar },
   parana: { search: '?area=parana', run: parana },
+  'minas-gerais': { search: '?area=minas-gerais', run: minasGerais },
   playlist: { search: '?area=floripa', run: playlist },
 };
 
