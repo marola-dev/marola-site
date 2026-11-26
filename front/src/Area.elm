@@ -3,7 +3,8 @@ module Area exposing (Area, Bounds, Pin, decoder, isDive, isPeak, listDecoder, p
 {-| An area of the picker: `data/areas.json` carries more, the page reads these. `bounds`, `zoom`
 and `pin` are the area's own: what the camera frames, where it enters without bounds, the layer it
 opens on, and the named places it carries (the Complexo Lagunar frames its lagoons and pins the
-Instituto Canto das Águas; Paraná pins the Ilha do Mel; Florianópolis pins three islands).
+Instituto Canto das Águas; Paraná pins the Ilha do Mel; Minas Gerais pins Wberdiver and the source
+of the São Francisco; Florianópolis pins three islands).
 -}
 
 import Dec exposing (required)

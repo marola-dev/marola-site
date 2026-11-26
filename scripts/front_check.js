@@ -616,11 +616,14 @@ async function minasGerais() {
   const areas = distJson('data/areas.json');
   const mg = (areas.areas || areas).find((a) => a.id === 'minas-gerais');
   ok(mg && mg.pin && mg.pin.name === 'Wberdiver' && mg.pin.url === 'https://www.instagram.com/wberdiver/', 'areas.json pins Minas Gerais at Wberdiver', JSON.stringify(mg && mg.pin));
+  ok(mg && mg.pins && mg.pins.some((p) => p.name === 'Nascente do Rio São Francisco' && p.lat === -20.2429 && p.lon === -46.4465), 'areas.json also pins the source of the São Francisco', JSON.stringify(mg && mg.pins));
   ok(map.opts.center[0] === -48.2495 && map.opts.center[1] === -18.9537 && map.opts.zoom === 6, 'the map enters at Uberlândia, then frames Minas Gerais', JSON.stringify(map.opts.center.concat(map.opts.zoom)));
   const fits = map.calls.filter((c) => c.name === 'fitBounds');
   ok(fits.length === 1 && JSON.stringify(fits[0].args[0]) === JSON.stringify([[-51.05, -22.92], [-39.85, -14.23]]) && fits[0].args[1].maxZoom === 12, 'the camera frames Minas Gerais, and the beaches never refit it', JSON.stringify(fits));
   const pin = live().find((m) => cls(m.el).includes('pin'));
   ok(pin && $('.pin-label', pin.el).textContent === 'Wberdiver' && pin.el.getAttribute('href') === 'https://www.instagram.com/wberdiver/' && pin.el.getAttribute('target') === '_blank', 'the dive school is pinned and links to its Instagram', pin && pin.el.getAttribute('href'));
+  const mgPins = live().filter((m) => cls(m.el).includes('pin'));
+  ok(mgPins.length === 2 && $('.pin-label', mgPins[1].el).textContent === 'Nascente do Rio São Francisco' && !mgPins[1].el.getAttribute('href'), 'the source is pinned as well, with no link', mgPins.map((m) => $('.pin-label', m.el).textContent).join(', '));
   const mgOption = $$('#area option').find((o) => o.getAttribute('value') === 'minas-gerais');
   ok(mgOption && mgOption.textContent === 'MG', 'the picker shows MG', JSON.stringify($$('#area option').map((o) => [o.getAttribute('value'), o.textContent])));
 }

@@ -257,6 +257,25 @@
         "ja": "ミナスジェライス州ウベルランジアの SDI/TDI・PADI ダイビングスクール。",
         "zh-Hant": "位於米納斯吉拉斯州烏貝蘭迪亞的 SDI/TDI 與 PADI 潛水學校。"
       }
-    }
+    },
+    "pins": [
+      {
+        "name": "Nascente do Rio São Francisco",
+        "names": {
+          "pt-BR": "Nascente do Rio São Francisco",
+          "en": "Source of the São Francisco River",
+          "ja": "サン・フランシスコ川の源流",
+          "zh-Hant": "聖弗朗西斯科河源頭"
+        },
+        "lat": -20.2429,
+        "lon": -46.4465,
+        "descriptions": {
+          "pt-BR": "a nascente histórica do Velho Chico, no Parque Nacional da Serra da Canastra, em São Roque de Minas.",
+          "en": "the historic source of the São Francisco River, in Serra da Canastra National Park, São Roque de Minas.",
+          "ja": "サン・ロケ・デ・ミナスのセラ・ダ・カナストラ国立公園にある、サン・フランシスコ川の歴史的な源流。",
+          "zh-Hant": "聖弗朗西斯科河的歷史源頭，位於聖羅克迪米納斯的卡納斯特拉山國家公園。"
+        }
+      }
+    ]
   }
 ]
