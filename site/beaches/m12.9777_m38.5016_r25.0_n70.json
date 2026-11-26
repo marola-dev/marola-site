@@ -1,0 +1,377 @@
+{
+ "version": 1,
+ "beaches": [
+  {
+   "name": "Praia Costa de Fora",
+   "lat": -12.77993,
+   "lon": -38.62182,
+   "distance_km": 25.56
+  },
+  {
+   "name": "Praia Ponta de Nossa Senhora de Guadalupe",
+   "lat": -12.81418,
+   "lon": -38.63946,
+   "distance_km": 23.53
+  },
+  {
+   "name": "Praia do Tobar",
+   "lat": -12.79158,
+   "lon": -38.62581,
+   "distance_km": 24.69
+  },
+  {
+   "name": "Praia Do Alvejado",
+   "lat": -12.90049,
+   "lon": -38.49115,
+   "distance_km": 8.66
+  },
+  {
+   "name": "Praia da Gamboa",
+   "lat": -12.98337,
+   "lon": -38.52097,
+   "distance_km": 2.19
+  },
+  {
+   "name": "Praia da Preguiça",
+   "lat": -12.97887,
+   "lon": -38.51781,
+   "distance_km": 1.76
+  },
+  {
+   "name": "Praia da Ribeira",
+   "lat": -12.91108,
+   "lon": -38.49748,
+   "distance_km": 7.42
+  },
+  {
+   "name": "Praia de Boa Viagem",
+   "lat": -12.93223,
+   "lon": -38.51409,
+   "distance_km": 5.23
+  },
+  {
+   "name": "Praia de Inema",
+   "lat": -12.81229,
+   "lon": -38.49187,
+   "distance_km": 18.42
+  },
+  {
+   "name": "Praia de Periperi",
+   "lat": -12.87208,
+   "lon": -38.4794,
+   "distance_km": 11.99
+  },
+  {
+   "name": "Praia de São Tome de Paripe",
+   "lat": -12.81927,
+   "lon": -38.48733,
+   "distance_km": 17.68
+  },
+  {
+   "name": "Praia de Tubarão",
+   "lat": -12.83468,
+   "lon": -38.4793,
+   "distance_km": 16.09
+  },
+  {
+   "name": "Praia do Cantagalo",
+   "lat": -12.94324,
+   "lon": -38.5038,
+   "distance_km": 3.84
+  },
+  {
+   "name": "Praia do Paredão",
+   "lat": -12.93708,
+   "lon": -38.50812,
+   "distance_km": 4.57
+  },
+  {
+   "name": "Prainha do Solar do União",
+   "lat": -12.98133,
+   "lon": -38.51978,
+   "distance_km": 2.01
+  },
+  {
+   "name": "Mar Grande",
+   "lat": -12.96514,
+   "lon": -38.60771,
+   "distance_km": 11.58
+  },
+  {
+   "name": "Praia Buraco da Velha",
+   "lat": -12.89115,
+   "lon": -38.28905,
+   "distance_km": 24.96
+  },
+  {
+   "name": "Praia Buraco do Boi",
+   "lat": -12.93967,
+   "lon": -38.61349,
+   "distance_km": 12.84
+  },
+  {
+   "name": "Praia da Gameleira",
+   "lat": -12.93548,
+   "lon": -38.61548,
+   "distance_km": 13.2
+  },
+  {
+   "name": "Praia da Penha",
+   "lat": -12.98724,
+   "lon": -38.61986,
+   "distance_km": 12.86
+  },
+  {
+   "name": "Praia de Amoreiras",
+   "lat": -12.90042,
+   "lon": -38.6509,
+   "distance_km": 18.32
+  },
+  {
+   "name": "Praia de Barra do Gil",
+   "lat": -12.99372,
+   "lon": -38.62861,
+   "distance_km": 13.88
+  },
+  {
+   "name": "Praia de Gamboa",
+   "lat": -12.97511,
+   "lon": -38.61185,
+   "distance_km": 11.95
+  },
+  {
+   "name": "Praia de Ilhota",
+   "lat": -12.9697,
+   "lon": -38.60951,
+   "distance_km": 11.73
+  },
+  {
+   "name": "Praia de Ipitanga",
+   "lat": -12.91112,
+   "lon": -38.30487,
+   "distance_km": 22.57
+  },
+  {
+   "name": "Praia de Mar Grande",
+   "lat": -12.96093,
+   "lon": -38.60552,
+   "distance_km": 11.41
+  },
+  {
+   "name": "Praia de Ponta da Cruz",
+   "lat": -13.05641,
+   "lon": -38.69731,
+   "distance_km": 22.94
+  },
+  {
+   "name": "Praia de Ponta de Areia",
+   "lat": -12.87921,
+   "lon": -38.68539,
+   "distance_km": 22.73
+  },
+  {
+   "name": "Praia do Acajá",
+   "lat": -12.92453,
+   "lon": -38.62433,
+   "distance_km": 14.55
+  },
+  {
+   "name": "Praia do Brasileiro",
+   "lat": -12.88723,
+   "lon": -38.67321,
+   "distance_km": 21.14
+  },
+  {
+   "name": "Praia do Duro",
+   "lat": -12.96567,
+   "lon": -38.60796,
+   "distance_km": 11.6
+  },
+  {
+   "name": "Praia do Forte Itaparica",
+   "lat": -12.87952,
+   "lon": -38.68527,
+   "distance_km": 22.7
+  },
+  {
+   "name": "Praia dos Madrugas",
+   "lat": -12.88218,
+   "lon": -38.6802,
+   "distance_km": 22.08
+  },
+  {
+   "name": "Praia Jardim de Alah",
+   "lat": -12.99747,
+   "lon": -38.44327,
+   "distance_km": 6.69
+  },
+  {
+   "name": "Praia Terceira Ponte",
+   "lat": -12.96084,
+   "lon": -38.39559,
+   "distance_km": 11.64
+  },
+  {
+   "name": "Praia da Barra",
+   "lat": -13.01018,
+   "lon": -38.52852,
+   "distance_km": 4.64
+  },
+  {
+   "name": "Praia da Boca do Rio",
+   "lat": -12.98205,
+   "lon": -38.42756,
+   "distance_km": 8.04
+  },
+  {
+   "name": "Praia da Coroa",
+   "lat": -13.00201,
+   "lon": -38.63452,
+   "distance_km": 14.65
+  },
+  {
+   "name": "Praia da Paciência",
+   "lat": -13.01104,
+   "lon": -38.49711,
+   "distance_km": 3.74
+  },
+  {
+   "name": "Praia da Pituba",
+   "lat": -13.01084,
+   "lon": -38.46437,
+   "distance_km": 5.46
+  },
+  {
+   "name": "Praia da Sereia",
+   "lat": -13.01124,
+   "lon": -38.50415,
+   "distance_km": 3.74
+  },
+  {
+   "name": "Praia de Amaralina",
+   "lat": -13.01464,
+   "lon": -38.475,
+   "distance_km": 5.02
+  },
+  {
+   "name": "Praia de Armação",
+   "lat": -12.99126,
+   "lon": -38.43706,
+   "distance_km": 7.15
+  },
+  {
+   "name": "Praia de Conceição",
+   "lat": -13.02196,
+   "lon": -38.64824,
+   "distance_km": 16.63
+  },
+  {
+   "name": "Praia de Itapuã",
+   "lat": -12.95351,
+   "lon": -38.36259,
+   "distance_km": 15.3
+  },
+  {
+   "name": "Praia de Jaguaribe",
+   "lat": -12.95756,
+   "lon": -38.38946,
+   "distance_km": 12.36
+  },
+  {
+   "name": "Praia de Ondina",
+   "lat": -13.01125,
+   "lon": -38.51042,
+   "distance_km": 3.85
+  },
+  {
+   "name": "Praia de Patamares",
+   "lat": -12.96489,
+   "lon": -38.4021,
+   "distance_km": 10.88
+  },
+  {
+   "name": "Praia de Pedra do Sal",
+   "lat": -12.95124,
+   "lon": -38.34614,
+   "distance_km": 17.1
+  },
+  {
+   "name": "Praia de Piatã",
+   "lat": -12.95519,
+   "lon": -38.38275,
+   "distance_km": 13.12
+  },
+  {
+   "name": "Praia de Placaford",
+   "lat": -12.95326,
+   "lon": -38.3744,
+   "distance_km": 14.05
+  },
+  {
+   "name": "Praia de Santana",
+   "lat": -13.01193,
+   "lon": -38.49289,
+   "distance_km": 3.92
+  },
+  {
+   "name": "Praia de Stella Maris",
+   "lat": -12.94034,
+   "lon": -38.33126,
+   "distance_km": 18.92
+  },
+  {
+   "name": "Praia do Buracão",
+   "lat": -13.015,
+   "lon": -38.4831,
+   "distance_km": 4.61
+  },
+  {
+   "name": "Praia do Calabreso",
+   "lat": -12.92694,
+   "lon": -38.49236,
+   "distance_km": 5.73
+  },
+  {
+   "name": "Praia do Corsário",
+   "lat": -12.97024,
+   "lon": -38.409,
+   "distance_km": 10.07
+  },
+  {
+   "name": "Praia do Flamengo",
+   "lat": -12.92888,
+   "lon": -38.3195,
+   "distance_km": 20.47
+  },
+  {
+   "name": "Praia do Porto da Barra",
+   "lat": -13.00327,
+   "lon": -38.53333,
+   "distance_km": 4.46
+  },
+  {
+   "name": "Praia do Reloginho",
+   "lat": -13.0086,
+   "lon": -38.53229,
+   "distance_km": 4.78
+  },
+  {
+   "name": "Praia dos Artistas",
+   "lat": -12.97525,
+   "lon": -38.41664,
+   "distance_km": 9.21
+  },
+  {
+   "name": "Prainha da Fonte do Boi",
+   "lat": -13.01584,
+   "lon": -38.48535,
+   "distance_km": 4.59
+  },
+  {
+   "name": "Suspiro da Jubarte",
+   "lat": -13.01033,
+   "lon": -38.51873,
+   "distance_km": 4.08
+  }
+ ]
+}
