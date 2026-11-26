@@ -143,9 +143,10 @@ attribution and a slim strip for the language.
   beaches are the board's; IGAM, the state's water agency, publishes ambient water-quality data but
   no per-point bathing-water bulletin, so there is no water file.
 - Florianópolis frames the island and the three offshore islands, with the **Ilha do Xavier**, the
-  **Ilha do Arvoredo** and the **Ilha do Campeche** pinned inside. Every pin's label and its hover
-  description follow the page language (`pt-BR`, `en`, `ja`, `zh-Hant`). Xavier and Arvoredo are
-  dive sites: the **scuba toggle** shows them with a mask marker, and Campeche stays a place pin.
+  **Ilha do Arvoredo** and the **Ilha do Campeche** pinned inside, and **Casa Örüm**, a women-only
+  coliving in Campeche, with the Venus marker. Every pin's label and its hover description follow
+  the page language (`pt-BR`, `en`, `ja`, `zh-Hant`). Xavier and Arvoredo are dive sites: the
+  **scuba toggle** shows them with a mask marker; Campeche and Casa Örüm stay on the plain map.
 - The server frames `/embed` only for the origins in `MAROLA_EMBED_FROM`, one per line, a file on the
   host ([hosting](docs/5-hosting.md#variables)). Every other page, and an empty list, keeps
   `frame-ancestors 'none'`: a partner asks to be added, and nobody else can frame marola. No origin

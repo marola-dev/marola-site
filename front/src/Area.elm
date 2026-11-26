@@ -1,10 +1,10 @@
-module Area exposing (Area, Bounds, Pin, decoder, isDive, isPeak, listDecoder, pinDescription, pinLabel)
+module Area exposing (Area, Bounds, Pin, decoder, isDive, isPeak, isWomen, listDecoder, pinDescription, pinLabel)
 
 {-| An area of the picker: `data/areas.json` carries more, the page reads these. `bounds`, `zoom`
 and `pin` are the area's own: what the camera frames, where it enters without bounds, the layer it
 opens on, and the named places it carries (the Complexo Lagunar frames its lagoons and pins the
-Instituto Canto das Águas; Paraná pins the Ilha do Mel; Minas Gerais pins Wberdiver and the source
-of the São Francisco; Florianópolis pins three islands).
+Instituto Canto das Águas; Paraná pins the Ilha do Mel; Minas Gerais pins Wberdiver, the source
+of the São Francisco and its four starting regions; Florianópolis pins three islands and Casa Örüm).
 -}
 
 import Dec exposing (required)
@@ -122,3 +122,10 @@ points of a state do not stack their names on top of each other at a wide zoom.
 isPeak : Pin -> Bool
 isPeak pin =
     pin.kind == "peak"
+
+
+{-| A women's place: a round marker with the Venus symbol.
+-}
+isWomen : Pin -> Bool
+isWomen pin =
+    pin.kind == "women"

@@ -69,6 +69,25 @@
           "ja": "フロリアノーポリス南東の島。遺跡と透明な海があります。",
           "zh-Hant": "弗洛里亞諾波利斯東南的島嶼，有考古遺址和清澈海水。"
         }
+      },
+      {
+        "name": "Casa Örüm",
+        "names": {
+          "pt-BR": "Casa Örüm",
+          "en": "Casa Örüm",
+          "ja": "カーザ・オルム",
+          "zh-Hant": "奧魯姆之家"
+        },
+        "lat": -27.6764,
+        "lon": -48.4871,
+        "label_below": true,
+        "descriptions": {
+          "pt-BR": "coliving só para mulheres e espaço de transição, no Campeche.",
+          "en": "a women-only coliving and transition space in Campeche.",
+          "ja": "カンペチェにある女性専用のコリビング兼トランジションスペース。",
+          "zh-Hant": "位於坎佩切的女性專用共居與過渡空間。"
+        },
+        "kind": "women"
       }
     ]
   },
