@@ -409,13 +409,15 @@ Fjalla name or numeral is what the eye lands on, Inter explains it, mono dates a
   (Inter 600, 11 px, `--tr-eyebrow`), each route a full-width row with its difficulty as a small
   band pill, its name, and its length in mono at the right. The picked route takes `--accent-soft`.
   The foot (source, IBGE code) is mono 11 px.
-- **Player** (`#player`): the playlist's frame in a `--surface` panel that hangs under the layer
-  buttons of the rail, over the map, as wide as the compact embed allows (`min(300px, ...)`) and
-  80 px high, with a mono link to open it in Spotify. The grip at its top edge (a 16 px bar with a
-  32 px handle in `--muted`, `cursor: grab`) drags the panel anywhere over the map: the drag runs
-  in Elm's own pointer subscriptions and only the moved pixels go through a port, because the CSP
-  keeps position out of inline styles. The rail scrolls when the two together are taller than the
-  map.
+- **Player** (`#player`): the playlist's frame in a `--surface` panel that sits beside the layer
+  rail and above the attribution, not inside the rail's scrolling box (its `overflow` used to clip
+  the player to a dark sliver). It is 420 px wide at most (`min(420px, calc(100vw - 88px))`) and
+  168 px high: a 16 px grip plus Spotify's 152 px compact playlist, which carries its own link to
+  open the playlist in Spotify. The grip (a 16 px bar with a 32 px handle in `--muted`,
+  `cursor: grab`) drags the panel anywhere over the map: the drag runs in Elm's own pointer
+  subscriptions and only the moved pixels go through a port, because the CSP keeps position out of
+  inline styles. On a phone it is a bottom sheet, 8 px from the sides and 44 px above the bottom,
+  so the attribution stays visible.
 - **Close button**: the control as a borderless 32 px circle in `--muted`, `--raised` on hover.
   On a phone the card's close button is sticky at the top right of its sheet, so it stays in reach
   while the card scrolls.

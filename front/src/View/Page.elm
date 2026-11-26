@@ -71,7 +71,7 @@ rail model =
             []
 
         _ ->
-            [ View.Layers.rail model, View.Layers.key model ]
+            [ View.Layers.rail model, View.Layers.player model, View.Layers.key model ]
 
 
 stage : Model -> Html Msg

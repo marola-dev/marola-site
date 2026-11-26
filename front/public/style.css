@@ -148,15 +148,14 @@ small { font-size: var(--fs-13); letter-spacing: var(--tr-13); }
 .bar:has(> .hourbar:not([hidden])) > .controls { grid-area: controls; }
 .bar > .tagline { grid-area: tag; justify-self: end; text-align: right; }
 .bar:has(> .hourbar[hidden]) > .tagline { margin-left: auto; }
-/* the playlist's player: Spotify's compact embed alone, 80 px high, under the layer buttons of
- * the rail, over the map; the grip at its top edge drags it anywhere over the map; no panel
- * around it, so it covers as little map as it can. flex: none, or the rail's flex column crushes
- * it to a dark sliver when the map is too short for the buttons and the player together: an item
- * with overflow: hidden has no automatic minimum to keep, and it is the only item that can shrink
- * (the buttons' box cannot), so it took all of it. The rail scrolls instead. */
+/* the playlist's player: Spotify's compact playlist embed, 152 px high, in a 420 px panel beside
+ * the layer rail and above the attribution. It must not live inside .flow: that rail scrolls with
+ * overflow, which clipped the player to the rail's width and turned it into a dark sliver. The grip
+ * at its top edge drags it anywhere over the map; only the moved pixels go through a port, because
+ * the CSP keeps position out of inline styles. */
 .player {
-  position: absolute; left: 50%; margin-left: -150px; top: 12px;
-  width: min(300px, calc(100vw - 76px)); height: 96px; flex: none;
+  position: absolute; right: 64px; bottom: 48px;
+  width: min(420px, calc(100vw - 88px)); height: 168px;
   overflow: hidden; border-radius: var(--r-panel); box-shadow: var(--shadow-float);
   touch-action: none;
   z-index: 900;
@@ -171,7 +170,7 @@ small { font-size: var(--fs-13); letter-spacing: var(--tr-13); }
   transform: translateX(-50%); border-radius: 2px; background: var(--muted);
 }
 .player .grip:hover, .player:has(.grip:active) .grip { cursor: grabbing; }
-.player iframe { display: block; width: 100%; height: 80px; border: 0; }
+.player iframe { display: block; width: 100%; height: 152px; border: 0; }
 
 /* One control everywhere: a 34 px pill with a 1px border. Hover turns the border to the accent
  * and lifts it 1 px (piabrota.art's .btn); pressed toggles take the soft accent; the one primary
@@ -829,7 +828,7 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
   .watermark { left: 8px; bottom: 50px; gap: 8px; }
   .watermark .lnt { width: 70px; }
   .watermark svg { width: 18px; height: 18px; }
-  .player { left: 50%; margin-left: calc(min(300px, calc(100vw - 84px)) / -2); top: calc(100% + 48px); }
+  .player { left: 8px; right: 8px; bottom: 44px; width: auto; height: 168px; }
   .flowkey { width: 7.5rem; padding: 6px 8px; font-size: var(--fs-11); letter-spacing: var(--tr-11); }
   /* the caption under a ramp hides (the about page explains the field); a key that is only its caption keeps it */
   .flowkey > .ends ~ span:last-child { display: none; }

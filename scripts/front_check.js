@@ -593,6 +593,7 @@ async function playlist() {
   await click(btn());
   const frame = $('#player iframe');
   ok(frame && frame.getAttribute('src') === embed, 'the playlist button opens the GREAT RESET embed', frame && frame.getAttribute('src'));
+  ok($('#player') && !$('#flow #player'), 'the player sits beside the rail, not inside its clipping box');
   ok(btn().getAttribute('aria-pressed') === 'true', 'the playlist button reads as pressed while the player is open');
   const csp = /http-equiv="Content-Security-Policy" content="([^"]*)"/.exec(fs.readFileSync(path.join(DIST, 'index.html'), 'utf8'))[1];
   ok(/(^|; )frame-src https:\/\/open\.spotify\.com(;|$)/.test(csp), 'the CSP lets the page frame open.spotify.com and nothing else', csp);
