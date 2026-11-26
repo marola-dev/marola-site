@@ -18,10 +18,10 @@ import System.Exit (ExitCode (..), exitWith)
 import System.FilePath (takeDirectory, (</>))
 import System.IO (hPutStrLn, stderr)
 
--- | A fixture beach: its name, coordinates and, when it has one, the IMA/SC sampling point the
--- offline preview shows. The point and verdict are real (the agency publishes both, and its
--- 17 Nov 2026 bulletin calls every point here PRÓPRIA); the enterococci count is absent because
--- that bulletin does not carry one.
+-- | A fixture beach: its name, coordinates and, when it has one, the agency sampling point the
+-- offline preview shows. The points and verdicts are real: IMA/SC's bulletin of 17 Nov 2026 for
+-- the Complexo Lagunar, IAT/PR's service of 9 Feb 2026 for the Litoral do Paraná. The enterococci
+-- count is absent because neither bulletin carries one.
 data Place = Place Text Double Double (Maybe Sample)
 
 data Sample = Sample
@@ -30,16 +30,35 @@ data Sample = Sample
     sampleCondition :: Text,
     sampleEnterococci :: Maybe Int,
     sampleSummary :: Text,
+    sampleSource :: Text,
+    sampleDay :: Text,
+    sampleDayLabel :: Text,
     sampleUnfit :: Bool
   }
 
 sample :: Text -> Text -> Maybe Sample
-sample point location = Just (Sample point location "proper" Nothing ("1/1 PRÓPRIA (17 Nov)") False)
+sample point location = Just (Sample point location "proper" Nothing "1/1 PRÓPRIA (17 Nov)" "IMA/SC" "2026-11-17" "17 Nov 2026" False)
+
+sampleIat :: Text -> Text -> Bool -> Maybe Sample
+sampleIat point location unfit =
+  Just
+    ( Sample
+        point
+        location
+        (if unfit then "improper" else "proper")
+        Nothing
+        (if unfit then "0/1 IMPRÓPRIA (9 Feb)" else "1/1 PRÓPRIA (9 Feb)")
+        "IAT/PR"
+        "2026-02-09"
+        "9 Feb 2026"
+        unfit
+    )
 
 -- | Fixture beaches (not live data): the template board's beaches moved to real places in each
 -- city, so the map centres on the city offline. Florianopolis keeps the template as it is. Point
 -- coordinates move with their beach. The Complexo Lagunar entries are the IMA/SC lagoon and
--- lagoon-mouth points, so the water layer has real places to draw offline.
+-- lagoon-mouth points; the Litoral do Paraná ones are IAT/PR's coastal and river points, from the
+-- Ilha do Mel to Guaratuba, so the water layer has real places to draw offline.
 fixtureBeaches :: [(Text, [Place])]
 fixtureBeaches =
   [ ("rio", [Place "Praia de Copacabana" (-22.9711) (-43.1822) Nothing, Place "Praia de Ipanema" (-22.9868) (-43.2058) Nothing]),
@@ -58,13 +77,35 @@ fixtureBeaches =
         Place "Canal do Camacho" (-28.6093444) (-48.8608168) (sample "Ponto 03" "Canal do Camacho"),
         Place "Lagoa do Arroio Corrente" (-28.6920252) (-49.0185997) (sample "Ponto 02" "Lagoa do Arroio Corrente")
       ]
+    ),
+    ( "parana",
+      [ Place "Praia do Farol" (-25.54039) (-48.30247) (sampleIat "IM01" "Farol (Praia do Farol)" False),
+        Place "Praia Grande" (-25.54692) (-48.29421) (sampleIat "IM11" "Farol (Praia Grande)" False),
+        Place "Encantadas" (-25.56418) (-48.31719) (sampleIat "IM10" "Encantadas (Baía)" False),
+        Place "Pontal do Sul" (-25.57678) (-48.34889) (sampleIat "PS04" "Pontal do Sul" False),
+        Place "Balneário Atami Sul" (-25.59934) (-48.38557) (sampleIat "AS01" "Balneário Atami Sul" False),
+        Place "Praia de Leste" (-25.69929) (-48.46894) (sampleIat "LE03" "Praia de Leste" False),
+        Place "Caiobá (Praia Mansa)" (-25.84786) (-48.54173) (sampleIat "CA10" "Caiobá (Praia Mansa)" False),
+        Place "Matinhos Praia Central" (-25.81659) (-48.53177) (sampleIat "MS05" "Matinhos Praia Central" False),
+        Place "Balneário Brejatuba" (-25.89981) (-48.56613) (sampleIat "GN5" "Balneário Brejatuba" True),
+        Place "Barra do Saí" (-25.97484) (-48.59518) (sampleIat "GN1" "Barra do Saí" True),
+        Place "Rio Nhundiaquara" (-25.47542) (-48.83303) (sampleIat "MR03" "Rio Nhundiaquara" True),
+        Place "Ponta da Pita" (-25.45125) (-48.68476) (sampleIat "AT01" "Ponta da Pita" True)
+      ]
     )
   ]
 
 boardFor :: A.Value -> Text -> A.Value
 boardFor template area = case lookup area fixtureBeaches of
   Nothing -> template
-  Just places -> overKey "beaches" (const (A.Array (V.fromList (zipWith build [0 ..] places)))) template
+  Just places ->
+    let boardSource = case [sampleSource s | Place _ _ _ (Just s) <- places] of
+          source : _ -> source
+          [] -> "IMA/SC"
+     in overKey
+          "sources"
+          (overKey "water" (const (A.toJSON boardSource)))
+          (overKey "beaches" (const (A.Array (V.fromList (zipWith build [0 ..] places)))) template)
   where
     templateBeaches = case template of
       A.Object o -> case KM.lookup "beaches" o of
@@ -91,13 +132,13 @@ boardFor template area = case lookup area fixtureBeaches of
                 "lat" .= lat,
                 "lon" .= lon,
                 "condition" .= sampleCondition s,
-                "sampled_on" .= ("2026-11-17" :: Text),
+                "sampled_on" .= sampleDay s,
                 "enterococci_per_100ml" .= sampleEnterococci s,
                 "rain" .= (Nothing :: Maybe Text)
               ]
           note =
             if sampleUnfit s
-              then Just ("water unfit for bathing — IMA/SC 17 Nov 2026, " <> samplePoint s <> " (" <> sampleLocation s <> ")")
+              then Just ("water unfit for bathing — " <> sampleSource s <> " " <> sampleDayLabel s <> ", " <> samplePoint s <> " (" <> sampleLocation s <> ")")
               else Nothing
        in set
             "water"
@@ -105,7 +146,7 @@ boardFor template area = case lookup area fixtureBeaches of
                 [ "summary" .= sampleSummary s,
                   "unfit" .= sampleUnfit s,
                   "note" .= note,
-                  "source" .= ("IMA/SC" :: Text),
+                  "source" .= sampleSource s,
                   "points" .= [point]
                 ]
             )

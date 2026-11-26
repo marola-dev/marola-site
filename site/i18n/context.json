@@ -76,7 +76,7 @@
   "flow.key_elnino": "El Niño key: what the drawn box is and how to read it",
   "flow.key_sst": "sea temperature key; a date follows",
   "flow.key_water": "under the water-layer key: the dots are the official sampling points, from the latest bulletin",
-  "flow.key_water_file": "under the water-layer key, after flow.key_water: the area's own IMA/SC file, with its sampling day as {when}",
+  "flow.key_water_file": "under the water-layer key, after flow.key_water: the area's own water file, with its source ({source}) and sampling day ({when})",
   "flow.key_waves": "under the wave colour ramp (0 to 3 m): interpolated from the beaches' own forecasts",
   "flow.key_wind": "under the wind colour ramp (0 to 40 km/h): the field is interpolated from the beaches' own forecasts, not a weather grid",
   "flow.label": "accessible name of the layer rail on the right of the map (wind, waves, bathing water)",

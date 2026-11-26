@@ -76,7 +76,7 @@
   "flow.key_elnino": "方框是 Niño 3.4 海域: 高溫持續數月為聖嬰，低溫為反聖嬰",
   "flow.key_sst": "海表面溫度（MUR、NASA），當日",
   "flow.key_water": "採樣點，最新公告",
-  "flow.key_water_file": "以及 IMA/SC 在潟湖複合區的採樣點（{when}）",
+  "flow.key_water_file": "以及 {source} 在該區域的採樣點（{when}）",
   "flow.key_waves": "在海灘之間推估的浪",
   "flow.key_wind": "在海灘之間推估的風",
   "flow.label": "地圖圖層",

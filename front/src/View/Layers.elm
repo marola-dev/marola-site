@@ -1,4 +1,4 @@
-module View.Layers exposing (key, rail)
+module View.Layers exposing (key, player, rail)
 
 {-| The rail of map layers and the key of the one on show.
 -}
@@ -19,10 +19,11 @@ import Words
 
 
 {-| The iframe exists only while the player is open, so Spotify is not contacted before a click. Spotify's
-compact embed carries its own link to the playlist, so the player is the iframe alone. It hangs under
-the layer buttons, over the map, and the grip at its top edge drags it anywhere over the map: the
-drag lives in the update (Elm's own pointer subscriptions); only the moved pixels, which the CSP
-keeps out of inline styles, go through a port (ADR 0007).
+compact embed carries its own link to the playlist, so the player is the iframe alone. It sits beside
+the layer rail, above the attribution, not inside the rail's scrolling box (which clipped it to a
+sliver); the grip at its top edge drags it anywhere over the map: the drag lives in the update (Elm's
+own pointer subscriptions); only the moved pixels, which the CSP keeps out of inline styles, go
+through a port (ADR 0007).
 -}
 player : Model -> Html Msg
 player model =
@@ -170,7 +171,6 @@ rail model =
                 ++ List.map (layerButton model) Layer.all
                 ++ [ bathymetry ]
             )
-        , player model
         ]
 
 
@@ -231,7 +231,9 @@ waterFileKey model =
                 [ Html.text
                     (Words.ta model
                         "flow.key_water_file"
-                        [ ( "when", Icu.Text (DateFmt.short file.sampledOn model.loc.language) ) ]
+                        [ ( "source", Icu.Text file.source )
+                        , ( "when", Icu.Text (DateFmt.short file.sampledOn model.loc.language) )
+                        ]
                     )
                 ]
             ]

@@ -51,5 +51,24 @@
       "lon": -48.7973,
       "url": "https://cantodasaguas.org/"
     }
+  },
+  {
+    "id": "parana",
+    "name": "Litoral do Paraná",
+    "lat": -25.5345,
+    "lon": -48.3107,
+    "radius_km": 70,
+    "beach_limit": 80,
+    "tz": "America/Sao_Paulo",
+    "tiles": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+    "tiles_attribution": "© OpenStreetMap contributors",
+    "zoom": 9,
+    "bounds": [-49.10, -25.95, -48.00, -25.15],
+    "layer": "water",
+    "pin": {
+      "name": "Ilha do Mel",
+      "lat": -25.5345,
+      "lon": -48.3107
+    }
   }
 ]

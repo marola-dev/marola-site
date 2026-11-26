@@ -142,6 +142,9 @@ areaCode id name =
         "complexo-lagunar" ->
             "CL"
 
+        "parana" ->
+            "PR"
+
         _ ->
             String.filter Char.isAlpha name |> String.left 2 |> String.toUpper
 
@@ -161,6 +164,9 @@ sourceLink source =
 
                 "IMA/SC" ->
                     Just "https://balneabilidade.ima.sc.gov.br/"
+
+                "IAT/PR" ->
+                    Just "https://www.iat.pr.gov.br/Pagina/Balneabilidade"
 
                 _ ->
                     Nothing
