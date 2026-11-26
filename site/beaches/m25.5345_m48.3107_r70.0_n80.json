@@ -1,0 +1,281 @@
+{
+ "version": 1,
+ "beaches": [
+  {
+   "name": "Balneário Alvorada",
+   "lat": -25.36589,
+   "lon": -54.50176,
+   "distance_km": 621.84
+  },
+  {
+   "name": "Balneário de Santa Helena",
+   "lat": -24.83788,
+   "lon": -54.33453,
+   "distance_km": 611.01
+  },
+  {
+   "name": "Balneário Jacutinga",
+   "lat": -25.23287,
+   "lon": -54.22853,
+   "distance_km": 595.4
+  },
+  {
+   "name": "Balneário Natal",
+   "lat": -25.04705,
+   "lon": -54.34382,
+   "distance_km": 608.92
+  },
+  {
+   "name": "Balneário Vila Yara",
+   "lat": -23.93973,
+   "lon": -54.02318,
+   "distance_km": 603.48
+  },
+  {
+   "name": "Encantadas",
+   "lat": -25.56797,
+   "lon": -48.31656,
+   "distance_km": 3.77
+  },
+  {
+   "name": "Ilha de Europinha",
+   "lat": -25.46071,
+   "lon": -48.61267,
+   "distance_km": 31.4
+  },
+  {
+   "name": "Ipanema",
+   "lat": -25.66546,
+   "lon": -48.44684,
+   "distance_km": 19.96
+  },
+  {
+   "name": "Ponta da Pita",
+   "lat": -25.45167,
+   "lon": -48.68514,
+   "distance_km": 38.69
+  },
+  {
+   "name": "Praia Artificial da Barra Bonita",
+   "lat": -25.50964,
+   "lon": -53.29486,
+   "distance_km": 500.11
+  },
+  {
+   "name": "Praia Central",
+   "lat": -25.87921,
+   "lon": -48.56607,
+   "distance_km": 46.08
+  },
+  {
+   "name": "Praia da Aguada",
+   "lat": -25.42619,
+   "lon": -48.41807,
+   "distance_km": 16.16
+  },
+  {
+   "name": "Praia da Fortaleza",
+   "lat": -25.5244,
+   "lon": -48.30925,
+   "distance_km": 1.13
+  },
+  {
+   "name": "Praia da Pontinha",
+   "lat": -25.5628,
+   "lon": -48.31873,
+   "distance_km": 3.25
+  },
+  {
+   "name": "Praia das Canoas",
+   "lat": -25.88797,
+   "lon": -48.56535,
+   "distance_km": 46.86
+  },
+  {
+   "name": "Praia das Conchas",
+   "lat": -25.56333,
+   "lon": -48.30164,
+   "distance_km": 3.33
+  },
+  {
+   "name": "Praia das Encantadas",
+   "lat": -25.57355,
+   "lon": -48.31126,
+   "distance_km": 4.34
+  },
+  {
+   "name": "Praia de Caieiras",
+   "lat": -25.86561,
+   "lon": -48.56538,
+   "distance_km": 44.8
+  },
+  {
+   "name": "Praia de Fora",
+   "lat": -25.54167,
+   "lon": -48.29256,
+   "distance_km": 1.99
+  },
+  {
+   "name": "Praia de Leste",
+   "lat": -25.69827,
+   "lon": -48.4676,
+   "distance_km": 24.06
+  },
+  {
+   "name": "Praia do Bananal",
+   "lat": -25.55948,
+   "lon": -48.31404,
+   "distance_km": 2.8
+  },
+  {
+   "name": "Praia do Belo",
+   "lat": -25.55157,
+   "lon": -48.30726,
+   "distance_km": 1.93
+  },
+  {
+   "name": "Praia do Brejatuba",
+   "lat": -25.91208,
+   "lon": -48.57162,
+   "distance_km": 49.46
+  },
+  {
+   "name": "Praia do Cedro",
+   "lat": -25.52662,
+   "lon": -48.34081,
+   "distance_km": 3.15
+  },
+  {
+   "name": "Praia do Farol",
+   "lat": -25.53993,
+   "lon": -48.29773,
+   "distance_km": 1.43
+  },
+  {
+   "name": "Praia do Gomes",
+   "lat": -25.47377,
+   "lon": -48.68199,
+   "distance_km": 37.87
+  },
+  {
+   "name": "Praia do Istmo",
+   "lat": -25.53973,
+   "lon": -48.30507,
+   "distance_km": 0.81
+  },
+  {
+   "name": "Praia do Lanço do Campo",
+   "lat": -25.57355,
+   "lon": -48.31623,
+   "distance_km": 4.38
+  },
+  {
+   "name": "Praia do Limoeiro",
+   "lat": -25.53389,
+   "lon": -48.31704,
+   "distance_km": 0.64
+  },
+  {
+   "name": "Praia do Miguel",
+   "lat": -25.55922,
+   "lon": -48.30203,
+   "distance_km": 2.88
+  },
+  {
+   "name": "Praia do Padre João",
+   "lat": -25.7098,
+   "lon": -48.47618,
+   "distance_km": 25.6
+  },
+  {
+   "name": "Praia do Porto São Jose",
+   "lat": -22.69354,
+   "lon": -53.16277,
+   "distance_km": 584.97
+  },
+  {
+   "name": "Praia do Trapiche da Nova Brasília",
+   "lat": -25.54317,
+   "lon": -48.30515,
+   "distance_km": 1.11
+  },
+  {
+   "name": "Praia dos Amores",
+   "lat": -25.84711,
+   "lon": -48.53568,
+   "distance_km": 41.43
+  },
+  {
+   "name": "Praia dos Namorados",
+   "lat": -25.57221,
+   "lon": -48.31903,
+   "distance_km": 4.28
+  },
+  {
+   "name": "Praia Grande",
+   "lat": -25.55074,
+   "lon": -48.29647,
+   "distance_km": 2.3
+  },
+  {
+   "name": "Praia Mansa",
+   "lat": -25.56681,
+   "lon": -48.35173,
+   "distance_km": 5.46
+  },
+  {
+   "name": "Prainha",
+   "lat": -25.85513,
+   "lon": -48.56242,
+   "distance_km": 43.67
+  },
+  {
+   "name": "Prainha da Ponta do Ubá",
+   "lat": -25.41379,
+   "lon": -48.4209,
+   "distance_km": 17.39
+  },
+  {
+   "name": "Prainha de Morretes",
+   "lat": -25.47558,
+   "lon": -48.83317,
+   "distance_km": 52.84
+  },
+  {
+   "name": "Prainha de Porto de Cima",
+   "lat": -25.43396,
+   "lon": -48.87367,
+   "distance_km": 57.6
+  },
+  {
+   "name": "Prainha do Corisco",
+   "lat": -25.40905,
+   "lon": -48.71638,
+   "distance_km": 43.05
+  },
+  {
+   "name": "Prainha do Passaúna",
+   "lat": -25.47819,
+   "lon": -49.3803,
+   "distance_km": 107.52
+  },
+  {
+   "name": "Prainha do pôr do sol",
+   "lat": -23.85626,
+   "lon": -53.99441,
+   "distance_km": 603.69
+  },
+  {
+   "name": "Prainha do Tabajara",
+   "lat": -25.51755,
+   "lon": -48.49946,
+   "distance_km": 19.03
+  },
+  {
+   "name": "Prainha Guaricana",
+   "lat": -25.69974,
+   "lon": -48.97817,
+   "distance_km": 69.4
+  }
+ ]
+}

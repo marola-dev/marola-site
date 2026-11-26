@@ -353,8 +353,14 @@ async function floripa() {
   ok(map.calls.some((c) => c.name === 'fitBounds'), 'the first board fits the map to the beaches');
   ok(document.documentElement.lang === 'pt-BR' && $('a[href=news.html]').textContent === 'notícias', 'default language is pt-BR');
   ok($('#watermark .lnt') && $('#watermark .lnt').getAttribute('role') === 'img' && $('#watermark .lnt').getAttribute('aria-label') === 'Leave No Trace, Proud Partner (marola é parceira oficial)' && $('#watermark svg').getAttribute('aria-hidden') === 'true', 'the map carries the watermark: the Leave No Trace logo with its name, the eye hidden from screen readers');
-  ok(beachMarkers().length === 2 && live().length === 2, 'one marker per beach, no water points yet', live().length);
-  ok(live().every((m) => cls(m.el).includes('wave')), 'beach marker nodes carry class wave');
+  ok(beachMarkers().length === 2 && live().length === 5, 'one marker per beach and the three pinned islands, no water points yet', live().length);
+  ok(beachMarkers().every((m) => cls(m.el).includes('wave')), 'beach marker nodes carry class wave');
+  const pins = () => live().filter((m) => cls(m.el).includes('pin'));
+  const pinLabels = () => pins().map((m) => $('.pin-label', m.el).textContent).sort().join('|');
+  ok(pins().length === 3 && pinLabels() === ['Ilha do Arvoredo', 'Ilha do Campeche', 'Ilha do Xavier'].sort().join('|'), 'the three islands are pinned', pinLabels());
+  await click($('button[lang=en]'));
+  ok(pinLabels() === ['Arvoredo Island', 'Campeche Island', 'Xavier Island'].sort().join('|'), 'the pin labels follow the page language', pinLabels());
+  await click($('button[lang=pt-BR]'));
   const best = markerOf(byScore[0].name);
   ok(best && $('circle.dot', best.el).getAttribute('class') === 'dot f-' + bandOf(byScore[0]), 'the best beach dot has its band class', byScore[0].best.score);
   ok(markerOf(byScore[1].name) && $('circle.dot', markerOf(byScore[1].name).el).getAttribute('class') === 'dot f-' + bandOf(byScore[1]), 'the unfit beach dot is f-c0');
@@ -395,7 +401,7 @@ async function floripa() {
   ok($('button[data-layer=water]').getAttribute('aria-pressed') === 'true', 'pressing water sets aria-pressed');
   ok(lastUrl().searchParams.get('layer') === 'water', 'the URL carries layer=water');
   ok(cls($('main')).includes('layer-water'), 'main gets class layer-water');
-  ok(before === 2 && live().length === 4 && live().filter((m) => cls(m.el).includes('wpoint')).length === 2, 'the water layer adds the sampling points', live().length);
+  ok(before === 5 && live().length === 7 && live().filter((m) => cls(m.el).includes('wpoint')).length === 2, 'the water layer adds the sampling points', live().length);
 
   const feats = trailCollection(map).features, file = trailFile('floripa');
   ok(feats.length === routesOf(file).filter((r) => r.lines.some((l) => l.length > 1)).length && feats.length > 0, 'floripa trails reach the map as features', feats.length);
@@ -426,12 +432,12 @@ async function english() {
 
 async function layerWater() {
   ok($('button[data-layer=water]').getAttribute('aria-pressed') === 'true', '?layer=water starts pressed');
-  ok(cls($('main')).includes('layer-water') && live().length === 4, '?layer=water draws the sampling points from the start', live().length);
+  ok(cls($('main')).includes('layer-water') && live().length === 7, '?layer=water draws the sampling points from the start', live().length);
 }
 
 async function layerWind() {
   ok($$('button[data-layer]').every((b) => b.getAttribute('aria-pressed') === 'false'), '?layer=wind is ignored: nothing pressed');
-  ok(!cls($('main')).includes('layer-water') && live().length === 2, '?layer=wind leaves the plain map', live().length);
+  ok(!cls($('main')).includes('layer-water') && live().length === 5, '?layer=wind leaves the plain map', live().length);
 }
 
 async function rio() {
@@ -541,13 +547,17 @@ async function complexoLagunar() {
   const map = ml.maps[0];
   const areas = distJson('data/areas.json');
   const cl = (areas.areas || areas).find((a) => a.id === 'complexo-lagunar');
-  ok(cl && cl.pin && cl.pin.name === 'Canto das Águas', 'areas.json pins the area to Canto das Águas', JSON.stringify(cl && cl.pin));
+  ok(cl && cl.pin && cl.pin.name === 'Instituto Canto das Águas SC', 'areas.json pins the area to the Instituto Canto das Águas SC', JSON.stringify(cl && cl.pin));
   ok(map.opts.center[0] === -48.7973 && map.opts.center[1] === -28.3287 && map.opts.zoom === 9, 'the map enters at the pin and the area zoom', JSON.stringify(map.opts.center.concat(map.opts.zoom)));
   const fits = map.calls.filter((c) => c.name === 'fitBounds');
   ok(fits.length === 1 && JSON.stringify(fits[0].args[0]) === JSON.stringify([[-48.95, -28.63], [-48.61, -28.07]]) && fits[0].args[1].maxZoom === 12, 'the camera frames the lagoon bounds, and the beaches never refit it', JSON.stringify(fits));
   const pin = live().find((m) => cls(m.el).includes('pin'));
-  ok(pin && $('.pin-label', pin.el).textContent === 'Canto das Águas' && $('.pin-dot', pin.el), 'the pin is drawn on the map, named');
+  ok(pin && $('.pin-label', pin.el).textContent === 'Instituto Canto das Águas SC' && $('.pin-dot', pin.el), 'the pin is drawn on the map, named');
   ok(pin && pin.el.getAttribute('href') === 'https://cantodasaguas.org/' && pin.el.getAttribute('target') === '_blank' && pin.el.getAttribute('rel') === 'noopener', "the pin is a link to the institute's site, in a new tab", pin && [pin.el.getAttribute('href'), pin.el.getAttribute('target')].join(' '));
+  fire(pin.el, 'pointerenter');
+  const pinTip = ml.popups[ml.popups.length - 1];
+  ok(pinTip && pinTip.open && pinTip.content.textContent.includes('Taquaraçatuba'), 'hovering a pin shows its description, not its name again', pinTip && pinTip.content.textContent);
+  fire(pin.el, 'pointerleave');
   const feats = trailCollection(map).features, file = trailFile('complexo-lagunar');
   ok(feats.length === routesOf(file).filter((r) => r.lines.some((l) => l.length > 1)).length && feats.length > 0, 'the lagoon complex trails reach the map', feats.length);
   const water = distJson('data/water/complexo-lagunar.json');
@@ -564,22 +574,22 @@ async function parana() {
   const map = ml.maps[0];
   const areas = distJson('data/areas.json');
   const pr = (areas.areas || areas).find((a) => a.id === 'parana');
-  ok(pr && pr.pin && pr.pin.name === 'Ilha do Mel' && !pr.pin.url, 'areas.json frames the Litoral do Paraná at Ilha do Mel', JSON.stringify(pr && pr.pin));
-  ok(map.opts.center[0] === -48.3107 && map.opts.center[1] === -25.5345 && map.opts.zoom === 9, 'the map enters at the island, the area centre', JSON.stringify(map.opts.center.concat(map.opts.zoom)));
+  ok(pr && pr.pin && pr.pin.name === 'Ilha do Mel' && !pr.pin.url, 'areas.json pins Paraná at Ilha do Mel', JSON.stringify(pr && pr.pin));
+  ok(map.opts.center[0] === -48.3107 && map.opts.center[1] === -25.5345 && map.opts.zoom === 7, 'the map enters at the island, then frames the state', JSON.stringify(map.opts.center.concat(map.opts.zoom)));
   const fits = map.calls.filter((c) => c.name === 'fitBounds');
-  ok(fits.length === 1 && JSON.stringify(fits[0].args[0]) === JSON.stringify([[-49.1, -25.95], [-48, -25.15]]) && fits[0].args[1].maxZoom === 12, 'the camera frames the coast and the Serra do Mar, and the beaches never refit it', JSON.stringify(fits));
+  ok(fits.length === 1 && JSON.stringify(fits[0].args[0]) === JSON.stringify([[-54.65, -26.75], [-47.98, -22.48]]) && fits[0].args[1].maxZoom === 12, 'the camera frames the whole state, and the beaches never refit it', JSON.stringify(fits));
   const pin = live().find((m) => cls(m.el).includes('pin'));
   ok(pin && $('.pin-label', pin.el).textContent === 'Ilha do Mel' && !pin.el.getAttribute('href'), 'the island is named on the map, with no link');
   const feats = trailCollection(map).features, file = trailFile('parana');
-  ok(file.bairros.length === 9 && routesOf(file).length === 67, 'the Paraná file groups 67 routes in nine landscapes', `${file.bairros.length} groups, ${routesOf(file).length} routes`);
+  ok(file.bairros.length === 17 && routesOf(file).length === 147, 'the Paraná file groups 147 routes in 17 regions', `${file.bairros.length} groups, ${routesOf(file).length} routes`);
   ok(feats.length === routesOf(file).filter((r) => r.lines.some((l) => l.length > 1)).length && feats.length > 0, 'the Paraná trails reach the map', feats.length);
   await openTrailPanel();
   ok($$('[data-trail]').length === routesOf(file).length && $('.trail-foot').textContent.includes('4118204'), 'the panel lists every route and the IBGE code');
   const water = distJson('data/water/parana.json');
-  ok(water.points.length === 59 && water.points.filter((p) => p.condition === 'improper').length === 19, "the area's own IAT/PR file carries 59 points, 19 of them improper", `${water.points.length} points, ${water.points.filter((p) => p.condition === 'improper').length} improper`);
+  ok(water.points.length === 76 && water.points.filter((p) => p.condition === 'improper').length === 22, "the area's own IAT/PR file carries 76 points, 22 of them improper", `${water.points.length} points, ${water.points.filter((p) => p.condition === 'improper').length} improper`);
   ok(cls($('main')).includes('layer-water') && $('button[data-layer=water]').getAttribute('aria-pressed') === 'true', 'the area opens on its own layer: water');
   const points = live().filter((m) => cls(m.el).includes('wpoint'));
-  ok(points.length === 59, "every IAT/PR point is drawn once, the board's twelve among the file's fifty-nine", points.length);
+  ok(points.length === 76, "every IAT/PR point is drawn once, the board's twelve among the file's seventy-six", points.length);
   ok($('#flowkeys').textContent.includes('IAT/PR'), 'the water key names the agency', $('#flowkeys').textContent);
   ok($('a[href=https://www.iat.pr.gov.br/Pagina/Balneabilidade]'), 'the footer links IAT/PR', $$('#footer a').map((a) => a.getAttribute('href')).join(','));
   const prOption = $$('#area option').find((o) => o.getAttribute('value') === 'parana');

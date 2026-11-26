@@ -74,6 +74,8 @@ function onMapClick(e) {
 
 function popupFor(m, node) {
   const tip = build(m.tip);
+  // A marker whose tip is empty (the pins, whose visible label already names them) opens nothing.
+  if (!tip.textContent && !tip.childElementCount) return () => {};
   let popup = null;
   const show = () => {
     if (popup) return;

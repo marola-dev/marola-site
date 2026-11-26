@@ -13,9 +13,9 @@ suite : Test
 suite =
     describe "config"
         [ describe "areaCode"
-            [ test "the Litoral do Paraná is PR" <|
+            [ test "Paraná is PR" <|
                 \_ ->
-                    Expect.equal (Config.areaCode "parana" "Litoral do Paraná") "PR"
+                    Expect.equal (Config.areaCode "parana" "Paraná") "PR"
             , test "the Complexo Lagunar is CL" <|
                 \_ ->
                     Expect.equal (Config.areaCode "complexo-lagunar" "Complexo Lagunar Sul Catarinense") "CL"

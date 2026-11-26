@@ -1,10 +1,11 @@
-module MapView exposing (beachBounds, drop, syncJson, waveIcon)
+module MapView exposing (beachBounds, drop, syncJson, waterPoints, waveIcon)
 
 {-| What the map shows, as one JSON text for `maplibre_ffi.mjs`: the beach dots, the water-sampling
 points, the visitor, the satellite layer and the trail visibility. The map keeps the last text of
 each part and redraws only the part that changed.
 -}
 
+import Area
 import Aspects
 import AspectsView
 import Band
@@ -17,6 +18,7 @@ import Model exposing (Model)
 import Raster
 import Tree exposing (Tree)
 import Water exposing (WaterPoint)
+import WaterFile
 
 
 {-| The west, south, east and north edges of the beaches, or none.
@@ -221,49 +223,77 @@ waterMarker model p =
     }
 
 
-{-| The area's pin, when it has one: the partner's place, named on the map. The area's camera
-enters there and the beaches' bounds do not pull it away (`Update.pinned`).
+{-| The area's pins: the partner's place and the named islands. Every label is in the page
+language; the area's camera enters the first and the beaches' bounds do not pull it away
+(`Update.pinned`).
 -}
 pinMarker : Model -> List Marker
 pinMarker model =
-    case model.area |> Maybe.andThen .pin of
-        Just pin ->
-            let
-                -- The partner's place is a link when the area names a URL: a visitor who wants to
-                -- know who keeps the map gets there in one click. A new tab, so an embed stays put.
-                link =
-                    case pin.url of
-                        Just url ->
-                            [ ( "href", url ), ( "target", "_blank" ), ( "rel", "noopener" ) ]
+    List.indexedMap (pinMarkerAt model) (areaPins model)
 
-                        Nothing ->
-                            []
-            in
-            [ { key = "pin"
-              , lon = pin.lon
-              , lat = pin.lat
-              , label = Just pin.name
-              , node =
-                    Tree.el
-                        (if List.isEmpty link then
-                            "div"
 
-                         else
-                            "a"
-                        )
-                        (( "class", "pin" ) :: ( "aria-label", pin.name ) :: link)
-                        [ Tree.el "span" [ ( "class", "pin-label" ) ] [ Tree.text pin.name ]
-                        , Tree.el "span" [ ( "class", "pin-dot" ) ] []
-                        ]
-              , tip = Tree.el "span" [] [ Tree.text pin.name ]
-              , tipClass = ""
-              , offset = 10
-              , click = Nothing
-              }
-            ]
+areaPins : Model -> List Area.Pin
+areaPins model =
+    case model.area of
+        Just area ->
+            (case area.pin of
+                Just pin ->
+                    [ pin ]
+
+                Nothing ->
+                    []
+            )
+                ++ area.pins
 
         Nothing ->
             []
+
+
+pinMarkerAt : Model -> Int -> Area.Pin -> Marker
+pinMarkerAt model index pin =
+    let
+        label =
+            Area.pinLabel model.loc pin
+
+        -- The partner's place is a link when the area names a URL: a visitor who wants to know who
+        -- keeps the map gets there in one click. A new tab, so an embed stays put.
+        link =
+            case pin.url of
+                Just url ->
+                    [ ( "href", url ), ( "target", "_blank" ), ( "rel", "noopener" ) ]
+
+                Nothing ->
+                    []
+    in
+    { key = "pin-" ++ String.fromInt index ++ "-" ++ pin.name
+    , lon = pin.lon
+    , lat = pin.lat
+    , label = Just label
+    , node =
+        Tree.el
+            (if List.isEmpty link then
+                "div"
+
+             else
+                "a"
+            )
+            (( "class", "pin" ) :: ( "aria-label", label ) :: link)
+            [ Tree.el "span" [ ( "class", "pin-label" ) ] [ Tree.text label ]
+            , Tree.el "span" [ ( "class", "pin-dot" ) ] []
+            ]
+
+    -- The visible label names it; the hover bubble describes it, so the two never read the same.
+    , tip =
+        case Area.pinDescription model.loc pin of
+            Just description ->
+                Tree.el "span" [ ( "class", "pin-tip" ) ] [ Tree.text description ]
+
+            Nothing ->
+                Tree.el "span" [] []
+    , tipClass = ""
+    , offset = 10
+    , click = Nothing
+    }
 
 
 selectedBeach : Model -> Maybe Beach
@@ -300,6 +330,24 @@ waterPoints model =
             else
                 []
            )
+        |> distinct
+
+
+{-| A sample is drawn once: the board may carry the same agency point on two beaches, and the
+file adds the points the board leaves out.
+-}
+distinct : List WaterPoint -> List WaterPoint
+distinct points =
+    List.foldl
+        (\p kept ->
+            if List.any (WaterFile.same p) kept then
+                kept
+
+            else
+                kept ++ [ p ]
+        )
+        []
+        points
 
 
 hereMarker : Model -> List Marker

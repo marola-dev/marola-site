@@ -127,7 +127,7 @@ browser search languages =
 
 areaNamed : String -> Area
 areaNamed id =
-    { id = id, name = "Area " ++ id, lat = -27.6, lon = -48.5, zoom = Nothing, bounds = Nothing, layer = Nothing, pin = Nothing }
+    { id = id, name = "Area " ++ id, lat = -27.6, lon = -48.5, zoom = Nothing, bounds = Nothing, layer = Nothing, pin = Nothing, pins = [] }
 
 
 {-| Feeds each message to `Update.update`, keeping the effects of the last one.

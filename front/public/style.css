@@ -619,6 +619,7 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
 .maplibregl-popup { font-size: var(--fs-13); letter-spacing: var(--tr-13); font-variant-numeric: tabular-nums; pointer-events: none; }
 .maplibregl-popup-content { padding: 8px 12px; color: var(--glass-ink); background: var(--glass); border: 1px solid var(--glass-line);
   border-radius: var(--r-panel); box-shadow: var(--shadow-float); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.maplibregl-popup .pin-tip { display: block; width: max-content; max-width: 18rem; white-space: normal; line-height: 1.4; text-transform: none; }
 .maplibregl-popup .unfit, .maplibregl-popup .improper { color: var(--glass-unfit); }
 .maplibregl-popup .facilities, .maplibregl-popup .past { color: var(--glass-muted); }
 .maplibregl-popup-tip { display: none; }
@@ -650,7 +651,7 @@ html:lang(pt) .addr:empty::before { content: "ainda não publicado"; }
 .pin .pin-label { position: absolute; left: 50%; bottom: 15px; transform: translateX(-50%); white-space: nowrap;
   padding: 3px 8px; border: 1px solid var(--glass-line); border-radius: var(--r-control);
   background: var(--glass); color: var(--glass-ink); font: 500 var(--fs-11)/1.2 var(--mono);
-  letter-spacing: var(--tr-mono); box-shadow: var(--shadow-float); }
+  letter-spacing: var(--tr-mono); box-shadow: var(--shadow-float); text-transform: none; }
 .pin .pin-dot { display: block; width: 14px; height: 14px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg);
   background: var(--accent); border: 2px solid var(--on-fill); box-shadow: 0 0 0 1.5px var(--bg); }
 /* on the water layer the sampling points are the data: the beach dots step back */

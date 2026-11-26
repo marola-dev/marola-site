@@ -2,13 +2,73 @@
   {
     "id": "floripa",
     "name": "Florianópolis",
-    "lat": -27.60,
+    "lat": -27.6,
     "lon": -48.48,
     "radius_km": 30,
     "beach_limit": 80,
     "tz": "America/Sao_Paulo",
     "tiles": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-    "tiles_attribution": "© OpenStreetMap contributors"
+    "tiles_attribution": "© OpenStreetMap contributors",
+    "zoom": 9,
+    "bounds": [
+      -48.62,
+      -27.85,
+      -48.3,
+      -27.24
+    ],
+    "pins": [
+      {
+        "name": "Ilha do Xavier",
+        "names": {
+          "pt-BR": "Ilha do Xavier",
+          "en": "Xavier Island",
+          "ja": "シャビエル島",
+          "zh-Hant": "沙維爾島"
+        },
+        "lat": -27.6099,
+        "lon": -48.3852,
+        "descriptions": {
+          "pt-BR": "Ilha rochosa em frente à Praia Mole, conhecida pelo mergulho.",
+          "en": "Rocky island off Praia Mole, known for diving.",
+          "ja": "プラヤ・モレ沖の岩の島。ダイビングで知られています。",
+          "zh-Hant": "莫萊海灘外海的岩石島，以潛水聞名。"
+        }
+      },
+      {
+        "name": "Ilha do Arvoredo",
+        "names": {
+          "pt-BR": "Ilha do Arvoredo",
+          "en": "Arvoredo Island",
+          "ja": "アルヴォレド島",
+          "zh-Hant": "阿爾沃雷多島"
+        },
+        "lat": -27.2848,
+        "lon": -48.3651,
+        "descriptions": {
+          "pt-BR": "Ilha da Reserva Biológica Marinha do Arvoredo, ao norte de Florianópolis.",
+          "en": "Island of the Arvoredo Marine Biological Reserve, north of Florianópolis.",
+          "ja": "フロリアノーポリス北方、アルヴォレド海洋生物保護区の島。",
+          "zh-Hant": "弗洛里亞諾波利斯北方的阿爾沃雷多海洋生物保護區島嶼。"
+        }
+      },
+      {
+        "name": "Ilha do Campeche",
+        "names": {
+          "pt-BR": "Ilha do Campeche",
+          "en": "Campeche Island",
+          "ja": "カンペシ島",
+          "zh-Hant": "坎佩切島"
+        },
+        "lat": -27.6953,
+        "lon": -48.4664,
+        "descriptions": {
+          "pt-BR": "Ilha com sítios arqueológicos e água transparente, a sudeste de Florianópolis.",
+          "en": "Island with archaeological sites and clear water, southeast of Florianópolis.",
+          "ja": "フロリアノーポリス南東の島。遺跡と透明な海があります。",
+          "zh-Hant": "弗洛里亞諾波利斯東南的島嶼，有考古遺址和清澈海水。"
+        }
+      }
+    ]
   },
   {
     "id": "rio",
@@ -43,18 +103,35 @@
     "tiles": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
     "tiles_attribution": "© OpenStreetMap contributors",
     "zoom": 9,
-    "bounds": [-48.95, -28.63, -48.61, -28.07],
+    "bounds": [
+      -48.95,
+      -28.63,
+      -48.61,
+      -28.07
+    ],
     "layer": "water",
     "pin": {
-      "name": "Canto das Águas",
+      "name": "Instituto Canto das Águas SC",
+      "names": {
+        "pt-BR": "Instituto Canto das Águas SC",
+        "en": "Canto das Águas Institute, SC",
+        "ja": "カント・ダス・アグアス研究所（SC）",
+        "zh-Hant": "坎托達斯阿瓜斯研究所（SC）"
+      },
       "lat": -28.3287,
       "lon": -48.7973,
-      "url": "https://cantodasaguas.org/"
+      "url": "https://cantodasaguas.org/",
+      "descriptions": {
+        "pt-BR": "Instituto de pesquisa e conservação das lagoas do Sul de Santa Catarina, em Taquaraçatuba, Imaruí.",
+        "en": "Research and conservation institute for the lagoons of southern Santa Catarina, in Taquaraçatuba, Imaruí.",
+        "ja": "サンタカタリーナ州南部の潟を研究・保全する研究所（タクアラサトゥバ、イマルイ）。",
+        "zh-Hant": "位於塔夸拉薩圖巴（Imaruí）的南聖卡塔琳娜潟湖研究與保育研究所。"
+      }
     }
   },
   {
     "id": "parana",
-    "name": "Litoral do Paraná",
+    "name": "Paraná",
     "lat": -25.5345,
     "lon": -48.3107,
     "radius_km": 70,
@@ -62,13 +139,30 @@
     "tz": "America/Sao_Paulo",
     "tiles": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
     "tiles_attribution": "© OpenStreetMap contributors",
-    "zoom": 9,
-    "bounds": [-49.10, -25.95, -48.00, -25.15],
+    "zoom": 7,
+    "bounds": [
+      -54.65,
+      -26.75,
+      -47.98,
+      -22.48
+    ],
     "layer": "water",
     "pin": {
       "name": "Ilha do Mel",
+      "names": {
+        "pt-BR": "Ilha do Mel",
+        "en": "Honey Island",
+        "ja": "蜂蜜島",
+        "zh-Hant": "蜂蜜島"
+      },
       "lat": -25.5345,
-      "lon": -48.3107
+      "lon": -48.3107,
+      "descriptions": {
+        "pt-BR": "Ilha do litoral do Paraná, com praias, o farol e a Reserva Ecológica.",
+        "en": "Island on the Paraná coast, with beaches, the lighthouse and the ecological reserve.",
+        "ja": "パラナ州沿岸の島。ビーチ、灯台、生態保護区があります。",
+        "zh-Hant": "巴拉那州海岸的島嶼，有海灘、燈塔和生態保護區。"
+      }
     }
   }
 ]

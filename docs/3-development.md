@@ -38,6 +38,14 @@ but a failure there only leaves them off the board. A list refreshes when its ar
 `radius_km` or `beach_limit` changes (that is the file name). OSM beaches change over years, not
 hours.
 
+Paraná's list is committed: `site/beaches/m25.5345_m48.3107_r70.0_n80.json` carries the 46 named
+beaches of the whole state, from the coast to Foz do Iguaçu and Primeiro de Maio. The area's centre
+and `radius_km` stay on the coast so its deep base-map box is the Litoral, not a 900 km square at
+zoom 15; the committed list is what puts the interior's beaches on the board. The file is a
+snapshot, not a radius query: a later `just beaches-refresh` for this key would replace it with a
+70 km list, so refresh it by hand with a state-wide Overpass `natural=beach` query or keep the
+committed one.
+
 `just site-build` builds the same boards on any machine in Brazil.
 
 ### Crawl files and metadata

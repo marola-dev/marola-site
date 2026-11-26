@@ -1,4 +1,4 @@
-module WaterFile exposing (WaterFile, decoder, spot)
+module WaterFile exposing (WaterFile, decoder, same, spot)
 
 {-| An area's own sampling points, from `data/water/<area>.json`: the official points the board
 never draws because the app matches them to a beach by name and an inland name (`lagoa …`,
@@ -36,3 +36,24 @@ or from this file.
 spot : WaterPoint -> ( Int, Int )
 spot p =
     ( round (p.lat * 100000), round (p.lon * 100000) )
+
+
+{-| The same sample, even when the board and the file round its coordinates differently. The
+agency's code is the identity only near the same place: IMA/SC reuses a code (`Ponto 04`) for
+different lagoons, and those points must stay apart. Two kilometres is wider than the gap between
+a beach and its sampling point, and narrower than the gap between two beaches.
+-}
+same : WaterPoint -> WaterPoint -> Bool
+same a b =
+    a
+        == b
+        || spot a
+        == spot b
+        || (not (String.isEmpty a.point)
+                && a.point
+                == b.point
+                && abs (a.lat - b.lat)
+                < 0.02
+                && abs (a.lon - b.lon)
+                < 0.02
+           )
