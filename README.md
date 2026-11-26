@@ -132,9 +132,11 @@ attribution and a slim strip for the language.
   Iguaçu and Primeiro de Maio; the interior is in the data and in the trail and water panels, not
   in the first frame.
 - Minas Gerais frames the state, with **Wberdiver** pinned in Uberlândia (linked to the dive
-  school's Instagram) and the **Nascente do Rio São Francisco** pinned in the Serra da Canastra.
-  The inland river and lake beaches are the board's; IGAM, the state's water agency, publishes
-  ambient water-quality data but no per-point bathing-water bulletin, so there is no water file.
+  school's Instagram), the **Nascente do Rio São Francisco** pinned in the Serra da Canastra and,
+  on the scuba layer, the **Ponte Velha do Rio Araguari** between Uberlândia and Araguari, whose
+  old Mogiana pillars sit under the Capim Branco reservoir. The inland river and lake beaches are
+  the board's; IGAM, the state's water agency, publishes ambient water-quality data but no
+  per-point bathing-water bulletin, so there is no water file.
 - Florianópolis frames the island and the three offshore islands, with the **Ilha do Xavier**, the
   **Ilha do Arvoredo** and the **Ilha do Campeche** pinned inside. Every pin's label and its hover
   description follow the page language (`pt-BR`, `en`, `ja`, `zh-Hant`). Xavier and Arvoredo are

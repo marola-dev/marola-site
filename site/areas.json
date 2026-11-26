@@ -275,6 +275,24 @@
           "ja": "サン・ロケ・デ・ミナスのセラ・ダ・カナストラ国立公園にある、サン・フランシスコ川の歴史的な源流。",
           "zh-Hant": "聖弗朗西斯科河的歷史源頭，位於聖羅克迪米納斯的卡納斯特拉山國家公園。"
         }
+      },
+      {
+        "name": "Ponte Velha do Rio Araguari",
+        "names": {
+          "pt-BR": "Ponte Velha do Rio Araguari",
+          "en": "Old Araguari River Bridge",
+          "ja": "アラグアリ川の旧橋",
+          "zh-Hant": "阿拉瓜里河舊橋"
+        },
+        "lat": -18.7594,
+        "lon": -48.2628,
+        "descriptions": {
+          "pt-BR": "os pilares da antiga ponte da Mogiana sobre o rio Araguari, entre Uberlândia e Araguari, submersos pela represa de Capim Branco; um ponto de mergulho do Wberdiver.",
+          "en": "the pillars of the old Mogiana bridge over the Araguari River, between Uberlândia and Araguari, submerged by the Capim Branco reservoir; a Wberdiver dive site.",
+          "ja": "ウベルランジアとアラグアリの間、アラグアリ川に架かっていたモジアナ鉄道の旧橋の橋脚。カピン・ブランコ貯水池に沈み、Wberdiver のダイビングポイントになっています。",
+          "zh-Hant": "烏貝蘭迪亞與阿拉瓜里之間、阿拉瓜里河上莫吉亞納鐵路舊橋的橋墩，淹沒於卡平布蘭科水庫，是 Wberdiver 的潛水點。"
+        },
+        "kind": "dive"
       }
     ]
   }

@@ -624,6 +624,10 @@ async function minasGerais() {
   ok(pin && $('.pin-label', pin.el).textContent === 'Wberdiver' && pin.el.getAttribute('href') === 'https://www.instagram.com/wberdiver/' && pin.el.getAttribute('target') === '_blank', 'the dive school is pinned and links to its Instagram', pin && pin.el.getAttribute('href'));
   const mgPins = live().filter((m) => cls(m.el).includes('pin'));
   ok(mgPins.length === 2 && $('.pin-label', mgPins[1].el).textContent === 'Nascente do Rio São Francisco' && !mgPins[1].el.getAttribute('href'), 'the source is pinned as well, with no link', mgPins.map((m) => $('.pin-label', m.el).textContent).join(', '));
+  ok(mg && mg.pins && mg.pins.some((p) => p.name === 'Ponte Velha do Rio Araguari' && p.kind === 'dive' && p.lat === -18.7594 && p.lon === -48.2628), 'areas.json also pins the old Araguari bridge as a dive site', JSON.stringify(mg && mg.pins));
+  await click($('button[data-toggle=scuba]'));
+  const mgDives = live().filter((m) => cls(m.el).includes('dive'));
+  ok(mgDives.length === 1 && $('.pin-label', mgDives[0].el).textContent === 'Ponte Velha do Rio Araguari', 'the scuba layer shows the old Araguari bridge', mgDives.map((m) => $('.pin-label', m.el).textContent).join(', '));
   const mgOption = $$('#area option').find((o) => o.getAttribute('value') === 'minas-gerais');
   ok(mgOption && mgOption.textContent === 'MG', 'the picker shows MG', JSON.stringify($$('#area option').map((o) => [o.getAttribute('value'), o.textContent])));
 }
