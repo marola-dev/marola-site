@@ -447,19 +447,20 @@ Fjalla name or numeral is what the eye lands on, Inter explains it, mono dates a
   phones, where the caption under a ramp hides; a key that is only its caption, such as bathing
   water, keeps it). A ramp 8 px high with its two ends in mono, or the fit and unfit dots, then a
   caption. On the bathing-water layer an area with its own `data/water/<area>.json` adds one caption:
-  the IMA/SC points, with the bulletin's day in the page's short date. On a phone it sits 72 px up,
-  above the attribution that MapLibre opens on load.
-- **Pin** (`.pin`): the area's partner place on the map, from `site/areas.json`'s `pin`: a 14 px
-  `--accent` teardrop with an `--on-fill` ring and the `--bg` rim of a marker, and the partner's name
+  the agency's points, its name from the file (`IMA/SC`, `IAT/PR`) and the bulletin's day in the
+  page's short date. On a phone it sits 72 px up, above the attribution that MapLibre opens on load.
+- **Pin** (`.pin`): the area's named place on the map, from `site/areas.json`'s `pin`: a 14 px
+  `--accent` teardrop with an `--on-fill` ring and the `--bg` rim of a marker, and the place's name
   in a glass pill 15 px above it, mono 11 px. With a `url` it is a link (the partner's site, in a
   new tab, `--accent` focus ring); without one it takes no tap. The Complexo Lagunar is pinned to
-  Canto das Águas, linked to the institute.
+  Canto das Águas, linked to the institute; the Litoral do Paraná to the Ilha do Mel, with no link.
 - **Embed** (`.embed`, `.embedbar`; ADR 0008): `/embed` is the map page with the top bar, the tool
   row and the footer off. A 36 px `--bg` strip with a `--line` bottom edge holds the language
   switch, right-aligned, and `.embed` fills the viewport so the map takes what is left. The map, the
   rail, the key, the panels, the card, the watermark, the attribution and the emergency button stay.
-  An area may name the layer it opens on (`site/areas.json`'s `layer`): the Complexo Lagunar opens on
-  bathing water, so the IMA/SC points at the lagoons are the first thing a visitor sees.
+  An area may name the layer it opens on (`site/areas.json`'s `layer`): the Complexo Lagunar and the
+  Litoral do Paraná open on bathing water, so their agencies' points are the first thing a visitor
+  sees.
 - **Flow layer** (wind and waves, `flow_layer_ffi.mjs`): a WebGL layer. The field is drawn at 65%
   opacity, so the light base map shows through, and particles run over it. Its edge fades. Under
   `prefers-reduced-motion: reduce` the particles are drawn once as still streaks. It is built, but

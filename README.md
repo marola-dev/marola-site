@@ -81,8 +81,9 @@ drawn with the umbrella's Archify pin and `scripts/figure.sh` (in a marola check
 - **Water points.** `front/public/data/water/<area>.json` holds an area's official sampling points
   when the board cannot draw them: the app matches a point to a beach by name and never falls back
   to distance for an inland name, so a lagoon point reaches no beach. The page draws the file's
-  points on the water layer, once per place. Only the Complexo Lagunar has one (IMA/SC, beaches and
-  lagoons). See [the reference](docs/4-reference.md#the-areas-own-water-file).
+  points on the water layer, once per place. The Complexo Lagunar (IMA/SC, beaches and lagoons) and
+  the Litoral do Paraná (IAT/PR, the coast and its rivers) have one. See
+  [the reference](docs/4-reference.md#the-areas-own-water-file).
 - **Studies.** The server keeps the accounts, the API keys, the study rows and the reports in SQLite
   (`MAROLA_DB`) and the PDFs in a folder (`MAROLA_STUDIES`). The study pages and the Atom feed are
   rendered by the server from those rows.
@@ -110,7 +111,8 @@ attribution and a slim strip for the language.
 ```
 
 - `area` is an id from [`site/areas.json`](site/areas.json) (`floripa`, `rio`, `salvador`,
-  `complexo-lagunar`). With no `day`, the embed shows today's board; `day=YYYY-MM-DD` pins a past one.
+  `complexo-lagunar`, `parana`). With no `day`, the embed shows today's board; `day=YYYY-MM-DD` pins a
+  past one.
 - `layer` picks the layer on show (`water`, `wind`, `waves`, …), `lang` the language (`pt-BR`, `en`,
   `ja`, `zh-Hant`), and `beaches=0` / `trails=0` start with those hidden.
 - A bounded area frames its own waters: the Complexo Lagunar opens on the lagoons (Imaruí, Mirim,
@@ -119,6 +121,9 @@ attribution and a slim strip for the language.
   stays there instead of fitting all the beaches. That is the first
   embed: the institute's [ecomonitoring platform](https://cantodasaguas.org/) shows the lagoon on
   today's date, in Portuguese.
+- The Litoral do Paraná frames the coast and the Serra do Mar (Guaratuba to Superagui, the bay and
+  the Pico Paraná), with the **Ilha do Mel** pinned inside, opens on the bathing-water layer, and
+  draws IAT/PR's 59 points from the Ilha do Mel to the rivers of Morretes and Antonina.
 - The server frames `/embed` only for the origins in `MAROLA_EMBED_FROM`, one per line, a file on the
   host ([hosting](docs/5-hosting.md#variables)). Every other page, and an empty list, keeps
   `frame-ancestors 'none'`: a partner asks to be added, and nobody else can frame marola. No origin

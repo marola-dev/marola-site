@@ -1,0 +1,599 @@
+{
+ "schema": 1,
+ "area": "parana",
+ "source": "IAT/PR",
+ "sampled_on": "2026-02-09",
+ "note": "Pontos de coleta do IAT/PR no Litoral do Paraná, copiados do serviço Balneabilidade Atual (geopr.iat.pr.gov.br) em 26 de novembro de 2026. A última semana completa do serviço é a 9ª do boletim da temporada 2025/2026: amostras de 12 de janeiro a 9 de fevereiro de 2026 e boletim da semana de 13 a 19 de fevereiro. O IAT usa E. coli como indicador e não publica a contagem no boletim; o serviço traz os 59 pontos do litoral, inclusive os 10 pontos de foz de rio que o boletim impresso não lista. O primeiro boletim da temporada 2026/2027 sai em 18 de dezembro de 2026 e substitui este arquivo; ele é uma cópia, não dado ao vivo.",
+ "points": [
+  {
+   "point": "AT02",
+   "location": "Rio do Nunes",
+   "lat": -25.34642,
+   "lon": -48.76812,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "MR01",
+   "location": "Rio Nhundiaquara",
+   "lat": -25.43335,
+   "lon": -48.87338,
+   "condition": "improper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "AT01",
+   "location": "Ponta da Pita",
+   "lat": -25.45125,
+   "lon": -48.68476,
+   "condition": "improper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "MR03",
+   "location": "Rio Nhundiaquara",
+   "lat": -25.47542,
+   "lon": -48.83303,
+   "condition": "improper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "MR04",
+   "location": "Rio Marumbi",
+   "lat": -25.48722,
+   "lon": -48.82728,
+   "condition": "improper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "IM01",
+   "location": "Farol (Praia do Farol)",
+   "lat": -25.54039,
+   "lon": -48.30247,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "IM09",
+   "location": "Farol (Praia de Fora)",
+   "lat": -25.54188,
+   "lon": -48.29257,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "IM11",
+   "location": "Farol (Praia Grande)",
+   "lat": -25.54692,
+   "lon": -48.29421,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "IM10",
+   "location": "Encantadas (Baía)",
+   "lat": -25.56418,
+   "lon": -48.31719,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "IM05",
+   "location": "Encantadas (Baía)",
+   "lat": -25.56724,
+   "lon": -48.31558,
+   "condition": "improper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "IM07",
+   "location": "Encantadas (Mar de Fora)",
+   "lat": -25.57163,
+   "lon": -48.3069,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "PS04",
+   "location": "Pontal do Sul",
+   "lat": -25.57678,
+   "lon": -48.34889,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "AS01",
+   "location": "Balneário Atami Sul",
+   "lat": -25.59934,
+   "lon": -48.38557,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "SH02",
+   "location": "Balneário Shangri-lá",
+   "lat": -25.62638,
+   "lon": -48.41862,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "SH01",
+   "location": "Balneário Shangri-lá",
+   "lat": -25.62955,
+   "lon": -48.42126,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "SH03",
+   "location": "Balneário Shangri-lá",
+   "lat": -25.63379,
+   "lon": -48.42465,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "A18",
+   "location": "Balneário Olho d'Água",
+   "lat": -25.63859,
+   "lon": -48.42876,
+   "condition": "improper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "PS01",
+   "location": "Balneário Olho d'Água",
+   "lat": -25.63997,
+   "lon": -48.43005,
+   "condition": "improper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "IP02",
+   "location": "Balneário Ipanema",
+   "lat": -25.65535,
+   "lon": -48.44097,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "IP01",
+   "location": "Balneário Ipanema",
+   "lat": -25.65715,
+   "lon": -48.44202,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "ST02",
+   "location": "Balneário Santa Terezinha",
+   "lat": -25.6777,
+   "lon": -48.45491,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "LE03",
+   "location": "Praia de Leste",
+   "lat": -25.69929,
+   "lon": -48.46894,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "LE01",
+   "location": "Praia de Leste",
+   "lat": -25.70402,
+   "lon": -48.47182,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "GT02",
+   "location": "Balneário Gaivotas",
+   "lat": -25.72058,
+   "lon": -48.48179,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "CL01",
+   "location": "Balneário Costa Azul",
+   "lat": -25.73351,
+   "lon": -48.49005,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "MS12",
+   "location": "Balneário Ipacaray",
+   "lat": -25.75525,
+   "lon": -48.50266,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "SL03",
+   "location": "Balneário Solymar",
+   "lat": -25.76795,
+   "lon": -48.5096,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "FL01",
+   "location": "Balneário Flórida",
+   "lat": -25.77949,
+   "lon": -48.51546,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "MS17",
+   "location": "Balneário Riviera",
+   "lat": -25.79028,
+   "lon": -48.52109,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "MS15",
+   "location": "Balneário Riviera",
+   "lat": -25.79752,
+   "lon": -48.52482,
+   "condition": "improper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "MS10",
+   "location": "Balneário Flamingo",
+   "lat": -25.80956,
+   "lon": -48.53091,
+   "condition": "improper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "NM02",
+   "location": "Balneário Flamingo",
+   "lat": -25.81252,
+   "lon": -48.53197,
+   "condition": "improper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "MS05",
+   "location": "Matinhos Praia Central",
+   "lat": -25.81659,
+   "lon": -48.53177,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "MS06",
+   "location": "Matinhos (Direita do Morro)",
+   "lat": -25.82492,
+   "lon": -48.53277,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "CN05",
+   "location": "Caiobá (Praia Brava)",
+   "lat": -25.83279,
+   "lon": -48.53597,
+   "condition": "improper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "CA14",
+   "location": "Caiobá (Praia Brava)",
+   "lat": -25.83517,
+   "lon": -48.53646,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "CA13",
+   "location": "Caiobá (Praia Brava)",
+   "lat": -25.83702,
+   "lon": -48.53681,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "CA05",
+   "location": "Caiobá (Praia Brava)",
+   "lat": -25.84247,
+   "lon": -48.53774,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "CA10",
+   "location": "Caiobá (Praia Mansa)",
+   "lat": -25.84786,
+   "lon": -48.54173,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "CA15",
+   "location": "Prainha",
+   "lat": -25.85348,
+   "lon": -48.55947,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "GA48",
+   "location": "Caieiras",
+   "lat": -25.86292,
+   "lon": -48.56529,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "GA47",
+   "location": "Caieiras",
+   "lat": -25.86679,
+   "lon": -48.5632,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "GA06",
+   "location": "Guaratuba",
+   "lat": -25.87265,
+   "lon": -48.56441,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "GA07",
+   "location": "Guaratuba",
+   "lat": -25.87803,
+   "lon": -48.56704,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "GA09",
+   "location": "Guaratuba",
+   "lat": -25.88024,
+   "lon": -48.56806,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "GA23",
+   "location": "Guaratuba",
+   "lat": -25.88511,
+   "lon": -48.56829,
+   "condition": "improper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "GN13",
+   "location": "Guaratuba",
+   "lat": -25.88796,
+   "lon": -48.5672,
+   "condition": "improper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "GA05",
+   "location": "Guaratuba",
+   "lat": -25.88943,
+   "lon": -48.56308,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "GA20",
+   "location": "Balneário Brejatuba",
+   "lat": -25.89261,
+   "lon": -48.56216,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "GN6",
+   "location": "Balneário Brejatuba",
+   "lat": -25.89721,
+   "lon": -48.56453,
+   "condition": "improper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "GN5",
+   "location": "Balneário Brejatuba",
+   "lat": -25.89981,
+   "lon": -48.56613,
+   "condition": "improper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "GA08",
+   "location": "Balneário Brejatuba",
+   "lat": -25.904,
+   "lon": -48.56844,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "GN4",
+   "location": "Balneário Brejatuba",
+   "lat": -25.91093,
+   "lon": -48.572,
+   "condition": "improper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "GA22",
+   "location": "Balneário Nereidas/Eliane",
+   "lat": -25.91288,
+   "lon": -48.57287,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "GN3",
+   "location": "Balneário Nereidas/Eliane",
+   "lat": -25.92541,
+   "lon": -48.57855,
+   "condition": "improper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "GA18",
+   "location": "Balneário Nereidas/Eliane",
+   "lat": -25.93065,
+   "lon": -48.58098,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "GN2",
+   "location": "Balneário Nereidas/Eliane",
+   "lat": -25.93269,
+   "lon": -48.5817,
+   "condition": "improper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "GA19",
+   "location": "Barra do Saí",
+   "lat": -25.96744,
+   "lon": -48.59412,
+   "condition": "proper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  },
+  {
+   "point": "GN1",
+   "location": "Barra do Saí",
+   "lat": -25.97484,
+   "lon": -48.59518,
+   "condition": "improper",
+   "sampled_on": "2026-02-09",
+   "enterococci_per_100ml": null,
+   "rain": null
+  }
+ ]
+}

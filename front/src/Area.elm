@@ -2,7 +2,8 @@ module Area exposing (Area, Bounds, Pin, decoder, listDecoder)
 
 {-| An area of the picker: `data/areas.json` carries more, the page reads these. `bounds`, `zoom`
 and `pin` are the area's own: what the camera frames, where it enters without bounds, the layer it
-opens on, and the partner place it carries (the Complexo Lagunar frames its lagoons and pins Canto das Águas).
+opens on, and the named place it carries (the Complexo Lagunar frames its lagoons and pins Canto das
+Águas; the Litoral do Paraná pins the Ilha do Mel).
 -}
 
 import Dec exposing (required)

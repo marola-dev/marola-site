@@ -231,7 +231,9 @@ waterFileKey model =
                 [ Html.text
                     (Words.ta model
                         "flow.key_water_file"
-                        [ ( "when", Icu.Text (DateFmt.short file.sampledOn model.loc.language) ) ]
+                        [ ( "source", Icu.Text file.source )
+                        , ( "when", Icu.Text (DateFmt.short file.sampledOn model.loc.language) )
+                        ]
                     )
                 ]
             ]

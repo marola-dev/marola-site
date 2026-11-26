@@ -560,6 +560,32 @@ async function complexoLagunar() {
   ok(!cls($('main')).includes('layer-water') && live().filter((m) => cls(m.el).includes('wpoint')).length === 0, 'pressing the layer again is the plain map');
 }
 
+async function parana() {
+  const map = ml.maps[0];
+  const areas = distJson('data/areas.json');
+  const pr = (areas.areas || areas).find((a) => a.id === 'parana');
+  ok(pr && pr.pin && pr.pin.name === 'Ilha do Mel' && !pr.pin.url, 'areas.json frames the Litoral do Paraná at Ilha do Mel', JSON.stringify(pr && pr.pin));
+  ok(map.opts.center[0] === -48.3107 && map.opts.center[1] === -25.5345 && map.opts.zoom === 9, 'the map enters at the island, the area centre', JSON.stringify(map.opts.center.concat(map.opts.zoom)));
+  const fits = map.calls.filter((c) => c.name === 'fitBounds');
+  ok(fits.length === 1 && JSON.stringify(fits[0].args[0]) === JSON.stringify([[-49.1, -25.95], [-48, -25.15]]) && fits[0].args[1].maxZoom === 12, 'the camera frames the coast and the Serra do Mar, and the beaches never refit it', JSON.stringify(fits));
+  const pin = live().find((m) => cls(m.el).includes('pin'));
+  ok(pin && $('.pin-label', pin.el).textContent === 'Ilha do Mel' && !pin.el.getAttribute('href'), 'the island is named on the map, with no link');
+  const feats = trailCollection(map).features, file = trailFile('parana');
+  ok(file.bairros.length === 9 && routesOf(file).length === 67, 'the Paraná file groups 67 routes in nine landscapes', `${file.bairros.length} groups, ${routesOf(file).length} routes`);
+  ok(feats.length === routesOf(file).filter((r) => r.lines.some((l) => l.length > 1)).length && feats.length > 0, 'the Paraná trails reach the map', feats.length);
+  await openTrailPanel();
+  ok($$('[data-trail]').length === routesOf(file).length && $('.trail-foot').textContent.includes('4118204'), 'the panel lists every route and the IBGE code');
+  const water = distJson('data/water/parana.json');
+  ok(water.points.length === 59 && water.points.filter((p) => p.condition === 'improper').length === 19, "the area's own IAT/PR file carries 59 points, 19 of them improper", `${water.points.length} points, ${water.points.filter((p) => p.condition === 'improper').length} improper`);
+  ok(cls($('main')).includes('layer-water') && $('button[data-layer=water]').getAttribute('aria-pressed') === 'true', 'the area opens on its own layer: water');
+  const points = live().filter((m) => cls(m.el).includes('wpoint'));
+  ok(points.length === 59, "every IAT/PR point is drawn once, the board's twelve among the file's fifty-nine", points.length);
+  ok($('#flowkeys').textContent.includes('IAT/PR'), 'the water key names the agency', $('#flowkeys').textContent);
+  ok($('a[href=https://www.iat.pr.gov.br/Pagina/Balneabilidade]'), 'the footer links IAT/PR', $$('#footer a').map((a) => a.getAttribute('href')).join(','));
+  const prOption = $$('#area option').find((o) => o.getAttribute('value') === 'parana');
+  ok(prOption && prOption.textContent === 'PR', 'the picker shows PR', JSON.stringify($$('#area option').map((o) => [o.getAttribute('value'), o.textContent])));
+}
+
 async function playlist() {
   const embed = 'https://open.spotify.com/embed/playlist/2hsuqvhCouatM8DtmKKl7U?theme=0';
   const btn = () => document.querySelector('[data-toggle=playlist]');
@@ -594,6 +620,7 @@ const SCENARIOS = {
   'near-denied': { search: '?area=floripa', run: nearDenied },
   embed: { search: '?embed=1&area=complexo-lagunar', run: embed },
   'complexo-lagunar': { search: '?area=complexo-lagunar', run: complexoLagunar },
+  parana: { search: '?area=parana', run: parana },
   playlist: { search: '?area=floripa', run: playlist },
 };
 
