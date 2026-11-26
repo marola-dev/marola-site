@@ -31,6 +31,7 @@ HEADER_CSS = """
 .archify-head a{color:#9AA3B2;text-decoration:none}
 .archify-head a:hover{color:#EDEFF3}
 .toolbar,.diagram-nav,.focus-chip,.archify-toast{display:none!important}
+@media (max-width:700px){.diagram-container{overflow-x:auto}.diagram-container svg{min-width:900px}}
 """
 
 
