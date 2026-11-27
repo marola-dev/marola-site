@@ -56,6 +56,17 @@ local =
 localAvatars :: Map.Map Text Text
 localAvatars = Map.insert "barbara-almeida" "barbara-almeida.jpg" avatars
 
+-- Contributors and advisors, PV last in the file: the page puts him first among the advisors.
+sections :: Text
+sections =
+  "# Members\n\n| Name | Affiliation | ORCID | GitHub | Website | First commit | marola role | GitHub role |\n"
+    <> "|---|---|---|---|---|---|---|---|\n"
+    <> "| Hoffmann, Matheus | | | [h0ffmann](https://github.com/h0ffmann) | | | contributor | owner |\n"
+    <> "| Morais, Jonathan | | | | | | contributor | contributor |\n"
+    <> "| Kuzniecow, Yuri | | | | | | advisor | |\n"
+    <> "| Nader, Joao Victor | | | | | | advisor | |\n"
+    <> "| Guimarães, Pedro Veras | | | [pvguima](https://github.com/pvguima) | | | advisor | |\n"
+
 -- The ## Non-human table (MEMBERS.md, 25 November 2026), under the people's table.
 entityTable :: Text
 entityTable =
@@ -127,6 +138,20 @@ spec env = describe "members" $ do
     count "<article class=\"about-body\" lang=\"en\">" (page En good) `shouldBe` 1
   it "'Family, Given' shows as Given Family" $
     page En good `shouldSatisfy` has "<span class=\"member-name\">Matheus Hoffmann</span>"
+  it "contributors and advisors, the advisors PV, Yuri, then the MEMBERS.md order" $ do
+    let html = page En sections
+        adv = fst (T.breakOn "</section>" (snd (T.breakOn "<h2>advisors</h2>" html)))
+        lofi = [T.takeWhile (/= '<') r | r <- occurrences "<span class=\"member-lofi-name\">" adv]
+    html `shouldSatisfy` has "<h2>contributors</h2>"
+    html `shouldSatisfy` has "<h2>advisors</h2>"
+    lofi `shouldBe` ["Pedro Veras Guimarães", "Yuri Kuzniecow", "Joao Victor Nader"]
+  it "the views are a radio switch over both sections" $ do
+    let html = page En sections
+    html `shouldSatisfy` has "id=\"members-lofi\""
+    html `shouldSatisfy` has "id=\"members-hifi\""
+    html `shouldSatisfy` has "<ul class=\"members-lofi\">"
+    html `shouldSatisfy` has "<ul class=\"members\">"
+    html `shouldSatisfy` has "aria-label=\"members view\""
   it "a compound family name" $
     page En good `shouldSatisfy` has "<span class=\"member-name\">Rob Kler Soares da Silva Junior</span>"
   it "a member with no GitHub login keeps initials (first and last word)" $ do
@@ -137,8 +162,12 @@ spec env = describe "members" $ do
     html `shouldSatisfy` has "<img class=\"member-mark\" src=\"/img/members/barbara-almeida.jpg\" width=\"48\" height=\"48\" alt=\"\""
     html `shouldNotSatisfy` has "aria-hidden=\"true\">BA</span>"
     Members.checkAvatars localAvatars (parsed local) [] `shouldBe` Right ()
-  it "a local photo for a member with a GitHub login is a stray" $
-    isLeft (Members.checkAvatars (Map.insert "matheus-hoffmann" "matheus-hoffmann.jpg" avatars) (parsed full) []) `shouldBe` True
+  it "a local photo wins over the GitHub avatar" $ do
+    let over = Map.insert "matheus-hoffmann" "matheus-hoffmann.jpg" avatars
+    Members.checkAvatars over (parsed full) [] `shouldBe` Right ()
+    let html = toHtml (Members.article En over (parsed full) [])
+    html `shouldSatisfy` has "<img class=\"member-mark\" src=\"/img/members/matheus-hoffmann.jpg\""
+    html `shouldNotSatisfy` has "\"/img/members/h0ffmann.png\""
   it "ORCID and GitHub links" $ do
     let html = page En good
     html `shouldSatisfy` has "<a href=\"https://orcid.org/0009-0009-1056-7661\">ORCID 0009-0009-1056-7661</a>"

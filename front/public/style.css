@@ -523,6 +523,19 @@ img.member-mark { display: block; object-fit: cover; border: 1px solid var(--lin
 .member-aff, .member-state { font-size: var(--fs-14); line-height: 1.45; letter-spacing: var(--tr-14); color: var(--muted); }
 .member-role, .member-links { color: var(--muted); font: 400 var(--fs-11)/1.6 var(--mono); letter-spacing: var(--tr-mono); }
 .member-links { display: flex; flex-wrap: wrap; gap: 0 12px; margin-top: 4px; font-variant-numeric: tabular-nums; }
+/* members.html: contributors and advisors, each in the lo-fi lines and the hi-fi cards; the radio
+   inputs switch both sections at once, with no script. */
+.members-view-input { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+.members-view-switch { display: inline-flex; gap: 6px; margin: 0 0 24px; }
+.members-view-switch label { cursor: pointer; padding: 5px 12px; border: 1px solid var(--line-strong); border-radius: var(--r-control); font: 400 var(--fs-11)/1.6 var(--mono); letter-spacing: var(--tr-mono); color: var(--muted); }
+#members-lofi:checked ~ .members-view-switch label[for=members-lofi],
+#members-hifi:checked ~ .members-view-switch label[for=members-hifi] { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+#members-hifi:checked ~ .members-group .members-lofi { display: none; }
+#members-lofi:checked ~ .members-group .members { display: none; }
+.about-body .members-group { margin: 0 0 36px; }
+.about-body .members-group h2 { margin: 0 0 14px; padding-top: 18px; border-top: 1px solid var(--line); font: 400 var(--fs-20)/1.2 var(--display); letter-spacing: var(--tr-fjalla); }
+.about-body .members-lofi { list-style: none; margin: 0; padding: 0; }
+.members-lofi li { padding: 9px 0; border-bottom: 1px solid var(--line); font: 400 var(--fs-17)/1.5 var(--display); letter-spacing: var(--tr-fjalla); }
 
 /* /studies: one card per study */
 .about-body .studies { list-style: none; margin: 0 0 24px; padding: 0; display: grid; gap: 12px; }
