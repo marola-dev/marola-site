@@ -523,6 +523,11 @@ img.member-mark { display: block; object-fit: cover; border: 1px solid var(--lin
 .member-aff, .member-state { font-size: var(--fs-14); line-height: 1.45; letter-spacing: var(--tr-14); color: var(--muted); }
 .member-role, .member-links { color: var(--muted); font: 400 var(--fs-11)/1.6 var(--mono); letter-spacing: var(--tr-mono); }
 .member-links { display: flex; flex-wrap: wrap; gap: 0 12px; margin-top: 4px; font-variant-numeric: tabular-nums; }
+/* members.html, the short display: the names only, above the cards, each a link to its card */
+.about-body .members-short { list-style: none; display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 0 0 28px; padding: 0; }
+.members-short a { color: var(--ink); text-decoration: none; font: 400 var(--fs-14)/1.6 var(--mono); letter-spacing: var(--tr-mono); }
+.members-short a:hover { color: var(--accent); text-decoration: underline; }
+.about-body .member { scroll-margin-top: 90px; }
 
 /* /studies: one card per study */
 .about-body .studies { list-style: none; margin: 0 0 24px; padding: 0; display: grid; gap: 12px; }

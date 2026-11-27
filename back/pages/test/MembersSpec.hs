@@ -127,6 +127,18 @@ spec env = describe "members" $ do
     count "<article class=\"about-body\" lang=\"en\">" (page En good) `shouldBe` 1
   it "'Family, Given' shows as Given Family" $
     page En good `shouldSatisfy` has "<span class=\"member-name\">Matheus Hoffmann</span>"
+  it "the short display lists the names only, each linking to its card" $ do
+    let html = page En good
+        short = fst (T.breakOn "</ul>" (snd (T.breakOn "<ul class=\"members-short\">" html)))
+    html
+      `shouldSatisfy` has "<nav aria-label=\"member index\"><ul class=\"members-short\">"
+    short
+      `shouldSatisfy` has "<li><a href=\"#member-matheus-hoffmann\">Matheus Hoffmann</a></li>"
+    short
+      `shouldSatisfy` has "<li><a href=\"#member-rob-kler-soares-da-silva-junior\">Rob Kler Soares da Silva Junior</a></li>"
+    short `shouldNotSatisfy` has "ORCID"
+    short `shouldNotSatisfy` has "https://"
+    html `shouldSatisfy` has "<li class=\"member\" id=\"member-matheus-hoffmann\">"
   it "a compound family name" $
     page En good `shouldSatisfy` has "<span class=\"member-name\">Rob Kler Soares da Silva Junior</span>"
   it "a member with no GitHub login keeps initials (first and last word)" $ do
