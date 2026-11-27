@@ -25,7 +25,7 @@ import Crypto.Hash.SHA1 qualified as SHA1
 import Data.ByteString qualified as B
 import Data.ByteString.Char8 qualified as BC
 import Data.Char (isAsciiLower, isAsciiUpper, isDigit, toUpper)
-import Data.List (sort)
+import Data.List (partition, sort, sortOn)
 import Data.Map.Strict (Map)
 import Data.Map.Strict qualified as Map
 import Data.Maybe (catMaybes, fromMaybe, isJust)
@@ -418,8 +418,12 @@ checkAvatars avatars members entities =
 data Copy = Copy
   { cTitle :: Text,
     cLede :: [Node],
-    -- | The invisible name of the short index of names above the cards.
-    cShort :: Text,
+    cContributors :: Text,
+    cAdvisors :: Text,
+    -- | The invisible name of the two-view switch.
+    cView :: Text,
+    cLofi :: Text,
+    cHifi :: Text,
     cCommit :: Text -> Text,
     cRole :: Text -> Text,
     cGitHubRole :: Text -> Text,
@@ -440,7 +444,11 @@ copy PtBr =
           a zenodo [H.text "registro do marola no Zenodo"],
           H.text "."
         ],
-      cShort = "índice de membros",
+      cContributors = "contribuidores",
+      cAdvisors = "conselheiros",
+      cView = "visão dos membros",
+      cLofi = "lo-fi",
+      cHifi = "hi-fi",
       cCommit = ("primeiro commit em " <>),
       cRole = ("no marola: " <>),
       cGitHubRole = ("no GitHub: " <>),
@@ -460,7 +468,11 @@ copy En =
           a zenodo [H.text "marola record on Zenodo"],
           H.text "."
         ],
-      cShort = "member index",
+      cContributors = "contributors",
+      cAdvisors = "advisors",
+      cView = "members view",
+      cLofi = "lo-fi",
+      cHifi = "hi-fi",
       cCommit = ("first commit on " <>),
       cRole = ("marola: " <>),
       cGitHubRole = ("GitHub: " <>),
@@ -480,7 +492,11 @@ copy Ja =
           a zenodo [H.text "marolaのZenodo登録"],
           H.text " の著者でもあります。"
         ],
-      cShort = "メンバー一覧",
+      cContributors = "コントリビューター",
+      cAdvisors = "アドバイザー",
+      cView = "メンバー表示",
+      cLofi = "lo-fi",
+      cHifi = "hi-fi",
       cCommit = ("最初のコミット: " <>),
       cRole = ("marolaでの役割: " <>),
       cGitHubRole = ("GitHubでの役割: " <>),
@@ -500,7 +516,11 @@ copy ZhHant =
           a zenodo [H.text "marola 的 Zenodo 登錄"],
           H.text " 的作者。"
         ],
-      cShort = "成員索引",
+      cContributors = "貢獻者",
+      cAdvisors = "顧問",
+      cView = "成員檢視",
+      cLofi = "lo-fi",
+      cHifi = "hi-fi",
       cCommit = ("首次提交於 " <>),
       cRole = ("marola 的角色: " <>),
       cGitHubRole = ("GitHub 的角色: " <>),
@@ -535,18 +555,16 @@ joined :: [Node] -> [Node]
 joined [] = []
 joined (x : xs) = x : concatMap (\n -> [H.text " ", n]) xs
 
--- | The short display: the names only, in the file's order, each linking to its card below.
-shortItem :: Member -> Node
-shortItem m =
-  H.el "li" [] [a ("#member-" <> slug (name m)) [H.text (name m)]]
+-- | The lo-fi line: the name alone, one line per person.
+lofiItem :: Member -> Node
+lofiItem m =
+  H.el "li" [H.cls "member-lofi"] [span' "member-lofi-name" [H.text (name m)]]
 
 item :: Copy -> Map Text Text -> Member -> Node
 item c avatars m =
   H.el
     "li"
-    [ H.cls "member",
-      H.attr "id" ("member-" <> slug (name m))
-    ]
+    [H.cls "member"]
     ( [mark, span' "member-name" [H.text (name m)]]
         <> [span' "member-aff" [H.text (affiliation m)] | affiliation m /= ""]
         <> [span' "member-state" [H.text (state m)] | state m /= ""]
@@ -590,10 +608,67 @@ entityItem avatars e =
           a ("https://github.com/" <> entityGitHub e) [H.text ("@" <> entityGitHub e)]
         ]
 
+-- | One section of the list, in both views: the lo-fi lines and the hi-fi cards. The stylesheet
+-- shows one of them, never both.
+memberSection :: Copy -> Map Text Text -> Text -> [Member] -> Node
+memberSection c avatars title ms =
+  H.el
+    "section"
+    [H.cls "members-group"]
+    ( [H.el "h2" [] [H.text title]]
+        <> [H.el "ul" [H.cls "members-lofi"] (map lofiItem ms) | not (null ms)]
+        <> [H.el "ul" [H.cls "members"] (map (item c avatars) ms) | not (null ms)]
+    )
+
+-- | Advising order: PV first, Yuri second, then the rest in MEMBERS.md's order (a stable sort).
+advisorRank :: Member -> Int
+advisorRank m = case slug (name m) of
+  "pedro-veras-guimaraes" -> 0
+  "yuri-kuzniecow" -> 1
+  _ -> 2
+
+-- | Contributors in MEMBERS.md's order; advisors by 'advisorRank'.
+groups :: [Member] -> ([Member], [Member])
+groups members =
+  let (advisors, contributors) = partition ((== "advisor") . marolaRole) members
+   in (contributors, sortOn advisorRank advisors)
+
+-- | The two mutually exclusive views, as a radio group: no script, the stylesheet does the switching.
+viewSwitch :: Copy -> [Node]
+viewSwitch c =
+  [ H.el
+      "input"
+      [ H.cls "members-view-input",
+        H.attr "type" "radio",
+        H.attr "name" "members-view",
+        H.attr "id" "members-lofi",
+        H.attr "checked" ""
+      ]
+      [],
+    H.el
+      "input"
+      [ H.cls "members-view-input",
+        H.attr "type" "radio",
+        H.attr "name" "members-view",
+        H.attr "id" "members-hifi"
+      ]
+      [],
+    H.el
+      "div"
+      [H.cls "members-view-switch", H.attr "role" "group", H.attr "aria-label" (cView c)]
+      [ H.el "label" [H.attr "for" "members-lofi"] [H.text (cLofi c)],
+        H.el "label" [H.attr "for" "members-hifi"] [H.text (cHifi c)]
+      ]
+  ]
+
 -- | The @<article>@ of the page in one language.
 article :: Language -> Map Text Text -> [Member] -> [Entity] -> Node
 article l avatars members entities =
   let c = copy l
+      (contributors, advisors) = groups members
+      memberSections =
+        [memberSection c avatars (cContributors c) contributors | not (null contributors)]
+          <> [memberSection c avatars (cAdvisors c) advisors | not (null advisors)]
       nonHuman =
         [ H.el "h2" [] [H.text (cNonHuman c)],
           H.el "p" [H.cls "lede"] (cNonHumanLede c),
@@ -604,13 +679,10 @@ article l avatars members entities =
         "article"
         [H.cls "about-body", H.attr "lang" (Language.tag l)]
         ( [ H.el "h2" [] [H.text (cTitle c)],
-            H.el "p" [H.cls "lede"] (cLede c),
-            H.el
-              "nav"
-              [H.attr "aria-label" (cShort c)]
-              [H.el "ul" [H.cls "members-short"] (map shortItem members)],
-            H.el "ul" [H.cls "members"] (map (item c avatars) members)
+            H.el "p" [H.cls "lede"] (cLede c)
           ]
+            <> viewSwitch c
+            <> memberSections
             <> section
             <> [H.el "p" [] (cFoot c)]
         )
