@@ -28,7 +28,7 @@ import Data.Char (isAsciiLower, isAsciiUpper, isDigit, toUpper)
 import Data.List (sort)
 import Data.Map.Strict (Map)
 import Data.Map.Strict qualified as Map
-import Data.Maybe (catMaybes, fromMaybe, isJust, isNothing)
+import Data.Maybe (catMaybes, fromMaybe, isJust)
 import Data.Set qualified as Set
 import Data.Text (Text)
 import Data.Text qualified as T
@@ -393,12 +393,13 @@ unaccent c = fromMaybe c (lookup c accents)
         ('ç', 'c')
       ]
 
--- | The avatar file of each login must be in the folder, and no other; a person with no GitHub
--- login may also have the optional local photo named after them. The page never asks GitHub.
+-- | The avatar file of each login must be in the folder, and no other; a person may also have an
+-- optional local photo named after them, shown instead of the GitHub avatar. The page never asks
+-- GitHub.
 checkAvatars :: Map Text Text -> [Member] -> [Entity] -> Either Text ()
 checkAvatars avatars members entities =
   let needed = Set.fromList (catMaybes (map gitHub members) <> map entityGitHub entities)
-      locals = Set.fromList [slug (name m) | m <- members, isNothing (gitHub m)]
+      locals = Set.fromList [slug (name m) | m <- members]
       allowed = needed <> locals
       have = Map.keysSet avatars
    in if needed `Set.isSubsetOf` have && have `Set.isSubsetOf` allowed
@@ -553,9 +554,9 @@ item c avatars m =
         <> [span' "member-links" links | not (null links)]
     )
   where
-    mark = case gitHub m >>= (`Map.lookup` avatars) of
+    mark = case Map.lookup (slug (name m)) avatars of
       Just f -> avatarNode f
-      Nothing -> case Map.lookup (slug (name m)) avatars of
+      Nothing -> case gitHub m >>= (`Map.lookup` avatars) of
         Just f -> avatarNode f
         Nothing -> H.el "span" [H.cls "member-mark", H.attr "aria-hidden" "true"] [H.text (initials (name m))]
     linkNodes =
