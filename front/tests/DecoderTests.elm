@@ -72,6 +72,7 @@ suite =
                         , lat = -27.6099
                         , lon = -48.3852
                         , url = Nothing
+                        , labelBelow = False
                         }
 
                     loc language =
@@ -88,6 +89,12 @@ suite =
                             ( Just "Rocky island off Praia Mole.", True )
                     ]
                     ()
+        , test "a pin can put its label below the dot" <|
+            \_ ->
+                D.decodeString Area.listDecoder
+                    "{\"areas\":[{\"id\":\"x\",\"name\":\"X\",\"lat\":0,\"lon\":0,\"pins\":[{\"name\":\"A\",\"lat\":1,\"lon\":2,\"label_below\":true}]}]}"
+                    |> Result.map (List.concatMap (.pins >> List.map .labelBelow))
+                    |> Expect.equal (Ok [ True ])
         , test "a trails file reads its routes in order and drops the lines it cannot draw" <|
             \_ ->
                 Expect.equal

@@ -1,9 +1,13 @@
 title: パートナー
-description: marolaと歩む人々: Canto das Águas、Leave No Trace、OpenDiving、Ouroboric、piabrota。それぞれの役割と、パートナーになる方法。
+description: marolaと歩む人々: ECO 研究室、Canto das Águas、Leave No Trace、OpenDiving、Ouroboric、piabrota。それぞれの役割と、パートナーになる方法。
 
 ## パートナー
 
 marolaは市民科学として、コードを公開して作られており、一人で歩んではいません。ここに載ることを了承したパートナーです。
+
+## ECO 研究室 @UFSC
+
+[ECO 研究室](https://ondaseventos.ufsc.br/) は、フロリアノーポリスのサンタカタリーナ連邦大学（UFSC）の研究室で、大学の波と風のサイト **Ondas & Ventos** を運営しています。この提携は、サンタカタリーナ沿岸の海と風に取り組む研究室と marola を結び、オープンデータと市民科学を共有します。
 
 ## Canto das Águas
 

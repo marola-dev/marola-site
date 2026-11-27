@@ -28,7 +28,7 @@ import Data.Char (isAsciiLower, isAsciiUpper, isDigit, toUpper)
 import Data.List (partition, sort, sortOn)
 import Data.Map.Strict (Map)
 import Data.Map.Strict qualified as Map
-import Data.Maybe (catMaybes, fromMaybe, isJust)
+import Data.Maybe (catMaybes, fromMaybe, isJust, isNothing)
 import Data.Set qualified as Set
 import Data.Text (Text)
 import Data.Text qualified as T

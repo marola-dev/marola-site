@@ -275,6 +275,9 @@ pinMarkerAt model index pin =
     if Area.isDive pin then
         diveMarker model index pin
 
+    else if Area.isWomen pin then
+        womenMarker model index pin
+
     else if Area.isPeak pin then
         peakMarker model index pin
 
@@ -331,7 +334,16 @@ placeMarker model index pin =
              else
                 "a"
             )
-            (( "class", "pin" ) :: ( "aria-label", label ) :: link)
+            (( "class"
+             , if pin.labelBelow then
+                "pin label-below"
+
+               else
+                "pin"
+             )
+                :: ( "aria-label", label )
+                :: link
+            )
             [ Tree.el "span" [ ( "class", "pin-label" ) ] [ Tree.text label ]
             , Tree.el "span" [ ( "class", "pin-dot" ) ] []
             ]
@@ -382,6 +394,52 @@ diveIcon =
             []
         , Tree.svg "circle" [ ( "class", "lens" ), ( "cx", "9" ), ( "cy", "11.5" ), ( "r", "1.5" ) ] []
         , Tree.svg "circle" [ ( "class", "lens" ), ( "cx", "15" ), ( "cy", "11.5" ), ( "r", "1.5" ) ] []
+        ]
+
+
+{-| A women's place: a round marker with the Venus symbol and its name.
+-}
+womenMarker : Model -> Int -> Area.Pin -> Marker
+womenMarker model index pin =
+    let
+        label =
+            Area.pinLabel model.loc pin
+    in
+    { key = "women-" ++ String.fromInt index ++ "-" ++ pin.name
+    , lon = pin.lon
+    , lat = pin.lat
+    , label = Just label
+    , node =
+        Tree.el "div"
+            [ ( "class"
+              , if pin.labelBelow then
+                    "women label-below"
+
+                else
+                    "women"
+              )
+            , ( "role", "img" )
+            , ( "aria-label", label )
+            ]
+            [ womenIcon, Tree.el "span" [ ( "class", "pin-label" ) ] [ Tree.text label ] ]
+    , tip = pinTip model pin
+    , tipClass = ""
+    , tipAnchor = "top"
+    , offset = 14
+    , click = Nothing
+    }
+
+
+{-| The Venus symbol: a ring, a stem and its cross, on the accent dot.
+-}
+womenIcon : Tree
+womenIcon =
+    Tree.svg "svg"
+        [ ( "viewBox", "0 0 24 24" ), ( "aria-hidden", "true" ), ( "focusable", "false" ) ]
+        [ Tree.svg "circle" [ ( "class", "rim" ), ( "cx", "12" ), ( "cy", "12" ), ( "r", "11" ) ] []
+        , Tree.svg "circle" [ ( "class", "fill" ), ( "cx", "12" ), ( "cy", "12" ), ( "r", "9" ) ] []
+        , Tree.svg "circle" [ ( "class", "venus-ring" ), ( "cx", "12" ), ( "cy", "8.5" ), ( "r", "4" ) ] []
+        , Tree.svg "path" [ ( "class", "venus-cross" ), ( "d", "M12 12.5V20M8.5 16.5h7" ) ] []
         ]
 
 

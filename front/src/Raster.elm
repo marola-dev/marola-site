@@ -16,7 +16,7 @@ type alias Raster =
 
 clouds : Raster
 clouds =
-    { layer = "VIIRS_SNPP_CorrectedReflectance_TrueColor", matrix = "GoogleMapsCompatible_Level9", ext = "jpg", maxZoom = 9, daysBack = 1, opacity = 1.0 }
+    { layer = "VIIRS_NOAA20_CorrectedReflectance_TrueColor", matrix = "GoogleMapsCompatible_Level9", ext = "jpg", maxZoom = 9, daysBack = 1, opacity = 1.0 }
 
 
 sst : Raster
