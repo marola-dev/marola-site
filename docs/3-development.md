@@ -168,7 +168,11 @@ never the HTML. The members page reads `site/members/MEMBERS.md`, a copy of maro
 of the copy. The build refuses a copy that does not hash to that id, so a build needs no network.
 `just members-check` (in `just quality`) and a test in `back/pages` check the same. To move the
 pin, copy MEMBERS.md at the new commit over the file and write both lines of `site/members.version`
-(`git hash-object site/members/MEMBERS.md` prints the blob id). `MEMBERS_SOURCE=<file>` reads another
+(`git hash-object site/members/MEMBERS.md` prints the blob id). A member with no GitHub login may
+have a photo at `site/static/img/members/<given>-<family>.<png|jpg>`, copied from
+`profile/avatars/` at the same commit: lowercase ASCII, accents folded, hyphens for spaces
+(`barbara-almeida.jpg`). The page shows it instead of initials; `scripts/members_build.py` keeps
+it when it syncs the GitHub avatars, and its `--check` accepts it. `MEMBERS_SOURCE=<file>` reads another
 file instead. With no `site/members/MEMBERS.md`, the build fetches the commit. `--no-install` reuses
 `front/node_modules`. `dist/`, `front/dist/` and `dist-newstyle/` are not in git.
 

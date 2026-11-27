@@ -72,6 +72,12 @@ Affiliation: Dhidrone
 State: Rio Grande do Sul / Santa Catarina
 Website: https://dhidrone.com.br/
 
+Name: Bárbara Almeida
+Role: advisor
+Affiliation: TV Integração
+State: Minas Gerais
+Website: https://www.instagram.com/barbaraalmeidajn/
+
 /* SITE */
 Members: https://github.com/marola-dev/.github/blob/main/MEMBERS.md
 Cite: https://doi.org/10.5281/zenodo.23224155

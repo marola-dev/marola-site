@@ -46,6 +46,16 @@ full =
 avatars :: Map.Map Text Text
 avatars = Map.fromList [("h0ffmann", "h0ffmann.png")]
 
+-- The row with a local photo and no GitHub login (MEMBERS.md, 26 November 2026).
+local :: Text
+local =
+  full
+    <> "| Almeida, Bárbara | TV Integração | | | https://www.instagram.com/barbaraalmeidajn/"
+    <> " | | advisor | |\n"
+
+localAvatars :: Map.Map Text Text
+localAvatars = Map.insert "barbara-almeida" "barbara-almeida.jpg" avatars
+
 -- The ## Non-human table (MEMBERS.md, 25 November 2026), under the people's table.
 entityTable :: Text
 entityTable =
@@ -122,6 +132,13 @@ spec env = describe "members" $ do
   it "a member with no GitHub login keeps initials (first and last word)" $ do
     let html = page En good
     (has "aria-hidden=\"true\">RJ</span>" html && not (has "aria-hidden=\"true\">MH" html)) `shouldBe` True
+  it "a member with no GitHub login and a local photo shows it instead of initials" $ do
+    let html = toHtml (Members.article PtBr localAvatars (parsed local) [])
+    html `shouldSatisfy` has "<img class=\"member-mark\" src=\"/img/members/barbara-almeida.jpg\" width=\"48\" height=\"48\" alt=\"\""
+    html `shouldNotSatisfy` has "aria-hidden=\"true\">BA</span>"
+    Members.checkAvatars localAvatars (parsed local) [] `shouldBe` Right ()
+  it "a local photo for a member with a GitHub login is a stray" $
+    isLeft (Members.checkAvatars (Map.insert "matheus-hoffmann" "matheus-hoffmann.jpg" avatars) (parsed full) []) `shouldBe` True
   it "ORCID and GitHub links" $ do
     let html = page En good
     html `shouldSatisfy` has "<a href=\"https://orcid.org/0009-0009-1056-7661\">ORCID 0009-0009-1056-7661</a>"

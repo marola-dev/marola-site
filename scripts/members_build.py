@@ -21,6 +21,7 @@ import io
 import re
 import sys
 import tempfile
+import unicodedata
 import urllib.request
 from pathlib import Path
 
@@ -271,6 +272,12 @@ def initials(name):
     return (parts[0][0] + parts[-1][0]).upper()
 
 
+def slug(name):
+    """A member's photo file stem: lowercase ASCII, accents folded, hyphens for spaces."""
+    plain = "".join(c for c in unicodedata.normalize("NFKD", name) if not unicodedata.combining(c))
+    return "-".join(re.findall(r"[a-z0-9]+", plain.lower()))
+
+
 def sniff(data):
     if data.startswith(b"\x89PNG\r\n\x1a\n"):
         return "png"
@@ -283,11 +290,13 @@ def avatar_files(folder):
     return {p.stem: p.name for p in folder.glob("*")} if folder.is_dir() else {}
 
 
-def sync_avatars(logins, folder, get):
-    """Download each login's avatar into folder and delete the files of logins no longer listed."""
+def sync_avatars(logins, folder, get, locals=()):
+    """Download each login's avatar into folder and delete every file that is neither a login nor
+    a member's local photo (``locals``, kept as they are)."""
     folder.mkdir(parents=True, exist_ok=True)
+    keep = set(logins) | set(locals)
     for p in folder.glob("*"):
-        if p.stem not in logins:
+        if p.stem not in keep:
             p.unlink()
     for login in logins:
         data = get(login)
@@ -331,10 +340,11 @@ def render(members, avatars, entities):
                 for k, v in (("role", marola_role), ("ghrole", gh_role))
                 if v
             ]
+            avatar = (avatars.get(gh) if gh else None) or avatars.get(slug(name))
             out += [
                 '        <li class="member">',
-                f'          <img class="member-mark" src="img/members/{avatars[gh]}" width="48" height="48" alt="" loading="lazy">'
-                if gh in avatars
+                f'          <img class="member-mark" src="img/members/{avatar}" width="48" height="48" alt="" loading="lazy">'
+                if avatar
                 else f'          <span class="member-mark" aria-hidden="true">{initials(name)}</span>',
                 f'          <span class="member-name">{html.escape(name)}</span>',
                 *([f'          <span class="member-aff">{html.escape(aff)}</span>'] if aff else []),
@@ -422,13 +432,16 @@ def run(text, page, check, folder=AVATARS, get=get_avatar, humans=HUMANS):
         members = parse(text)
         entities = parse_entities(text)
         logins = [m[4] for m in members if m[4]] + [e[1] for e in entities]
+        locals = [slug(m[0]) for m in members if not m[4]]
         if not check:
-            sync_avatars(logins, folder, get)
+            sync_avatars(logins, folder, get, locals)
         have = avatar_files(folder)
-        if set(have) != set(logins):
+        required = set(logins)
+        allowed = required | set(locals)
+        if not required <= set(have) or not set(have) <= allowed:
             raise MembersError(
-                f"{folder.name}/ has avatars for {sorted(have)}, MEMBERS.md lists {sorted(logins)}:"
-                " run scripts/members_build.py"
+                f"{folder.name}/ has avatars for {sorted(have)}, MEMBERS.md lists {sorted(required)}"
+                f" and allows the local photos {sorted(locals)}: run scripts/members_build.py"
             )
         block = render(members, have, entities)
         humans_text = render_humans(members)
@@ -493,15 +506,23 @@ def self_test():
         + ") | contributor | owner |\n"
         "| Soares da Silva Junior, Rob Kler | | | | | | ui / mkt | |\n"
     )
+    local = (
+        full
+        + "| Almeida, Bárbara | TV Integração | | | https://www.instagram.com/barbaraalmeidajn/"
+        " | | advisor | |\n"
+    )
     page = f"<main>\n    {BEGIN}\n    {END}\n</main>\n"
     png = b"\x89PNG\r\n\x1a\n" + b"0" * 8
     quiet = (contextlib.redirect_stdout, contextlib.redirect_stderr)
 
-    def scenario(label, text, expect_ok, between=None):
+    def scenario(label, text, expect_ok, between=None, before=None):
         with tempfile.TemporaryDirectory() as tmp:
             out, folder = Path(tmp) / "members.html", Path(tmp) / "members"
             humans = Path(tmp) / "humans.txt"
             out.write_text(page)
+            if before:
+                folder.mkdir(parents=True, exist_ok=True)
+                before(folder)
             with quiet[0](io.StringIO()), quiet[1](io.StringIO()):
                 run(text, out, check=False, folder=folder, get=lambda _: png, humans=humans)
                 if between:
@@ -661,6 +682,24 @@ def self_test():
         ' <a href="https://www.instagram.com/nader_oficial/">www.instagram.com/nader_oficial</a>'
         in got_full,
         "one or two websites are links in the card, shown without the scheme",
+    )
+    local_page, local_files = scenario(
+        "a local photo for a member with no GitHub login passes",
+        local,
+        True,
+        before=lambda f: (f / "barbara-almeida.jpg").write_bytes(png),
+    )
+    ok(
+        "barbara-almeida.jpg" in local_files
+        and '<img class="member-mark" src="img/members/barbara-almeida.jpg"' in local_page
+        and 'aria-hidden="true">BA</span>' not in local_page,
+        "a member with no GitHub login shows the local photo instead of initials",
+    )
+    scenario(
+        "a stray local photo for a member with a GitHub login fails",
+        full,
+        False,
+        between=lambda f, _: (f / "matheus-hoffmann.jpg").write_bytes(png),
     )
     ok(
         "GitHub: https://github.com/h0ffmann\nORCID: https://orcid.org/0009-0009-1056-7661\n"

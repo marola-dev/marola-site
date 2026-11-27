@@ -28,7 +28,7 @@ import Data.Char (isAsciiLower, isAsciiUpper, isDigit, toUpper)
 import Data.List (sort)
 import Data.Map.Strict (Map)
 import Data.Map.Strict qualified as Map
-import Data.Maybe (catMaybes, fromMaybe, isJust)
+import Data.Maybe (catMaybes, fromMaybe, isJust, isNothing)
 import Data.Set qualified as Set
 import Data.Text (Text)
 import Data.Text qualified as T
@@ -354,19 +354,63 @@ initials nm =
   let parts = filter (not . T.null) (T.split (\c -> c == ' ' || c == '\t') nm)
    in T.map toUpper (T.take 1 (head parts) <> T.take 1 (last parts))
 
--- | The avatar file of each login must be in the folder, and no other: the page never asks GitHub.
+-- | A member's photo file stem: lowercase ASCII, accents folded, hyphens for spaces. It is the
+-- name of the optional file under @img/members/@ for a person with no GitHub login.
+slug :: Text -> Text
+slug nm =
+  let parts = T.split (not . ascii) (T.map unaccent (T.toLower nm))
+   in T.intercalate "-" (filter (not . T.null) parts)
+  where
+    ascii c = (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')
+
+-- | Fold the Portuguese accents a member's name can carry, after @T.toLower@.
+unaccent :: Char -> Char
+unaccent c = fromMaybe c (lookup c accents)
+  where
+    accents =
+      [ ('á', 'a'),
+        ('à', 'a'),
+        ('â', 'a'),
+        ('ã', 'a'),
+        ('ä', 'a'),
+        ('é', 'e'),
+        ('è', 'e'),
+        ('ê', 'e'),
+        ('ë', 'e'),
+        ('í', 'i'),
+        ('ì', 'i'),
+        ('î', 'i'),
+        ('ï', 'i'),
+        ('ó', 'o'),
+        ('ò', 'o'),
+        ('ô', 'o'),
+        ('õ', 'o'),
+        ('ö', 'o'),
+        ('ú', 'u'),
+        ('ù', 'u'),
+        ('û', 'u'),
+        ('ü', 'u'),
+        ('ç', 'c')
+      ]
+
+-- | The avatar file of each login must be in the folder, and no other; a person with no GitHub
+-- login may also have the optional local photo named after them. The page never asks GitHub.
 checkAvatars :: Map Text Text -> [Member] -> [Entity] -> Either Text ()
 checkAvatars avatars members entities =
-  let logins = Set.fromList (catMaybes (map gitHub members) <> map entityGitHub entities)
+  let needed = Set.fromList (catMaybes (map gitHub members) <> map entityGitHub entities)
+      locals = Set.fromList [slug (name m) | m <- members, isNothing (gitHub m)]
+      allowed = needed <> locals
       have = Map.keysSet avatars
-   in if logins == have
+   in if needed `Set.isSubsetOf` have && have `Set.isSubsetOf` allowed
         then Right ()
         else
           Left
             ( "img/members/ has avatars for "
                 <> T.intercalate ", " (Set.toList have)
                 <> ", MEMBERS.md lists "
-                <> T.intercalate ", " (Set.toList logins)
+                <> T.intercalate ", " (Set.toList needed)
+                <> " and allows the local photos "
+                <> T.intercalate ", " (Set.toList locals)
                 <> ": run scripts/members_build.py"
             )
 
@@ -498,7 +542,9 @@ item c avatars m =
   where
     mark = case gitHub m >>= (`Map.lookup` avatars) of
       Just f -> avatarNode f
-      Nothing -> H.el "span" [H.cls "member-mark", H.attr "aria-hidden" "true"] [H.text (initials (name m))]
+      Nothing -> case Map.lookup (slug (name m)) avatars of
+        Just f -> avatarNode f
+        Nothing -> H.el "span" [H.cls "member-mark", H.attr "aria-hidden" "true"] [H.text (initials (name m))]
     linkNodes =
       [a url [H.text (siteLabel url)] | url <- websites m]
         <> catMaybes
