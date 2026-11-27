@@ -537,9 +537,11 @@ pages](#no-inline-style-no-script-on-content-pages)). Each layout mirrors `View/
   a phone. A 48 px circle (the avatar, or the initials in Fjalla, `--accent` on `--accent-soft`),
   the name in Fjalla 20 px, the affiliation and the state of origin in `--muted` 14 px, the roles
   and the links in mono 11 px. The links are `--ink` with no underline until hovered. Names wrap
-  anywhere. Above the cards, `ul.members-short` is the short display: the names only, in mono
-  14 px, each a link to its card (`#member-<slug>`), so a visitor can find a person before the
-  affiliations, ORCIDs and sites.
+  anywhere. The page has two sections, **contributors** and **advisors**, and two mutually
+  exclusive views: `ul.members-lofi` is one line per person (the name, a hairline between rows) and
+  `ul.members` is the cards above. The radio inputs `#members-lofi` and `#members-hifi` and the
+  switch labels choose the view with no script; the stylesheet shows one view in both sections. The
+  advisors come in PV, Yuri, then the file's order.
 - **Funding channel** (`.p-support .about-body li`): the channel's name in Fjalla 22 px across the
   whole card, with a mono arrow at the right; a channel that is not open yet is `--muted` with its
   "soon" in mono.

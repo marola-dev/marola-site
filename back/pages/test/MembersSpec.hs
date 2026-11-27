@@ -56,6 +56,17 @@ local =
 localAvatars :: Map.Map Text Text
 localAvatars = Map.insert "barbara-almeida" "barbara-almeida.jpg" avatars
 
+-- Contributors and advisors, PV last in the file: the page puts him first among the advisors.
+sections :: Text
+sections =
+  "# Members\n\n| Name | Affiliation | ORCID | GitHub | Website | First commit | marola role | GitHub role |\n"
+    <> "|---|---|---|---|---|---|---|---|\n"
+    <> "| Hoffmann, Matheus | | | [h0ffmann](https://github.com/h0ffmann) | | | contributor | owner |\n"
+    <> "| Morais, Jonathan | | | | | | contributor | contributor |\n"
+    <> "| Kuzniecow, Yuri | | | | | | advisor | |\n"
+    <> "| Nader, Joao Victor | | | | | | advisor | |\n"
+    <> "| Guimarães, Pedro Veras | | | [pvguima](https://github.com/pvguima) | | | advisor | |\n"
+
 -- The ## Non-human table (MEMBERS.md, 25 November 2026), under the people's table.
 entityTable :: Text
 entityTable =
@@ -127,18 +138,20 @@ spec env = describe "members" $ do
     count "<article class=\"about-body\" lang=\"en\">" (page En good) `shouldBe` 1
   it "'Family, Given' shows as Given Family" $
     page En good `shouldSatisfy` has "<span class=\"member-name\">Matheus Hoffmann</span>"
-  it "the short display lists the names only, each linking to its card" $ do
-    let html = page En good
-        short = fst (T.breakOn "</ul>" (snd (T.breakOn "<ul class=\"members-short\">" html)))
-    html
-      `shouldSatisfy` has "<nav aria-label=\"member index\"><ul class=\"members-short\">"
-    short
-      `shouldSatisfy` has "<li><a href=\"#member-matheus-hoffmann\">Matheus Hoffmann</a></li>"
-    short
-      `shouldSatisfy` has "<li><a href=\"#member-rob-kler-soares-da-silva-junior\">Rob Kler Soares da Silva Junior</a></li>"
-    short `shouldNotSatisfy` has "ORCID"
-    short `shouldNotSatisfy` has "https://"
-    html `shouldSatisfy` has "<li class=\"member\" id=\"member-matheus-hoffmann\">"
+  it "contributors and advisors, the advisors PV, Yuri, then the MEMBERS.md order" $ do
+    let html = page En sections
+        adv = fst (T.breakOn "</section>" (snd (T.breakOn "<h2>advisors</h2>" html)))
+        lofi = [T.takeWhile (/= '<') r | r <- occurrences "<span class=\"member-lofi-name\">" adv]
+    html `shouldSatisfy` has "<h2>contributors</h2>"
+    html `shouldSatisfy` has "<h2>advisors</h2>"
+    lofi `shouldBe` ["Pedro Veras Guimarães", "Yuri Kuzniecow", "Joao Victor Nader"]
+  it "the views are a radio switch over both sections" $ do
+    let html = page En sections
+    html `shouldSatisfy` has "id=\"members-lofi\""
+    html `shouldSatisfy` has "id=\"members-hifi\""
+    html `shouldSatisfy` has "<ul class=\"members-lofi\">"
+    html `shouldSatisfy` has "<ul class=\"members\">"
+    html `shouldSatisfy` has "aria-label=\"members view\""
   it "a compound family name" $
     page En good `shouldSatisfy` has "<span class=\"member-name\">Rob Kler Soares da Silva Junior</span>"
   it "a member with no GitHub login keeps initials (first and last word)" $ do
