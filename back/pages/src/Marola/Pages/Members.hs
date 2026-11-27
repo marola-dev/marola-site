@@ -417,6 +417,8 @@ checkAvatars avatars members entities =
 data Copy = Copy
   { cTitle :: Text,
     cLede :: [Node],
+    -- | The invisible name of the short index of names above the cards.
+    cShort :: Text,
     cCommit :: Text -> Text,
     cRole :: Text -> Text,
     cGitHubRole :: Text -> Text,
@@ -437,6 +439,7 @@ copy PtBr =
           a zenodo [H.text "registro do marola no Zenodo"],
           H.text "."
         ],
+      cShort = "índice de membros",
       cCommit = ("primeiro commit em " <>),
       cRole = ("no marola: " <>),
       cGitHubRole = ("no GitHub: " <>),
@@ -456,6 +459,7 @@ copy En =
           a zenodo [H.text "marola record on Zenodo"],
           H.text "."
         ],
+      cShort = "member index",
       cCommit = ("first commit on " <>),
       cRole = ("marola: " <>),
       cGitHubRole = ("GitHub: " <>),
@@ -475,6 +479,7 @@ copy Ja =
           a zenodo [H.text "marolaのZenodo登録"],
           H.text " の著者でもあります。"
         ],
+      cShort = "メンバー一覧",
       cCommit = ("最初のコミット: " <>),
       cRole = ("marolaでの役割: " <>),
       cGitHubRole = ("GitHubでの役割: " <>),
@@ -494,6 +499,7 @@ copy ZhHant =
           a zenodo [H.text "marola 的 Zenodo 登錄"],
           H.text " 的作者。"
         ],
+      cShort = "成員索引",
       cCommit = ("首次提交於 " <>),
       cRole = ("marola 的角色: " <>),
       cGitHubRole = ("GitHub 的角色: " <>),
@@ -528,11 +534,18 @@ joined :: [Node] -> [Node]
 joined [] = []
 joined (x : xs) = x : concatMap (\n -> [H.text " ", n]) xs
 
+-- | The short display: the names only, in the file's order, each linking to its card below.
+shortItem :: Member -> Node
+shortItem m =
+  H.el "li" [] [a ("#member-" <> slug (name m)) [H.text (name m)]]
+
 item :: Copy -> Map Text Text -> Member -> Node
 item c avatars m =
   H.el
     "li"
-    [H.cls "member"]
+    [ H.cls "member",
+      H.attr "id" ("member-" <> slug (name m))
+    ]
     ( [mark, span' "member-name" [H.text (name m)]]
         <> [span' "member-aff" [H.text (affiliation m)] | affiliation m /= ""]
         <> [span' "member-state" [H.text (state m)] | state m /= ""]
@@ -591,6 +604,10 @@ article l avatars members entities =
         [H.cls "about-body", H.attr "lang" (Language.tag l)]
         ( [ H.el "h2" [] [H.text (cTitle c)],
             H.el "p" [H.cls "lede"] (cLede c),
+            H.el
+              "nav"
+              [H.attr "aria-label" (cShort c)]
+              [H.el "ul" [H.cls "members-short"] (map shortItem members)],
             H.el "ul" [H.cls "members"] (map (item c avatars) members)
           ]
             <> section

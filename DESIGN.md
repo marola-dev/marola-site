@@ -537,7 +537,9 @@ pages](#no-inline-style-no-script-on-content-pages)). Each layout mirrors `View/
   a phone. A 48 px circle (the avatar, or the initials in Fjalla, `--accent` on `--accent-soft`),
   the name in Fjalla 20 px, the affiliation and the state of origin in `--muted` 14 px, the roles
   and the links in mono 11 px. The links are `--ink` with no underline until hovered. Names wrap
-  anywhere.
+  anywhere. Above the cards, `ul.members-short` is the short display: the names only, in mono
+  14 px, each a link to its card (`#member-<slug>`), so a visitor can find a person before the
+  affiliations, ORCIDs and sites.
 - **Funding channel** (`.p-support .about-body li`): the channel's name in Fjalla 22 px across the
   whole card, with a mono arrow at the right; a channel that is not open yet is `--muted` with its
   "soon" in mono.
