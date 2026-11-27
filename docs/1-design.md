@@ -34,9 +34,9 @@
 - `site/members.version`: the marola-dev/.github commit whose `MEMBERS.md`, the org's one list of
   members (the Zenodo record's creators), `scripts/members_build.py` (`just members`) writes into
   `members.html`, copying each member's GitHub avatar into `site/static/img/members/` (the page
-  hotlinks nothing). A person with no GitHub login may have a photo there, `<given>-<family>.jpg`
-  or `.png` (lowercase ASCII, accents folded, hyphens for spaces), taken from `profile/avatars/`
-  at the same commit; the page shows it instead of initials. `members.yml` moves the pin to
+  hotlinks nothing). A person may have a photo there, `<given>-<family>.jpg` or `.png` (lowercase
+  ASCII, accents folded, hyphens for spaces), taken from `profile/avatars/` at the same commit or
+  added by hand; the page shows it instead of the GitHub avatar or initials. `members.yml` moves the pin to
   `.github`'s main and rebuilds both every day, as a PR for a person to merge, so a new member or
   photo needs no change here by hand. CI's `--check` fails when the page or the avatar files differ
   from the pinned list.

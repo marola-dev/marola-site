@@ -149,8 +149,12 @@ spec env = describe "members" $ do
     html `shouldSatisfy` has "<img class=\"member-mark\" src=\"/img/members/barbara-almeida.jpg\" width=\"48\" height=\"48\" alt=\"\""
     html `shouldNotSatisfy` has "aria-hidden=\"true\">BA</span>"
     Members.checkAvatars localAvatars (parsed local) [] `shouldBe` Right ()
-  it "a local photo for a member with a GitHub login is a stray" $
-    isLeft (Members.checkAvatars (Map.insert "matheus-hoffmann" "matheus-hoffmann.jpg" avatars) (parsed full) []) `shouldBe` True
+  it "a local photo wins over the GitHub avatar" $ do
+    let over = Map.insert "matheus-hoffmann" "matheus-hoffmann.jpg" avatars
+    Members.checkAvatars over (parsed full) [] `shouldBe` Right ()
+    let html = toHtml (Members.article En over (parsed full) [])
+    html `shouldSatisfy` has "<img class=\"member-mark\" src=\"/img/members/matheus-hoffmann.jpg\""
+    html `shouldNotSatisfy` has "\"/img/members/h0ffmann.png\""
   it "ORCID and GitHub links" $ do
     let html = page En good
     html `shouldSatisfy` has "<a href=\"https://orcid.org/0009-0009-1056-7661\">ORCID 0009-0009-1056-7661</a>"

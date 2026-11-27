@@ -340,7 +340,7 @@ def render(members, avatars, entities):
                 for k, v in (("role", marola_role), ("ghrole", gh_role))
                 if v
             ]
-            avatar = (avatars.get(gh) if gh else None) or avatars.get(slug(name))
+            avatar = avatars.get(slug(name)) or (avatars.get(gh) if gh else None)
             out += [
                 '        <li class="member">',
                 f'          <img class="member-mark" src="img/members/{avatar}" width="48" height="48" alt="" loading="lazy">'
@@ -432,7 +432,7 @@ def run(text, page, check, folder=AVATARS, get=get_avatar, humans=HUMANS):
         members = parse(text)
         entities = parse_entities(text)
         logins = [m[4] for m in members if m[4]] + [e[1] for e in entities]
-        locals = [slug(m[0]) for m in members if not m[4]]
+        locals = [slug(m[0]) for m in members]
         if not check:
             sync_avatars(logins, folder, get, locals)
         have = avatar_files(folder)
