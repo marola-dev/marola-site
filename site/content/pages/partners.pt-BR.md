@@ -1,9 +1,13 @@
 title: parceiros
-description: Quem caminha com o marola: Canto das Águas, Leave No Trace, OpenDiving, Ouroboric e piabrota, o que cada um faz e como virar parceiro.
+description: Quem caminha com o marola: Laboratório ECO, Canto das Águas, Leave No Trace, OpenDiving, Ouroboric e piabrota, o que cada um faz e como virar parceiro.
 
 ## Parceiros
 
 O marola é feito em código aberto, como ciência cidadã, e não anda sozinho. Estes são os parceiros que aceitaram ser listados aqui.
+
+## Laboratório ECO @UFSC
+
+O [Laboratório ECO](https://ondaseventos.ufsc.br/) é o laboratório da Universidade Federal de Santa Catarina, em Florianópolis, que mantém o **Ondas & Ventos**, o site de ondas e ventos da universidade. A parceria aproxima o marola do trabalho do laboratório com o mar e o vento na costa catarinense, em dados abertos e ciência cidadã.
 
 ## Canto das Águas
 

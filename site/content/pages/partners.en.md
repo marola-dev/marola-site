@@ -1,9 +1,13 @@
 title: partners
-description: Who walks with marola: Canto das Águas, Leave No Trace, OpenDiving, Ouroboric and piabrota, what each one does and how to become a partner.
+description: Who walks with marola: the ECO Lab, Canto das Águas, Leave No Trace, OpenDiving, Ouroboric and piabrota, what each one does and how to become a partner.
 
 ## Partners
 
 marola is built in the open, as citizen science, and it does not go alone. These are the partners that agreed to be listed here.
+
+## ECO Lab @UFSC
+
+The [ECO Lab](https://ondaseventos.ufsc.br/) is the laboratory at the Federal University of Santa Catarina, in Florianópolis, that runs **Ondas & Ventos**, the university's waves-and-winds site. The partnership brings marola alongside the lab's work with the sea and the wind on the Santa Catarina coast, in open data and citizen science.
 
 ## Canto das Águas
 

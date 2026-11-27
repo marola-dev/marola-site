@@ -1,9 +1,13 @@
 title: 合作夥伴
-description: 與 marola 同行的人: Canto das Águas、Leave No Trace、OpenDiving、Ouroboric 與 piabrota，各自的角色，以及如何成為夥伴。
+description: 與 marola 同行的人: ECO 實驗室、Canto das Águas、Leave No Trace、OpenDiving、Ouroboric 與 piabrota，各自的角色，以及如何成為夥伴。
 
 ## 合作夥伴
 
 marola 以公民科學的方式、在開放程式碼中打造，而且不是獨自前行。以下是同意列名於此的夥伴。
+
+## ECO 實驗室 @UFSC
+
+[ECO 實驗室](https://ondaseventos.ufsc.br/) 是位於弗洛里亞諾波利斯的聖卡塔琳娜聯邦大學（UFSC）實驗室，營運大學的波浪與風網站 **Ondas & Ventos**。這項合作讓 marola 與研究聖卡塔琳娜海岸海與風的實驗室並肩，共享開放資料與公民科學。
 
 ## Canto das Águas
 
